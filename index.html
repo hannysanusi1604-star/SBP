@@ -78,6 +78,59 @@
   .hero-immersive { background: #FBF9F5; margin-top: -57px; padding-top: 57px; }
   .hero-glow { background: radial-gradient(70% 55% at 50% 70%, rgba(184,152,85,.18), rgba(184,152,85,0) 65%); }
   .hero-vignette { background: radial-gradient(95% 80% at 50% 35%, rgba(251,249,245,0), rgba(251,249,245,0.85)); }
+  .hero-image-wrap { will-change: transform; transition: transform 0.9s cubic-bezier(.2,.8,.2,1); }
+  @keyframes kenBurns {
+    0% { transform: scale(1.04); }
+    100% { transform: scale(1.10); }
+  }
+  .hero-image { animation: kenBurns 22s ease-in-out alternate infinite; transform-origin: 55% 60%; }
+
+  /* Interactive buffet hotspots */
+  .hotspot { position: absolute; transform: translate(-50%, -50%); cursor: pointer; background: transparent; border: 0; padding: 0; outline: none; }
+  .hotspot-dot {
+    position: relative; display: block; width: 12px; height: 12px; border-radius: 999px;
+    background: #FBF9F5; box-shadow: 0 0 0 0 rgba(184,152,85,.55), 0 0 10px rgba(20,38,63,.35);
+    animation: hotspotPulse 2.6s infinite ease-out;
+  }
+  .hotspot-dot::after {
+    content: ''; position: absolute; inset: -7px; border-radius: 999px;
+    border: 1px solid rgba(251,249,245,.7); transition: transform .35s cubic-bezier(.2,.8,.2,1), border-color .35s;
+  }
+  .hotspot:hover .hotspot-dot::after,
+  .hotspot:focus-visible .hotspot-dot::after { transform: scale(1.55); border-color: rgba(184,152,85,.9); }
+  .hotspot-card {
+    position: absolute; left: 50%; bottom: calc(100% + 14px);
+    transform: translate(-50%, 6px); transform-origin: bottom center;
+    background: rgba(251,249,245,.96); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(20,38,63,.08);
+    padding: 14px 18px; min-width: 220px; max-width: 280px; text-align: left;
+    opacity: 0; pointer-events: none;
+    transition: opacity .4s cubic-bezier(.2,.8,.2,1), transform .4s cubic-bezier(.2,.8,.2,1);
+  }
+  .hotspot-card::after {
+    content: ''; position: absolute; left: 50%; top: 100%; transform: translateX(-50%);
+    width: 1px; height: 14px; background: rgba(184,152,85,.55);
+  }
+  .hotspot:hover .hotspot-card,
+  .hotspot:focus-visible .hotspot-card,
+  .hotspot.hotspot-open .hotspot-card { opacity: 1; transform: translate(-50%, 0); }
+  .hotspot-eyebrow { display: block; font-size: .56rem; letter-spacing: .3em; text-transform: uppercase; color: #8A8475; margin-bottom: 6px; font-weight: 500; }
+  .hotspot-title { display: block; font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; color: #0A1729; line-height: 1.2; }
+  .hotspot-desc { display: block; font-size: .76rem; color: rgba(36,59,92,.85); margin-top: 5px; line-height: 1.55; }
+  /* Right-side hotspots anchor the card to the left so it doesn't clip */
+  .hotspot[data-anchor="right"] .hotspot-card { left: auto; right: 50%; transform: translate(50%, 6px); }
+  .hotspot[data-anchor="right"]:hover .hotspot-card,
+  .hotspot[data-anchor="right"]:focus-visible .hotspot-card { transform: translate(50%, 0); }
+  /* Lower hotspots flip the card above to below */
+  .hotspot[data-flip="down"] .hotspot-card { bottom: auto; top: calc(100% + 14px); transform: translate(-50%, -6px); }
+  .hotspot[data-flip="down"] .hotspot-card::after { top: auto; bottom: 100%; }
+  .hotspot[data-flip="down"]:hover .hotspot-card,
+  .hotspot[data-flip="down"]:focus-visible .hotspot-card { transform: translate(-50%, 0); }
+  @keyframes hotspotPulse {
+    0% { box-shadow: 0 0 0 0 rgba(184,152,85,.6), 0 0 10px rgba(20,38,63,.35); }
+    60% { box-shadow: 0 0 0 18px rgba(184,152,85,0), 0 0 10px rgba(20,38,63,.35); }
+    100% { box-shadow: 0 0 0 0 rgba(184,152,85,0), 0 0 10px rgba(20,38,63,.35); }
+  }
   .scroll-cue { animation: scrollPulse 2.4s ease-in-out infinite; }
   @keyframes scrollPulse {
     0%,100% { opacity: .25; transform: translateY(0); }
@@ -604,27 +657,49 @@ function renderHeader() {
    =========================================================== */
 function pageHome() {
   return `
-  <!-- ===== Immersive 3D hero ===== -->
+  <!-- ===== Immersive buffet hero ===== -->
   <section class="hero-immersive relative h-[100svh] min-h-[640px] overflow-hidden">
-    <canvas id="heroCanvas" class="absolute inset-0 w-full h-full block"></canvas>
-    <div class="absolute inset-0 hero-glow pointer-events-none"></div>
-    <div class="absolute inset-0 hero-vignette pointer-events-none"></div>
-
-    <div class="relative z-10 h-full flex flex-col items-center justify-center text-center px-5">
-      <div class="swiss-eyebrow anim-fade" style="animation-delay:.1s">${esc(t('home.eyebrow'))}</div>
-      <div class="mt-7 sm:mt-9 anim-up" style="animation-delay:.2s">
-        <div class="aspire-mark text-navy-900 text-[3.4rem] sm:text-[6rem] md:text-[8rem] leading-none">ASPIRE</div>
-        <div class="aspire-sub mt-3 sm:mt-4 text-[0.55rem] sm:text-[0.7rem]">${esc(t('brand.sub'))}</div>
-      </div>
-      <p class="serif-heading italic text-navy-900 mt-10 sm:mt-14 text-[1.4rem] sm:text-[2rem] md:text-[2.4rem] max-w-2xl leading-[1.2] anim-up" style="animation-delay:.4s">${esc(t('home.welcome'))}</p>
-      <div class="mt-10 anim-fade" style="animation-delay:.6s">
-        <a href="#menu" data-route="menu" class="group inline-flex items-center gap-3 px-7 py-3.5 border border-navy-900 text-navy-900 uppercase tracking-[0.22em] text-[0.7rem] hover:bg-navy-900 hover:text-ivory-50 transition-colors">
-          ${esc(t('home.cta.menu'))} ${icon('i-arrow','w-3.5 h-3.5')}
-        </a>
+    <!-- Background buffet photograph (replace src with your own image to swap) -->
+    <div id="heroImageWrap" class="hero-image-wrap absolute inset-0">
+      <div class="hero-image absolute -inset-[4%]">
+        <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=2400&q=85" alt="Aspire Lounge breakfast buffet" class="h-full w-full object-cover" />
       </div>
     </div>
 
-    <div class="absolute bottom-7 inset-x-0 flex justify-center z-10 pointer-events-none">
+    <!-- Atmospheric overlays -->
+    <div class="absolute inset-0 bg-gradient-to-b from-ivory-50/15 via-ivory-50/0 to-ivory-50/80 pointer-events-none"></div>
+    <div class="absolute inset-0 hero-glow pointer-events-none"></div>
+
+    <!-- Champagne dust over the image -->
+    <canvas id="heroCanvas" class="absolute inset-0 w-full h-full block pointer-events-none"></canvas>
+
+    <!-- Interactive hotspots over the image -->
+    <div class="absolute inset-0 z-10">
+      ${hotspot(20, 64, 'Artisan Breads', 'Sourdough, walnut and seeded loaves, sliced to order.', 'down')}
+      ${hotspot(32, 50, 'Swiss Pretzel Garland', 'Hand-twisted in the lounge kitchen each morning.')}
+      ${hotspot(46, 72, 'Mini French Pastries', 'Pain au chocolat, croissants, brioche and palmier.', 'down')}
+      ${hotspot(58, 76, 'Seasonal Preserves', 'Apricot, fig, wild berry and alpine honey.', 'down', 'right')}
+      ${hotspot(70, 65, 'Hand-painted Porcelain', 'A quiet table setting curated for the season.', null, 'right')}
+      ${hotspot(50, 36, 'Mediterranean Citrus', 'Today’s fruit feature — kumquats and bergamot.', null, 'right')}
+    </div>
+
+    <!-- Foreground typography -->
+    <div class="relative z-20 h-full flex flex-col items-center justify-center text-center px-5">
+      <div class="swiss-eyebrow anim-fade" style="animation-delay:.1s">${esc(t('home.eyebrow'))}</div>
+      <div class="mt-7 sm:mt-9 anim-up" style="animation-delay:.2s">
+        <div class="aspire-mark text-navy-900 text-[3.4rem] sm:text-[6rem] md:text-[8rem] leading-none" style="text-shadow: 0 4px 30px rgba(251,249,245,0.65);">ASPIRE</div>
+        <div class="aspire-sub mt-3 sm:mt-4 text-[0.55rem] sm:text-[0.7rem]">${esc(t('brand.sub'))}</div>
+      </div>
+      <p class="serif-heading italic text-navy-900 mt-10 sm:mt-14 text-[1.4rem] sm:text-[2rem] md:text-[2.4rem] max-w-2xl leading-[1.2] anim-up" style="animation-delay:.4s; text-shadow: 0 2px 20px rgba(251,249,245,0.7);">${esc(t('home.welcome'))}</p>
+      <div class="mt-10 anim-fade" style="animation-delay:.6s">
+        <a href="#menu" data-route="menu" class="group inline-flex items-center gap-3 px-7 py-3.5 border border-navy-900 bg-ivory-50/70 backdrop-blur-sm text-navy-900 uppercase tracking-[0.22em] text-[0.7rem] hover:bg-navy-900 hover:text-ivory-50 transition-colors">
+          ${esc(t('home.cta.menu'))} ${icon('i-arrow','w-3.5 h-3.5')}
+        </a>
+      </div>
+      <div class="mt-6 text-[0.6rem] uppercase tracking-[0.4em] text-navy-500/80 anim-fade" style="animation-delay:.8s">Tap any glowing point to discover the buffet</div>
+    </div>
+
+    <div class="absolute bottom-7 inset-x-0 flex justify-center z-20 pointer-events-none">
       <div class="flex flex-col items-center gap-3 text-navy-500/80">
         <span class="text-[0.58rem] uppercase tracking-[0.4em]">Scroll</span>
         <span class="scroll-cue block w-px h-10 bg-gradient-to-b from-navy-500/70 to-transparent"></span>
@@ -716,6 +791,20 @@ function pageHome() {
       </div>
     </div>
   </section>`;
+}
+
+function hotspot(left, top, title, desc, flip, anchor) {
+  const flipAttr = flip === 'down' ? ' data-flip="down"' : '';
+  const anchorAttr = anchor === 'right' ? ' data-anchor="right"' : '';
+  return `
+  <button class="hotspot" style="left:${left}%; top:${top}%;"${flipAttr}${anchorAttr} aria-label="${esc(title)}">
+    <span class="hotspot-dot"></span>
+    <span class="hotspot-card" role="tooltip">
+      <span class="hotspot-eyebrow">— On the buffet</span>
+      <span class="hotspot-title">${esc(title)}</span>
+      <span class="hotspot-desc">${esc(desc)}</span>
+    </span>
+  </button>`;
 }
 
 function editorialCard(href, eyebrow, title, body, img) {
@@ -1268,86 +1357,98 @@ function teardownHomeImmersive() {
 }
 
 function setupHomeImmersive() {
+  IMMERSIVE.running = true;
+  setupHeroImageParallax();
   setupHeroScene();
+  setupHotspotTouch();
   setupRevealObserver();
   setupTiltCards();
   setupParallax();
 }
 
+function setupHeroImageParallax() {
+  const wrap = document.getElementById('heroImageWrap');
+  if (!wrap) return;
+  let mx = 0, my = 0, tmx = 0, tmy = 0;
+  function onMove(e) {
+    const cx = (e.touches ? e.touches[0].clientX : e.clientX) / window.innerWidth - 0.5;
+    const cy = (e.touches ? e.touches[0].clientY : e.clientY) / window.innerHeight - 0.5;
+    tmx = cx; tmy = cy;
+  }
+  let raf = 0;
+  function tick() {
+    if (!IMMERSIVE.running) return;
+    mx += (tmx - mx) * 0.05;
+    my += (tmy - my) * 0.05;
+    const scrollY = Math.max(0, window.scrollY || 0);
+    const k = Math.min(1, scrollY / (window.innerHeight || 1));
+    const tx = (-mx * 26).toFixed(1);
+    const ty = (-my * 18 - k * 60).toFixed(1);
+    wrap.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
+    raf = requestAnimationFrame(tick);
+  }
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('touchmove', onMove, { passive: true });
+  tick();
+  IMMERSIVE.cleanup.push(() => {
+    cancelAnimationFrame(raf);
+    window.removeEventListener('mousemove', onMove);
+    window.removeEventListener('touchmove', onMove);
+  });
+}
+
+function setupHotspotTouch() {
+  // On touch devices, toggle the active hotspot's card via click; close others.
+  const spots = document.querySelectorAll('#main .hotspot');
+  if (!spots.length) return;
+  function onClick(e) {
+    const s = e.currentTarget;
+    spots.forEach(other => { if (other !== s) other.classList.remove('hotspot-open'); });
+    s.classList.toggle('hotspot-open');
+  }
+  function onDocClick(e) {
+    if (!e.target.closest('.hotspot')) spots.forEach(s => s.classList.remove('hotspot-open'));
+  }
+  spots.forEach(s => s.addEventListener('click', onClick));
+  document.addEventListener('click', onDocClick);
+  IMMERSIVE.cleanup.push(() => {
+    spots.forEach(s => s.removeEventListener('click', onClick));
+    document.removeEventListener('click', onDocClick);
+  });
+}
+
 function setupHeroScene() {
+  // Lightweight atmospheric dust layer over the buffet photograph.
   const canvas = document.getElementById('heroCanvas');
   if (!canvas || typeof THREE === 'undefined') return;
   const w = () => canvas.clientWidth;
   const h = () => canvas.clientHeight;
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(0xFBF9F5, 5, 16);
-
-  const camera = new THREE.PerspectiveCamera(55, w()/h(), 0.1, 50);
+  const camera = new THREE.PerspectiveCamera(55, w()/h(), 0.1, 30);
   camera.position.set(0, 0, 6);
-  camera.lookAt(0, 0, -2);
 
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setSize(w(), h(), false);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-  renderer.setClearColor(0xFBF9F5, 1);
+  renderer.setClearColor(0x000000, 0);
 
-  // Drifting food still-life — photographs suspended in the lounge atmosphere
-  const FOOD_PLATES = [
-    { url:'https://images.unsplash.com/photo-1631379578550-7038263db699?auto=format&fit=crop&w=900&q=80', pos:[-3.4, 1.6, -3.2], size:[2.4, 3.0], phase:0.0 },
-    { url:'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=900&q=80', pos:[ 3.6, 1.4, -4.2], size:[2.4, 3.0], phase:1.1 },
-    { url:'https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?auto=format&fit=crop&w=900&q=80', pos:[-3.0,-1.8, -3.0], size:[2.2, 2.7], phase:2.3 },
-    { url:'https://images.unsplash.com/photo-1542691457-cbe4df041eb2?auto=format&fit=crop&w=900&q=80', pos:[ 3.1,-1.6, -3.8], size:[2.1, 2.6], phase:3.5 },
-    { url:'https://images.unsplash.com/photo-1541783245831-57d6fb0926d3?auto=format&fit=crop&w=900&q=80', pos:[-1.4, 0.6, -7.0], size:[2.0, 2.5], phase:4.7 },
-    { url:'https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=900&q=80', pos:[ 1.6,-0.4, -7.8], size:[2.0, 2.5], phase:5.9 },
-    { url:'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=900&q=80', pos:[ 0.0, 2.6, -9.2], size:[1.9, 2.4], phase:6.9 },
-    { url:'https://images.unsplash.com/photo-1485921325833-c519f76c4927?auto=format&fit=crop&w=900&q=80', pos:[-4.4, 0.2, -8.6], size:[1.9, 2.4], phase:8.1 },
-  ];
-
-  const loader = new THREE.TextureLoader();
-  loader.setCrossOrigin('anonymous');
-  const plates = [];
-
-  FOOD_PLATES.forEach(item => {
-    const geo = new THREE.PlaneGeometry(item.size[0], item.size[1]);
-    const mat = new THREE.MeshBasicMaterial({ color: 0xEDE6D6, transparent: true, opacity: 0, fog: true });
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.set(item.pos[0], item.pos[1], item.pos[2]);
-    mesh.rotation.y = (Math.random() - 0.5) * 0.35;
-    scene.add(mesh);
-    plates.push({ mesh, geo, mat, base:[...item.pos], baseRotY: mesh.rotation.y, phase: item.phase, targetOpacity: 0.92 });
-
-    loader.load(
-      item.url,
-      (tex) => {
-        if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
-        tex.anisotropy = renderer.capabilities.getMaxAnisotropy ? renderer.capabilities.getMaxAnisotropy() : 1;
-        mat.map = tex;
-        mat.color = new THREE.Color(0xffffff);
-        mat.needsUpdate = true;
-      },
-      undefined,
-      () => { /* keep the soft cream placeholder if loading fails */ }
-    );
-  });
-
-  // Champagne dust — sparse, soft
-  const N = 180;
+  // Champagne dust drifting in front of the image
+  const N = 220;
   const pPos = new Float32Array(N * 3);
   const pSeed = new Float32Array(N);
   for (let i = 0; i < N; i++) {
     pPos[i*3]   = (Math.random() - 0.5) * 18;
-    pPos[i*3+1] = (Math.random() - 0.5) * 9;
-    pPos[i*3+2] = (Math.random() - 0.5) * 12 - 2;
+    pPos[i*3+1] = (Math.random() - 0.5) * 10;
+    pPos[i*3+2] = (Math.random() - 0.5) * 6;
     pSeed[i]    = Math.random() * Math.PI * 2;
   }
   const pGeo = new THREE.BufferGeometry();
   pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-  const pMat = new THREE.PointsMaterial({ color: 0xB89855, size: 0.028, transparent: true, opacity: 0.4, depthWrite: false, fog: true });
+  const pMat = new THREE.PointsMaterial({ color: 0xD4B66A, size: 0.034, transparent: true, opacity: 0.55, depthWrite: false });
   const particles = new THREE.Points(pGeo, pMat);
   scene.add(particles);
 
-  // Mouse parallax
   let mx = 0, my = 0, tmx = 0, tmy = 0;
   function onMove(e) {
     const cx = (e.touches ? e.touches[0].clientX : e.clientX) / window.innerWidth - 0.5;
@@ -1364,40 +1465,22 @@ function setupHeroScene() {
   }
   window.addEventListener('resize', onResize);
 
-  IMMERSIVE.running = true;
   let t = 0;
   function animate() {
     if (!IMMERSIVE.running) return;
     t += 0.005;
     mx += (tmx - mx) * 0.05;
     my += (tmy - my) * 0.05;
-
-    // Drift each plate gently
-    plates.forEach((p) => {
-      p.mesh.position.y = p.base[1] + Math.sin(t + p.phase) * 0.18;
-      p.mesh.position.x = p.base[0] + Math.sin(t * 0.55 + p.phase) * 0.10;
-      p.mesh.rotation.y = p.baseRotY + Math.sin(t * 0.4 + p.phase) * 0.06;
-      if (p.mat.opacity < p.targetOpacity) p.mat.opacity = Math.min(p.targetOpacity, p.mat.opacity + 0.012);
-    });
-
-    particles.rotation.y = t * 0.02;
+    particles.rotation.y = t * 0.04;
     const dustPos = particles.geometry.attributes.position;
     for (let i = 0; i < N; i++) {
-      const y = dustPos.getY(i) + 0.0014 + Math.sin(t * 0.8 + pSeed[i]) * 0.0005;
-      dustPos.setY(i, y > 5 ? -5 : y);
+      const y = dustPos.getY(i) + 0.0016 + Math.sin(t * 0.9 + pSeed[i]) * 0.0005;
+      dustPos.setY(i, y > 6 ? -6 : y);
     }
     dustPos.needsUpdate = true;
-
-    // Subtle mouse parallax on camera
-    camera.position.x = mx * 0.9;
-    camera.position.y = -my * 0.45;
-
-    // Scroll-driven push through the still-life
-    const scrollY = Math.max(0, window.scrollY || 0);
-    const k = Math.min(1, scrollY / (window.innerHeight || 1));
-    camera.position.z = 6 - k * 3.6;
-    camera.lookAt(0, 0, -2);
-
+    camera.position.x = mx * 0.6;
+    camera.position.y = -my * 0.3;
+    camera.lookAt(0, 0, 0);
     renderer.render(scene, camera);
     IMMERSIVE.raf = requestAnimationFrame(animate);
   }
@@ -1407,11 +1490,6 @@ function setupHeroScene() {
     window.removeEventListener('mousemove', onMove);
     window.removeEventListener('touchmove', onMove);
     window.removeEventListener('resize', onResize);
-    plates.forEach(p => {
-      p.geo.dispose();
-      if (p.mat.map) p.mat.map.dispose();
-      p.mat.dispose();
-    });
     pGeo.dispose(); pMat.dispose();
     renderer.dispose();
   });
