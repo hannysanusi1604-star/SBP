@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 <script>
   tailwind.config = {
     darkMode: 'class',
@@ -246,6 +247,9 @@ const I18N = {
     'home.cta.menu':'Browse Buffet','home.cta.premium':'Suite Ordering',
     'home.qr.title':'Your table, our menu',
     'home.qr.body':'You’ve been seated. Take your time — the buffet refreshes throughout the day.',
+    'home.qr.scan.eyebrow':'Take it with you',
+    'home.qr.scan.title':'Scan to open on your phone.',
+    'home.qr.scan.body':'Point your camera at the code to continue browsing the buffet, dietary guide and feedback wherever you settle in the lounge.',
     'home.hours':'Open daily · 04:30 — 23:00',
     'menu.title':'Today’s Buffet','menu.subtitle':'Refreshed continuously by our chefs',
     'menu.search':'Search dishes, ingredients…','menu.filters':'Filters','menu.clear':'Clear',
@@ -293,6 +297,7 @@ const I18N = {
     'home.subtitle':'Découvrez le buffet du jour, les ingrédients suisses, et voyagez sereinement.',
     'home.cta.menu':'Voir le buffet','home.cta.premium':'Service Suite',
     'home.qr.title':'Votre table, notre menu','home.qr.body':'Vous êtes installé(e). Prenez votre temps — le buffet est renouvelé tout au long de la journée.',
+    'home.qr.scan.eyebrow':'Emportez le menu','home.qr.scan.title':'Scannez pour ouvrir sur votre téléphone.','home.qr.scan.body':'Pointez votre appareil photo vers le code pour consulter le buffet, le guide diététique et les avis depuis votre place.',
     'home.hours':'Ouvert chaque jour · 04:30 — 23:00',
     'menu.title':'Buffet du jour','menu.subtitle':'Renouvelé par nos chefs en continu',
     'menu.search':'Rechercher un plat, un ingrédient…','menu.filters':'Filtres','menu.clear':'Effacer',
@@ -340,6 +345,7 @@ const I18N = {
     'home.subtitle':'Entdecken Sie das heutige Buffet, Schweizer Zutaten — und reisen Sie entspannt.',
     'home.cta.menu':'Zum Buffet','home.cta.premium':'Suite-Service',
     'home.qr.title':'Ihr Tisch, unser Menü','home.qr.body':'Sie haben Platz genommen. Lassen Sie sich Zeit — das Buffet wird laufend aufgefrischt.',
+    'home.qr.scan.eyebrow':'Nehmen Sie es mit','home.qr.scan.title':'Scannen, um auf dem Handy zu öffnen.','home.qr.scan.body':'Richten Sie die Kamera auf den Code, um Buffet, Ernährungsguide und Feedback bequem an Ihrem Platz weiter zu erkunden.',
     'home.hours':'Täglich geöffnet · 04:30 — 23:00',
     'menu.title':'Buffet des Tages','menu.subtitle':'Laufend von unseren Köchen aufgefrischt',
     'menu.search':'Gericht, Zutat suchen…','menu.filters':'Filter','menu.clear':'Zurücksetzen',
@@ -387,6 +393,7 @@ const I18N = {
     'home.subtitle':'Scopri il buffet di oggi e gli ingredienti svizzeri, viaggia sereno.',
     'home.cta.menu':'Scopri il buffet','home.cta.premium':'Servizio Suite',
     'home.qr.title':'Il tuo tavolo, il nostro menu','home.qr.body':'Sei accomodato. Prenditi il tuo tempo — il buffet viene rinnovato durante la giornata.',
+    'home.qr.scan.eyebrow':'Portalo con te','home.qr.scan.title':'Scansiona per aprire sul telefono.','home.qr.scan.body':'Inquadra il codice con la fotocamera per sfogliare buffet, guida dietetica e feedback dal tuo posto.',
     'home.hours':'Aperto tutti i giorni · 04:30 — 23:00',
     'menu.title':'Buffet di oggi','menu.subtitle':'Rinnovato di continuo dai nostri chef',
     'menu.search':'Cerca piatto o ingrediente…','menu.filters':'Filtri','menu.clear':'Pulisci',
@@ -434,6 +441,7 @@ const I18N = {
     'home.subtitle':'تصفّح قائمة اليوم، اكتشف المكونات السويسرية، وسافر بكل راحة.',
     'home.cta.menu':'تصفح البوفيه','home.cta.premium':'خدمة السويت',
     'home.qr.title':'طاولتك، قائمتنا','home.qr.body':'لقد جلست بالفعل. خذ وقتك — يتجدد البوفيه طوال اليوم.',
+    'home.qr.scan.eyebrow':'خذها معك','home.qr.scan.title':'امسح الرمز لفتح الموقع على هاتفك.','home.qr.scan.body':'وجّه كاميرا هاتفك نحو الرمز لمتابعة تصفّح البوفيه ودليل النظام الغذائي والملاحظات أينما جلست.',
     'home.hours':'مفتوح يومياً · 04:30 — 23:00',
     'menu.title':'بوفيه اليوم','menu.subtitle':'يتجدّد باستمرار من قِبَل طهاتنا',
     'menu.search':'ابحث عن طبق أو مكوّن…','menu.filters':'تصفية','menu.clear':'مسح',
@@ -498,6 +506,7 @@ function setLocale(code) {
 }
 
 const NAV_ITEMS = [
+  { href:'home', key:'nav.home' },
   { href:'menu', key:'nav.menu' },
   { href:'drinks', key:'nav.drinks' },
   { href:'dietary', key:'nav.dietary' },
@@ -622,6 +631,24 @@ function pageHome() {
     <div class="grid md:grid-cols-2 gap-8 sm:gap-10">
       ${editorialCard('menu','01',t('nav.menu'),t('home.qr.body'),'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=80')}
       ${editorialCard('drinks','02',t('nav.drinks'),t('drinks.subtitle'),'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1400&q=80')}
+    </div>
+  </section>
+
+  <div class="hairline mx-auto max-w-6xl"></div>
+
+  <section class="mx-auto max-w-6xl px-5 sm:px-8 py-16 sm:py-24">
+    <div class="grid md:grid-cols-12 gap-10 md:gap-14 items-center">
+      <div class="md:col-span-7">
+        <div class="swiss-eyebrow">— ${esc(t('home.qr.scan.eyebrow'))}</div>
+        <h2 class="serif-heading text-3xl sm:text-5xl mt-4 text-navy-900">${esc(t('home.qr.scan.title'))}</h2>
+        <p class="mt-5 text-navy-500 leading-[1.7] max-w-md">${esc(t('home.qr.scan.body'))}</p>
+        <div class="mt-6 text-[0.7rem] uppercase tracking-[0.28em] text-navy-500" id="qrUrlLabel"></div>
+      </div>
+      <div class="md:col-span-5">
+        <div class="bg-white p-6 sm:p-8 inline-block">
+          <div id="qrCanvas" class="w-[220px] h-[220px] sm:w-[260px] sm:h-[260px]"></div>
+        </div>
+      </div>
     </div>
   </section>`;
 }
@@ -1079,6 +1106,35 @@ function renderMain() {
   }
   m.innerHTML = `<div class="page">${html}</div>`;
   attachPageEvents();
+  if (STATE.route === '' || STATE.route === 'home') renderHomeQR();
+}
+
+function renderHomeQR() {
+  const host = document.getElementById('qrCanvas');
+  if (!host || typeof qrcode === 'undefined') return;
+  const url = window.location.href.split('#')[0];
+  try {
+    const qr = qrcode(0, 'M');
+    qr.addData(url);
+    qr.make();
+    // Build SVG manually for a refined look (rounded dots optional kept square for clarity)
+    const count = qr.getModuleCount();
+    const size = 260;
+    const cell = size / count;
+    let rects = '';
+    for (let r = 0; r < count; r++) {
+      for (let c = 0; c < count; c++) {
+        if (qr.isDark(r, c)) {
+          rects += `<rect x="${(c*cell).toFixed(2)}" y="${(r*cell).toFixed(2)}" width="${cell.toFixed(2)}" height="${cell.toFixed(2)}" fill="#0A1729"/>`;
+        }
+      }
+    }
+    host.innerHTML = `<svg viewBox="0 0 ${size} ${size}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" aria-label="QR code linking to this menu">${rects}</svg>`;
+    const lbl = document.getElementById('qrUrlLabel');
+    if (lbl) lbl.textContent = url.replace(/^https?:\/\//, '');
+  } catch (e) {
+    host.innerHTML = '<div class="text-[0.8rem] text-navy-500">QR generation unavailable.</div>';
+  }
 }
 
 function render() {
