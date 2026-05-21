@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Dish, Dietary, categories, dishes } from '@/lib/menu-data';
+import { Dish, Dietary, Temperature, categories, dishes } from '@/lib/menu-data';
 import { MenuCard } from './MenuCard';
 import { DishDetail } from './DishDetail';
 import { useLocale } from './LocaleProvider';
-import { DietIcon, Search, Sliders, X } from './icons';
+import { DietIcon, Flame, Search, Sliders, Snowflake, X } from './icons';
 
 const dietaryFilters: Dietary[] = [
   'vegetarian',
@@ -21,23 +21,27 @@ export function MenuExplorer({ initialCategory }: { initialCategory?: string }) 
   const [query, setQuery] = useState('');
   const [active, setActive] = useState(initialCategory || 'starters');
   const [filters, setFilters] = useState<Dietary[]>([]);
+  const [temperature, setTemperature] = useState<Temperature | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [selected, setSelected] = useState<Dish | null>(null);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
   const navRef = useRef<HTMLDivElement>(null);
+
+  const activeCount = filters.length + (temperature ? 1 : 0);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return dishes.filter((d) => {
       if (filters.length && !filters.every((f) => d.dietary.includes(f)))
         return false;
+      if (temperature && d.temperature !== temperature) return false;
       if (!q) return true;
       return (
         d.name.toLowerCase().includes(q) ||
         d.description.toLowerCase().includes(q)
       );
     });
-  }, [filters, query]);
+  }, [filters, temperature, query]);
 
   const grouped = useMemo(() => {
     const map: Record<string, Dish[]> = {};
@@ -99,15 +103,15 @@ export function MenuExplorer({ initialCategory }: { initialCategory?: string }) 
           <button
             onClick={() => setFiltersOpen((v) => !v)}
             className={`h-12 px-5 rounded-full border flex items-center gap-2 uppercase tracking-wider text-[0.72rem] transition-colors ${
-              filters.length || filtersOpen
+              activeCount || filtersOpen
                 ? 'bg-navy-900 dark:bg-gold-500 text-ivory-50 dark:text-navy-900 border-navy-900 dark:border-gold-500'
                 : 'border-ivory-200 dark:border-navy-500/40'
             }`}
           >
             <Sliders size={14} /> {t('menu.filters')}
-            {filters.length > 0 && (
+            {activeCount > 0 && (
               <span className="ml-1 h-5 min-w-5 px-1.5 rounded-full bg-gold-400 text-navy-900 text-[0.65rem] flex items-center justify-center">
-                {filters.length}
+                {activeCount}
               </span>
             )}
           </button>
@@ -116,10 +120,13 @@ export function MenuExplorer({ initialCategory }: { initialCategory?: string }) 
         {filtersOpen && (
           <div className="mt-3 p-5 rounded-3xl bg-white dark:bg-navy-700/40 border border-ivory-200/60 dark:border-navy-500/30 animate-fade-up">
             <div className="flex items-center justify-between mb-3">
-              <div className="swiss-eyebrow">{t('menu.filters')}</div>
-              {filters.length > 0 && (
+              <div className="swiss-eyebrow">{t('menu.dietary')}</div>
+              {activeCount > 0 && (
                 <button
-                  onClick={() => setFilters([])}
+                  onClick={() => {
+                    setFilters([]);
+                    setTemperature(null);
+                  }}
                   className="text-[0.72rem] uppercase tracking-wider text-navy-500 inline-flex items-center gap-1 hover:text-navy-900 dark:hover:text-ivory-50"
                 >
                   <X size={12} /> {t('menu.clear')}
@@ -144,6 +151,33 @@ export function MenuExplorer({ initialCategory }: { initialCategory?: string }) 
                   </button>
                 );
               })}
+            </div>
+
+            <div className="mt-5 pt-5 border-t border-ivory-200/60 dark:border-navy-500/30">
+              <div className="swiss-eyebrow mb-3">{t('menu.temperature')}</div>
+              <div className="flex flex-wrap gap-2">
+                {(['hot', 'cold'] as Temperature[]).map((temp) => {
+                  const on = temperature === temp;
+                  const Icon = temp === 'hot' ? Flame : Snowflake;
+                  const onColor = temp === 'hot' ? 'bg-[#C0481E]' : 'bg-[#2E7BB8]';
+                  return (
+                    <button
+                      key={temp}
+                      onClick={() =>
+                        setTemperature((cur) => (cur === temp ? null : temp))
+                      }
+                      className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[0.8rem] transition-colors border ${
+                        on
+                          ? `${onColor} text-white border-transparent`
+                          : 'bg-ivory-100 dark:bg-navy-900/40 text-navy-700 dark:text-ivory-100 border-ivory-200 dark:border-navy-500/30'
+                      }`}
+                    >
+                      <Icon size={14} />
+                      {t(`menu.${temp}`)}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         )}
@@ -180,7 +214,7 @@ export function MenuExplorer({ initialCategory }: { initialCategory?: string }) 
       <div className="mx-auto max-w-6xl px-5 sm:px-8 py-8 space-y-14">
         {categories.map((cat) => {
           const list = grouped[cat.id] || [];
-          if (!list.length && filters.length === 0 && !query) return null;
+          if (!list.length && activeCount === 0 && !query) return null;
           return (
             <section
               key={cat.id}
