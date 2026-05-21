@@ -12,6 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
 <script>
   tailwind.config = {
     darkMode: 'class',
@@ -72,6 +73,27 @@
   .dish-card:hover { transform: translateY(-2px); }
   /* Modal */
   .modal-bg { background: rgba(10,23,41,.4); backdrop-filter: blur(4px); }
+
+  /* Immersive home */
+  .hero-immersive { background: #050d1c; margin-top: -57px; padding-top: 57px; }
+  .hero-glow { background: radial-gradient(60% 50% at 50% 65%, rgba(184,152,85,.18), transparent 70%); }
+  .scroll-cue { animation: scrollPulse 2.4s ease-in-out infinite; }
+  @keyframes scrollPulse {
+    0%,100% { opacity: .25; transform: translateY(0); }
+    50% { opacity: .9; transform: translateY(6px); }
+  }
+  .reveal { opacity: 0; transform: translateY(48px); transition: opacity 1.1s cubic-bezier(.2,.8,.2,1), transform 1.1s cubic-bezier(.2,.8,.2,1); will-change: opacity, transform; }
+  .reveal.revealed { opacity: 1; transform: translateY(0); }
+  .reveal-img { clip-path: inset(100% 0 0 0); transition: clip-path 1.3s cubic-bezier(.2,.8,.2,1); will-change: clip-path; }
+  .reveal-img.revealed { clip-path: inset(0 0 0 0); }
+  .tilt-card { transition: transform .9s cubic-bezier(.2,.8,.2,1); transform-style: preserve-3d; will-change: transform; }
+  .tilt-card .tilt-inner { transform: translateZ(40px); transition: transform .9s cubic-bezier(.2,.8,.2,1); }
+  .parallax-soft { transition: transform .25s ease-out; will-change: transform; }
+  .text-stroke { -webkit-text-stroke: 1px rgba(246,242,234,.4); color: transparent; }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal, .reveal-img, .tilt-card, .parallax-soft { transition: none !important; transform: none !important; clip-path: none !important; opacity: 1 !important; }
+    .scroll-cue { animation: none !important; }
+  }
 </style>
 </head>
 <body class="min-h-screen">
@@ -581,78 +603,114 @@ function renderHeader() {
    =========================================================== */
 function pageHome() {
   return `
-  <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-16 sm:pt-24 pb-12 sm:pb-20">
-    <div class="grid md:grid-cols-12 gap-10 md:gap-14 items-end">
-      <div class="md:col-span-7 anim-up">
-        <div class="swiss-eyebrow">${esc(t('home.eyebrow'))}</div>
-        <h1 class="serif-heading text-[2.6rem] sm:text-6xl md:text-[5.2rem] mt-5 leading-[1.02] text-navy-900">${esc(t('home.welcome'))}</h1>
-        <p class="mt-7 text-[1rem] sm:text-[1.1rem] text-navy-500 max-w-lg leading-[1.7]">${esc(t('home.subtitle'))}</p>
-        <div class="mt-10 flex items-center gap-6">
-          <a href="#menu" data-route="menu" class="group inline-flex items-center gap-3 px-7 py-3.5 border border-navy-900 text-navy-900 uppercase tracking-[0.22em] text-[0.7rem] hover:bg-navy-900 hover:text-ivory-50 transition-colors">
-            ${esc(t('home.cta.menu'))} ${icon('i-arrow','w-3.5 h-3.5')}
-          </a>
-          <a href="#about" data-route="about" class="hidden sm:inline-flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.22em] text-navy-500 hover:text-navy-900 transition-colors">
-            ${esc(t('nav.about'))}
-          </a>
-        </div>
+  <!-- ===== Immersive 3D hero ===== -->
+  <section class="hero-immersive relative h-[100svh] min-h-[640px] overflow-hidden">
+    <canvas id="heroCanvas" class="absolute inset-0 w-full h-full block"></canvas>
+    <div class="absolute inset-0 hero-glow pointer-events-none"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#050d1c]"></div>
+
+    <div class="relative z-10 h-full flex flex-col items-center justify-center text-center px-5">
+      <div class="swiss-eyebrow text-gold-300 anim-fade" style="animation-delay:.1s">${esc(t('home.eyebrow'))}</div>
+      <div class="mt-7 sm:mt-9 anim-up" style="animation-delay:.2s">
+        <div class="aspire-mark text-ivory-50 text-[3.4rem] sm:text-[6rem] md:text-[8rem] leading-none">ASPIRE</div>
+        <div class="aspire-sub text-ivory-50/60 mt-3 sm:mt-4 text-[0.55rem] sm:text-[0.7rem]">${esc(t('brand.sub'))}</div>
       </div>
-      <div class="md:col-span-5">
-        <div class="relative aspect-[4/5] overflow-hidden">
-          ${image('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=80','','h-full w-full')}
-        </div>
+      <p class="serif-heading italic text-ivory-50 mt-10 sm:mt-14 text-[1.4rem] sm:text-[2rem] md:text-[2.4rem] max-w-2xl leading-[1.2] anim-up" style="animation-delay:.4s">${esc(t('home.welcome'))}</p>
+      <div class="mt-10 anim-fade" style="animation-delay:.6s">
+        <a href="#menu" data-route="menu" class="group inline-flex items-center gap-3 px-7 py-3.5 border border-ivory-50/50 text-ivory-50 uppercase tracking-[0.22em] text-[0.7rem] hover:bg-ivory-50 hover:text-navy-900 hover:border-ivory-50 transition-colors backdrop-blur-sm">
+          ${esc(t('home.cta.menu'))} ${icon('i-arrow','w-3.5 h-3.5')}
+        </a>
+      </div>
+    </div>
+
+    <div class="absolute bottom-7 inset-x-0 flex justify-center z-10 pointer-events-none">
+      <div class="flex flex-col items-center gap-3 text-ivory-50/70">
+        <span class="text-[0.58rem] uppercase tracking-[0.4em]">Scroll</span>
+        <span class="scroll-cue block w-px h-10 bg-gradient-to-b from-ivory-50/80 to-transparent"></span>
       </div>
     </div>
   </section>
 
-  <div class="hairline mx-auto max-w-6xl"></div>
-
-  <section class="mx-auto max-w-6xl px-5 sm:px-8 py-12 sm:py-16">
-    <div class="flex flex-wrap items-center justify-between gap-6 text-[0.72rem] uppercase tracking-[0.28em] text-navy-500">
+  <!-- ===== Strap line ===== -->
+  <section class="bg-[#050d1c] text-ivory-50 py-10">
+    <div class="mx-auto max-w-6xl px-5 sm:px-8 flex flex-wrap items-center justify-between gap-6 text-[0.66rem] uppercase tracking-[0.4em] text-ivory-50/60">
       <span>${esc(t('home.hours'))}</span>
       <span class="hidden sm:inline">Zürich · Genève · Basel</span>
       <span>${esc(t('home.qr.title'))}</span>
     </div>
   </section>
 
-  <div class="hairline mx-auto max-w-6xl"></div>
-
-  <section class="mx-auto max-w-6xl px-5 sm:px-8 py-16 sm:py-24">
-    <div class="grid md:grid-cols-12 gap-10 items-center">
-      <div class="md:col-span-5 anim-up">
-        <div class="swiss-eyebrow">— ${esc(t('nav.about'))}</div>
-        <h2 class="serif-heading text-3xl sm:text-5xl mt-4 text-navy-900">From Swiss valleys, lakes and farms.</h2>
-        <p class="mt-5 text-navy-500 leading-[1.7] max-w-md">${esc(t('about.subtitle'))}</p>
-        <a href="#about" data-route="about" class="mt-6 inline-flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.22em] text-navy-900 border-b border-navy-900/40 pb-1 hover:border-navy-900 transition-colors">
-          Discover sourcing ${icon('i-arrow','w-3 h-3')}
-        </a>
+  <!-- ===== Story I — Welcome ===== -->
+  <section class="relative bg-[#050d1c] text-ivory-50 overflow-hidden">
+    <div class="absolute inset-0 opacity-30">
+      <div id="parallaxBg1" class="parallax-soft absolute inset-0">
+        ${image('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=2200&q=80','','h-full w-full scale-110')}
       </div>
-      <div class="md:col-span-7 relative aspect-[5/4] overflow-hidden">
-        ${image('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1600&q=80','Swiss alpine pasture','h-full w-full')}
+      <div class="absolute inset-0 bg-gradient-to-b from-[#050d1c] via-[#050d1c]/60 to-[#050d1c]"></div>
+    </div>
+    <div class="relative mx-auto max-w-6xl px-5 sm:px-8 py-32 sm:py-48">
+      <div class="grid md:grid-cols-12 gap-12 items-center">
+        <div class="md:col-span-7 reveal">
+          <div class="swiss-eyebrow text-gold-300">— Our quiet promise</div>
+          <h2 class="serif-heading text-[2.2rem] sm:text-[3.6rem] md:text-[4.4rem] mt-5 leading-[1.05]">${esc(t('home.subtitle'))}</h2>
+        </div>
+        <div class="md:col-span-5 reveal" style="transition-delay:.15s">
+          <p class="text-[0.95rem] sm:text-[1rem] leading-[1.8] text-ivory-50/75 max-w-md">From the first sip of alpine coffee to the last bite of Zuger Kirschtorte, every detail is composed to feel like a calm pause between cities.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Story II — Sourcing parallax ===== -->
+  <section class="relative bg-ivory-50 overflow-hidden">
+    <div class="mx-auto max-w-7xl px-5 sm:px-8 py-24 sm:py-40">
+      <div class="grid md:grid-cols-12 gap-10 md:gap-16 items-center">
+        <div class="md:col-span-5 reveal">
+          <div class="swiss-eyebrow">— ${esc(t('nav.about'))}</div>
+          <h2 class="serif-heading text-3xl sm:text-5xl md:text-[3.6rem] mt-4 leading-[1.05] text-navy-900">From Swiss valleys, lakes and farms.</h2>
+          <p class="mt-6 text-navy-500 leading-[1.7] max-w-md">${esc(t('about.subtitle'))}</p>
+          <a href="#about" data-route="about" class="mt-7 inline-flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.22em] text-navy-900 border-b border-navy-900/40 pb-1 hover:border-navy-900 transition-colors">
+            Discover sourcing ${icon('i-arrow','w-3 h-3')}
+          </a>
+        </div>
+        <div class="md:col-span-7 reveal" style="transition-delay:.1s">
+          <div class="relative aspect-[5/4] overflow-hidden">
+            <div id="parallaxBg2" class="parallax-soft absolute inset-0">
+              ${image('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=2000&q=80','Swiss alpine pasture','h-full w-full scale-110')}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Editorial tilt cards ===== -->
+  <section class="bg-ivory-50">
+    <div class="mx-auto max-w-6xl px-5 sm:px-8 py-20 sm:py-32">
+      <div class="text-center mb-14 sm:mb-20 reveal">
+        <div class="swiss-eyebrow">— Today in the lounge</div>
+        <h2 class="serif-heading text-3xl sm:text-5xl mt-3 text-navy-900">Choose where to begin.</h2>
+      </div>
+      <div class="grid md:grid-cols-2 gap-10 sm:gap-14" style="perspective: 1400px">
+        ${editorialCard('menu','01',t('nav.menu'),t('home.qr.body'),'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=80')}
+        ${editorialCard('drinks','02',t('nav.drinks'),t('drinks.subtitle'),'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1400&q=80')}
       </div>
     </div>
   </section>
 
   <div class="hairline mx-auto max-w-6xl"></div>
 
-  <section class="mx-auto max-w-6xl px-5 sm:px-8 py-16 sm:py-24">
-    <div class="grid md:grid-cols-2 gap-8 sm:gap-10">
-      ${editorialCard('menu','01',t('nav.menu'),t('home.qr.body'),'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=80')}
-      ${editorialCard('drinks','02',t('nav.drinks'),t('drinks.subtitle'),'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1400&q=80')}
-    </div>
-  </section>
-
-  <div class="hairline mx-auto max-w-6xl"></div>
-
-  <section class="mx-auto max-w-6xl px-5 sm:px-8 py-16 sm:py-24">
+  <!-- ===== QR section ===== -->
+  <section class="mx-auto max-w-6xl px-5 sm:px-8 py-20 sm:py-32">
     <div class="grid md:grid-cols-12 gap-10 md:gap-14 items-center">
-      <div class="md:col-span-7">
+      <div class="md:col-span-7 reveal">
         <div class="swiss-eyebrow">— ${esc(t('home.qr.scan.eyebrow'))}</div>
         <h2 class="serif-heading text-3xl sm:text-5xl mt-4 text-navy-900">${esc(t('home.qr.scan.title'))}</h2>
         <p class="mt-5 text-navy-500 leading-[1.7] max-w-md">${esc(t('home.qr.scan.body'))}</p>
         <div class="mt-6 text-[0.7rem] uppercase tracking-[0.28em] text-navy-500" id="qrUrlLabel"></div>
       </div>
-      <div class="md:col-span-5">
-        <div class="bg-white p-6 sm:p-8 inline-block">
+      <div class="md:col-span-5 reveal" style="transition-delay:.1s">
+        <div class="bg-white p-6 sm:p-8 inline-block shadow-soft">
           <div id="qrCanvas" class="w-[220px] h-[220px] sm:w-[260px] sm:h-[260px]"></div>
         </div>
       </div>
@@ -662,16 +720,18 @@ function pageHome() {
 
 function editorialCard(href, eyebrow, title, body, img) {
   return `
-  <a href="#${href}" data-route="${href}" class="group block">
-    <div class="relative aspect-[4/3] overflow-hidden">
-      ${image(img,'','h-full w-full')}
+  <a href="#${href}" data-route="${href}" class="tilt-card group block reveal" data-tilt>
+    <div class="tilt-inner">
+      <div class="relative aspect-[4/3] overflow-hidden">
+        ${image(img,'','h-full w-full transition-transform duration-700 group-hover:scale-[1.04]')}
+      </div>
+      <div class="pt-5 flex items-baseline justify-between">
+        <span class="swiss-eyebrow">${esc(eyebrow)}</span>
+        ${icon('i-arrow','w-3.5 h-3.5 text-navy-500 group-hover:text-navy-900 transition-colors')}
+      </div>
+      <h3 class="serif-heading text-3xl sm:text-4xl mt-2 text-navy-900">${esc(title)}</h3>
+      <p class="mt-2 text-[0.92rem] text-navy-500 leading-relaxed max-w-md">${esc(body)}</p>
     </div>
-    <div class="pt-5 flex items-baseline justify-between">
-      <span class="swiss-eyebrow">${esc(eyebrow)}</span>
-      ${icon('i-arrow','w-3.5 h-3.5 text-navy-500 group-hover:text-navy-900 transition-colors')}
-    </div>
-    <h3 class="serif-heading text-3xl sm:text-4xl mt-2 text-navy-900">${esc(title)}</h3>
-    <p class="mt-2 text-[0.92rem] text-navy-500 leading-relaxed max-w-md">${esc(body)}</p>
   </a>`;
 }
 
@@ -1147,6 +1207,7 @@ function closeModals() {
    Routing & main render
    =========================================================== */
 function renderMain() {
+  teardownHomeImmersive();
   const m = document.getElementById('main');
   let html = '';
   switch (STATE.route) {
@@ -1159,7 +1220,10 @@ function renderMain() {
   }
   m.innerHTML = `<div class="page">${html}</div>`;
   attachPageEvents();
-  if (STATE.route === '' || STATE.route === 'home') renderHomeQR();
+  if (STATE.route === '' || STATE.route === 'home') {
+    renderHomeQR();
+    setupHomeImmersive();
+  }
 }
 
 function renderHomeQR() {
@@ -1188,6 +1252,224 @@ function renderHomeQR() {
   } catch (e) {
     host.innerHTML = '<div class="text-[0.8rem] text-navy-500">QR generation unavailable.</div>';
   }
+}
+
+/* ===========================================================
+   Immersive home: Three.js hero + tilt + reveals + parallax
+   =========================================================== */
+const IMMERSIVE = { raf: 0, running: false, cleanup: [] };
+
+function teardownHomeImmersive() {
+  IMMERSIVE.running = false;
+  if (IMMERSIVE.raf) cancelAnimationFrame(IMMERSIVE.raf);
+  IMMERSIVE.raf = 0;
+  IMMERSIVE.cleanup.forEach(fn => { try { fn(); } catch(_){} });
+  IMMERSIVE.cleanup = [];
+}
+
+function setupHomeImmersive() {
+  setupHeroScene();
+  setupRevealObserver();
+  setupTiltCards();
+  setupParallax();
+}
+
+function setupHeroScene() {
+  const canvas = document.getElementById('heroCanvas');
+  if (!canvas || typeof THREE === 'undefined') return;
+  const w = () => canvas.clientWidth;
+  const h = () => canvas.clientHeight;
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.Fog(0x050d1c, 10, 38);
+
+  const camera = new THREE.PerspectiveCamera(60, w()/h(), 0.1, 100);
+  camera.position.set(0, 3, 9);
+  camera.lookAt(0, 1, 0);
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+  renderer.setSize(w(), h(), false);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setClearColor(0x050d1c, 1);
+
+  // Alpine terrain (wireframe)
+  const tGeo = new THREE.PlaneGeometry(70, 35, 90, 45);
+  tGeo.rotateX(-Math.PI / 2);
+  const tPos = tGeo.attributes.position;
+  for (let i = 0; i < tPos.count; i++) {
+    const x = tPos.getX(i), z = tPos.getZ(i);
+    const ridge = Math.sin(x * 0.35) * Math.cos(z * 0.28) * 0.7;
+    const peak  = Math.sin(x * 0.09 + z * 0.12) * 1.6;
+    const noise = (Math.sin(x * 1.6 + z * 1.3) * 0.18);
+    tPos.setY(i, ridge + peak + noise);
+  }
+  tGeo.computeVertexNormals();
+  const tMat = new THREE.MeshBasicMaterial({ color: 0x243B5C, wireframe: true, transparent: true, opacity: 0.55 });
+  const terrain = new THREE.Mesh(tGeo, tMat);
+  terrain.position.y = -1.6;
+  scene.add(terrain);
+
+  // Distant ridge silhouettes (darker, far)
+  const rGeo = new THREE.PlaneGeometry(70, 18, 80, 18);
+  rGeo.rotateX(-Math.PI / 2);
+  const rPos = rGeo.attributes.position;
+  for (let i = 0; i < rPos.count; i++) {
+    const x = rPos.getX(i);
+    rPos.setY(i, Math.sin(x * 0.18) * 0.8 + Math.sin(x * 0.07) * 1.4);
+  }
+  rGeo.computeVertexNormals();
+  const rMat = new THREE.MeshBasicMaterial({ color: 0x15263F, wireframe: true, transparent: true, opacity: 0.4 });
+  const ridge = new THREE.Mesh(rGeo, rMat);
+  ridge.position.set(0, -1.2, -14);
+  scene.add(ridge);
+
+  // Gold dust particles
+  const N = 700;
+  const pPos = new Float32Array(N * 3);
+  const pSeed = new Float32Array(N);
+  for (let i = 0; i < N; i++) {
+    pPos[i*3]   = (Math.random() - 0.5) * 32;
+    pPos[i*3+1] = Math.random() * 9;
+    pPos[i*3+2] = (Math.random() - 0.5) * 24 - 4;
+    pSeed[i]    = Math.random() * Math.PI * 2;
+  }
+  const pGeo = new THREE.BufferGeometry();
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+  const pMat = new THREE.PointsMaterial({ color: 0xD4B66A, size: 0.045, transparent: true, opacity: 0.75, depthWrite: false });
+  const particles = new THREE.Points(pGeo, pMat);
+  scene.add(particles);
+
+  // Mouse parallax
+  let mx = 0, my = 0, tmx = 0, tmy = 0;
+  function onMove(e) {
+    const cx = (e.touches ? e.touches[0].clientX : e.clientX) / window.innerWidth - 0.5;
+    const cy = (e.touches ? e.touches[0].clientY : e.clientY) / window.innerHeight - 0.5;
+    tmx = cx; tmy = cy;
+  }
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('touchmove', onMove, { passive: true });
+
+  function onResize() {
+    camera.aspect = w()/h();
+    camera.updateProjectionMatrix();
+    renderer.setSize(w(), h(), false);
+  }
+  window.addEventListener('resize', onResize);
+
+  IMMERSIVE.running = true;
+  let t = 0;
+  function animate() {
+    if (!IMMERSIVE.running) return;
+    t += 0.006;
+    // Smooth mouse follow
+    mx += (tmx - mx) * 0.06;
+    my += (tmy - my) * 0.06;
+
+    terrain.rotation.y = mx * 0.25 + Math.sin(t * 0.3) * 0.04;
+    terrain.rotation.x = -0.04 + my * 0.07;
+    ridge.rotation.y = mx * 0.12;
+    particles.rotation.y = t * 0.04;
+
+    const dustPos = particles.geometry.attributes.position;
+    for (let i = 0; i < N; i++) {
+      const y = dustPos.getY(i) + 0.003 + Math.sin(t * 1.2 + pSeed[i]) * 0.001;
+      dustPos.setY(i, y > 9 ? 0 : y);
+    }
+    dustPos.needsUpdate = true;
+
+    // Scroll-driven camera depth
+    const scrollY = Math.max(0, window.scrollY || 0);
+    const k = Math.min(1, scrollY / (window.innerHeight || 1));
+    camera.position.y = 3 + k * 1.6;
+    camera.position.z = 9 - k * 2.5;
+    camera.rotation.x = -k * 0.12;
+
+    renderer.render(scene, camera);
+    IMMERSIVE.raf = requestAnimationFrame(animate);
+  }
+  animate();
+
+  IMMERSIVE.cleanup.push(() => {
+    window.removeEventListener('mousemove', onMove);
+    window.removeEventListener('touchmove', onMove);
+    window.removeEventListener('resize', onResize);
+    tGeo.dispose(); tMat.dispose();
+    rGeo.dispose(); rMat.dispose();
+    pGeo.dispose(); pMat.dispose();
+    renderer.dispose();
+  });
+}
+
+function setupRevealObserver() {
+  const els = document.querySelectorAll('#main .reveal');
+  if (!els.length || typeof IntersectionObserver === 'undefined') {
+    els.forEach(el => el.classList.add('revealed'));
+    return;
+  }
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('revealed');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+  els.forEach(el => io.observe(el));
+  IMMERSIVE.cleanup.push(() => io.disconnect());
+}
+
+function setupTiltCards() {
+  const cards = document.querySelectorAll('#main [data-tilt]');
+  cards.forEach(card => {
+    let raf = 0;
+    function onMove(e) {
+      const rect = card.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        card.style.transform = `perspective(1200px) rotateX(${(-y * 5).toFixed(2)}deg) rotateY(${(x * 6).toFixed(2)}deg)`;
+      });
+    }
+    function onLeave() {
+      cancelAnimationFrame(raf);
+      card.style.transform = '';
+    }
+    card.addEventListener('mousemove', onMove);
+    card.addEventListener('mouseleave', onLeave);
+    IMMERSIVE.cleanup.push(() => {
+      card.removeEventListener('mousemove', onMove);
+      card.removeEventListener('mouseleave', onLeave);
+      cancelAnimationFrame(raf);
+    });
+  });
+}
+
+function setupParallax() {
+  const layers = [
+    { el: document.getElementById('parallaxBg1'), factor: 0.18 },
+    { el: document.getElementById('parallaxBg2'), factor: 0.12 },
+  ].filter(l => l.el);
+  if (!layers.length) return;
+  let raf = 0;
+  function onScroll() {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(() => {
+      layers.forEach(l => {
+        const rect = l.el.getBoundingClientRect();
+        const center = rect.top + rect.height / 2 - window.innerHeight / 2;
+        l.el.style.transform = `translate3d(0, ${(-center * l.factor).toFixed(1)}px, 0)`;
+      });
+    });
+  }
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  IMMERSIVE.cleanup.push(() => {
+    cancelAnimationFrame(raf);
+    window.removeEventListener('scroll', onScroll);
+    window.removeEventListener('resize', onScroll);
+  });
 }
 
 function render() {
