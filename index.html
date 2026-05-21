@@ -767,27 +767,119 @@ function dishCard(d) {
   </button>`;
 }
 
+const DRINK_SECTIONS = [
+  {
+    key:'coffee',
+    title:'Espresso & Coffee',
+    img:'https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?auto=format&fit=crop&w=1400&q=80',
+    items:[
+      { name:'Espresso', desc:'Double shot, single-origin Swiss roast.' },
+      { name:'Cappuccino', desc:'Silky microfoam, balanced shot.' },
+      { name:'Flat White', desc:'Strong coffee, velvety milk.' },
+      { name:'Americano', desc:'Bold, smooth, long black.' },
+      { name:'Café Latte', desc:'Classic, or flavoured with caramel or vanilla.' },
+      { name:'Schümli', desc:'Traditional Swiss-style coffee with cream.' },
+      { name:'Mocha', desc:'Espresso, steamed milk, Swiss chocolate.' },
+      { name:'Decaffeinated', desc:'Same single-origin beans, decaf.' },
+    ],
+  },
+  {
+    key:'tea',
+    title:'Tea & Infusions',
+    img:'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=1400&q=80',
+    items:[
+      { name:'Earl Grey', desc:'Black tea, bergamot, cornflower.' },
+      { name:'English Breakfast', desc:'Robust, full-bodied, malted.' },
+      { name:'Sencha Green', desc:'Delicate, grassy, lightly steamed.' },
+      { name:'Alpine Herb', desc:'Thyme, chamomile, linden flower.' },
+      { name:'Verveine', desc:'Lemon verbena, soothing, caffeine-free.' },
+      { name:'Rooibos', desc:'Honey notes, naturally caffeine-free.' },
+      { name:'Moroccan Mint', desc:'Green tea, fresh spearmint.' },
+      { name:'Chai', desc:'Black tea, cardamom, cinnamon, ginger.' },
+    ],
+    reverse:true,
+  },
+  {
+    key:'water',
+    title:'Alpine Water Station',
+    img:'https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=1400&q=80',
+    items:[
+      { name:'Still Water', desc:'Naturally filtered Swiss spring water.' },
+      { name:'Sparkling Water', desc:'Lightly carbonated, chilled.' },
+      { name:'Cucumber & Mint', desc:'Crisp, garden-fresh infusion.' },
+      { name:'Citrus & Lemongrass', desc:'Lemon, lime, lemongrass.' },
+      { name:'Berry & Sage', desc:'Wild berries, garden sage.' },
+      { name:'Rosemary & Lavender', desc:'Alpine herbs, lightly aromatic.' },
+    ],
+  },
+  {
+    key:'juice',
+    title:'Cold-Pressed Juices',
+    img:'https://images.unsplash.com/photo-1600271886742-f049cd451bba?auto=format&fit=crop&w=1400&q=80',
+    items:[
+      { name:'Orange', desc:'Freshly squeezed Valencia oranges.' },
+      { name:'Apple & Elderflower', desc:'Swiss apple, alpine elderflower.' },
+      { name:'Beetroot & Ginger', desc:'Earthy, warming, mineral-rich.' },
+      { name:'Carrot & Turmeric', desc:'Anti-inflammatory blend, citrus finish.' },
+      { name:'Green Detox', desc:'Cucumber, spinach, green apple, lemon.' },
+      { name:'Seasonal Pressed', desc:'Chef’s rotating selection of the day.' },
+      { name:'Kombucha', desc:'House-fermented ginger or hibiscus.' },
+    ],
+    reverse:true,
+  },
+  {
+    key:'wine',
+    title:'Wines & Aperitifs',
+    img:'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1400&q=80',
+    items:[
+      { name:'Fendant du Valais', desc:'Crisp white, mineral, alpine character.' },
+      { name:'Chasselas de Vaud', desc:'Light, floral, gently saline.' },
+      { name:'Pinot Noir', desc:'Bündner-Herrschaft, soft red berries.' },
+      { name:'Merlot del Ticino', desc:'Elegant, southern Swiss red.' },
+      { name:'Prosecco DOC', desc:'Veneto, fine bubbles, by the flute.' },
+      { name:'Champagne Brut', desc:'Reserve cuvée, served chilled.' },
+      { name:'Aperitif Selection', desc:'Aperol, Campari, vermouth, gin & tonic.' },
+      { name:'Swiss Craft Beer', desc:'Feldschlösschen, Quöllfrisch, on request.' },
+    ],
+  },
+];
+
 function pageDrinks() {
-  const stations = [
-    { key:'station1', img:'https://images.unsplash.com/photo-1523362628745-0c100150b504?auto=format&fit=crop&w=1400&q=80' },
-    { key:'station2', img:'https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?auto=format&fit=crop&w=1400&q=80' },
-    { key:'station3', img:'https://images.unsplash.com/photo-1600271886742-f049cd451bba?auto=format&fit=crop&w=1400&q=80' },
-  ];
+  const sections = DRINK_SECTIONS.map((s, i) => `
+    <section class="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-center">
+      <div class="md:col-span-7 ${s.reverse ? 'md:order-2' : ''}">
+        <h2 class="serif-heading text-3xl sm:text-[2.6rem] text-navy-900">${esc(s.title)}</h2>
+        <div class="mt-8 space-y-6">
+          ${s.items.map(it => `
+            <div>
+              <div class="flex items-baseline gap-3">
+                <span class="text-[0.95rem] font-medium text-navy-900 tracking-tight">${esc(it.name)}</span>
+                <span class="flex-1 border-b border-dotted border-navy-900/25 translate-y-[-3px]"></span>
+              </div>
+              <p class="mt-1.5 text-[0.85rem] text-navy-500 leading-relaxed max-w-md">${esc(it.desc)}</p>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="md:col-span-5 ${s.reverse ? 'md:order-1' : ''}">
+        <div class="relative aspect-[4/5] overflow-hidden">
+          ${image(s.img, s.title, 'h-full w-full')}
+        </div>
+      </div>
+    </section>
+  `).join('<div class="hairline my-16 sm:my-24"></div>');
+
   return `
   <div class="mx-auto max-w-6xl px-5 sm:px-8 pt-14 sm:pt-20 pb-16">
     <div class="swiss-eyebrow">— Aspire</div>
     <h1 class="serif-heading text-[2.4rem] sm:text-[4rem] mt-3 text-navy-900">${esc(t('drinks.title'))}</h1>
     <p class="mt-4 text-navy-500 max-w-xl leading-[1.7]">${esc(t('drinks.subtitle'))}</p>
-    <div class="mt-14 grid grid-cols-1 md:grid-cols-3 gap-10 sm:gap-12">
-      ${stations.map((s,i)=>`
-        <div class="anim-up" style="animation-delay:${i*80}ms">
-          <div class="relative aspect-[4/5] overflow-hidden">${image(s.img,'','h-full w-full')}</div>
-          <div class="pt-5">
-            <div class="swiss-eyebrow">0${i+1}</div>
-            <h3 class="serif-heading text-2xl sm:text-3xl mt-2 text-navy-900">${esc(t('drinks.'+s.key+'.title'))}</h3>
-            <p class="mt-2 text-[0.92rem] text-navy-500 leading-relaxed">${esc(t('drinks.'+s.key+'.body'))}</p>
-          </div>
-        </div>`).join('')}
+
+    <div class="mt-16 sm:mt-24">${sections}</div>
+
+    <div class="mt-20 pt-8 border-t border-navy-900/10 flex flex-wrap items-center justify-between gap-4 text-[0.7rem] uppercase tracking-[0.28em] text-navy-500">
+      <span>Self-serve · refreshed throughout the day</span>
+      <span>Ask a host for additional requests</span>
     </div>
   </div>`;
 }
