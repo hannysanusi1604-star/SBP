@@ -75,8 +75,9 @@
   .modal-bg { background: rgba(10,23,41,.4); backdrop-filter: blur(4px); }
 
   /* Immersive home */
-  .hero-immersive { background: #050d1c; margin-top: -57px; padding-top: 57px; }
-  .hero-glow { background: radial-gradient(60% 50% at 50% 65%, rgba(184,152,85,.18), transparent 70%); }
+  .hero-immersive { background: #FBF9F5; margin-top: -57px; padding-top: 57px; }
+  .hero-glow { background: radial-gradient(70% 55% at 50% 70%, rgba(184,152,85,.18), rgba(184,152,85,0) 65%); }
+  .hero-vignette { background: radial-gradient(95% 80% at 50% 35%, rgba(251,249,245,0), rgba(251,249,245,0.85)); }
   .scroll-cue { animation: scrollPulse 2.4s ease-in-out infinite; }
   @keyframes scrollPulse {
     0%,100% { opacity: .25; transform: translateY(0); }
@@ -607,55 +608,54 @@ function pageHome() {
   <section class="hero-immersive relative h-[100svh] min-h-[640px] overflow-hidden">
     <canvas id="heroCanvas" class="absolute inset-0 w-full h-full block"></canvas>
     <div class="absolute inset-0 hero-glow pointer-events-none"></div>
-    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#050d1c]"></div>
+    <div class="absolute inset-0 hero-vignette pointer-events-none"></div>
 
     <div class="relative z-10 h-full flex flex-col items-center justify-center text-center px-5">
-      <div class="swiss-eyebrow text-gold-300 anim-fade" style="animation-delay:.1s">${esc(t('home.eyebrow'))}</div>
+      <div class="swiss-eyebrow anim-fade" style="animation-delay:.1s">${esc(t('home.eyebrow'))}</div>
       <div class="mt-7 sm:mt-9 anim-up" style="animation-delay:.2s">
-        <div class="aspire-mark text-ivory-50 text-[3.4rem] sm:text-[6rem] md:text-[8rem] leading-none">ASPIRE</div>
-        <div class="aspire-sub text-ivory-50/60 mt-3 sm:mt-4 text-[0.55rem] sm:text-[0.7rem]">${esc(t('brand.sub'))}</div>
+        <div class="aspire-mark text-navy-900 text-[3.4rem] sm:text-[6rem] md:text-[8rem] leading-none">ASPIRE</div>
+        <div class="aspire-sub mt-3 sm:mt-4 text-[0.55rem] sm:text-[0.7rem]">${esc(t('brand.sub'))}</div>
       </div>
-      <p class="serif-heading italic text-ivory-50 mt-10 sm:mt-14 text-[1.4rem] sm:text-[2rem] md:text-[2.4rem] max-w-2xl leading-[1.2] anim-up" style="animation-delay:.4s">${esc(t('home.welcome'))}</p>
+      <p class="serif-heading italic text-navy-900 mt-10 sm:mt-14 text-[1.4rem] sm:text-[2rem] md:text-[2.4rem] max-w-2xl leading-[1.2] anim-up" style="animation-delay:.4s">${esc(t('home.welcome'))}</p>
       <div class="mt-10 anim-fade" style="animation-delay:.6s">
-        <a href="#menu" data-route="menu" class="group inline-flex items-center gap-3 px-7 py-3.5 border border-ivory-50/50 text-ivory-50 uppercase tracking-[0.22em] text-[0.7rem] hover:bg-ivory-50 hover:text-navy-900 hover:border-ivory-50 transition-colors backdrop-blur-sm">
+        <a href="#menu" data-route="menu" class="group inline-flex items-center gap-3 px-7 py-3.5 border border-navy-900 text-navy-900 uppercase tracking-[0.22em] text-[0.7rem] hover:bg-navy-900 hover:text-ivory-50 transition-colors">
           ${esc(t('home.cta.menu'))} ${icon('i-arrow','w-3.5 h-3.5')}
         </a>
       </div>
     </div>
 
     <div class="absolute bottom-7 inset-x-0 flex justify-center z-10 pointer-events-none">
-      <div class="flex flex-col items-center gap-3 text-ivory-50/70">
+      <div class="flex flex-col items-center gap-3 text-navy-500/80">
         <span class="text-[0.58rem] uppercase tracking-[0.4em]">Scroll</span>
-        <span class="scroll-cue block w-px h-10 bg-gradient-to-b from-ivory-50/80 to-transparent"></span>
+        <span class="scroll-cue block w-px h-10 bg-gradient-to-b from-navy-500/70 to-transparent"></span>
       </div>
     </div>
   </section>
 
   <!-- ===== Strap line ===== -->
-  <section class="bg-[#050d1c] text-ivory-50 py-10">
-    <div class="mx-auto max-w-6xl px-5 sm:px-8 flex flex-wrap items-center justify-between gap-6 text-[0.66rem] uppercase tracking-[0.4em] text-ivory-50/60">
+  <section class="bg-ivory-50 border-y border-navy-900/10">
+    <div class="mx-auto max-w-6xl px-5 sm:px-8 py-7 flex flex-wrap items-center justify-between gap-6 text-[0.66rem] uppercase tracking-[0.4em] text-navy-500">
       <span>${esc(t('home.hours'))}</span>
       <span class="hidden sm:inline">Zürich · Genève · Basel</span>
       <span>${esc(t('home.qr.title'))}</span>
     </div>
   </section>
 
-  <!-- ===== Story I — Welcome ===== -->
-  <section class="relative bg-[#050d1c] text-ivory-50 overflow-hidden">
-    <div class="absolute inset-0 opacity-30">
-      <div id="parallaxBg1" class="parallax-soft absolute inset-0">
-        ${image('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=2200&q=80','','h-full w-full scale-110')}
-      </div>
-      <div class="absolute inset-0 bg-gradient-to-b from-[#050d1c] via-[#050d1c]/60 to-[#050d1c]"></div>
-    </div>
-    <div class="relative mx-auto max-w-6xl px-5 sm:px-8 py-32 sm:py-48">
-      <div class="grid md:grid-cols-12 gap-12 items-center">
+  <!-- ===== Story I — Quiet promise ===== -->
+  <section class="relative bg-ivory-50 overflow-hidden">
+    <div class="mx-auto max-w-6xl px-5 sm:px-8 py-28 sm:py-44">
+      <div class="grid md:grid-cols-12 gap-10 md:gap-16 items-end">
         <div class="md:col-span-7 reveal">
-          <div class="swiss-eyebrow text-gold-300">— Our quiet promise</div>
-          <h2 class="serif-heading text-[2.2rem] sm:text-[3.6rem] md:text-[4.4rem] mt-5 leading-[1.05]">${esc(t('home.subtitle'))}</h2>
+          <div class="swiss-eyebrow">— Our quiet promise</div>
+          <h2 class="serif-heading text-[2.2rem] sm:text-[3.6rem] md:text-[4.4rem] mt-5 leading-[1.05] text-navy-900">${esc(t('home.subtitle'))}</h2>
         </div>
         <div class="md:col-span-5 reveal" style="transition-delay:.15s">
-          <p class="text-[0.95rem] sm:text-[1rem] leading-[1.8] text-ivory-50/75 max-w-md">From the first sip of alpine coffee to the last bite of Zuger Kirschtorte, every detail is composed to feel like a calm pause between cities.</p>
+          <p class="text-[0.95rem] sm:text-[1rem] leading-[1.8] text-navy-500 max-w-md">From the first sip of alpine coffee to the last bite of Zuger Kirschtorte, every detail is composed to feel like a calm pause between cities.</p>
+        </div>
+      </div>
+      <div class="relative aspect-[16/8] mt-16 sm:mt-24 overflow-hidden">
+        <div id="parallaxBg1" class="parallax-soft absolute inset-0">
+          ${image('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=2200&q=80','','h-full w-full scale-110')}
         </div>
       </div>
     </div>
@@ -1281,61 +1281,61 @@ function setupHeroScene() {
   const h = () => canvas.clientHeight;
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(0x050d1c, 10, 38);
+  scene.fog = new THREE.Fog(0xFBF9F5, 14, 36);
 
-  const camera = new THREE.PerspectiveCamera(60, w()/h(), 0.1, 100);
-  camera.position.set(0, 3, 9);
+  const camera = new THREE.PerspectiveCamera(58, w()/h(), 0.1, 100);
+  camera.position.set(0, 3.4, 9.4);
   camera.lookAt(0, 1, 0);
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
   renderer.setSize(w(), h(), false);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-  renderer.setClearColor(0x050d1c, 1);
+  renderer.setClearColor(0xFBF9F5, 1);
 
-  // Alpine terrain (wireframe)
+  // Gentle alpine contour terrain (foreground)
   const tGeo = new THREE.PlaneGeometry(70, 35, 90, 45);
   tGeo.rotateX(-Math.PI / 2);
   const tPos = tGeo.attributes.position;
   for (let i = 0; i < tPos.count; i++) {
     const x = tPos.getX(i), z = tPos.getZ(i);
-    const ridge = Math.sin(x * 0.35) * Math.cos(z * 0.28) * 0.7;
-    const peak  = Math.sin(x * 0.09 + z * 0.12) * 1.6;
-    const noise = (Math.sin(x * 1.6 + z * 1.3) * 0.18);
+    const ridge = Math.sin(x * 0.32) * Math.cos(z * 0.26) * 0.5;
+    const peak  = Math.sin(x * 0.08 + z * 0.11) * 1.1;
+    const noise = Math.sin(x * 1.4 + z * 1.1) * 0.10;
     tPos.setY(i, ridge + peak + noise);
   }
   tGeo.computeVertexNormals();
-  const tMat = new THREE.MeshBasicMaterial({ color: 0x243B5C, wireframe: true, transparent: true, opacity: 0.55 });
+  const tMat = new THREE.MeshBasicMaterial({ color: 0x243B5C, wireframe: true, transparent: true, opacity: 0.16 });
   const terrain = new THREE.Mesh(tGeo, tMat);
-  terrain.position.y = -1.6;
+  terrain.position.y = -1.7;
   scene.add(terrain);
 
-  // Distant ridge silhouettes (darker, far)
-  const rGeo = new THREE.PlaneGeometry(70, 18, 80, 18);
+  // Distant gold-accent ridge (far)
+  const rGeo = new THREE.PlaneGeometry(80, 16, 80, 16);
   rGeo.rotateX(-Math.PI / 2);
   const rPos = rGeo.attributes.position;
   for (let i = 0; i < rPos.count; i++) {
     const x = rPos.getX(i);
-    rPos.setY(i, Math.sin(x * 0.18) * 0.8 + Math.sin(x * 0.07) * 1.4);
+    rPos.setY(i, Math.sin(x * 0.16) * 0.6 + Math.sin(x * 0.06) * 1.1);
   }
   rGeo.computeVertexNormals();
-  const rMat = new THREE.MeshBasicMaterial({ color: 0x15263F, wireframe: true, transparent: true, opacity: 0.4 });
+  const rMat = new THREE.MeshBasicMaterial({ color: 0xB89855, wireframe: true, transparent: true, opacity: 0.18 });
   const ridge = new THREE.Mesh(rGeo, rMat);
-  ridge.position.set(0, -1.2, -14);
+  ridge.position.set(0, -1.4, -16);
   scene.add(ridge);
 
-  // Gold dust particles
-  const N = 700;
+  // Champagne dust particles — fewer, softer
+  const N = 380;
   const pPos = new Float32Array(N * 3);
   const pSeed = new Float32Array(N);
   for (let i = 0; i < N; i++) {
-    pPos[i*3]   = (Math.random() - 0.5) * 32;
-    pPos[i*3+1] = Math.random() * 9;
-    pPos[i*3+2] = (Math.random() - 0.5) * 24 - 4;
+    pPos[i*3]   = (Math.random() - 0.5) * 30;
+    pPos[i*3+1] = Math.random() * 8;
+    pPos[i*3+2] = (Math.random() - 0.5) * 22 - 3;
     pSeed[i]    = Math.random() * Math.PI * 2;
   }
   const pGeo = new THREE.BufferGeometry();
   pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-  const pMat = new THREE.PointsMaterial({ color: 0xD4B66A, size: 0.045, transparent: true, opacity: 0.75, depthWrite: false });
+  const pMat = new THREE.PointsMaterial({ color: 0xB89855, size: 0.032, transparent: true, opacity: 0.55, depthWrite: false });
   const particles = new THREE.Points(pGeo, pMat);
   scene.add(particles);
 
@@ -1365,24 +1365,24 @@ function setupHeroScene() {
     mx += (tmx - mx) * 0.06;
     my += (tmy - my) * 0.06;
 
-    terrain.rotation.y = mx * 0.25 + Math.sin(t * 0.3) * 0.04;
-    terrain.rotation.x = -0.04 + my * 0.07;
-    ridge.rotation.y = mx * 0.12;
-    particles.rotation.y = t * 0.04;
+    terrain.rotation.y = mx * 0.18 + Math.sin(t * 0.25) * 0.025;
+    terrain.rotation.x = -0.05 + my * 0.05;
+    ridge.rotation.y = mx * 0.08;
+    particles.rotation.y = t * 0.025;
 
     const dustPos = particles.geometry.attributes.position;
     for (let i = 0; i < N; i++) {
-      const y = dustPos.getY(i) + 0.003 + Math.sin(t * 1.2 + pSeed[i]) * 0.001;
-      dustPos.setY(i, y > 9 ? 0 : y);
+      const y = dustPos.getY(i) + 0.0018 + Math.sin(t * 0.9 + pSeed[i]) * 0.0006;
+      dustPos.setY(i, y > 8 ? 0 : y);
     }
     dustPos.needsUpdate = true;
 
-    // Scroll-driven camera depth
+    // Scroll-driven camera depth (subtle)
     const scrollY = Math.max(0, window.scrollY || 0);
     const k = Math.min(1, scrollY / (window.innerHeight || 1));
-    camera.position.y = 3 + k * 1.6;
-    camera.position.z = 9 - k * 2.5;
-    camera.rotation.x = -k * 0.12;
+    camera.position.y = 3.4 + k * 1.2;
+    camera.position.z = 9.4 - k * 1.8;
+    camera.rotation.x = -k * 0.08;
 
     renderer.render(scene, camera);
     IMMERSIVE.raf = requestAnimationFrame(animate);
