@@ -203,25 +203,38 @@ const DIETARY = ['vegetarian','vegan','gluten-free','halal-friendly','nut-free',
 const ALLERGENS = ['gluten','dairy','nuts','shellfish','eggs','soy','sesame'];
 
 const DISHES = [
-  // Starters
+  // ===== Starters — Local =====
+  { id:'cheese-charcuterie', name:'Swiss Cheese & Charcuterie Board', description:'Aged Gruyère AOP, Tête de Moine, Bündnerfleisch and Walliser dried meats with fig compote.', category:'starters', image:'https://images.unsplash.com/photo-1631379578550-7038263db699?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'local', dietary:['nut-free'], allergens:['dairy'], chefNote:'Selection rotated weekly with local affineurs.' },
+  { id:'bircher-muesli', name:'Birchermüesli Cups', description:'Overnight oats, grated apple, Swiss yoghurt, honey and toasted hazelnuts.', category:'starters', image:'https://images.unsplash.com/photo-1517673400267-0251440c45dc?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'local', dietary:['vegetarian'], allergens:['gluten','dairy','nuts'] },
   { id:'smoked-trout-salad', name:'Smoked Trout Potato Salad', description:'Cold-smoked alpine trout, Ratte potatoes, dill crème fraîche, lemon zest.', category:'starters', image:'https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'local', dietary:['gluten-free','nut-free'], allergens:['dairy','eggs'], chefNote:'Trout sourced from Lake Lucerne fisheries.' },
-  { id:'cheese-charcuterie', name:'Swiss Cheese & Charcuterie Board', description:'Aged Gruyère AOP, Tête de Moine, Bündnerfleisch, Walliser dried meats, fig compote.', category:'starters', image:'https://images.unsplash.com/photo-1631379578550-7038263db699?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'local', dietary:['gluten-free','nut-free'], allergens:['dairy'], chefNote:'Selection rotated weekly with local affineurs.' },
-  { id:'heirloom-tomato', name:'Heirloom Tomato & Basil', description:'Sun-ripened tomatoes, buffalo mozzarella, aged balsamic, Genovese basil.', category:'starters', image:'https://images.unsplash.com/photo-1572441713132-c542fc4fe282?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'international', dietary:['vegetarian','gluten-free','nut-free'], allergens:['dairy'] },
-  { id:'wild-mushroom-veloute', name:'Wild Mushroom Velouté', description:'Forest mushrooms, thyme cream, truffle oil drizzle, sourdough crouton.', category:'starters', image:'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'local', dietary:['vegetarian'], allergens:['gluten','dairy'] },
+  { id:'cucumber-radish-salad', name:'Cucumber & Radish Herb Salad', description:'Crisp cucumber, French breakfast radishes, garden herbs, lemon vinaigrette.', category:'starters', image:'https://images.unsplash.com/photo-1505253213348-cd54c92b37e6?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'local', dietary:['vegan','vegetarian','gluten-free','dairy-free','halal-friendly','nut-free'], allergens:[] },
+  { id:'pretzel-butter', name:'Pretzel Rolls & Butter Selection', description:'Warm Swiss pretzel rolls with cultured butter, herb butter and alpine sea salt.', category:'starters', image:'https://images.unsplash.com/photo-1568051243851-f9b136146e97?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'local', dietary:['vegetarian','nut-free'], allergens:['gluten','dairy'] },
+  { id:'fruit-compote', name:'Seasonal Fruit Compote Cups', description:'Slow-cooked seasonal fruits, vanilla bean, light alpine honey syrup.', category:'starters', image:'https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'local', dietary:['vegan','vegetarian','gluten-free','dairy-free','halal-friendly','nut-free'], allergens:[] },
 
-  // Mains
+  // ===== Starters — International =====
+  { id:'greek-yogurt-parfait', name:'Greek Yogurt Parfait Station', description:'Thick Greek yoghurt, honey, granola, fresh berries and seasonal fruits.', category:'starters', image:'https://images.unsplash.com/photo-1542691457-cbe4df041eb2?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'international', dietary:['vegetarian','halal-friendly'], allergens:['dairy','gluten','nuts'] },
+  { id:'french-pastry', name:'Mini French Pastry Selection', description:'Pain au chocolat, croissant, brioche and palmier — baked each morning.', category:'starters', image:'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'international', dietary:['vegetarian','nut-free'], allergens:['gluten','dairy','eggs'] },
+  { id:'chickpea-salad', name:'Middle Eastern Chickpea Salad', description:'Chickpeas, tomato, cucumber, parsley, lemon, cumin and olive oil.', category:'starters', image:'https://images.unsplash.com/photo-1543339308-43e59d6b73a6?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'international', dietary:['vegan','vegetarian','gluten-free','dairy-free','halal-friendly','nut-free'], allergens:[] },
+  { id:'avocado-wraps', name:'Avocado & Tomato Breakfast Wraps', description:'Smashed avocado, sun-ripened tomato, baby spinach, lemon, soft wheat wrap.', category:'starters', image:'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'international', dietary:['vegan','vegetarian','dairy-free','halal-friendly','nut-free'], allergens:['gluten'] },
+
+  // ===== Mains — Local =====
   { id:'zurcher-geschnetzeltes', name:'Zürcher Geschnetzeltes', description:'Sliced veal in white wine and mushroom cream sauce, traditional Zürich style.', category:'mains', image:'https://images.unsplash.com/photo-1432139509613-5c4255815697?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'local', dietary:['nut-free'], allergens:['dairy','gluten'], chefNote:'A signature dish of canton Zürich since the 1940s.' },
   { id:'rosti-alpine-cheese', name:'Rösti with Alpine Cheese', description:'Crisp golden potato rösti baked with melted Berner Hobelkäse and chives.', category:'mains', image:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'local', dietary:['vegetarian','gluten-free','nut-free','halal-friendly'], allergens:['dairy'] },
+  { id:'veal-bratwurst', name:'Veal Bratwurst with Onion Gravy', description:'Swiss-style veal bratwurst, slow-cooked onion gravy, buttered rösti potatoes.', category:'mains', image:'https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'local', dietary:['nut-free'], allergens:['gluten','dairy'] },
   { id:'herb-lake-fish', name:'Herb-Roasted Lake Fish', description:'Filet of Lake Zürich perch, herb butter, citrus beurre blanc, garden vegetables.', category:'mains', image:'https://images.unsplash.com/photo-1485921325833-c519f76c4927?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'local', dietary:['gluten-free','nut-free'], allergens:['dairy'], chefNote:'Sustainably caught from regional Swiss lakes.' },
-  { id:'vegetable-risotto', name:'Spring Vegetable Risotto', description:'Carnaroli rice, asparagus, peas, Parmigiano Reggiano, fresh herbs.', category:'mains', image:'https://images.unsplash.com/photo-1633964913849-96bb09cd5256?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'international', dietary:['vegetarian','gluten-free','nut-free','halal-friendly'], allergens:['dairy'] },
-  { id:'chickpea-tagine', name:'Moroccan Chickpea Tagine', description:'Slow-cooked chickpeas, apricots, preserved lemon, ras el hanout, herbed couscous.', category:'mains', image:'https://images.unsplash.com/photo-1574484284002-952d92456975?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'international', dietary:['vegan','vegetarian','dairy-free','halal-friendly','nut-free'], allergens:['gluten'] },
 
-  // Desserts
+  // ===== Mains — International =====
+  { id:'shakshuka', name:'Mediterranean Shakshuka', description:'Slow-simmered tomatoes, peppers, spices and baked eggs with crusty bread.', category:'mains', image:'https://images.unsplash.com/photo-1590412200988-a436970781fa?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'international', dietary:['vegetarian','gluten-free','halal-friendly'], allergens:['eggs'] },
+  { id:'chicken-skillet', name:'Chicken Sausage Breakfast Skillet', description:'Halal chicken sausage, peppers, onions, golden potatoes and baked eggs.', category:'mains', image:'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'international', dietary:['halal-friendly','nut-free'], allergens:['eggs'] },
+  { id:'asian-fried-rice', name:'Asian Vegetable Fried Rice', description:'Jasmine rice, ginger, garlic, soy and seasonal vegetables, finished with sesame.', category:'mains', image:'https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'international', dietary:['vegan','vegetarian','dairy-free','halal-friendly','nut-free'], allergens:['soy','sesame'] },
+
+  // ===== Desserts — Local =====
   { id:'zuger-kirschtorte', name:'Mini Zuger Kirschtorte', description:'Layered hazelnut meringue, buttercream and kirsch-soaked sponge from canton Zug.', category:'desserts', image:'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'local', dietary:['vegetarian'], allergens:['gluten','dairy','nuts','eggs'], chefNote:'A protected Swiss specialty since 1915.' },
   { id:'chocolate-mousse', name:'Swiss Chocolate Mousse Cups', description:'70% Lindt grand cru chocolate, whipped cream, cocoa nibs, gold leaf.', category:'desserts', image:'https://images.unsplash.com/photo-1541783245831-57d6fb0926d3?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'local', dietary:['vegetarian','gluten-free'], allergens:['dairy','eggs','soy'] },
-  { id:'panna-cotta', name:'Tropical Fruit Panna Cotta', description:'Vanilla bean panna cotta, passion-fruit coulis, mango, micro basil.', category:'desserts', image:'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'international', dietary:['vegetarian','gluten-free','nut-free'], allergens:['dairy'] },
-  { id:'fruit-platter', name:'Seasonal Fruit Platter', description:'Selection of fresh seasonal fruits, mint, lime, edible flowers.', category:'desserts', image:'https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'international', dietary:['vegan','vegetarian','gluten-free','dairy-free','halal-friendly','nut-free'], allergens:[] },
 
+  // ===== Desserts — International =====
+  { id:'panna-cotta', name:'Tropical Fruit Panna Cotta', description:'Vanilla bean panna cotta, passion-fruit coulis, mango, micro basil.', category:'desserts', image:'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'international', dietary:['vegetarian','gluten-free','nut-free'], allergens:['dairy'] },
+  { id:'frozen-yoghurt', name:'Frozen Yoghurt', description:'House-made frozen yoghurt with seasonal berry, vanilla and dark chocolate sauces.', category:'desserts', image:'https://images.unsplash.com/photo-1488900128323-21503983a07e?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'international', dietary:['vegetarian','gluten-free','halal-friendly','nut-free'], allergens:['dairy'] },
 ];
 
 const LOCALES = [
@@ -250,7 +263,7 @@ const I18N = {
     'menu.search':'Search dishes, ingredients…','menu.filters':'Filters','menu.clear':'Clear',
     'menu.empty':'No dishes match your filters.','menu.allergens':'Contains','menu.dietary':'Suitable for',
     'menu.hot':'Hot','menu.cold':'Cold','menu.temperature':'Temperature',
-    'menu.local':'Swiss sourced','menu.international':'International',
+    'menu.local':'Swiss sourced','menu.international':'International','menu.local.heading':'Local Speciality',
     'menu.chefnote':'Chef’s note','menu.order':'Request at table','menu.viewdetails':'View details','menu.close':'Close',
     'cat.starters':'Starters','cat.mains':'Main Courses','cat.desserts':'Desserts','cat.drinks':'Drinks','cat.premium':'Premium Add-ons',
     'diet.vegetarian':'Vegetarian','diet.vegan':'Vegan','diet.gluten-free':'Gluten-free','diet.halal-friendly':'Halal-friendly','diet.nut-free':'Nut-free','diet.dairy-free':'Dairy-free',
@@ -298,7 +311,7 @@ const I18N = {
     'menu.search':'Rechercher un plat, un ingrédient…','menu.filters':'Filtres','menu.clear':'Effacer',
     'menu.empty':'Aucun plat ne correspond à vos filtres.','menu.allergens':'Contient','menu.dietary':'Convient à',
     'menu.hot':'Chaud','menu.cold':'Froid','menu.temperature':'Température',
-    'menu.local':'Origine suisse','menu.international':'International',
+    'menu.local':'Origine suisse','menu.international':'International','menu.local.heading':'Spécialité suisse',
     'menu.chefnote':'Note du chef','menu.order':'Demander à table','menu.viewdetails':'Voir le détail','menu.close':'Fermer',
     'cat.starters':'Entrées','cat.mains':'Plats','cat.desserts':'Desserts','cat.drinks':'Boissons','cat.premium':'Suppléments Premium',
     'diet.vegetarian':'Végétarien','diet.vegan':'Végan','diet.gluten-free':'Sans gluten','diet.halal-friendly':'Halal','diet.nut-free':'Sans fruits à coque','diet.dairy-free':'Sans lactose',
@@ -346,7 +359,7 @@ const I18N = {
     'menu.search':'Gericht, Zutat suchen…','menu.filters':'Filter','menu.clear':'Zurücksetzen',
     'menu.empty':'Keine Gerichte entsprechen Ihren Filtern.','menu.allergens':'Enthält','menu.dietary':'Geeignet für',
     'menu.hot':'Warm','menu.cold':'Kalt','menu.temperature':'Temperatur',
-    'menu.local':'Schweizer Herkunft','menu.international':'International',
+    'menu.local':'Schweizer Herkunft','menu.international':'International','menu.local.heading':'Schweizer Spezialität',
     'menu.chefnote':'Notiz des Küchenchefs','menu.order':'Am Tisch anfragen','menu.viewdetails':'Details ansehen','menu.close':'Schliessen',
     'cat.starters':'Vorspeisen','cat.mains':'Hauptgerichte','cat.desserts':'Desserts','cat.drinks':'Getränke','cat.premium':'Premium-Ergänzungen',
     'diet.vegetarian':'Vegetarisch','diet.vegan':'Vegan','diet.gluten-free':'Glutenfrei','diet.halal-friendly':'Halal-freundlich','diet.nut-free':'Nussfrei','diet.dairy-free':'Laktosefrei',
@@ -394,7 +407,7 @@ const I18N = {
     'menu.search':'Cerca piatto o ingrediente…','menu.filters':'Filtri','menu.clear':'Pulisci',
     'menu.empty':'Nessun piatto corrisponde ai filtri.','menu.allergens':'Contiene','menu.dietary':'Adatto a',
     'menu.hot':'Caldo','menu.cold':'Freddo','menu.temperature':'Temperatura',
-    'menu.local':'Origine svizzera','menu.international':'Internazionale',
+    'menu.local':'Origine svizzera','menu.international':'Internazionale','menu.local.heading':'Specialità svizzera',
     'menu.chefnote':'Nota dello chef','menu.order':'Richiedi al tavolo','menu.viewdetails':'Dettagli','menu.close':'Chiudi',
     'cat.starters':'Antipasti','cat.mains':'Secondi','cat.desserts':'Dolci','cat.drinks':'Bevande','cat.premium':'Aggiunte Premium',
     'diet.vegetarian':'Vegetariano','diet.vegan':'Vegano','diet.gluten-free':'Senza glutine','diet.halal-friendly':'Halal','diet.nut-free':'Senza frutta a guscio','diet.dairy-free':'Senza lattosio',
@@ -442,7 +455,7 @@ const I18N = {
     'menu.search':'ابحث عن طبق أو مكوّن…','menu.filters':'تصفية','menu.clear':'مسح',
     'menu.empty':'لا توجد أطباق مطابقة.','menu.allergens':'يحتوي على','menu.dietary':'مناسب لـ',
     'menu.hot':'ساخن','menu.cold':'بارد','menu.temperature':'الحرارة',
-    'menu.local':'مصدر سويسري','menu.international':'دولي',
+    'menu.local':'مصدر سويسري','menu.international':'دولي','menu.local.heading':'تخصص سويسري',
     'menu.chefnote':'ملاحظة الشيف','menu.order':'اطلب إلى الطاولة','menu.viewdetails':'التفاصيل','menu.close':'إغلاق',
     'cat.starters':'المقبلات','cat.mains':'الأطباق الرئيسية','cat.desserts':'الحلويات','cat.drinks':'المشروبات','cat.premium':'إضافات مميزة',
     'diet.vegetarian':'نباتي','diet.vegan':'نباتي صرف','diet.gluten-free':'خالٍ من الغلوتين','diet.halal-friendly':'حلال','diet.nut-free':'بدون مكسرات','diet.dairy-free':'خالٍ من الألبان',
@@ -709,31 +722,39 @@ function pageMenu() {
 
   const sections = CATEGORIES.map(cat => {
     if (cat.id === 'drinks') {
-      // Dietary/temperature filters don't apply to drinks; show editorial layout, filtered by search only.
       if (activeCount > 0 && !STATE.search) return '';
       const inner = renderDrinkSections(STATE.search);
       if (!inner) return '';
       return `
-    <section id="cat-${cat.id}" class="scroll-mt-32 pt-10">
-      <div class="mb-10">
-        <h2 class="serif-heading text-3xl sm:text-5xl text-navy-900">${esc(t(cat.labelKey))}</h2>
-        <p class="mt-3 text-navy-500 leading-[1.7] max-w-xl">${esc(t('drinks.subtitle'))}</p>
-      </div>
-      ${inner}
+    <section id="cat-${cat.id}" class="scroll-mt-32 pt-12">
+      ${categoryHeader(t(cat.labelKey))}
+      <p class="mt-4 text-center text-navy-500 leading-[1.7] max-w-xl mx-auto">${esc(t('drinks.subtitle'))}</p>
+      <div class="mt-12">${inner}</div>
     </section>`;
     }
 
     const list = grouped[cat.id];
     if (!list.length && activeCount === 0 && !STATE.search) return '';
+    const local = list.filter(d => d.source === 'local');
+    const international = list.filter(d => d.source === 'international');
     return `
-    <section id="cat-${cat.id}" class="scroll-mt-32 pt-10 first:pt-0">
-      <div class="flex items-end justify-between mb-8">
-        <h2 class="serif-heading text-3xl sm:text-5xl text-navy-900">${esc(t(cat.labelKey))}</h2>
-        <span class="text-[0.7rem] tracking-[0.22em] uppercase text-navy-500/70">${list.length.toString().padStart(2,'0')} · ${list.length === 1 ? 'dish' : 'dishes'}</span>
-      </div>
+    <section id="cat-${cat.id}" class="scroll-mt-32 pt-12 first:pt-0">
+      ${categoryHeader(t(cat.labelKey))}
       ${list.length === 0
-        ? `<div class="border-t border-navy-900/10 py-16 text-center text-[0.9rem] tracking-wider uppercase text-navy-500">${esc(t('menu.empty'))}</div>`
-        : `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">${list.map(dishCard).join('')}</div>`}
+        ? `<div class="border-t border-navy-900/10 py-16 text-center text-[0.9rem] tracking-[0.22em] uppercase text-navy-500">${esc(t('menu.empty'))}</div>`
+        : `
+        ${local.length ? `
+          <div class="mt-10">
+            ${localSpecialityHeader()}
+            <ul class="mt-6 space-y-1">${local.map(dishRow).join('')}</ul>
+          </div>` : ''}
+        ${local.length && international.length ? `<div class="hairline my-10 max-w-xl mx-auto"></div>` : ''}
+        ${international.length ? `
+          <div>
+            ${!local.length ? '<div class="h-10"></div>' : ''}
+            <ul class="space-y-1">${international.map(dishRow).join('')}</ul>
+          </div>` : ''}
+      `}
     </section>`;
   }).join('');
 
@@ -772,35 +793,41 @@ function pageMenu() {
   <div class="mx-auto max-w-6xl px-5 sm:px-8 py-12 space-y-16">${sections}</div>`;
 }
 
-function dishCard(d) {
+function categoryHeader(label) {
   return `
-  <button data-dish="${d.id}" class="group text-left focus:outline-none anim-up w-full">
-    <div class="relative aspect-[4/5] overflow-hidden">
-      ${image(d.image, d.name, 'h-full w-full transition-transform duration-700 group-hover:scale-[1.02]')}
-      <div class="absolute top-3 left-3 right-3 flex items-start justify-between">
-        ${d.source === 'local'
-          ? `<span class="inline-flex items-center gap-1.5 bg-ivory-50/95 px-2 py-1 text-[0.6rem] uppercase tracking-[0.22em] text-navy-900">${icon('i-swiss','w-3 h-3')} ${esc(t('menu.local'))}</span>`
-          : `<span class="inline-flex items-center gap-1.5 bg-ivory-50/95 px-2 py-1 text-[0.6rem] uppercase tracking-[0.22em] text-navy-500">${icon('i-globe','w-3 h-3')} ${esc(t('menu.international'))}</span>`}
-        <span class="inline-flex items-center gap-1 bg-ivory-50/95 px-2 py-1 text-[0.6rem] uppercase tracking-[0.22em] ${d.temperature === 'hot' ? 'text-[#C0481E]' : 'text-[#2E7BB8]'}">
-          ${icon(d.temperature === 'hot' ? 'i-flame' : 'i-snow','w-3 h-3')} ${esc(t('menu.'+d.temperature))}
+  <div class="flex items-center justify-center gap-5 max-w-xl mx-auto">
+    <span class="flex-1 h-px bg-gold-500/60"></span>
+    <h2 class="text-[0.95rem] sm:text-[1.05rem] uppercase tracking-[0.38em] text-navy-900 font-medium">${esc(label)}</h2>
+    <span class="flex-1 h-px bg-gold-500/60"></span>
+  </div>`;
+}
+
+function localSpecialityHeader() {
+  return `
+  <div class="flex items-center justify-center gap-4 text-navy-900 max-w-md mx-auto">
+    <span class="inline-block w-5 h-5"><svg viewBox="0 0 24 24" class="w-full h-full"><use href="#i-swiss"/></svg></span>
+    <span class="text-[0.78rem] uppercase tracking-[0.32em]">${esc(t('menu.local.heading'))}</span>
+    <span class="inline-block w-5 h-5"><svg viewBox="0 0 24 24" class="w-full h-full"><use href="#i-swiss"/></svg></span>
+  </div>`;
+}
+
+function dishRow(d) {
+  const diet = d.dietary.slice(0, 4);
+  return `
+  <li>
+    <button data-dish="${d.id}" class="group w-full flex items-center gap-4 py-4 border-b border-navy-900/10 text-left hover:bg-navy-900/[0.02] transition-colors">
+      <div class="flex-1 min-w-0">
+        <div class="text-[1rem] sm:text-[1.05rem] text-navy-900 leading-snug">${esc(d.name)}</div>
+        <div class="mt-1 text-[0.78rem] text-navy-500 leading-relaxed line-clamp-1">${esc(d.description)}</div>
+      </div>
+      <div class="flex items-center gap-2 sm:gap-3 text-gold-500 shrink-0">
+        ${diet.map(f => `<span title="${esc(t('diet.'+f))}">${icon('d-'+f,'w-4 h-4 sm:w-[18px] sm:h-[18px]')}</span>`).join('')}
+        <span class="ml-1 sm:ml-2 ${d.temperature === 'hot' ? 'text-[#C0481E]' : 'text-[#2E7BB8]'}" title="${esc(t('menu.'+d.temperature))}">
+          ${icon(d.temperature === 'hot' ? 'i-flame' : 'i-snow','w-3.5 h-3.5')}
         </span>
       </div>
-    </div>
-    <div class="pt-5">
-      <h3 class="serif-heading text-[1.55rem] leading-tight text-navy-900">${esc(d.name)}</h3>
-      <p class="mt-2 text-[0.9rem] text-navy-500 leading-relaxed line-clamp-2">${esc(d.description)}</p>
-      <div class="mt-4 flex items-center justify-between">
-        <div class="flex items-center gap-2 text-navy-500">
-          ${d.dietary.slice(0,4).map(f => `<span title="${esc(t('diet.'+f))}">${icon('d-'+f,'w-4 h-4')}</span>`).join('')}
-          ${d.allergens.length ? `<span class="ml-2 inline-flex items-center gap-1.5 text-[0.62rem] uppercase tracking-[0.22em] text-navy-500/60">
-            <span>${esc(t('menu.allergens'))}</span>
-            ${d.allergens.slice(0,3).map(a => icon('a-'+a,'w-3.5 h-3.5')).join('')}
-          </span>` : ''}
-        </div>
-        <span class="text-[0.65rem] uppercase tracking-[0.22em] text-navy-500 group-hover:text-navy-900 transition-colors inline-flex items-center gap-1">${esc(t('menu.viewdetails'))} ${icon('i-arrow','w-3 h-3')}</span>
-      </div>
-    </div>
-  </button>`;
+    </button>
+  </li>`;
 }
 
 const DRINK_SECTIONS = [
