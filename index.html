@@ -1,0 +1,1329 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+<meta name="theme-color" content="#FBF9F5" />
+<title>Aspire Lounge Switzerland · Digital Buffet Menu</title>
+<meta name="description" content="A calm, premium digital buffet menu for Aspire Lounge guests at Swiss airports." />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'><rect width='128' height='128' rx='24' fill='%230A1729'/><rect x='56' y='34' width='16' height='60' fill='%23B89855'/><rect x='34' y='56' width='60' height='16' fill='%23B89855'/></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          ivory: { 50: '#FBF9F5', 100: '#F6F2EA', 200: '#EDE6D6' },
+          navy: { 50: '#EEF1F6', 100: '#D3DBE7', 500: '#243B5C', 700: '#15263F', 900: '#0A1729' },
+          gold: { 300: '#E6CD8A', 400: '#D4B66A', 500: '#B89855', 600: '#9A7E3F' },
+          sage: { 500: '#7A8C73' }
+        },
+        fontFamily: {
+          serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+          sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif']
+        },
+        boxShadow: {
+          soft: '0 4px 24px -8px rgba(20, 38, 63, 0.08)',
+          lift: '0 12px 40px -12px rgba(20, 38, 63, 0.18)'
+        }
+      }
+    }
+  };
+</script>
+<style>
+  :root { --color-bg:#FBF9F5; --color-ink:#0A1729; --color-gold:#B89855; }
+  html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  body { background: var(--color-bg); color: var(--color-ink); font-family: 'Inter', system-ui, sans-serif; font-weight: 300; letter-spacing: .005em; }
+  [dir='rtl'] { text-align: right; }
+  .hairline { background: linear-gradient(90deg, transparent, rgba(184,152,85,.4), transparent); height: 1px; }
+  .swiss-eyebrow { font-family: 'Inter', sans-serif; font-weight: 500; font-size: .7rem; text-transform: uppercase; letter-spacing: .22em; color: #B89855; }
+  .serif-heading { font-family: 'Cormorant Garamond', serif; font-weight: 400; letter-spacing: -.01em; line-height: 1.05; }
+  .card-glass { background: rgba(255,255,255,.72); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+  ::selection { background: rgba(184,152,85,.25); color: #0A1729; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(20,38,63,.15); border-radius: 8px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(20,38,63,.3); }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  .img-fade { opacity: 0; transition: opacity .7s ease-out; }
+  .img-fade.loaded { opacity: 1; }
+  .skeleton { background: linear-gradient(90deg, #EDE6D6 0%, #F6F2EA 40%, #EDE6D6 80%); background-size: 800px 104px; animation: shimmer 2.4s infinite linear; }
+  @keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
+  .lounge-input:focus { outline: none; border-color: #B89855; box-shadow: 0 0 0 3px rgba(184,152,85,.18); }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .anim-fade { animation: fadeIn .5s ease-out both; }
+  .anim-up { animation: fadeUp .7s ease-out both; }
+  .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .hidden-page { display: none; }
+  .page { animation: fadeUp .55s ease-out both; }
+  /* Dish card hover */
+  .dish-card { transition: transform .3s ease, box-shadow .3s ease; }
+  .dish-card:hover { transform: translateY(-2px); }
+  /* Modal */
+  .modal-bg { background: rgba(10,23,41,.4); backdrop-filter: blur(4px); }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- ========================= ICON SVG SPRITES ========================= -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-swiss" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="#D9342B"/><rect x="10.5" y="6" width="3" height="12" fill="white"/><rect x="6" y="10.5" width="12" height="3" fill="white"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a13.5 13.5 0 010 18M12 3a13.5 13.5 0 000 18"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s4 4 4 8a4 4 0 11-8 0c0-1.5.5-2.5 1-3 0 0 0 2 1.5 2 1 0-1.5-3 1.5-7z"/><path d="M9 17a3 3 0 006 0"/></symbol>
+    <symbol id="i-snow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18M5 5l14 14M19 5L5 19"/><path d="M9 4l3 2 3-2M9 20l3-2 3 2M4 9l2 3-2 3M20 9l-2 3 2 3"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="14" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M6 18L18 6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 5 5L20 6"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></symbol>
+    <symbol id="i-sparkle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6L12 3z"/><path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8L19 14z"/></symbol>
+    <symbol id="i-qr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14h1M14 20h3M20 17v4"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0112 0c0 7 3 7 3 9H3c0-2 3-2 3-9z"/><path d="M10 21a2 2 0 004 0"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.7 5.7 6.3.9-4.6 4.4 1.1 6.3L12 17.8 6.5 20.3l1.1-6.3L3 9.6l6.3-.9L12 3z"/></symbol>
+
+    <!-- Dietary -->
+    <symbol id="d-vegetarian" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 14c2-6 8-9 14-9-1 8-6 13-12 13-2 0-3-1-3-2 0-1 0-1 1-2z"/></symbol>
+    <symbol id="d-vegan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-5 0-8-4-8-9 0-3 2-6 4-7 0 4 2 6 4 6s4-2 4-6c2 1 4 4 4 7 0 5-3 9-8 9z"/></symbol>
+    <symbol id="d-gluten-free" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16"/><path d="M12 8c-2 0-3 1-3 2s1 2 3 2M12 8c2 0 3 1 3 2s-1 2-3 2"/><path d="M5 19L19 5"/></symbol>
+    <symbol id="d-halal-friendly" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12a7 7 0 11-3-5.7"/><path d="M19 4v5h-5"/></symbol>
+    <symbol id="d-nut-free" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c4 0 6 4 6 8s-2 10-6 10-6-6-6-10 2-8 6-8z"/><path d="M5 19L19 5"/></symbol>
+    <symbol id="d-dairy-free" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8v3l-1 2v9a3 3 0 01-3 3h0a3 3 0 01-3-3V8L8 6V3z"/><path d="M5 19L19 5"/></symbol>
+
+    <!-- Allergens -->
+    <symbol id="a-gluten" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M12 7c-2 0-3 1-3 2s1 2 3 2M12 7c2 0 3 1 3 2s-1 2-3 2"/><path d="M12 12c-2 0-3 1-3 2s1 2 3 2M12 12c2 0 3 1 3 2s-1 2-3 2"/><path d="M12 17c-2 0-3 1-3 2M12 17c2 0 3 1 3 2"/></symbol>
+    <symbol id="a-dairy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8v3l-1 2v9a3 3 0 01-3 3h0a3 3 0 01-3-3V8L8 6V3z"/></symbol>
+    <symbol id="a-nuts" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c4 0 6 4 6 8s-2 10-6 10-6-6-6-10 2-8 6-8z"/><path d="M12 7v12M9 10h6M9 14h6"/></symbol>
+    <symbol id="a-shellfish" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a8 8 0 0116 0H4z"/><path d="M8 14v3M12 14v4M16 14v3M6 11l1-2M18 11l-1-2M12 8V5"/></symbol>
+    <symbol id="a-eggs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="13" rx="6" ry="8"/></symbol>
+    <symbol id="a-soy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17a6 6 0 1110-10"/><circle cx="9" cy="15" r="1.5"/><circle cx="14" cy="10" r="1.5"/><circle cx="13" cy="16" r="1.5"/></symbol>
+    <symbol id="a-sesame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="8" cy="9" rx="2" ry="1.2" transform="rotate(-20 8 9)"/><ellipse cx="14" cy="11" rx="2" ry="1.2" transform="rotate(20 14 11)"/><ellipse cx="10" cy="14" rx="2" ry="1.2" transform="rotate(-10 10 14)"/><ellipse cx="15" cy="16" rx="2" ry="1.2" transform="rotate(15 15 16)"/></symbol>
+  </defs>
+</svg>
+
+<!-- ========================= HEADER ========================= -->
+<header class="sticky top-0 z-40 backdrop-blur-md bg-ivory-50/80 border-b border-ivory-200/60">
+  <div class="mx-auto max-w-6xl px-5 sm:px-8 py-3 flex items-center justify-between">
+    <a href="#home" data-route="home" class="group flex items-center gap-3" aria-label="Aspire Lounge Switzerland">
+      <div class="h-8 w-8 rounded-sm bg-navy-900 flex items-center justify-center">
+        <svg class="w-4 h-4"><use href="#i-swiss"/></svg>
+      </div>
+      <div class="leading-tight">
+        <div class="serif-heading text-[1.05rem] tracking-tight" data-i18n="brand.line1">Aspire Lounge</div>
+        <div class="swiss-eyebrow text-[0.6rem]" data-i18n="brand.line2">Switzerland</div>
+      </div>
+    </a>
+    <nav class="hidden md:flex items-center gap-7 text-[0.78rem] tracking-wide uppercase" id="desktopNav"></nav>
+    <div class="flex items-center gap-2">
+      <div class="relative" id="langWrap">
+        <button id="langBtn" class="h-9 px-3 rounded-full border border-ivory-200 flex items-center gap-2 text-[0.72rem] uppercase tracking-wider hover:border-gold-400 transition-colors">
+          <svg class="w-3.5 h-3.5"><use href="#i-globe"/></svg>
+          <span id="langCurrent">EN</span>
+        </button>
+        <div id="langMenu" class="hidden absolute right-0 mt-2 w-56 rounded-2xl bg-white shadow-lift border border-ivory-200/60 overflow-hidden anim-fade z-50"></div>
+      </div>
+      <button id="mobileBtn" class="md:hidden h-9 w-9 rounded-full border border-ivory-200 flex items-center justify-center" aria-label="Open menu">
+        <span class="block w-4 h-px bg-current relative">
+          <span class="absolute left-0 -top-1.5 block w-4 h-px bg-current"></span>
+          <span class="absolute left-0 top-1.5 block w-4 h-px bg-current"></span>
+        </span>
+      </button>
+    </div>
+  </div>
+  <nav id="mobileNav" class="hidden md:hidden border-t border-ivory-200/60 bg-ivory-50/95">
+    <div class="px-5 py-3 flex flex-col gap-1 text-[0.85rem] uppercase tracking-wide" id="mobileNavList"></div>
+  </nav>
+</header>
+
+<main id="main"></main>
+
+<!-- ========================= FOOTER ========================= -->
+<footer class="mt-24 border-t border-ivory-200/60">
+  <div class="mx-auto max-w-6xl px-5 sm:px-8 py-12 grid grid-cols-1 sm:grid-cols-3 gap-10">
+    <div>
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-sm bg-navy-900 flex items-center justify-center">
+          <svg class="w-4 h-4"><use href="#i-swiss"/></svg>
+        </div>
+        <div class="leading-tight">
+          <div class="serif-heading text-lg" data-i18n="brand.line1">Aspire Lounge</div>
+          <div class="swiss-eyebrow" data-i18n="brand.line2">Switzerland</div>
+        </div>
+      </div>
+      <p class="mt-4 text-[0.88rem] text-navy-500 leading-relaxed max-w-xs" data-i18n="footer.note"></p>
+    </div>
+    <div>
+      <div class="swiss-eyebrow mb-3" data-i18n="home.hours"></div>
+      <div class="space-y-1 text-[0.88rem] text-navy-500">
+        <div>Zürich Airport · Terminal A</div>
+        <div>Genève Aéroport · Terminal 1</div>
+        <div>Basel EuroAirport · Departures</div>
+      </div>
+    </div>
+    <div>
+      <div class="swiss-eyebrow mb-3">— Aspire</div>
+      <div class="space-y-1 text-[0.88rem] text-navy-500">
+        <a href="#dietary" data-route="dietary" class="block hover:text-navy-900" data-i18n="nav.dietary"></a>
+        <a href="#about" data-route="about" class="block hover:text-navy-900" data-i18n="nav.about"></a>
+        <a href="#feedback" data-route="feedback" class="block hover:text-navy-900" data-i18n="nav.feedback"></a>
+      </div>
+    </div>
+  </div>
+  <div class="hairline mx-auto max-w-6xl"></div>
+  <div class="mx-auto max-w-6xl px-5 sm:px-8 py-6 flex items-center justify-between text-[0.72rem] uppercase tracking-wider text-navy-500/70">
+    <span>© Aspire Lounge Switzerland</span>
+    <span>Crafted in Zürich</span>
+  </div>
+</footer>
+
+<!-- ========================= FLOATING HELP ========================= -->
+<button id="helpBtn" class="fixed bottom-6 right-5 z-40 h-14 w-14 rounded-full bg-navy-900 text-ivory-50 shadow-lift flex items-center justify-center hover:scale-105 active:scale-100 transition-transform" aria-label="Help">
+  <svg class="w-5 h-5"><use href="#i-qr"/></svg>
+  <span class="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-gold-400 ring-2 ring-ivory-50"></span>
+</button>
+
+<!-- ========================= MODAL HOST ========================= -->
+<div id="modalHost"></div>
+
+<script>
+/* ===========================================================
+   Data: dishes, translations, categories
+   =========================================================== */
+const CATEGORIES = [
+  { id: 'starters', labelKey: 'cat.starters' },
+  { id: 'mains', labelKey: 'cat.mains' },
+  { id: 'desserts', labelKey: 'cat.desserts' },
+  { id: 'drinks', labelKey: 'cat.drinks' },
+  { id: 'premium', labelKey: 'cat.premium' },
+];
+
+const DIETARY = ['vegetarian','vegan','gluten-free','halal-friendly','nut-free','dairy-free'];
+const ALLERGENS = ['gluten','dairy','nuts','shellfish','eggs','soy','sesame'];
+
+const DISHES = [
+  // Starters
+  { id:'smoked-trout-salad', name:'Smoked Trout Potato Salad', description:'Cold-smoked alpine trout, Ratte potatoes, dill crème fraîche, lemon zest.', category:'starters', image:'https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'local', dietary:['gluten-free','nut-free'], allergens:['dairy','eggs'], chefNote:'Trout sourced from Lake Lucerne fisheries.' },
+  { id:'cheese-charcuterie', name:'Swiss Cheese & Charcuterie Board', description:'Aged Gruyère AOP, Tête de Moine, Bündnerfleisch, Walliser dried meats, fig compote.', category:'starters', image:'https://images.unsplash.com/photo-1631379578550-7038263db699?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'local', dietary:['gluten-free','nut-free'], allergens:['dairy'], chefNote:'Selection rotated weekly with local affineurs.' },
+  { id:'heirloom-tomato', name:'Heirloom Tomato & Basil', description:'Sun-ripened tomatoes, buffalo mozzarella, aged balsamic, Genovese basil.', category:'starters', image:'https://images.unsplash.com/photo-1572441713132-c542fc4fe282?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'international', dietary:['vegetarian','gluten-free','nut-free'], allergens:['dairy'] },
+  { id:'wild-mushroom-veloute', name:'Wild Mushroom Velouté', description:'Forest mushrooms, thyme cream, truffle oil drizzle, sourdough crouton.', category:'starters', image:'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'local', dietary:['vegetarian'], allergens:['gluten','dairy'] },
+
+  // Mains
+  { id:'zurcher-geschnetzeltes', name:'Zürcher Geschnetzeltes', description:'Sliced veal in white wine and mushroom cream sauce, traditional Zürich style.', category:'mains', image:'https://images.unsplash.com/photo-1432139509613-5c4255815697?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'local', dietary:['nut-free'], allergens:['dairy','gluten'], chefNote:'A signature dish of canton Zürich since the 1940s.' },
+  { id:'rosti-alpine-cheese', name:'Rösti with Alpine Cheese', description:'Crisp golden potato rösti baked with melted Berner Hobelkäse and chives.', category:'mains', image:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'local', dietary:['vegetarian','gluten-free','nut-free','halal-friendly'], allergens:['dairy'] },
+  { id:'herb-lake-fish', name:'Herb-Roasted Lake Fish', description:'Filet of Lake Zürich perch, herb butter, citrus beurre blanc, garden vegetables.', category:'mains', image:'https://images.unsplash.com/photo-1485921325833-c519f76c4927?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'local', dietary:['gluten-free','nut-free'], allergens:['dairy'], chefNote:'Sustainably caught from regional Swiss lakes.' },
+  { id:'vegetable-risotto', name:'Spring Vegetable Risotto', description:'Carnaroli rice, asparagus, peas, Parmigiano Reggiano, fresh herbs.', category:'mains', image:'https://images.unsplash.com/photo-1633964913849-96bb09cd5256?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'international', dietary:['vegetarian','gluten-free','nut-free','halal-friendly'], allergens:['dairy'] },
+  { id:'chickpea-tagine', name:'Moroccan Chickpea Tagine', description:'Slow-cooked chickpeas, apricots, preserved lemon, ras el hanout, herbed couscous.', category:'mains', image:'https://images.unsplash.com/photo-1574484284002-952d92456975?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'international', dietary:['vegan','vegetarian','dairy-free','halal-friendly','nut-free'], allergens:['gluten'] },
+
+  // Desserts
+  { id:'zuger-kirschtorte', name:'Mini Zuger Kirschtorte', description:'Layered hazelnut meringue, buttercream and kirsch-soaked sponge from canton Zug.', category:'desserts', image:'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'local', dietary:['vegetarian'], allergens:['gluten','dairy','nuts','eggs'], chefNote:'A protected Swiss specialty since 1915.' },
+  { id:'chocolate-mousse', name:'Swiss Chocolate Mousse Cups', description:'70% Lindt grand cru chocolate, whipped cream, cocoa nibs, gold leaf.', category:'desserts', image:'https://images.unsplash.com/photo-1541783245831-57d6fb0926d3?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'local', dietary:['vegetarian','gluten-free'], allergens:['dairy','eggs','soy'] },
+  { id:'panna-cotta', name:'Tropical Fruit Panna Cotta', description:'Vanilla bean panna cotta, passion-fruit coulis, mango, micro basil.', category:'desserts', image:'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'international', dietary:['vegetarian','gluten-free','nut-free'], allergens:['dairy'] },
+  { id:'fruit-platter', name:'Seasonal Fruit Platter', description:'Selection of fresh seasonal fruits, mint, lime, edible flowers.', category:'desserts', image:'https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'international', dietary:['vegan','vegetarian','gluten-free','dairy-free','halal-friendly','nut-free'], allergens:[] },
+
+  // Drinks
+  { id:'still-sparkling-water', name:'Alpine Still & Sparkling Water', description:'Naturally filtered Swiss mountain spring water, chilled, with citrus.', category:'drinks', image:'https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'local', dietary:['vegan','vegetarian','gluten-free','dairy-free','halal-friendly','nut-free'], allergens:[] },
+  { id:'espresso-bar', name:'Swiss Espresso Bar', description:'Single-origin espresso, cappuccino, Schümli, herbal & alpine teas.', category:'drinks', image:'https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'local', dietary:['vegan','vegetarian','gluten-free','nut-free'], allergens:['dairy'] },
+  { id:'fresh-juices', name:'Cold-Pressed Juice Selection', description:'Apple-elderflower, beetroot-ginger, orange and seasonal blends.', category:'drinks', image:'https://images.unsplash.com/photo-1600271886742-f049cd451bba?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'local', dietary:['vegan','vegetarian','gluten-free','dairy-free','halal-friendly','nut-free'], allergens:[] },
+  { id:'house-wine', name:'Swiss House Wines', description:'A curated selection of Valais and Vaud reds and whites by the glass.', category:'drinks', image:'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'local', dietary:['vegan','vegetarian','gluten-free','dairy-free','nut-free'], allergens:[] },
+
+  // Premium
+  { id:'champagne-flute', name:'Champagne by the Flute', description:'Ruinart Blanc de Blancs, served chilled with seasonal garnish.', category:'premium', image:'https://images.unsplash.com/photo-1547595628-c61a29f496f0?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'international', dietary:['vegan','vegetarian','gluten-free','dairy-free','nut-free'], allergens:[], premium:true, price:'CHF 28' },
+  { id:'caviar-service', name:'Oscietra Caviar Service', description:'15g Oscietra caviar, blinis, crème fraîche, mother-of-pearl spoon.', category:'premium', image:'https://images.unsplash.com/photo-1625938145744-533e82c1a2b8?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'international', dietary:['nut-free'], allergens:['gluten','dairy','eggs'], premium:true, price:'CHF 65' },
+  { id:'truffle-pasta', name:'Black Truffle Tagliolini', description:'Hand-cut egg pasta, butter, aged Parmigiano, shaved Périgord truffle.', category:'premium', image:'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'international', dietary:['vegetarian'], allergens:['gluten','dairy','eggs'], premium:true, price:'CHF 42' },
+  { id:'sommelier-wine', name:'Sommelier Wine Pairing', description:'A curated three-glass flight selected by our head sommelier.', category:'premium', image:'https://images.unsplash.com/photo-1568213816046-0ee1c42bd559?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'international', dietary:['vegan','vegetarian','gluten-free','dairy-free','nut-free'], allergens:[], premium:true, price:'CHF 55' },
+];
+
+const LOCALES = [
+  { code:'en', native:'English' },
+  { code:'fr', native:'Français' },
+  { code:'de', native:'Deutsch' },
+  { code:'it', native:'Italiano' },
+  { code:'ar', native:'العربية' },
+];
+
+const I18N = {
+  en: {
+    'brand.line1':'Aspire Lounge','brand.line2':'Switzerland',
+    'nav.home':'Home','nav.menu':'Menu','nav.drinks':'Drinks','nav.dietary':'Dietary','nav.premium':'Suite','nav.feedback':'Feedback','nav.about':'Local Sourcing',
+    'home.eyebrow':'Zürich · Geneva · Basel',
+    'home.welcome':'Welcome to a quiet moment before your flight.',
+    'home.subtitle':'Browse today’s buffet, discover Swiss ingredients, and travel with comfort.',
+    'home.cta.menu':'Browse Buffet','home.cta.premium':'Suite Ordering',
+    'home.qr.title':'Your table, our menu',
+    'home.qr.body':'You’ve been seated. Take your time — the buffet refreshes throughout the day.',
+    'home.hours':'Open daily · 04:30 — 23:00',
+    'menu.title':'Today’s Buffet','menu.subtitle':'Refreshed continuously by our chefs',
+    'menu.search':'Search dishes, ingredients…','menu.filters':'Filters','menu.clear':'Clear',
+    'menu.empty':'No dishes match your filters.','menu.allergens':'Contains','menu.dietary':'Suitable for',
+    'menu.hot':'Hot','menu.cold':'Cold','menu.temperature':'Temperature',
+    'menu.local':'Swiss sourced','menu.international':'International',
+    'menu.chefnote':'Chef’s note','menu.order':'Request at table','menu.viewdetails':'View details','menu.close':'Close',
+    'cat.starters':'Starters','cat.mains':'Main Courses','cat.desserts':'Desserts','cat.drinks':'Drinks','cat.premium':'Premium Add-ons',
+    'diet.vegetarian':'Vegetarian','diet.vegan':'Vegan','diet.gluten-free':'Gluten-free','diet.halal-friendly':'Halal-friendly','diet.nut-free':'Nut-free','diet.dairy-free':'Dairy-free',
+    'allergen.gluten':'Gluten','allergen.dairy':'Dairy','allergen.nuts':'Nuts','allergen.shellfish':'Shellfish','allergen.eggs':'Eggs','allergen.soy':'Soy','allergen.sesame':'Sesame',
+    'drinks.title':'Drinks & Water Station','drinks.subtitle':'Self-serve coffee, tea, alpine water and cold-pressed juices.',
+    'drinks.station1.title':'Alpine Water Station','drinks.station1.body':'Still and sparkling Swiss spring water, citrus and herb infusions.',
+    'drinks.station2.title':'Espresso & Tea Bar','drinks.station2.body':'Single-origin espresso, Schümli, herbal teas and chai.',
+    'drinks.station3.title':'Juice & Wellness','drinks.station3.body':'Cold-pressed seasonal juices, kombucha and electrolyte drinks.',
+    'dietary.title':'Dietary & Allergen Guide','dietary.subtitle':'Every dish is clearly labelled. Please ask any team member for advice.',
+    'dietary.contact':'If you have a severe allergy, kindly let a host know — we will guide you personally.',
+    'premium.eyebrow':'Suite Lounge guests','premium.title':'Discreet table service',
+    'premium.subtitle':'A quiet hand to add a glass of champagne, a glass of wine or a chef’s plate at your table.',
+    'premium.cta':'Order to table','premium.estimated':'Estimated preparation','premium.minutes':'min',
+    'premium.status.pending':'Pending confirmation','premium.status.confirmed':'Confirmed','premium.status.preparing':'Preparing','premium.status.ontheway':'On its way','premium.status.delivered':'Delivered',
+    'premium.order.title':'Your order','premium.order.empty':'No items yet — explore the additions below.',
+    'premium.order.total':'Total','premium.order.place':'Place order',
+    'premium.order.note':'Note for the team (optional)','premium.order.notepl':'e.g. seat 14C, allergies, occasion…',
+    'premium.access':'Available to Suite Lounge guests — your boarding pass tier is detected automatically.',
+    'premium.confirm.title':'Order received','premium.confirm.body':'A member of our team is on their way to your table.',
+    'premium.confirm.eta':'Estimated arrival','premium.confirm.ref':'Confirmation',
+    'about.title':'About Local Ingredients','about.subtitle':'We work with Swiss farmers, alpine cheesemakers and lake fisheries within 200 km of the lounge.',
+    'about.farmers.title':'Swiss Farmers','about.farmers.body':'Daily deliveries from Aargau and Bern producers — vegetables, dairy and eggs.',
+    'about.cheese.title':'Alpine Cheesemakers','about.cheese.body':'AOP-certified Gruyère, Emmentaler and Berner Hobelkäse, matured in family caves.',
+    'about.water.title':'Mountain Water','about.water.body':'Natural spring water filtered through 300m of alpine limestone.',
+    'about.coffee.title':'Swiss Roasters','about.coffee.body':'Single-origin beans roasted weekly in our partner microroastery.',
+    'feedback.title':'How was your moment with us?','feedback.subtitle':'Your impressions help us shape the next traveller’s experience.',
+    'feedback.overall':'Overall experience','feedback.food':'Food quality','feedback.service':'Service & atmosphere',
+    'feedback.comment':'A note for the team (optional)','feedback.commentpl':'A dish you loved, anything we can refine…',
+    'feedback.submit':'Send feedback','feedback.thanks':'Thank you — safe travels.',
+    'feedback.dishrating':'Rate a specific dish','feedback.choose':'Choose a dish',
+    'lang.title':'Language','help.title':'Need a hand?','help.body':'Press the call button or ask any host — we’re close by.',
+    'help.callstaff':'Call a host','help.called':'A host has been notified.','help.close':'Close',
+    'footer.note':'A calm, premium moment before your flight.'
+  },
+  fr: {
+    'brand.line1':'Aspire Lounge','brand.line2':'Suisse',
+    'nav.home':'Accueil','nav.menu':'Menu','nav.drinks':'Boissons','nav.dietary':'Régimes','nav.premium':'Suite','nav.feedback':'Avis','nav.about':'Producteurs',
+    'home.eyebrow':'Zurich · Genève · Bâle','home.welcome':'Bienvenue dans un moment de calme avant votre vol.',
+    'home.subtitle':'Découvrez le buffet du jour, les ingrédients suisses, et voyagez sereinement.',
+    'home.cta.menu':'Voir le buffet','home.cta.premium':'Service Suite',
+    'home.qr.title':'Votre table, notre menu','home.qr.body':'Vous êtes installé(e). Prenez votre temps — le buffet est renouvelé tout au long de la journée.',
+    'home.hours':'Ouvert chaque jour · 04:30 — 23:00',
+    'menu.title':'Buffet du jour','menu.subtitle':'Renouvelé par nos chefs en continu',
+    'menu.search':'Rechercher un plat, un ingrédient…','menu.filters':'Filtres','menu.clear':'Effacer',
+    'menu.empty':'Aucun plat ne correspond à vos filtres.','menu.allergens':'Contient','menu.dietary':'Convient à',
+    'menu.hot':'Chaud','menu.cold':'Froid','menu.temperature':'Température',
+    'menu.local':'Origine suisse','menu.international':'International',
+    'menu.chefnote':'Note du chef','menu.order':'Demander à table','menu.viewdetails':'Voir le détail','menu.close':'Fermer',
+    'cat.starters':'Entrées','cat.mains':'Plats','cat.desserts':'Desserts','cat.drinks':'Boissons','cat.premium':'Suppléments Premium',
+    'diet.vegetarian':'Végétarien','diet.vegan':'Végan','diet.gluten-free':'Sans gluten','diet.halal-friendly':'Halal','diet.nut-free':'Sans fruits à coque','diet.dairy-free':'Sans lactose',
+    'allergen.gluten':'Gluten','allergen.dairy':'Lactose','allergen.nuts':'Fruits à coque','allergen.shellfish':'Crustacés','allergen.eggs':'Œufs','allergen.soy':'Soja','allergen.sesame':'Sésame',
+    'drinks.title':'Boissons & espace eau','drinks.subtitle':'Café, thé, eau alpine et jus pressés à froid en libre-service.',
+    'drinks.station1.title':'Eau des Alpes','drinks.station1.body':'Eau de source plate et pétillante, infusions citron et herbes.',
+    'drinks.station2.title':'Espresso & Thés','drinks.station2.body':'Espresso, Schümli, thés et tisanes des Alpes.',
+    'drinks.station3.title':'Jus & Bien-être','drinks.station3.body':'Jus pressés à froid, kombucha et boissons électrolytes.',
+    'dietary.title':'Guide des régimes & allergènes','dietary.subtitle':'Chaque plat est clairement identifié. Demandez conseil à notre équipe.',
+    'dietary.contact':'En cas d’allergie sévère, prévenez un hôte — nous vous accompagnons personnellement.',
+    'premium.eyebrow':'Réservé Suite Lounge','premium.title':'Service à table discret',
+    'premium.subtitle':'Une coupe de champagne, un verre de vin ou une assiette du chef apportés à votre table.',
+    'premium.cta':'Commander à table','premium.estimated':'Préparation estimée','premium.minutes':'min',
+    'premium.status.pending':'En attente','premium.status.confirmed':'Confirmée','premium.status.preparing':'En préparation','premium.status.ontheway':'En route','premium.status.delivered':'Servie',
+    'premium.order.title':'Votre commande','premium.order.empty':'Aucun article — explorez les options ci-dessous.',
+    'premium.order.total':'Total','premium.order.place':'Passer commande',
+    'premium.order.note':'Note pour l’équipe (facultatif)','premium.order.notepl':'ex. siège 14C, allergie, occasion…',
+    'premium.access':'Réservé aux invités Suite Lounge — votre niveau d’embarquement est détecté automatiquement.',
+    'premium.confirm.title':'Commande reçue','premium.confirm.body':'Un membre de notre équipe se dirige vers votre table.',
+    'premium.confirm.eta':'Arrivée estimée','premium.confirm.ref':'Confirmation',
+    'about.title':'Producteurs locaux','about.subtitle':'Nous collaborons avec des fermiers suisses, fromagers alpins et pêcheurs à moins de 200 km du salon.',
+    'about.farmers.title':'Fermiers suisses','about.farmers.body':'Livraisons quotidiennes d’Argovie et de Berne — légumes, produits laitiers, œufs.',
+    'about.cheese.title':'Fromagers alpins','about.cheese.body':'Gruyère AOP, Emmental et Hobelkäse affinés en caves familiales.',
+    'about.water.title':'Eau des montagnes','about.water.body':'Eau de source filtrée par 300 m de calcaire alpin.',
+    'about.coffee.title':'Torréfacteurs suisses','about.coffee.body':'Grains d’origine torréfiés chaque semaine chez notre partenaire.',
+    'feedback.title':'Comment s’est passé votre moment ?','feedback.subtitle':'Vos impressions guident l’expérience du prochain voyageur.',
+    'feedback.overall':'Expérience globale','feedback.food':'Qualité de la cuisine','feedback.service':'Service & ambiance',
+    'feedback.comment':'Un mot pour l’équipe (facultatif)','feedback.commentpl':'Un plat aimé, un détail à améliorer…',
+    'feedback.submit':'Envoyer','feedback.thanks':'Merci — bon voyage.',
+    'feedback.dishrating':'Noter un plat précis','feedback.choose':'Choisir un plat',
+    'lang.title':'Langue','help.title':'Besoin d’aide ?','help.body':'Appelez un hôte ou faites-nous signe — nous sommes proches.',
+    'help.callstaff':'Appeler un hôte','help.called':'Un hôte a été prévenu.','help.close':'Fermer',
+    'footer.note':'Un moment calme et raffiné avant votre vol.'
+  },
+  de: {
+    'brand.line1':'Aspire Lounge','brand.line2':'Schweiz',
+    'nav.home':'Start','nav.menu':'Menü','nav.drinks':'Getränke','nav.dietary':'Ernährung','nav.premium':'Suite','nav.feedback':'Feedback','nav.about':'Herkunft',
+    'home.eyebrow':'Zürich · Genf · Basel','home.welcome':'Willkommen zu einem ruhigen Moment vor Ihrem Flug.',
+    'home.subtitle':'Entdecken Sie das heutige Buffet, Schweizer Zutaten — und reisen Sie entspannt.',
+    'home.cta.menu':'Zum Buffet','home.cta.premium':'Suite-Service',
+    'home.qr.title':'Ihr Tisch, unser Menü','home.qr.body':'Sie haben Platz genommen. Lassen Sie sich Zeit — das Buffet wird laufend aufgefrischt.',
+    'home.hours':'Täglich geöffnet · 04:30 — 23:00',
+    'menu.title':'Buffet des Tages','menu.subtitle':'Laufend von unseren Köchen aufgefrischt',
+    'menu.search':'Gericht, Zutat suchen…','menu.filters':'Filter','menu.clear':'Zurücksetzen',
+    'menu.empty':'Keine Gerichte entsprechen Ihren Filtern.','menu.allergens':'Enthält','menu.dietary':'Geeignet für',
+    'menu.hot':'Warm','menu.cold':'Kalt','menu.temperature':'Temperatur',
+    'menu.local':'Schweizer Herkunft','menu.international':'International',
+    'menu.chefnote':'Notiz des Küchenchefs','menu.order':'Am Tisch anfragen','menu.viewdetails':'Details ansehen','menu.close':'Schliessen',
+    'cat.starters':'Vorspeisen','cat.mains':'Hauptgerichte','cat.desserts':'Desserts','cat.drinks':'Getränke','cat.premium':'Premium-Ergänzungen',
+    'diet.vegetarian':'Vegetarisch','diet.vegan':'Vegan','diet.gluten-free':'Glutenfrei','diet.halal-friendly':'Halal-freundlich','diet.nut-free':'Nussfrei','diet.dairy-free':'Laktosefrei',
+    'allergen.gluten':'Gluten','allergen.dairy':'Milch','allergen.nuts':'Nüsse','allergen.shellfish':'Schalentiere','allergen.eggs':'Eier','allergen.soy':'Soja','allergen.sesame':'Sesam',
+    'drinks.title':'Getränke & Wasserstation','drinks.subtitle':'Kaffee, Tee, Alpenwasser und kaltgepresste Säfte zur Selbstbedienung.',
+    'drinks.station1.title':'Alpenwasser','drinks.station1.body':'Stilles und sprudelndes Quellwasser, Zitrus- und Kräuterinfusionen.',
+    'drinks.station2.title':'Espresso & Tee','drinks.station2.body':'Espresso, Schümli, Tees und Alpenkräutertees.',
+    'drinks.station3.title':'Säfte & Wellness','drinks.station3.body':'Kaltgepresste Säfte, Kombucha und Elektrolytgetränke.',
+    'dietary.title':'Ernährungs- & Allergenführer','dietary.subtitle':'Jedes Gericht ist klar gekennzeichnet. Unser Team berät Sie gerne.',
+    'dietary.contact':'Bei schwerer Allergie informieren Sie bitte einen Gastgeber — wir begleiten Sie persönlich.',
+    'premium.eyebrow':'Suite-Lounge-Gäste','premium.title':'Diskreter Tischservice',
+    'premium.subtitle':'Ein Glas Champagner, ein Wein oder ein Küchenchef-Teller — direkt an Ihren Tisch.',
+    'premium.cta':'An den Tisch bestellen','premium.estimated':'Geschätzte Zubereitung','premium.minutes':'Min.',
+    'premium.status.pending':'Ausstehend','premium.status.confirmed':'Bestätigt','premium.status.preparing':'In Zubereitung','premium.status.ontheway':'Unterwegs','premium.status.delivered':'Serviert',
+    'premium.order.title':'Ihre Bestellung','premium.order.empty':'Noch keine Artikel — entdecken Sie unsere Auswahl.',
+    'premium.order.total':'Gesamt','premium.order.place':'Bestellung aufgeben',
+    'premium.order.note':'Notiz an das Team (optional)','premium.order.notepl':'z. B. Platz 14C, Allergien, Anlass…',
+    'premium.access':'Für Suite-Lounge-Gäste — Ihre Stufe wird automatisch erkannt.',
+    'premium.confirm.title':'Bestellung erhalten','premium.confirm.body':'Ein Teammitglied ist bereits unterwegs zu Ihrem Tisch.',
+    'premium.confirm.eta':'Voraussichtliche Ankunft','premium.confirm.ref':'Bestätigung',
+    'about.title':'Lokale Zutaten','about.subtitle':'Wir arbeiten mit Schweizer Bauern, Alpkäsereien und Fischern im Umkreis von 200 km.',
+    'about.farmers.title':'Schweizer Bauern','about.farmers.body':'Tägliche Lieferungen aus Aargau und Bern — Gemüse, Milchprodukte, Eier.',
+    'about.cheese.title':'Alpkäser','about.cheese.body':'AOP-Gruyère, Emmentaler und Berner Hobelkäse aus familieneigenen Höhlen.',
+    'about.water.title':'Bergwasser','about.water.body':'Quellwasser, gefiltert durch 300 m alpinen Kalkstein.',
+    'about.coffee.title':'Schweizer Röstereien','about.coffee.body':'Sortenreine Bohnen, jede Woche frisch geröstet.',
+    'feedback.title':'Wie war Ihr Moment bei uns?','feedback.subtitle':'Ihre Eindrücke prägen das Erlebnis des nächsten Reisenden.',
+    'feedback.overall':'Gesamterlebnis','feedback.food':'Qualität der Küche','feedback.service':'Service & Atmosphäre',
+    'feedback.comment':'Eine Notiz an das Team (optional)','feedback.commentpl':'Ein geliebtes Gericht, ein Vorschlag…',
+    'feedback.submit':'Senden','feedback.thanks':'Vielen Dank — gute Reise.',
+    'feedback.dishrating':'Ein Gericht bewerten','feedback.choose':'Gericht wählen',
+    'lang.title':'Sprache','help.title':'Brauchen Sie Hilfe?','help.body':'Rufen Sie einen Gastgeber — wir sind in der Nähe.',
+    'help.callstaff':'Gastgeber rufen','help.called':'Ein Gastgeber wurde informiert.','help.close':'Schliessen',
+    'footer.note':'Ein ruhiger, edler Moment vor Ihrem Flug.'
+  },
+  it: {
+    'brand.line1':'Aspire Lounge','brand.line2':'Svizzera',
+    'nav.home':'Home','nav.menu':'Menu','nav.drinks':'Bevande','nav.dietary':'Dieta','nav.premium':'Suite','nav.feedback':'Feedback','nav.about':'Produttori',
+    'home.eyebrow':'Zurigo · Ginevra · Basilea','home.welcome':'Benvenuto in un momento di calma prima del volo.',
+    'home.subtitle':'Scopri il buffet di oggi e gli ingredienti svizzeri, viaggia sereno.',
+    'home.cta.menu':'Scopri il buffet','home.cta.premium':'Servizio Suite',
+    'home.qr.title':'Il tuo tavolo, il nostro menu','home.qr.body':'Sei accomodato. Prenditi il tuo tempo — il buffet viene rinnovato durante la giornata.',
+    'home.hours':'Aperto tutti i giorni · 04:30 — 23:00',
+    'menu.title':'Buffet di oggi','menu.subtitle':'Rinnovato di continuo dai nostri chef',
+    'menu.search':'Cerca piatto o ingrediente…','menu.filters':'Filtri','menu.clear':'Pulisci',
+    'menu.empty':'Nessun piatto corrisponde ai filtri.','menu.allergens':'Contiene','menu.dietary':'Adatto a',
+    'menu.hot':'Caldo','menu.cold':'Freddo','menu.temperature':'Temperatura',
+    'menu.local':'Origine svizzera','menu.international':'Internazionale',
+    'menu.chefnote':'Nota dello chef','menu.order':'Richiedi al tavolo','menu.viewdetails':'Dettagli','menu.close':'Chiudi',
+    'cat.starters':'Antipasti','cat.mains':'Secondi','cat.desserts':'Dolci','cat.drinks':'Bevande','cat.premium':'Aggiunte Premium',
+    'diet.vegetarian':'Vegetariano','diet.vegan':'Vegano','diet.gluten-free':'Senza glutine','diet.halal-friendly':'Halal','diet.nut-free':'Senza frutta a guscio','diet.dairy-free':'Senza lattosio',
+    'allergen.gluten':'Glutine','allergen.dairy':'Latticini','allergen.nuts':'Frutta a guscio','allergen.shellfish':'Crostacei','allergen.eggs':'Uova','allergen.soy':'Soia','allergen.sesame':'Sesamo',
+    'drinks.title':'Bevande & punto acqua','drinks.subtitle':'Caffè, tè, acqua alpina e succhi a freddo in self-service.',
+    'drinks.station1.title':'Acqua delle Alpi','drinks.station1.body':'Acqua naturale e frizzante, infusi di agrumi ed erbe.',
+    'drinks.station2.title':'Espresso & Tè','drinks.station2.body':'Espresso, Schümli, tè e tisane alpine.',
+    'drinks.station3.title':'Succhi & Benessere','drinks.station3.body':'Succhi a freddo, kombucha e bevande agli elettroliti.',
+    'dietary.title':'Guida dieta & allergeni','dietary.subtitle':'Ogni piatto è chiaramente etichettato. Chiedi consiglio al nostro team.',
+    'dietary.contact':'In caso di allergia grave, avvisa un host — ti accompagneremo personalmente.',
+    'premium.eyebrow':'Ospiti Suite Lounge','premium.title':'Servizio al tavolo discreto',
+    'premium.subtitle':'Un calice di champagne, un vino o un piatto dello chef portati al tuo tavolo.',
+    'premium.cta':'Ordina al tavolo','premium.estimated':'Preparazione stimata','premium.minutes':'min',
+    'premium.status.pending':'In attesa','premium.status.confirmed':'Confermato','premium.status.preparing':'In preparazione','premium.status.ontheway':'In arrivo','premium.status.delivered':'Servito',
+    'premium.order.title':'Il tuo ordine','premium.order.empty':'Nessun articolo — esplora la selezione.',
+    'premium.order.total':'Totale','premium.order.place':'Conferma ordine',
+    'premium.order.note':'Nota per il team (facoltativo)','premium.order.notepl':'es. posto 14C, allergie, occasione…',
+    'premium.access':'Riservato agli ospiti Suite Lounge — il tuo livello è rilevato automaticamente.',
+    'premium.confirm.title':'Ordine ricevuto','premium.confirm.body':'Un nostro collaboratore sta raggiungendo il tuo tavolo.',
+    'premium.confirm.eta':'Arrivo previsto','premium.confirm.ref':'Conferma',
+    'about.title':'Ingredienti locali','about.subtitle':'Lavoriamo con contadini svizzeri, casari alpini e pescatori entro 200 km.',
+    'about.farmers.title':'Contadini svizzeri','about.farmers.body':'Consegne giornaliere dai Cantoni Argovia e Berna.',
+    'about.cheese.title':'Casari alpini','about.cheese.body':'Gruyère AOP, Emmental e Hobelkäse stagionati nelle grotte di famiglia.',
+    'about.water.title':'Acqua di montagna','about.water.body':'Acqua sorgiva filtrata da 300 m di calcare alpino.',
+    'about.coffee.title':'Torrefattori svizzeri','about.coffee.body':'Chicchi single-origin tostati settimanalmente.',
+    'feedback.title':'Com’è andato il tuo momento?','feedback.subtitle':'Le tue impressioni guidano l’esperienza del prossimo viaggiatore.',
+    'feedback.overall':'Esperienza complessiva','feedback.food':'Qualità della cucina','feedback.service':'Servizio & atmosfera',
+    'feedback.comment':'Una nota per il team (facoltativo)','feedback.commentpl':'Un piatto che ti è piaciuto…',
+    'feedback.submit':'Invia','feedback.thanks':'Grazie — buon viaggio.',
+    'feedback.dishrating':'Valuta un piatto specifico','feedback.choose':'Scegli un piatto',
+    'lang.title':'Lingua','help.title':'Serve aiuto?','help.body':'Chiama un host — siamo vicini.',
+    'help.callstaff':'Chiama un host','help.called':'Un host è stato avvisato.','help.close':'Chiudi',
+    'footer.note':'Un momento calmo e raffinato prima del volo.'
+  },
+  ar: {
+    'brand.line1':'صالة أسباير','brand.line2':'سويسرا',
+    'nav.home':'الرئيسية','nav.menu':'القائمة','nav.drinks':'المشروبات','nav.dietary':'النظام الغذائي','nav.premium':'سويت','nav.feedback':'الملاحظات','nav.about':'مصادرنا',
+    'home.eyebrow':'زيورخ · جنيف · بازل','home.welcome':'أهلاً بك في لحظة هدوء قبل رحلتك.',
+    'home.subtitle':'تصفّح قائمة اليوم، اكتشف المكونات السويسرية، وسافر بكل راحة.',
+    'home.cta.menu':'تصفح البوفيه','home.cta.premium':'خدمة السويت',
+    'home.qr.title':'طاولتك، قائمتنا','home.qr.body':'لقد جلست بالفعل. خذ وقتك — يتجدد البوفيه طوال اليوم.',
+    'home.hours':'مفتوح يومياً · 04:30 — 23:00',
+    'menu.title':'بوفيه اليوم','menu.subtitle':'يتجدّد باستمرار من قِبَل طهاتنا',
+    'menu.search':'ابحث عن طبق أو مكوّن…','menu.filters':'تصفية','menu.clear':'مسح',
+    'menu.empty':'لا توجد أطباق مطابقة.','menu.allergens':'يحتوي على','menu.dietary':'مناسب لـ',
+    'menu.hot':'ساخن','menu.cold':'بارد','menu.temperature':'الحرارة',
+    'menu.local':'مصدر سويسري','menu.international':'دولي',
+    'menu.chefnote':'ملاحظة الشيف','menu.order':'اطلب إلى الطاولة','menu.viewdetails':'التفاصيل','menu.close':'إغلاق',
+    'cat.starters':'المقبلات','cat.mains':'الأطباق الرئيسية','cat.desserts':'الحلويات','cat.drinks':'المشروبات','cat.premium':'إضافات مميزة',
+    'diet.vegetarian':'نباتي','diet.vegan':'نباتي صرف','diet.gluten-free':'خالٍ من الغلوتين','diet.halal-friendly':'حلال','diet.nut-free':'بدون مكسرات','diet.dairy-free':'خالٍ من الألبان',
+    'allergen.gluten':'غلوتين','allergen.dairy':'ألبان','allergen.nuts':'مكسرات','allergen.shellfish':'محار','allergen.eggs':'بيض','allergen.soy':'صويا','allergen.sesame':'سمسم',
+    'drinks.title':'المشروبات ومحطة المياه','drinks.subtitle':'قهوة وشاي ومياه ألبية وعصائر طازجة.',
+    'drinks.station1.title':'محطة المياه الألبية','drinks.station1.body':'مياه ينابيع سويسرية، نقعات حمضيات وأعشاب.',
+    'drinks.station2.title':'ركن الإسبريسو والشاي','drinks.station2.body':'إسبريسو ومشروبات ساخنة وأعشاب ألبية.',
+    'drinks.station3.title':'عصائر وعافية','drinks.station3.body':'عصائر معصورة على البارد وكومبوتشا.',
+    'dietary.title':'دليل النظام الغذائي والمحسسات','dietary.subtitle':'كل طبق مُعنون بوضوح. اسأل أي مضيف للاستشارة.',
+    'dietary.contact':'في حالة الحساسية الشديدة، أبلغ المضيف وسنرافقك شخصياً.',
+    'premium.eyebrow':'لضيوف صالة السويت','premium.title':'خدمة طاولة هادئة',
+    'premium.subtitle':'كأس شامبانيا، نبيذ أو طبق من الشيف يصلك إلى طاولتك.',
+    'premium.cta':'اطلب إلى الطاولة','premium.estimated':'وقت التحضير المتوقع','premium.minutes':'دقيقة',
+    'premium.status.pending':'بانتظار التأكيد','premium.status.confirmed':'مؤكد','premium.status.preparing':'قيد التحضير','premium.status.ontheway':'في الطريق','premium.status.delivered':'تم التقديم',
+    'premium.order.title':'طلبك','premium.order.empty':'لم تضف عناصر بعد — تصفّح المختارات.',
+    'premium.order.total':'الإجمالي','premium.order.place':'تأكيد الطلب',
+    'premium.order.note':'ملاحظة للفريق (اختياري)','premium.order.notepl':'مثلاً: مقعد 14C، حساسية…',
+    'premium.access':'متاح لضيوف صالة السويت — يتم التحقق من تذكرتك تلقائياً.',
+    'premium.confirm.title':'تم استلام طلبك','premium.confirm.body':'أحد أعضاء فريقنا في طريقه إلى طاولتك.',
+    'premium.confirm.eta':'الوصول المتوقع','premium.confirm.ref':'تأكيد',
+    'about.title':'مكوّنات محلية','about.subtitle':'نتعاون مع مزارعين سويسريين وصانعي أجبان وصيادين ضمن 200 كم.',
+    'about.farmers.title':'مزارعون سويسريون','about.farmers.body':'توصيلات يومية من آرجاو وبرن.',
+    'about.cheese.title':'صانعو الجبن الألبيون','about.cheese.body':'غرويير وإيمنتال وهوبلكيزه يُعتق في كهوف عائلية.',
+    'about.water.title':'مياه الجبال','about.water.body':'مياه ينابيع مرشحة طبيعياً عبر 300 م من الحجر الكلسي.',
+    'about.coffee.title':'محمصو القهوة السويسريون','about.coffee.body':'حبوب طازجة محمصة أسبوعياً.',
+    'feedback.title':'كيف كانت لحظتك معنا؟','feedback.subtitle':'انطباعاتك تصنع تجربة المسافر التالي.',
+    'feedback.overall':'التجربة الكلية','feedback.food':'جودة الطعام','feedback.service':'الخدمة والأجواء',
+    'feedback.comment':'ملاحظة للفريق (اختياري)','feedback.commentpl':'طبق أعجبك أو شيء يمكن تحسينه…',
+    'feedback.submit':'إرسال','feedback.thanks':'شكراً — رحلة آمنة.',
+    'feedback.dishrating':'قيّم طبقاً محدداً','feedback.choose':'اختر طبقاً',
+    'lang.title':'اللغة','help.title':'هل تحتاج مساعدة؟','help.body':'استدع مضيفاً — نحن قريبون.',
+    'help.callstaff':'استدعاء مضيف','help.called':'تم إخطار المضيف.','help.close':'إغلاق',
+    'footer.note':'لحظة هادئة وراقية قبل رحلتك.'
+  }
+};
+
+/* ===========================================================
+   State
+   =========================================================== */
+const STATE = {
+  locale: localStorage.getItem('aspire-locale') || 'en',
+  route: (location.hash || '#home').replace('#',''),
+  search: '',
+  filters: new Set(),
+  temperature: null,
+  filtersOpen: false,
+  order: [],     // [{dish, qty}]
+  orderNote: '',
+  orderStatus: 'idle',
+  orderRef: null,
+};
+
+function t(key) { return (I18N[STATE.locale] && I18N[STATE.locale][key]) || I18N.en[key] || key; }
+function setLocale(code) {
+  STATE.locale = code;
+  localStorage.setItem('aspire-locale', code);
+  document.documentElement.lang = code;
+  document.documentElement.dir = code === 'ar' ? 'rtl' : 'ltr';
+  render();
+}
+
+const NAV_ITEMS = [
+  { href:'menu', key:'nav.menu' },
+  { href:'drinks', key:'nav.drinks' },
+  { href:'dietary', key:'nav.dietary' },
+  { href:'premium', key:'nav.premium' },
+  { href:'about', key:'nav.about' },
+  { href:'feedback', key:'nav.feedback' },
+];
+
+/* ===========================================================
+   Helpers
+   =========================================================== */
+const esc = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const icon = (id, cls='w-4 h-4') => `<svg class="${cls}" aria-hidden="true"><use href="#${id}"/></svg>`;
+
+function image(src, alt, cls='') {
+  return `<div class="relative overflow-hidden bg-ivory-200/60 ${cls}">
+    <div class="absolute inset-0 skeleton"></div>
+    <img src="${esc(src)}" alt="${esc(alt)}" loading="lazy" decoding="async"
+      class="img-fade absolute inset-0 h-full w-full object-cover"
+      onload="this.classList.add('loaded'); this.previousElementSibling && (this.previousElementSibling.style.display='none')" />
+  </div>`;
+}
+
+/* ===========================================================
+   Rendering: Header nav & language menu
+   =========================================================== */
+function renderHeader() {
+  const desk = document.getElementById('desktopNav');
+  const mob = document.getElementById('mobileNavList');
+  desk.innerHTML = NAV_ITEMS.map(n => {
+    const active = STATE.route === n.href;
+    return `<a href="#${n.href}" data-route="${n.href}"
+      class="relative pb-1 transition-colors ${active ? 'text-navy-900' : 'text-navy-500 hover:text-navy-900'}">
+      ${esc(t(n.key))}
+      ${active ? '<span class="absolute left-0 right-0 -bottom-0.5 h-px bg-gold-500"></span>' : ''}
+    </a>`;
+  }).join('');
+  mob.innerHTML = NAV_ITEMS.map(n => {
+    const active = STATE.route === n.href;
+    return `<a href="#${n.href}" data-route="${n.href}"
+      class="py-2 ${active ? 'text-navy-900' : 'text-navy-500'}">${esc(t(n.key))}</a>`;
+  }).join('');
+
+  const langMenu = document.getElementById('langMenu');
+  langMenu.innerHTML = `
+    <div class="px-4 py-2.5 swiss-eyebrow border-b border-ivory-200/60">${esc(t('lang.title'))}</div>
+    <ul>
+      ${LOCALES.map(l => `
+        <li><button data-lang="${l.code}" class="w-full px-4 py-2.5 flex items-center justify-between hover:bg-ivory-100 transition-colors text-[0.9rem]">
+          <span class="flex items-center gap-2">
+            <span class="text-[0.75rem] uppercase tracking-wider text-navy-500 w-6">${l.code}</span>
+            <span>${esc(l.native)}</span>
+          </span>
+          ${l.code === STATE.locale ? `<span class="text-gold-500">${icon('i-check','w-3.5 h-3.5')}</span>` : ''}
+        </button></li>`).join('')}
+    </ul>`;
+  document.getElementById('langCurrent').textContent = STATE.locale.toUpperCase();
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+}
+
+/* ===========================================================
+   Rendering: Pages
+   =========================================================== */
+function pageHome() {
+  return `
+  <section class="relative overflow-hidden">
+    <div class="absolute inset-0 -z-10">
+      ${image('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=2000&q=80','','absolute inset-0 h-full w-full')}
+      <div class="absolute inset-0 bg-gradient-to-b from-ivory-50/40 via-ivory-50/60 to-ivory-50"></div>
+    </div>
+    <div class="mx-auto max-w-6xl px-5 sm:px-8 pt-12 sm:pt-20 pb-16 sm:pb-28">
+      <div class="max-w-2xl anim-up">
+        <div class="swiss-eyebrow">${esc(t('home.eyebrow'))}</div>
+        <h1 class="serif-heading text-4xl sm:text-6xl md:text-7xl mt-3 leading-[1.02]">${esc(t('home.welcome'))}</h1>
+        <p class="mt-5 text-[1.05rem] sm:text-[1.15rem] text-navy-500 max-w-xl leading-relaxed">${esc(t('home.subtitle'))}</p>
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+          <a href="#menu" data-route="menu" class="group inline-flex items-center gap-3 px-7 py-4 rounded-full bg-navy-900 text-ivory-50 uppercase tracking-wider text-[0.78rem] hover:opacity-90 transition-all">
+            ${esc(t('home.cta.menu'))} ${icon('i-arrow','w-4 h-4')}
+          </a>
+          <a href="#premium" data-route="premium" class="inline-flex items-center gap-2 px-7 py-4 rounded-full border border-navy-900/30 text-navy-900 uppercase tracking-wider text-[0.78rem] hover:border-gold-500 transition-colors">
+            ${icon('i-sparkle','w-3.5 h-3.5')} ${esc(t('home.cta.premium'))}
+          </a>
+        </div>
+      </div>
+      <div class="mt-14 sm:mt-20 max-w-md card-glass rounded-3xl p-6 border border-white/60 shadow-soft anim-up">
+        <div class="flex items-start gap-4">
+          <div class="h-12 w-12 rounded-2xl bg-navy-900 text-ivory-50 flex items-center justify-center flex-shrink-0">${icon('i-qr','w-5 h-5')}</div>
+          <div>
+            <div class="swiss-eyebrow">${esc(t('home.qr.title'))}</div>
+            <p class="mt-1.5 text-[0.96rem] text-navy-700 leading-relaxed">${esc(t('home.qr.body'))}</p>
+            <div class="mt-3 text-[0.75rem] uppercase tracking-wider text-gold-600">${esc(t('home.hours'))}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-5 sm:px-8 -mt-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+      ${featureCard('menu','01',t('nav.menu'),'Today’s buffet, refreshed continuously by our chefs.','https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80')}
+      ${featureCard('drinks','02',t('nav.drinks'),'Espresso bar, alpine water and cold-pressed juices.','https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80')}
+      ${featureCard('premium','03',t('nav.premium'),'Discreet table service for Suite Lounge guests.','https://images.unsplash.com/photo-1547595628-c61a29f496f0?auto=format&fit=crop&w=1200&q=80',true)}
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-5 sm:px-8 mt-24">
+    <div class="grid md:grid-cols-2 gap-10 items-center">
+      <div class="anim-up">
+        <div class="swiss-eyebrow inline-flex items-center gap-2">${icon('i-swiss','w-3.5 h-3.5')} About our sourcing</div>
+        <h2 class="serif-heading text-3xl sm:text-5xl mt-3">From Swiss valleys, lakes and farms.</h2>
+        <p class="mt-4 text-navy-500 leading-relaxed">We work with alpine cheesemakers, lake fisheries and family farms within 200 km of the lounge. Local first, world-aware — quietly.</p>
+        <a href="#about" data-route="about" class="mt-5 inline-flex items-center gap-2 text-gold-600 uppercase tracking-wider text-[0.78rem] hover:gap-3 transition-all">
+          ${esc(t('nav.about'))} ${icon('i-arrow','w-3.5 h-3.5')}
+        </a>
+      </div>
+      <div class="relative aspect-[5/4] rounded-3xl overflow-hidden shadow-soft">
+        ${image('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1400&q=80','Swiss alpine pasture','h-full w-full')}
+      </div>
+    </div>
+  </section>`;
+}
+
+function featureCard(href, eyebrow, title, body, img, premium) {
+  return `
+  <a href="#${href}" data-route="${href}" class="group relative rounded-3xl overflow-hidden bg-white border border-ivory-200/60 shadow-soft hover:shadow-lift transition-all duration-300 hover:-translate-y-0.5">
+    <div class="relative aspect-[5/3]">
+      ${image(img,'','h-full w-full')}
+      <div class="absolute inset-0 bg-gradient-to-t from-navy-900/55 via-navy-900/10 to-transparent"></div>
+      ${premium ? `<span class="absolute top-3 right-3 inline-flex items-center gap-1 rounded-full bg-navy-900 text-gold-300 px-2.5 py-1 text-[0.66rem] uppercase tracking-wider">${icon('i-sparkle','w-3 h-3')} Suite</span>` : ''}
+    </div>
+    <div class="p-5">
+      <div class="flex items-baseline justify-between">
+        <span class="swiss-eyebrow">${esc(eyebrow)}</span>
+        ${icon('i-arrow','w-3.5 h-3.5 text-navy-500 group-hover:text-gold-500 transition-colors')}
+      </div>
+      <h3 class="serif-heading text-2xl mt-1.5">${esc(title)}</h3>
+      <p class="mt-2 text-[0.9rem] text-navy-500 leading-relaxed">${esc(body)}</p>
+    </div>
+  </a>`;
+}
+
+/* Menu */
+function dishesFiltered() {
+  const q = STATE.search.trim().toLowerCase();
+  return DISHES.filter(d => {
+    if (STATE.filters.size && ![...STATE.filters].every(f => d.dietary.includes(f))) return false;
+    if (STATE.temperature && d.temperature !== STATE.temperature) return false;
+    if (!q) return true;
+    return d.name.toLowerCase().includes(q) || d.description.toLowerCase().includes(q);
+  });
+}
+
+function pageMenu() {
+  const activeCount = STATE.filters.size + (STATE.temperature ? 1 : 0);
+  const filterPanel = STATE.filtersOpen ? `
+    <div class="mt-3 p-5 rounded-3xl bg-white border border-ivory-200/60 anim-up">
+      <div class="flex items-center justify-between mb-3">
+        <div class="swiss-eyebrow">${esc(t('menu.dietary'))}</div>
+        ${activeCount ? `<button id="clearFilters" class="text-[0.72rem] uppercase tracking-wider text-navy-500 inline-flex items-center gap-1 hover:text-navy-900">${icon('i-x','w-3 h-3')} ${esc(t('menu.clear'))}</button>` : ''}
+      </div>
+      <div class="flex flex-wrap gap-2">
+        ${DIETARY.map(f => {
+          const on = STATE.filters.has(f);
+          return `<button data-filter="${f}" class="inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[0.8rem] transition-colors border ${on ? 'bg-sage-500 text-white border-sage-500' : 'bg-ivory-100 text-navy-700 border-ivory-200 hover:border-sage-500/50'}">
+            ${icon('d-'+f,'w-3.5 h-3.5')} ${esc(t('diet.'+f))}
+          </button>`;
+        }).join('')}
+      </div>
+      <div class="mt-5 pt-5 border-t border-ivory-200/60">
+        <div class="swiss-eyebrow mb-3">${esc(t('menu.temperature'))}</div>
+        <div class="flex flex-wrap gap-2">
+          ${['hot','cold'].map(temp => {
+            const on = STATE.temperature === temp;
+            const onColor = temp === 'hot' ? 'bg-[#C0481E]' : 'bg-[#2E7BB8]';
+            return `<button data-temp="${temp}" class="inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[0.8rem] transition-colors border ${on ? `${onColor} text-white border-transparent` : 'bg-ivory-100 text-navy-700 border-ivory-200'}">
+              ${icon(temp === 'hot' ? 'i-flame' : 'i-snow','w-3.5 h-3.5')} ${esc(t('menu.'+temp))}
+            </button>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>` : '';
+
+  const filtered = dishesFiltered();
+  const grouped = {};
+  CATEGORIES.forEach(c => grouped[c.id] = []);
+  filtered.forEach(d => grouped[d.category].push(d));
+
+  const sections = CATEGORIES.map(cat => {
+    const list = grouped[cat.id];
+    if (!list.length && activeCount === 0 && !STATE.search) return '';
+    return `
+    <section id="cat-${cat.id}" class="scroll-mt-32">
+      <div class="flex items-end justify-between mb-5">
+        <div>
+          <div class="swiss-eyebrow">— ${esc(t('menu.subtitle'))}</div>
+          <h2 class="serif-heading text-3xl sm:text-4xl mt-1.5">${esc(t(cat.labelKey))}</h2>
+        </div>
+        <span class="text-[0.75rem] tracking-wider text-navy-500/70">${list.length} ${list.length === 1 ? 'dish' : 'dishes'}</span>
+      </div>
+      ${list.length === 0
+        ? `<div class="rounded-3xl border border-dashed border-ivory-200 p-10 text-center text-navy-500">${esc(t('menu.empty'))}</div>`
+        : `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">${list.map(dishCard).join('')}</div>`}
+    </section>`;
+  }).join('');
+
+  return `
+  <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-10 pb-6">
+    <div class="swiss-eyebrow">— ${esc(t('menu.subtitle'))}</div>
+    <h1 class="serif-heading text-4xl sm:text-5xl mt-2">${esc(t('menu.title'))}</h1>
+  </section>
+
+  <div class="mx-auto max-w-6xl px-5 sm:px-8">
+    <div class="flex flex-col sm:flex-row gap-3">
+      <div class="relative flex-1">
+        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-navy-500">${icon('i-search','w-4 h-4')}</span>
+        <input id="searchInput" type="search" value="${esc(STATE.search)}" placeholder="${esc(t('menu.search'))}"
+          class="lounge-input w-full h-12 pl-11 pr-4 rounded-full bg-white border border-ivory-200 text-[0.95rem]" />
+      </div>
+      <button id="toggleFilters" class="h-12 px-5 rounded-full border flex items-center gap-2 uppercase tracking-wider text-[0.72rem] transition-colors ${activeCount || STATE.filtersOpen ? 'bg-navy-900 text-ivory-50 border-navy-900' : 'border-ivory-200'}">
+        ${icon('i-sliders','w-3.5 h-3.5')} ${esc(t('menu.filters'))}
+        ${activeCount ? `<span class="ml-1 h-5 min-w-5 px-1.5 rounded-full bg-gold-400 text-navy-900 text-[0.65rem] flex items-center justify-center">${activeCount}</span>` : ''}
+      </button>
+    </div>
+    ${filterPanel}
+  </div>
+
+  <div class="sticky top-[57px] z-30 mt-5 bg-ivory-50/85 backdrop-blur-md border-b border-ivory-200/60">
+    <div class="mx-auto max-w-6xl px-5 sm:px-8">
+      <div class="flex gap-1 overflow-x-auto scrollbar-hide py-3 -mx-2 px-2">
+        ${CATEGORIES.map(c => `
+          <button data-jump="cat-${c.id}" class="whitespace-nowrap px-4 py-2 rounded-full text-[0.78rem] uppercase tracking-wider transition-all text-navy-500 hover:text-navy-900">
+            ${esc(t(c.labelKey))}
+          </button>`).join('')}
+      </div>
+    </div>
+  </div>
+
+  <div class="mx-auto max-w-6xl px-5 sm:px-8 py-8 space-y-14">${sections}</div>`;
+}
+
+function dishCard(d) {
+  return `
+  <button data-dish="${d.id}" class="dish-card group text-left bg-white/80 backdrop-blur-sm rounded-3xl overflow-hidden border border-ivory-200/60 shadow-soft hover:shadow-lift focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 anim-up w-full">
+    <div class="relative aspect-[4/3]">
+      ${image(d.image, d.name, 'h-full w-full')}
+      <div class="absolute inset-0 bg-gradient-to-t from-navy-900/40 via-transparent to-transparent"></div>
+      <div class="absolute top-3 left-3 flex items-center gap-2">
+        ${d.source === 'local'
+          ? `<span class="inline-flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-[0.66rem] uppercase tracking-wider text-navy-900">${icon('i-swiss','w-3 h-3')} ${esc(t('menu.local'))}</span>`
+          : `<span class="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-2.5 py-1 text-[0.66rem] uppercase tracking-wider text-navy-500">${icon('i-globe','w-3 h-3')} ${esc(t('menu.international'))}</span>`}
+      </div>
+      <div class="absolute top-3 right-3 flex items-center gap-1.5">
+        ${d.premium ? `<span class="inline-flex items-center gap-1 rounded-full bg-navy-900 text-gold-300 px-2.5 py-1 text-[0.66rem] uppercase tracking-wider">${icon('i-sparkle','w-3 h-3')} Suite</span>` : ''}
+        <span class="h-7 w-7 rounded-full flex items-center justify-center bg-white/90 ${d.temperature === 'hot' ? 'text-[#C0481E]' : 'text-[#2E7BB8]'}" title="${esc(t('menu.'+d.temperature))}">
+          ${icon(d.temperature === 'hot' ? 'i-flame' : 'i-snow','w-3.5 h-3.5')}
+        </span>
+      </div>
+    </div>
+    <div class="p-5">
+      <div class="flex items-start justify-between gap-3">
+        <h3 class="serif-heading text-[1.3rem] leading-tight">${esc(d.name)}</h3>
+        ${d.price ? `<span class="text-[0.75rem] tracking-wider text-gold-600 whitespace-nowrap pt-1">${esc(d.price)}</span>` : ''}
+      </div>
+      <p class="mt-2 text-[0.88rem] text-navy-500 leading-relaxed line-clamp-2">${esc(d.description)}</p>
+      <div class="mt-4 flex items-center justify-between">
+        <div class="flex items-center gap-1.5 text-navy-500">
+          ${d.dietary.slice(0,3).map(f => `<span class="h-7 w-7 rounded-full bg-ivory-100 flex items-center justify-center" title="${esc(t('diet.'+f))}">${icon('d-'+f,'w-3.5 h-3.5')}</span>`).join('')}
+          ${d.allergens.length ? `<span class="ml-1 inline-flex items-center gap-1 text-[0.65rem] uppercase tracking-wider text-navy-500/70">
+            <span class="hidden sm:inline">${esc(t('menu.allergens'))}</span>
+            ${d.allergens.slice(0,3).map(a => icon('a-'+a,'w-3.5 h-3.5 opacity-70')).join('')}
+          </span>` : ''}
+        </div>
+        <span class="inline-flex items-center gap-1 text-[0.7rem] uppercase tracking-wider text-gold-600 opacity-0 group-hover:opacity-100 transition-opacity">${esc(t('menu.viewdetails'))} ${icon('i-arrow','w-3 h-3')}</span>
+      </div>
+    </div>
+  </button>`;
+}
+
+function pageDrinks() {
+  const stations = [
+    { key:'station1', img:'https://images.unsplash.com/photo-1523362628745-0c100150b504?auto=format&fit=crop&w=1400&q=80' },
+    { key:'station2', img:'https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?auto=format&fit=crop&w=1400&q=80' },
+    { key:'station3', img:'https://images.unsplash.com/photo-1600271886742-f049cd451bba?auto=format&fit=crop&w=1400&q=80' },
+  ];
+  return `
+  <div class="mx-auto max-w-6xl px-5 sm:px-8 pt-10 pb-16">
+    <div class="swiss-eyebrow">— Aspire</div>
+    <h1 class="serif-heading text-4xl sm:text-5xl mt-2">${esc(t('drinks.title'))}</h1>
+    <p class="mt-3 text-navy-500 max-w-2xl leading-relaxed">${esc(t('drinks.subtitle'))}</p>
+    <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+      ${stations.map((s,i)=>`
+        <div class="rounded-3xl overflow-hidden bg-white border border-ivory-200/60 shadow-soft anim-up" style="animation-delay:${i*80}ms">
+          <div class="relative aspect-[4/3]">${image(s.img,'','h-full w-full')}</div>
+          <div class="p-6">
+            <div class="swiss-eyebrow">0${i+1}</div>
+            <h3 class="serif-heading text-2xl mt-1.5">${esc(t('drinks.'+s.key+'.title'))}</h3>
+            <p class="mt-2 text-[0.92rem] text-navy-500 leading-relaxed">${esc(t('drinks.'+s.key+'.body'))}</p>
+          </div>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function pageDietary() {
+  return `
+  <div class="mx-auto max-w-5xl px-5 sm:px-8 pt-10 pb-16">
+    <div class="swiss-eyebrow">— Aspire</div>
+    <h1 class="serif-heading text-4xl sm:text-5xl mt-2">${esc(t('dietary.title'))}</h1>
+    <p class="mt-3 text-navy-500 max-w-2xl leading-relaxed">${esc(t('dietary.subtitle'))}</p>
+
+    <section class="mt-10">
+      <h2 class="swiss-eyebrow mb-4">${esc(t('menu.dietary'))}</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+        ${DIETARY.map(d=>`
+          <div class="flex items-center gap-3 p-4 rounded-2xl bg-white border border-ivory-200/60">
+            <div class="h-10 w-10 rounded-full bg-sage-500/15 text-sage-500 flex items-center justify-center">${icon('d-'+d,'w-5 h-5')}</div>
+            <div class="text-[0.9rem]">${esc(t('diet.'+d))}</div>
+          </div>`).join('')}
+      </div>
+    </section>
+
+    <section class="mt-12">
+      <h2 class="swiss-eyebrow mb-4">${esc(t('menu.allergens'))}</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+        ${ALLERGENS.map(a=>`
+          <div class="flex items-center gap-3 p-4 rounded-2xl bg-white border border-ivory-200/60">
+            <div class="h-10 w-10 rounded-full bg-ivory-200/60 text-navy-700 flex items-center justify-center">${icon('a-'+a,'w-5 h-5')}</div>
+            <div class="text-[0.9rem]">${esc(t('allergen.'+a))}</div>
+          </div>`).join('')}
+      </div>
+    </section>
+
+    <section class="mt-12 rounded-3xl border border-gold-500/30 bg-gold-500/5 p-6 sm:p-8">
+      <div class="swiss-eyebrow">— important</div>
+      <p class="mt-2 text-[0.98rem] leading-relaxed text-navy-700">${esc(t('dietary.contact'))}</p>
+    </section>
+  </div>`;
+}
+
+/* Premium / order */
+const STATUS_ORDER = ['pending','confirmed','preparing','ontheway','delivered'];
+
+function etaMinutes() {
+  return Math.min(22, 6 + STATE.order.reduce((a,i)=>a + i.qty*2, 0));
+}
+
+function orderAdd(id) {
+  const dish = DISHES.find(d => d.id === id);
+  if (!dish) return;
+  const cur = STATE.order.find(i => i.dish.id === id);
+  if (cur) cur.qty++; else STATE.order.push({ dish, qty: 1 });
+  renderMain();
+}
+function orderRemove(id) {
+  const idx = STATE.order.findIndex(i => i.dish.id === id);
+  if (idx < 0) return;
+  if (STATE.order[idx].qty > 1) STATE.order[idx].qty--;
+  else STATE.order.splice(idx,1);
+  renderMain();
+}
+function orderClear() { STATE.order = []; renderMain(); }
+function orderPlace() {
+  if (!STATE.order.length) return;
+  STATE.orderRef = 'ASP-' + Math.random().toString(36).slice(2,7).toUpperCase();
+  STATE.orderStatus = 'pending';
+  showConfirmModal();
+  const steps = ['confirmed','preparing','ontheway','delivered'];
+  const delays = [900,2400,5200,8200];
+  steps.forEach((s,i)=>{
+    setTimeout(()=>{
+      STATE.orderStatus = s;
+      renderMain();
+      const modal = document.getElementById('confirmModal');
+      if (modal) showConfirmModal();
+    }, delays[i]);
+  });
+  renderMain();
+}
+
+function pagePremium() {
+  const premiumDishes = DISHES.filter(d => d.premium);
+  const totalCount = STATE.order.reduce((a,i)=>a+i.qty,0);
+  const totalLabel = totalCount + (totalCount === 1 ? ' item' : ' items');
+
+  return `
+  <div class="mx-auto max-w-6xl px-5 sm:px-8 pt-10 pb-16">
+    <div class="flex items-center gap-2">
+      <span class="text-gold-500">${icon('i-sparkle','w-4 h-4')}</span>
+      <span class="swiss-eyebrow text-gold-600">${esc(t('premium.eyebrow'))}</span>
+    </div>
+    <h1 class="serif-heading text-4xl sm:text-5xl mt-2">${esc(t('premium.title'))}</h1>
+    <p class="mt-3 text-navy-500 max-w-2xl leading-relaxed">${esc(t('premium.subtitle'))}</p>
+    <div class="mt-4 text-[0.78rem] uppercase tracking-wider text-gold-600">${esc(t('premium.access'))}</div>
+
+    <div class="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-5">
+        ${premiumDishes.map(d => {
+          const inOrder = STATE.order.find(i => i.dish.id === d.id);
+          return `
+          <div class="rounded-3xl overflow-hidden bg-white border border-ivory-200/60 shadow-soft">
+            <div class="relative aspect-[5/3]">
+              ${image(d.image,d.name,'h-full w-full')}
+              <span class="absolute top-3 right-3 inline-flex items-center gap-1 rounded-full bg-navy-900 text-gold-300 px-2.5 py-1 text-[0.66rem] uppercase tracking-wider">${icon('i-sparkle','w-3 h-3')} Suite</span>
+            </div>
+            <div class="p-5">
+              <div class="flex items-start justify-between gap-3">
+                <h3 class="serif-heading text-xl leading-tight">${esc(d.name)}</h3>
+                <span class="text-[0.8rem] tracking-wider text-gold-600 whitespace-nowrap pt-1">${esc(d.price)}</span>
+              </div>
+              <p class="mt-2 text-[0.85rem] text-navy-500 leading-relaxed line-clamp-2">${esc(d.description)}</p>
+              <div class="mt-4">
+                ${inOrder ? `
+                  <div class="inline-flex items-center gap-3 rounded-full border border-navy-900/15 px-2 py-1.5">
+                    <button data-rm="${d.id}" class="h-7 w-7 rounded-full bg-ivory-100 flex items-center justify-center">${icon('i-minus','w-3.5 h-3.5')}</button>
+                    <span class="w-4 text-center text-[0.9rem]">${inOrder.qty}</span>
+                    <button data-add="${d.id}" class="h-7 w-7 rounded-full bg-navy-900 text-ivory-50 flex items-center justify-center">${icon('i-plus','w-3.5 h-3.5')}</button>
+                  </div>` : `
+                  <button data-add="${d.id}" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-navy-900/20 text-[0.78rem] uppercase tracking-wider hover:border-gold-500 transition-colors">
+                    ${icon('i-plus','w-3.5 h-3.5')} ${esc(t('premium.cta'))}
+                  </button>`}
+              </div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+
+      <aside class="lg:sticky lg:top-32 self-start">
+        <div class="rounded-3xl bg-navy-900 text-ivory-50 p-6 shadow-lift">
+          <div class="flex items-center justify-between">
+            <div class="swiss-eyebrow text-gold-300">${esc(t('premium.order.title'))}</div>
+            ${STATE.order.length ? `<button id="orderClear" class="text-[0.7rem] uppercase tracking-wider text-ivory-50/70 hover:text-ivory-50 inline-flex items-center gap-1">${icon('i-x','w-3 h-3')} ${esc(t('menu.clear'))}</button>` : ''}
+          </div>
+          ${STATE.order.length === 0 ? `<p class="mt-4 text-[0.92rem] text-ivory-100/80 leading-relaxed">${esc(t('premium.order.empty'))}</p>` : `
+            <ul class="mt-4 divide-y divide-ivory-50/10">
+              ${STATE.order.map(i=>`
+                <li class="py-3 flex items-center justify-between gap-3">
+                  <div>
+                    <div class="text-[0.95rem]">${esc(i.dish.name)}</div>
+                    <div class="text-[0.72rem] tracking-wider text-gold-300/80">${esc(i.dish.price)} · ×${i.qty}</div>
+                  </div>
+                  <button data-rm="${i.dish.id}" class="h-7 w-7 rounded-full bg-ivory-50/10 flex items-center justify-center hover:bg-ivory-50/20">${icon('i-minus','w-3 h-3')}</button>
+                </li>`).join('')}
+            </ul>`}
+
+          <div class="mt-4">
+            <label class="swiss-eyebrow text-gold-300 block mb-2">${esc(t('premium.order.note'))}</label>
+            <textarea id="orderNote" rows="2" placeholder="${esc(t('premium.order.notepl'))}" class="lounge-input w-full rounded-2xl bg-ivory-50/5 border border-ivory-50/15 px-4 py-3 text-[0.9rem] focus:bg-ivory-50/10">${esc(STATE.orderNote)}</textarea>
+          </div>
+
+          <div class="mt-5 flex items-center justify-between text-[0.8rem] tracking-wider text-ivory-100/80">
+            <span>${esc(t('premium.order.total'))}</span><span>${esc(totalLabel)}</span>
+          </div>
+
+          <button id="orderPlace" ${STATE.order.length === 0 ? 'disabled' : ''} class="mt-4 w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-full bg-gold-500 text-navy-900 uppercase tracking-wider text-[0.78rem] hover:bg-gold-400 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+            ${esc(t('premium.order.place'))} ${icon('i-arrow','w-3.5 h-3.5')}
+          </button>
+
+          ${STATE.orderStatus !== 'idle' ? `
+            <div class="mt-5">
+              <div class="text-[0.72rem] uppercase tracking-wider text-gold-300 mb-2">${esc(t('premium.estimated'))} · <span class="text-ivory-50">${etaMinutes()} ${esc(t('premium.minutes'))}</span></div>
+              <ol class="space-y-2">
+                ${STATUS_ORDER.map((s,i)=>{
+                  const idx = STATUS_ORDER.indexOf(STATE.orderStatus);
+                  const done = i <= idx;
+                  return `<li class="flex items-center gap-3">
+                    <span class="h-5 w-5 rounded-full flex items-center justify-center transition-colors ${done ? 'bg-gold-400 text-navy-900' : 'bg-ivory-50/10 text-ivory-100/60'}">
+                      ${done ? icon('i-check','w-3 h-3') : '<span class="h-1.5 w-1.5 rounded-full bg-current"></span>'}
+                    </span>
+                    <span class="text-[0.85rem] ${done ? 'text-ivory-50' : 'text-ivory-100/50'}">${esc(t('premium.status.'+s))}</span>
+                  </li>`;
+                }).join('')}
+              </ol>
+            </div>` : ''}
+        </div>
+      </aside>
+    </div>
+  </div>`;
+}
+
+function pageAbout() {
+  const items = [
+    { key:'farmers', img:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1400&q=80' },
+    { key:'cheese', img:'https://images.unsplash.com/photo-1452195100486-9cc805987862?auto=format&fit=crop&w=1400&q=80' },
+    { key:'water', img:'https://images.unsplash.com/photo-1551776235-dde6d4829808?auto=format&fit=crop&w=1400&q=80' },
+    { key:'coffee', img:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1400&q=80' },
+  ];
+  return `
+  <div class="mx-auto max-w-6xl px-5 sm:px-8 pt-10 pb-16">
+    <div class="swiss-eyebrow inline-flex items-center gap-2">${icon('i-swiss','w-3.5 h-3.5')} Swiss sourcing</div>
+    <h1 class="serif-heading text-4xl sm:text-5xl mt-2">${esc(t('about.title'))}</h1>
+    <p class="mt-3 text-navy-500 max-w-2xl leading-relaxed">${esc(t('about.subtitle'))}</p>
+    <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+      ${items.map((it,i)=>`
+        <article class="rounded-3xl overflow-hidden bg-white border border-ivory-200/60 shadow-soft anim-up" style="animation-delay:${i*80}ms">
+          <div class="relative aspect-[5/3]">${image(it.img,'','h-full w-full')}</div>
+          <div class="p-6">
+            <div class="swiss-eyebrow">0${i+1}</div>
+            <h3 class="serif-heading text-2xl mt-1.5">${esc(t('about.'+it.key+'.title'))}</h3>
+            <p class="mt-2 text-[0.92rem] text-navy-500 leading-relaxed">${esc(t('about.'+it.key+'.body'))}</p>
+          </div>
+        </article>`).join('')}
+    </div>
+  </div>`;
+}
+
+function pageFeedback() {
+  return `
+  <div class="mx-auto max-w-2xl px-5 sm:px-8 pt-10 pb-16">
+    <div class="swiss-eyebrow">— Aspire</div>
+    <h1 class="serif-heading text-4xl sm:text-5xl mt-2">${esc(t('feedback.title'))}</h1>
+    <p class="mt-3 text-navy-500 leading-relaxed">${esc(t('feedback.subtitle'))}</p>
+    <form id="feedbackForm" class="mt-10 space-y-8">
+      ${ratingRow('overall',t('feedback.overall'))}
+      ${ratingRow('food',t('feedback.food'))}
+      ${ratingRow('service',t('feedback.service'))}
+      <div>
+        <label class="swiss-eyebrow block mb-3">${esc(t('feedback.dishrating'))}</label>
+        <div class="grid grid-cols-1 sm:grid-cols-[2fr_1fr] gap-3">
+          <select id="dishSelect" class="lounge-input h-12 px-4 rounded-full bg-white border border-ivory-200 text-[0.95rem]">
+            <option value="">${esc(t('feedback.choose'))}</option>
+            ${DISHES.map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('')}
+          </select>
+          <div class="h-12 px-4 rounded-full bg-white border border-ivory-200 flex items-center justify-center">${stars('dish')}</div>
+        </div>
+      </div>
+      <div>
+        <label class="swiss-eyebrow block mb-3">${esc(t('feedback.comment'))}</label>
+        <textarea rows="4" placeholder="${esc(t('feedback.commentpl'))}" class="lounge-input w-full rounded-3xl bg-white border border-ivory-200 px-4 py-3 text-[0.95rem]"></textarea>
+      </div>
+      <button type="submit" class="w-full inline-flex items-center justify-center gap-2 py-4 rounded-full bg-navy-900 text-ivory-50 uppercase tracking-wider text-[0.78rem] hover:opacity-90 transition-opacity">${esc(t('feedback.submit'))}</button>
+    </form>
+  </div>`;
+}
+
+function ratingRow(name, label) {
+  return `<div class="flex items-center justify-between gap-4">
+    <div class="text-[0.95rem]">${esc(label)}</div>
+    ${stars(name)}
+  </div>`;
+}
+function stars(name) {
+  return `<div class="flex items-center gap-1" data-stars="${name}">
+    ${[1,2,3,4,5].map(n=>`<button type="button" data-star="${n}" class="p-1 hover:scale-110 active:scale-100 transition-transform" aria-label="${n} stars">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 3l2.7 5.7 6.3.9-4.6 4.4 1.1 6.3L12 17.8 6.5 20.3l1.1-6.3L3 9.6l6.3-.9L12 3z"/></svg>
+    </button>`).join('')}
+  </div>`;
+}
+
+/* Dish detail modal */
+function showDishModal(id) {
+  const d = DISHES.find(x => x.id === id);
+  if (!d) return;
+  document.body.style.overflow = 'hidden';
+  document.getElementById('modalHost').innerHTML = `
+  <div id="dishModal" class="fixed inset-0 z-50 modal-bg flex items-end sm:items-center justify-center anim-fade" data-close>
+    <div class="w-full max-w-2xl bg-ivory-50 rounded-t-3xl sm:rounded-3xl shadow-lift overflow-hidden sm:m-5 max-h-[92vh] flex flex-col anim-up">
+      <div class="relative aspect-[16/10] flex-shrink-0">
+        ${image(d.image,d.name,'h-full w-full')}
+        <button data-close class="absolute top-4 right-4 h-10 w-10 rounded-full bg-white/90 flex items-center justify-center shadow-soft" aria-label="${esc(t('menu.close'))}">${icon('i-x','w-4 h-4')}</button>
+        <div class="absolute bottom-4 left-4 flex flex-wrap items-center gap-2">
+          <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[0.66rem] uppercase tracking-wider bg-white ${d.temperature === 'hot' ? 'text-[#C0481E]' : 'text-[#2E7BB8]'}">
+            ${icon(d.temperature === 'hot' ? 'i-flame' : 'i-snow','w-3 h-3')} ${esc(t('menu.'+d.temperature))}
+          </span>
+          ${d.source === 'local'
+            ? `<span class="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-2.5 py-1 text-[0.66rem] uppercase tracking-wider text-navy-900">${icon('i-swiss','w-3 h-3')} ${esc(t('menu.local'))}</span>`
+            : `<span class="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-2.5 py-1 text-[0.66rem] uppercase tracking-wider text-navy-500">${icon('i-globe','w-3 h-3')} ${esc(t('menu.international'))}</span>`}
+          ${d.premium ? `<span class="inline-flex items-center gap-1 rounded-full bg-navy-900 text-gold-300 px-2.5 py-1 text-[0.66rem] uppercase tracking-wider">${icon('i-sparkle','w-3 h-3')} Suite</span>` : ''}
+        </div>
+      </div>
+      <div class="p-6 overflow-y-auto">
+        <div class="flex items-start justify-between gap-3">
+          <h2 class="serif-heading text-3xl">${esc(d.name)}</h2>
+          ${d.price ? `<span class="text-[0.95rem] tracking-wider text-gold-600">${esc(d.price)}</span>` : ''}
+        </div>
+        <p class="mt-3 text-[0.96rem] text-navy-500 leading-relaxed">${esc(d.description)}</p>
+        ${d.chefNote ? `<div class="mt-5 rounded-2xl border border-gold-500/30 bg-gold-500/5 p-4">
+          <div class="swiss-eyebrow mb-1.5">${esc(t('menu.chefnote'))}</div>
+          <p class="text-[0.9rem] italic text-navy-700 leading-relaxed">${esc(d.chefNote)}</p>
+        </div>` : ''}
+        ${d.dietary.length ? `<div class="mt-5">
+          <div class="swiss-eyebrow mb-2">${esc(t('menu.dietary'))}</div>
+          <div class="flex flex-wrap gap-2">
+            ${d.dietary.map(x=>`<span class="inline-flex items-center gap-1.5 rounded-full bg-sage-500/10 text-sage-500 px-3 py-1.5 text-[0.78rem]">${icon('d-'+x,'w-3.5 h-3.5')} ${esc(t('diet.'+x))}</span>`).join('')}
+          </div>
+        </div>` : ''}
+        ${d.allergens.length ? `<div class="mt-5">
+          <div class="swiss-eyebrow mb-2">${esc(t('menu.allergens'))}</div>
+          <div class="flex flex-wrap gap-2">
+            ${d.allergens.map(a=>`<span class="inline-flex items-center gap-1.5 rounded-full bg-ivory-200/60 px-3 py-1.5 text-[0.78rem] text-navy-700">${icon('a-'+a,'w-3.5 h-3.5')} ${esc(t('allergen.'+a))}</span>`).join('')}
+          </div>
+        </div>` : ''}
+        ${d.premium ? `<button data-add="${d.id}" data-then-close class="mt-6 w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-full bg-navy-900 text-ivory-50 uppercase tracking-wider text-[0.78rem] hover:opacity-90 transition-opacity">${icon('i-plus','w-3.5 h-3.5')} ${esc(t('menu.order'))}</button>` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+
+function showHelpModal() {
+  document.body.style.overflow = 'hidden';
+  document.getElementById('modalHost').innerHTML = `
+  <div id="helpModal" class="fixed inset-0 z-50 modal-bg flex items-end sm:items-center justify-center anim-fade" data-close>
+    <div class="w-full max-w-md bg-white rounded-t-3xl sm:rounded-3xl shadow-lift overflow-hidden sm:m-5 anim-up">
+      <div class="flex items-start justify-between p-5">
+        <div>
+          <div class="swiss-eyebrow">${esc(t('home.qr.title'))}</div>
+          <h3 class="serif-heading text-2xl mt-1">${esc(t('help.title'))}</h3>
+        </div>
+        <button data-close class="h-9 w-9 rounded-full border border-ivory-200 flex items-center justify-center">${icon('i-x','w-3.5 h-3.5')}</button>
+      </div>
+      <p class="px-5 text-[0.95rem] text-navy-500 leading-relaxed">${esc(t('help.body'))}</p>
+      <div class="p-5">
+        <button id="callHost" class="w-full flex items-center justify-center gap-2 py-3.5 rounded-full bg-navy-900 text-ivory-50 uppercase tracking-wider text-[0.78rem] hover:opacity-90 transition-opacity">
+          ${icon('i-bell','w-3.5 h-3.5')} ${esc(t('help.callstaff'))}
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function showConfirmModal() {
+  document.body.style.overflow = 'hidden';
+  const idx = STATUS_ORDER.indexOf(STATE.orderStatus);
+  document.getElementById('modalHost').innerHTML = `
+  <div id="confirmModal" class="fixed inset-0 z-50 modal-bg flex items-end sm:items-center justify-center anim-fade" data-close>
+    <div class="w-full max-w-md bg-white rounded-t-3xl sm:rounded-3xl shadow-lift overflow-hidden sm:m-5 anim-up">
+      <div class="p-7 text-center">
+        <div class="mx-auto h-14 w-14 rounded-full bg-gold-500/15 text-gold-600 flex items-center justify-center">${icon('i-check','w-7 h-7')}</div>
+        <div class="swiss-eyebrow mt-4">${esc(t('premium.confirm.ref'))}</div>
+        <div class="serif-heading text-3xl mt-1">${esc(STATE.orderRef || '')}</div>
+        <h3 class="serif-heading text-2xl mt-4">${esc(t('premium.confirm.title'))}</h3>
+        <p class="mt-2 text-[0.95rem] text-navy-500 leading-relaxed">${esc(t('premium.confirm.body'))}</p>
+        <div class="mt-4 inline-flex items-center gap-2 rounded-full bg-ivory-100 px-4 py-2 text-[0.8rem] tracking-wider">
+          ${esc(t('premium.confirm.eta'))} · <span class="text-gold-600">${etaMinutes()} ${esc(t('premium.minutes'))}</span>
+        </div>
+        <div class="mt-5 text-left">
+          <div class="swiss-eyebrow mb-2">${esc(t('premium.status.'+STATE.orderStatus))}</div>
+          <div class="h-1.5 rounded-full bg-ivory-200 overflow-hidden">
+            <div class="h-full bg-gold-500 transition-all duration-700" style="width:${((idx+1)/STATUS_ORDER.length)*100}%"></div>
+          </div>
+        </div>
+      </div>
+      <button data-close class="w-full py-4 border-t border-ivory-200/60 uppercase tracking-wider text-[0.78rem]">${esc(t('menu.close'))}</button>
+    </div>
+  </div>`;
+}
+
+function closeModals() {
+  document.getElementById('modalHost').innerHTML = '';
+  document.body.style.overflow = '';
+}
+
+/* ===========================================================
+   Routing & main render
+   =========================================================== */
+function renderMain() {
+  const m = document.getElementById('main');
+  let html = '';
+  switch (STATE.route) {
+    case 'menu':     html = pageMenu(); break;
+    case 'drinks':   html = pageDrinks(); break;
+    case 'dietary':  html = pageDietary(); break;
+    case 'premium':  html = pagePremium(); break;
+    case 'about':    html = pageAbout(); break;
+    case 'feedback': html = pageFeedback(); break;
+    default:         html = pageHome();
+  }
+  m.innerHTML = `<div class="page">${html}</div>`;
+  attachPageEvents();
+}
+
+function render() {
+  renderHeader();
+  renderMain();
+}
+
+function attachPageEvents() {
+  // Dish open
+  document.querySelectorAll('[data-dish]').forEach(b => b.addEventListener('click', e => {
+    showDishModal(b.getAttribute('data-dish'));
+  }));
+  // Premium add/remove
+  document.querySelectorAll('[data-add]').forEach(b => b.addEventListener('click', () => {
+    orderAdd(b.getAttribute('data-add'));
+    if (b.hasAttribute('data-then-close')) closeModals();
+  }));
+  document.querySelectorAll('[data-rm]').forEach(b => b.addEventListener('click', () => orderRemove(b.getAttribute('data-rm'))));
+  const oc = document.getElementById('orderClear'); if (oc) oc.addEventListener('click', orderClear);
+  const op = document.getElementById('orderPlace'); if (op) op.addEventListener('click', orderPlace);
+  const on = document.getElementById('orderNote'); if (on) on.addEventListener('input', e => STATE.orderNote = e.target.value);
+
+  // Menu filters
+  const si = document.getElementById('searchInput');
+  if (si) si.addEventListener('input', e => { STATE.search = e.target.value; renderMain(); requestAnimationFrame(()=>document.getElementById('searchInput').focus()); });
+  const tf = document.getElementById('toggleFilters');
+  if (tf) tf.addEventListener('click', () => { STATE.filtersOpen = !STATE.filtersOpen; renderMain(); });
+  document.querySelectorAll('[data-filter]').forEach(b => b.addEventListener('click', () => {
+    const f = b.getAttribute('data-filter');
+    if (STATE.filters.has(f)) STATE.filters.delete(f); else STATE.filters.add(f);
+    renderMain();
+  }));
+  document.querySelectorAll('[data-temp]').forEach(b => b.addEventListener('click', () => {
+    const v = b.getAttribute('data-temp');
+    STATE.temperature = STATE.temperature === v ? null : v;
+    renderMain();
+  }));
+  const cf = document.getElementById('clearFilters');
+  if (cf) cf.addEventListener('click', () => { STATE.filters.clear(); STATE.temperature = null; renderMain(); });
+
+  // Category jump
+  document.querySelectorAll('[data-jump]').forEach(b => b.addEventListener('click', () => {
+    const el = document.getElementById(b.getAttribute('data-jump'));
+    if (el) {
+      const top = el.getBoundingClientRect().top + window.scrollY - 110;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+  }));
+
+  // Feedback stars
+  document.querySelectorAll('[data-stars]').forEach(group => {
+    const buttons = group.querySelectorAll('[data-star]');
+    let value = 0;
+    const paint = (v) => buttons.forEach((btn,i) => {
+      const path = btn.querySelector('svg');
+      if (i < v) { path.setAttribute('fill', '#B89855'); path.setAttribute('stroke', '#B89855'); }
+      else { path.setAttribute('fill', 'none'); path.setAttribute('stroke', 'currentColor'); }
+    });
+    buttons.forEach((btn,i) => btn.addEventListener('click', () => { value = i + 1; paint(value); }));
+  });
+  const ff = document.getElementById('feedbackForm');
+  if (ff) ff.addEventListener('submit', (e) => {
+    e.preventDefault();
+    ff.outerHTML = `<div class="text-center anim-up py-10">
+      <div class="mx-auto h-16 w-16 rounded-full bg-gold-500/15 text-gold-600 flex items-center justify-center">${icon('i-check','w-7 h-7')}</div>
+      <h2 class="serif-heading text-3xl mt-5">${esc(t('feedback.thanks'))}</h2>
+      <p class="mt-3 text-navy-500 leading-relaxed">${esc(t('footer.note'))}</p>
+    </div>`;
+  });
+}
+
+/* ===========================================================
+   Global event wiring
+   =========================================================== */
+// Hash routing
+window.addEventListener('hashchange', () => {
+  STATE.route = (location.hash || '#home').replace('#','');
+  STATE.filtersOpen = false;
+  window.scrollTo({ top: 0 });
+  render();
+});
+document.body.addEventListener('click', (e) => {
+  const a = e.target.closest('a[data-route]');
+  if (a) {
+    e.preventDefault();
+    const r = a.getAttribute('data-route');
+    location.hash = '#' + r;
+  }
+});
+
+// Mobile menu
+document.getElementById('mobileBtn').addEventListener('click', () => {
+  document.getElementById('mobileNav').classList.toggle('hidden');
+});
+document.getElementById('mobileNav').addEventListener('click', () => {
+  document.getElementById('mobileNav').classList.add('hidden');
+});
+
+// Language menu
+const langBtn = document.getElementById('langBtn');
+const langMenu = document.getElementById('langMenu');
+langBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  langMenu.classList.toggle('hidden');
+});
+document.addEventListener('click', (e) => {
+  if (!document.getElementById('langWrap').contains(e.target)) langMenu.classList.add('hidden');
+});
+langMenu.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-lang]');
+  if (b) { setLocale(b.getAttribute('data-lang')); langMenu.classList.add('hidden'); }
+});
+
+// Help
+document.getElementById('helpBtn').addEventListener('click', showHelpModal);
+
+// Modal close + call host (delegated)
+document.getElementById('modalHost').addEventListener('click', (e) => {
+  const callBtn = e.target.closest('#callHost');
+  if (callBtn) {
+    callBtn.outerHTML = `
+      <div class="flex items-center justify-center gap-2 py-3.5 rounded-full bg-gold-500/10 text-gold-600 uppercase tracking-wider text-[0.78rem]">
+        ${icon('i-check','w-3.5 h-3.5')} ${esc(t('help.called'))}
+      </div>`;
+    setTimeout(closeModals, 1800);
+    return;
+  }
+  // Close on backdrop click (the outer [data-close] root) or on any explicit close button
+  const isBackdrop = e.target.hasAttribute && e.target.hasAttribute('data-close');
+  const closeBtn = e.target.closest('button[data-close]');
+  if (isBackdrop || closeBtn) closeModals();
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModals(); });
+
+// init
+document.documentElement.lang = STATE.locale;
+document.documentElement.dir = STATE.locale === 'ar' ? 'rtl' : 'ltr';
+render();
+</script>
+</body>
+</html>
