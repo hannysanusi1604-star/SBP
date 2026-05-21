@@ -222,11 +222,6 @@ const DISHES = [
   { id:'panna-cotta', name:'Tropical Fruit Panna Cotta', description:'Vanilla bean panna cotta, passion-fruit coulis, mango, micro basil.', category:'desserts', image:'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'international', dietary:['vegetarian','gluten-free','nut-free'], allergens:['dairy'] },
   { id:'fruit-platter', name:'Seasonal Fruit Platter', description:'Selection of fresh seasonal fruits, mint, lime, edible flowers.', category:'desserts', image:'https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'international', dietary:['vegan','vegetarian','gluten-free','dairy-free','halal-friendly','nut-free'], allergens:[] },
 
-  // Drinks
-  { id:'still-sparkling-water', name:'Alpine Still & Sparkling Water', description:'Naturally filtered Swiss mountain spring water, chilled, with citrus.', category:'drinks', image:'https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'local', dietary:['vegan','vegetarian','gluten-free','dairy-free','halal-friendly','nut-free'], allergens:[] },
-  { id:'espresso-bar', name:'Swiss Espresso Bar', description:'Single-origin espresso, cappuccino, Schümli, herbal & alpine teas.', category:'drinks', image:'https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'local', dietary:['vegan','vegetarian','gluten-free','nut-free'], allergens:['dairy'] },
-  { id:'fresh-juices', name:'Cold-Pressed Juice Selection', description:'Apple-elderflower, beetroot-ginger, orange and seasonal blends.', category:'drinks', image:'https://images.unsplash.com/photo-1600271886742-f049cd451bba?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'local', dietary:['vegan','vegetarian','gluten-free','dairy-free','halal-friendly','nut-free'], allergens:[] },
-  { id:'house-wine', name:'Swiss House Wines', description:'A curated selection of Valais and Vaud reds and whites by the glass.', category:'drinks', image:'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'local', dietary:['vegan','vegetarian','gluten-free','dairy-free','nut-free'], allergens:[] },
 ];
 
 const LOCALES = [
@@ -714,6 +709,21 @@ function pageMenu() {
   filtered.forEach(d => grouped[d.category].push(d));
 
   const sections = CATEGORIES.map(cat => {
+    if (cat.id === 'drinks') {
+      // Dietary/temperature filters don't apply to drinks; show editorial layout, filtered by search only.
+      if (activeCount > 0 && !STATE.search) return '';
+      const inner = renderDrinkSections(STATE.search);
+      if (!inner) return '';
+      return `
+    <section id="cat-${cat.id}" class="scroll-mt-32 pt-10">
+      <div class="mb-10">
+        <h2 class="serif-heading text-3xl sm:text-5xl text-navy-900">${esc(t(cat.labelKey))}</h2>
+        <p class="mt-3 text-navy-500 leading-[1.7] max-w-xl">${esc(t('drinks.subtitle'))}</p>
+      </div>
+      ${inner}
+    </section>`;
+    }
+
     const list = grouped[cat.id];
     if (!list.length && activeCount === 0 && !STATE.search) return '';
     return `
@@ -871,13 +881,19 @@ const DRINK_SECTIONS = [
   },
 ];
 
-function pageDrinks() {
-  const sections = DRINK_SECTIONS.map((s, i) => `
+function renderDrinkSections(query) {
+  const q = (query || '').trim().toLowerCase();
+  return DRINK_SECTIONS.map((s) => {
+    const items = q
+      ? s.items.filter(it => it.name.toLowerCase().includes(q) || it.desc.toLowerCase().includes(q))
+      : s.items;
+    if (!items.length) return '';
+    return `
     <section class="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-center">
       <div class="md:col-span-7 ${s.reverse ? 'md:order-2' : ''}">
         <h2 class="serif-heading text-3xl sm:text-[2.6rem] text-navy-900">${esc(s.title)}</h2>
         <div class="mt-8 space-y-6">
-          ${s.items.map(it => `
+          ${items.map(it => `
             <div>
               <div class="flex items-baseline gap-3">
                 <span class="text-[0.95rem] font-medium text-navy-900 tracking-tight">${esc(it.name)}</span>
@@ -893,9 +909,12 @@ function pageDrinks() {
           ${image(s.img, s.title, 'h-full w-full')}
         </div>
       </div>
-    </section>
-  `).join('<div class="hairline my-16 sm:my-24"></div>');
+    </section>`;
+  }).filter(Boolean).join('<div class="hairline my-16 sm:my-24"></div>');
+}
 
+function pageDrinks() {
+  const sections = renderDrinkSections('');
   return `
   <div class="mx-auto max-w-6xl px-5 sm:px-8 pt-14 sm:pt-20 pb-16">
     <div class="swiss-eyebrow">— Aspire</div>
