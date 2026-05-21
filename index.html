@@ -746,13 +746,12 @@ function pageMenu() {
         ${local.length ? `
           <div class="mt-10">
             ${localSpecialityHeader()}
-            <ul class="mt-6 space-y-1">${local.map(dishRow).join('')}</ul>
+            <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">${local.map(dishCard).join('')}</div>
           </div>` : ''}
-        ${local.length && international.length ? `<div class="hairline my-10 max-w-xl mx-auto"></div>` : ''}
+        ${local.length && international.length ? `<div class="hairline my-14 max-w-xl mx-auto"></div>` : ''}
         ${international.length ? `
-          <div>
-            ${!local.length ? '<div class="h-10"></div>' : ''}
-            <ul class="space-y-1">${international.map(dishRow).join('')}</ul>
+          <div class="${!local.length ? 'mt-10' : ''}">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">${international.map(dishCard).join('')}</div>
           </div>` : ''}
       `}
     </section>`;
@@ -811,23 +810,32 @@ function localSpecialityHeader() {
   </div>`;
 }
 
-function dishRow(d) {
-  const diet = d.dietary.slice(0, 4);
+function dishCard(d) {
   return `
-  <li>
-    <button data-dish="${d.id}" class="group w-full flex items-center gap-4 py-4 border-b border-navy-900/10 text-left hover:bg-navy-900/[0.02] transition-colors">
-      <div class="flex-1 min-w-0">
-        <div class="text-[1rem] sm:text-[1.05rem] text-navy-900 leading-snug">${esc(d.name)}</div>
-        <div class="mt-1 text-[0.78rem] text-navy-500 leading-relaxed line-clamp-1">${esc(d.description)}</div>
-      </div>
-      <div class="flex items-center gap-2 sm:gap-3 text-gold-500 shrink-0">
-        ${diet.map(f => `<span title="${esc(t('diet.'+f))}">${icon('d-'+f,'w-4 h-4 sm:w-[18px] sm:h-[18px]')}</span>`).join('')}
-        <span class="ml-1 sm:ml-2 ${d.temperature === 'hot' ? 'text-[#C0481E]' : 'text-[#2E7BB8]'}" title="${esc(t('menu.'+d.temperature))}">
-          ${icon(d.temperature === 'hot' ? 'i-flame' : 'i-snow','w-3.5 h-3.5')}
+  <button data-dish="${d.id}" class="group text-left focus:outline-none anim-up w-full">
+    <div class="relative aspect-[4/5] overflow-hidden">
+      ${image(d.image, d.name, 'h-full w-full transition-transform duration-700 group-hover:scale-[1.02]')}
+      <div class="absolute top-3 right-3">
+        <span class="inline-flex items-center gap-1 bg-ivory-50/95 px-2 py-1 text-[0.6rem] uppercase tracking-[0.22em] ${d.temperature === 'hot' ? 'text-[#C0481E]' : 'text-[#2E7BB8]'}">
+          ${icon(d.temperature === 'hot' ? 'i-flame' : 'i-snow','w-3 h-3')} ${esc(t('menu.'+d.temperature))}
         </span>
       </div>
-    </button>
-  </li>`;
+    </div>
+    <div class="pt-5">
+      <h3 class="serif-heading text-[1.55rem] leading-tight text-navy-900">${esc(d.name)}</h3>
+      <p class="mt-2 text-[0.9rem] text-navy-500 leading-relaxed line-clamp-2">${esc(d.description)}</p>
+      <div class="mt-4 flex items-center justify-between">
+        <div class="flex items-center gap-2 text-gold-500">
+          ${d.dietary.slice(0,4).map(f => `<span title="${esc(t('diet.'+f))}">${icon('d-'+f,'w-[18px] h-[18px]')}</span>`).join('')}
+          ${d.allergens.length ? `<span class="ml-2 inline-flex items-center gap-1.5 text-[0.62rem] uppercase tracking-[0.22em] text-navy-500/60">
+            <span>${esc(t('menu.allergens'))}</span>
+            ${d.allergens.slice(0,3).map(a => icon('a-'+a,'w-3.5 h-3.5')).join('')}
+          </span>` : ''}
+        </div>
+        <span class="text-[0.65rem] uppercase tracking-[0.22em] text-navy-500 group-hover:text-navy-900 transition-colors inline-flex items-center gap-1">${esc(t('menu.viewdetails'))} ${icon('i-arrow','w-3 h-3')}</span>
+      </div>
+    </div>
+  </button>`;
 }
 
 const DRINK_SECTIONS = [
