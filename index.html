@@ -1281,61 +1281,69 @@ function setupHeroScene() {
   const h = () => canvas.clientHeight;
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(0xFBF9F5, 14, 36);
+  scene.fog = new THREE.Fog(0xFBF9F5, 5, 16);
 
-  const camera = new THREE.PerspectiveCamera(58, w()/h(), 0.1, 100);
-  camera.position.set(0, 3.4, 9.4);
-  camera.lookAt(0, 1, 0);
+  const camera = new THREE.PerspectiveCamera(55, w()/h(), 0.1, 50);
+  camera.position.set(0, 0, 6);
+  camera.lookAt(0, 0, -2);
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
   renderer.setSize(w(), h(), false);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.setClearColor(0xFBF9F5, 1);
 
-  // Gentle alpine contour terrain (foreground)
-  const tGeo = new THREE.PlaneGeometry(70, 35, 90, 45);
-  tGeo.rotateX(-Math.PI / 2);
-  const tPos = tGeo.attributes.position;
-  for (let i = 0; i < tPos.count; i++) {
-    const x = tPos.getX(i), z = tPos.getZ(i);
-    const ridge = Math.sin(x * 0.32) * Math.cos(z * 0.26) * 0.5;
-    const peak  = Math.sin(x * 0.08 + z * 0.11) * 1.1;
-    const noise = Math.sin(x * 1.4 + z * 1.1) * 0.10;
-    tPos.setY(i, ridge + peak + noise);
-  }
-  tGeo.computeVertexNormals();
-  const tMat = new THREE.MeshBasicMaterial({ color: 0x243B5C, wireframe: true, transparent: true, opacity: 0.16 });
-  const terrain = new THREE.Mesh(tGeo, tMat);
-  terrain.position.y = -1.7;
-  scene.add(terrain);
+  // Drifting food still-life — photographs suspended in the lounge atmosphere
+  const FOOD_PLATES = [
+    { url:'https://images.unsplash.com/photo-1631379578550-7038263db699?auto=format&fit=crop&w=900&q=80', pos:[-3.4, 1.6, -3.2], size:[2.4, 3.0], phase:0.0 },
+    { url:'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=900&q=80', pos:[ 3.6, 1.4, -4.2], size:[2.4, 3.0], phase:1.1 },
+    { url:'https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?auto=format&fit=crop&w=900&q=80', pos:[-3.0,-1.8, -3.0], size:[2.2, 2.7], phase:2.3 },
+    { url:'https://images.unsplash.com/photo-1542691457-cbe4df041eb2?auto=format&fit=crop&w=900&q=80', pos:[ 3.1,-1.6, -3.8], size:[2.1, 2.6], phase:3.5 },
+    { url:'https://images.unsplash.com/photo-1541783245831-57d6fb0926d3?auto=format&fit=crop&w=900&q=80', pos:[-1.4, 0.6, -7.0], size:[2.0, 2.5], phase:4.7 },
+    { url:'https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=900&q=80', pos:[ 1.6,-0.4, -7.8], size:[2.0, 2.5], phase:5.9 },
+    { url:'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=900&q=80', pos:[ 0.0, 2.6, -9.2], size:[1.9, 2.4], phase:6.9 },
+    { url:'https://images.unsplash.com/photo-1485921325833-c519f76c4927?auto=format&fit=crop&w=900&q=80', pos:[-4.4, 0.2, -8.6], size:[1.9, 2.4], phase:8.1 },
+  ];
 
-  // Distant gold-accent ridge (far)
-  const rGeo = new THREE.PlaneGeometry(80, 16, 80, 16);
-  rGeo.rotateX(-Math.PI / 2);
-  const rPos = rGeo.attributes.position;
-  for (let i = 0; i < rPos.count; i++) {
-    const x = rPos.getX(i);
-    rPos.setY(i, Math.sin(x * 0.16) * 0.6 + Math.sin(x * 0.06) * 1.1);
-  }
-  rGeo.computeVertexNormals();
-  const rMat = new THREE.MeshBasicMaterial({ color: 0xB89855, wireframe: true, transparent: true, opacity: 0.18 });
-  const ridge = new THREE.Mesh(rGeo, rMat);
-  ridge.position.set(0, -1.4, -16);
-  scene.add(ridge);
+  const loader = new THREE.TextureLoader();
+  loader.setCrossOrigin('anonymous');
+  const plates = [];
 
-  // Champagne dust particles — fewer, softer
-  const N = 380;
+  FOOD_PLATES.forEach(item => {
+    const geo = new THREE.PlaneGeometry(item.size[0], item.size[1]);
+    const mat = new THREE.MeshBasicMaterial({ color: 0xEDE6D6, transparent: true, opacity: 0, fog: true });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(item.pos[0], item.pos[1], item.pos[2]);
+    mesh.rotation.y = (Math.random() - 0.5) * 0.35;
+    scene.add(mesh);
+    plates.push({ mesh, geo, mat, base:[...item.pos], baseRotY: mesh.rotation.y, phase: item.phase, targetOpacity: 0.92 });
+
+    loader.load(
+      item.url,
+      (tex) => {
+        if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
+        tex.anisotropy = renderer.capabilities.getMaxAnisotropy ? renderer.capabilities.getMaxAnisotropy() : 1;
+        mat.map = tex;
+        mat.color = new THREE.Color(0xffffff);
+        mat.needsUpdate = true;
+      },
+      undefined,
+      () => { /* keep the soft cream placeholder if loading fails */ }
+    );
+  });
+
+  // Champagne dust — sparse, soft
+  const N = 180;
   const pPos = new Float32Array(N * 3);
   const pSeed = new Float32Array(N);
   for (let i = 0; i < N; i++) {
-    pPos[i*3]   = (Math.random() - 0.5) * 30;
-    pPos[i*3+1] = Math.random() * 8;
-    pPos[i*3+2] = (Math.random() - 0.5) * 22 - 3;
+    pPos[i*3]   = (Math.random() - 0.5) * 18;
+    pPos[i*3+1] = (Math.random() - 0.5) * 9;
+    pPos[i*3+2] = (Math.random() - 0.5) * 12 - 2;
     pSeed[i]    = Math.random() * Math.PI * 2;
   }
   const pGeo = new THREE.BufferGeometry();
   pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-  const pMat = new THREE.PointsMaterial({ color: 0xB89855, size: 0.032, transparent: true, opacity: 0.55, depthWrite: false });
+  const pMat = new THREE.PointsMaterial({ color: 0xB89855, size: 0.028, transparent: true, opacity: 0.4, depthWrite: false, fog: true });
   const particles = new THREE.Points(pGeo, pMat);
   scene.add(particles);
 
@@ -1360,29 +1368,35 @@ function setupHeroScene() {
   let t = 0;
   function animate() {
     if (!IMMERSIVE.running) return;
-    t += 0.006;
-    // Smooth mouse follow
-    mx += (tmx - mx) * 0.06;
-    my += (tmy - my) * 0.06;
+    t += 0.005;
+    mx += (tmx - mx) * 0.05;
+    my += (tmy - my) * 0.05;
 
-    terrain.rotation.y = mx * 0.18 + Math.sin(t * 0.25) * 0.025;
-    terrain.rotation.x = -0.05 + my * 0.05;
-    ridge.rotation.y = mx * 0.08;
-    particles.rotation.y = t * 0.025;
+    // Drift each plate gently
+    plates.forEach((p) => {
+      p.mesh.position.y = p.base[1] + Math.sin(t + p.phase) * 0.18;
+      p.mesh.position.x = p.base[0] + Math.sin(t * 0.55 + p.phase) * 0.10;
+      p.mesh.rotation.y = p.baseRotY + Math.sin(t * 0.4 + p.phase) * 0.06;
+      if (p.mat.opacity < p.targetOpacity) p.mat.opacity = Math.min(p.targetOpacity, p.mat.opacity + 0.012);
+    });
 
+    particles.rotation.y = t * 0.02;
     const dustPos = particles.geometry.attributes.position;
     for (let i = 0; i < N; i++) {
-      const y = dustPos.getY(i) + 0.0018 + Math.sin(t * 0.9 + pSeed[i]) * 0.0006;
-      dustPos.setY(i, y > 8 ? 0 : y);
+      const y = dustPos.getY(i) + 0.0014 + Math.sin(t * 0.8 + pSeed[i]) * 0.0005;
+      dustPos.setY(i, y > 5 ? -5 : y);
     }
     dustPos.needsUpdate = true;
 
-    // Scroll-driven camera depth (subtle)
+    // Subtle mouse parallax on camera
+    camera.position.x = mx * 0.9;
+    camera.position.y = -my * 0.45;
+
+    // Scroll-driven push through the still-life
     const scrollY = Math.max(0, window.scrollY || 0);
     const k = Math.min(1, scrollY / (window.innerHeight || 1));
-    camera.position.y = 3.4 + k * 1.2;
-    camera.position.z = 9.4 - k * 1.8;
-    camera.rotation.x = -k * 0.08;
+    camera.position.z = 6 - k * 3.6;
+    camera.lookAt(0, 0, -2);
 
     renderer.render(scene, camera);
     IMMERSIVE.raf = requestAnimationFrame(animate);
@@ -1393,8 +1407,11 @@ function setupHeroScene() {
     window.removeEventListener('mousemove', onMove);
     window.removeEventListener('touchmove', onMove);
     window.removeEventListener('resize', onResize);
-    tGeo.dispose(); tMat.dispose();
-    rGeo.dispose(); rMat.dispose();
+    plates.forEach(p => {
+      p.geo.dispose();
+      if (p.mat.map) p.mat.map.dispose();
+      p.mat.dispose();
+    });
     pGeo.dispose(); pMat.dispose();
     renderer.dispose();
   });
