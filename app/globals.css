@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #FBF9F5;
+  --color-ink: #0A1729;
+  --color-gold: #B89855;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.005em;
+}
+
+[dir='rtl'] {
+  text-align: right;
+}
+
+.hairline {
+  background: linear-gradient(90deg, transparent, rgba(184, 152, 85, 0.4), transparent);
+  height: 1px;
+}
+
+.swiss-eyebrow {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: #B89855;
+}
+
+.serif-heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+}
+
+.card-glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+::selection {
+  background: rgba(184, 152, 85, 0.25);
+  color: #0A1729;
+}
+
+/* Scrollbar refinement */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(20, 38, 63, 0.15); border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(20, 38, 63, 0.3); }
+
+/* Hide scrollbar utility */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Smooth image fade-in */
+.img-fade {
+  opacity: 0;
+  transition: opacity 0.7s ease-out;
+}
+.img-fade.loaded { opacity: 1; }
+
+/* Subtle shimmer for skeleton */
+.skeleton {
+  background: linear-gradient(90deg, #EDE6D6 0%, #F6F2EA 40%, #EDE6D6 80%);
+  background-size: 800px 104px;
+  animation: shimmer 2.4s infinite linear;
+}
+
+/* Premium input focus ring */
+.lounge-input:focus {
+  outline: none;
+  border-color: #B89855;
+  box-shadow: 0 0 0 3px rgba(184, 152, 85, 0.18);
+}
+
+/* Dark mode */
+.dark body {
+  background: #0A1729;
+  color: #F6F2EA;
+}
+.dark .card-glass {
+  background: rgba(21, 38, 63, 0.6);
+}
