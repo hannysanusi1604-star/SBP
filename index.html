@@ -6,10 +6,10 @@
 <meta name="theme-color" content="#FBF9F5" />
 <title>Aspire Lounge Switzerland · Digital Buffet Menu</title>
 <meta name="description" content="A calm, premium digital buffet menu for Aspire Lounge guests at Swiss airports." />
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'><rect width='128' height='128' rx='24' fill='%230A1729'/><rect x='56' y='34' width='16' height='60' fill='%23B89855'/><rect x='34' y='56' width='60' height='16' fill='%23B89855'/></svg>" />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'><rect width='128' height='128' rx='24' fill='%230A1729'/><path d='M28 92 L52 36 L76 92 M38 76 L66 76' stroke='%23F6F2EA' stroke-width='9' fill='none' stroke-linecap='square' stroke-linejoin='miter'/></svg>" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = {
@@ -35,15 +35,19 @@
   };
 </script>
 <style>
-  :root { --color-bg:#FBF9F5; --color-ink:#0A1729; --color-gold:#B89855; }
+  :root { --color-bg:#FBF9F5; --color-ink:#0A1729; --color-gold:#B89855; --color-mute:#8A8475; }
   html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
   body { background: var(--color-bg); color: var(--color-ink); font-family: 'Inter', system-ui, sans-serif; font-weight: 300; letter-spacing: .005em; }
   [dir='rtl'] { text-align: right; }
-  .hairline { background: linear-gradient(90deg, transparent, rgba(184,152,85,.4), transparent); height: 1px; }
-  .swiss-eyebrow { font-family: 'Inter', sans-serif; font-weight: 500; font-size: .7rem; text-transform: uppercase; letter-spacing: .22em; color: #B89855; }
-  .serif-heading { font-family: 'Cormorant Garamond', serif; font-weight: 400; letter-spacing: -.01em; line-height: 1.05; }
+  .hairline { background: linear-gradient(90deg, transparent, rgba(20,38,63,.18), transparent); height: 1px; }
+  .swiss-eyebrow { font-family: 'Inter', sans-serif; font-weight: 400; font-size: .68rem; text-transform: uppercase; letter-spacing: .32em; color: #8A8475; }
+  .serif-heading { font-family: 'Cormorant Garamond', serif; font-weight: 300; letter-spacing: -.012em; line-height: 1.05; }
   .card-glass { background: rgba(255,255,255,.72); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
-  ::selection { background: rgba(184,152,85,.25); color: #0A1729; }
+  ::selection { background: rgba(184,152,85,.2); color: #0A1729; }
+
+  /* Aspire wordmark */
+  .aspire-mark { font-family: 'Inter', sans-serif; font-weight: 800; letter-spacing: .22em; line-height: 1; }
+  .aspire-sub { font-family: 'Inter', sans-serif; font-weight: 400; letter-spacing: .32em; line-height: 1; color: #8A8475; }
   ::-webkit-scrollbar { width: 8px; height: 8px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: rgba(20,38,63,.15); border-radius: 8px; }
@@ -112,25 +116,20 @@
 <!-- ========================= HEADER ========================= -->
 <header class="sticky top-0 z-40 backdrop-blur-md bg-ivory-50/80 border-b border-ivory-200/60">
   <div class="mx-auto max-w-6xl px-5 sm:px-8 py-3 flex items-center justify-between">
-    <a href="#home" data-route="home" class="group flex items-center gap-3" aria-label="Aspire Lounge Switzerland">
-      <div class="h-8 w-8 rounded-sm bg-navy-900 flex items-center justify-center">
-        <svg class="w-4 h-4"><use href="#i-swiss"/></svg>
-      </div>
-      <div class="leading-tight">
-        <div class="serif-heading text-[1.05rem] tracking-tight" data-i18n="brand.line1">Aspire Lounge</div>
-        <div class="swiss-eyebrow text-[0.6rem]" data-i18n="brand.line2">Switzerland</div>
-      </div>
+    <a href="#home" data-route="home" class="group flex flex-col items-start leading-none" aria-label="Aspire Lounge Switzerland">
+      <span class="aspire-mark text-navy-900 text-[1.35rem] sm:text-[1.45rem]">ASPIRE</span>
+      <span class="aspire-sub text-[0.5rem] sm:text-[0.55rem] mt-1.5" data-i18n="brand.sub">AIRPORT LOUNGES · SWITZERLAND</span>
     </a>
     <nav class="hidden md:flex items-center gap-7 text-[0.78rem] tracking-wide uppercase" id="desktopNav"></nav>
     <div class="flex items-center gap-2">
       <div class="relative" id="langWrap">
-        <button id="langBtn" class="h-9 px-3 rounded-full border border-ivory-200 flex items-center gap-2 text-[0.72rem] uppercase tracking-wider hover:border-gold-400 transition-colors">
+        <button id="langBtn" class="h-9 px-3 border border-navy-900/15 flex items-center gap-2 text-[0.68rem] uppercase tracking-[0.22em] hover:border-navy-900/40 transition-colors">
           <svg class="w-3.5 h-3.5"><use href="#i-globe"/></svg>
           <span id="langCurrent">EN</span>
         </button>
-        <div id="langMenu" class="hidden absolute right-0 mt-2 w-56 rounded-2xl bg-white shadow-lift border border-ivory-200/60 overflow-hidden anim-fade z-50"></div>
+        <div id="langMenu" class="hidden absolute right-0 mt-2 w-56 bg-ivory-50 border border-navy-900/10 shadow-soft overflow-hidden anim-fade z-50"></div>
       </div>
-      <button id="mobileBtn" class="md:hidden h-9 w-9 rounded-full border border-ivory-200 flex items-center justify-center" aria-label="Open menu">
+      <button id="mobileBtn" class="md:hidden h-9 w-9 border border-navy-900/15 flex items-center justify-center" aria-label="Open menu">
         <span class="block w-4 h-px bg-current relative">
           <span class="absolute left-0 -top-1.5 block w-4 h-px bg-current"></span>
           <span class="absolute left-0 top-1.5 block w-4 h-px bg-current"></span>
@@ -149,16 +148,11 @@
 <footer class="mt-24 border-t border-ivory-200/60">
   <div class="mx-auto max-w-6xl px-5 sm:px-8 py-12 grid grid-cols-1 sm:grid-cols-3 gap-10">
     <div>
-      <div class="flex items-center gap-3">
-        <div class="h-9 w-9 rounded-sm bg-navy-900 flex items-center justify-center">
-          <svg class="w-4 h-4"><use href="#i-swiss"/></svg>
-        </div>
-        <div class="leading-tight">
-          <div class="serif-heading text-lg" data-i18n="brand.line1">Aspire Lounge</div>
-          <div class="swiss-eyebrow" data-i18n="brand.line2">Switzerland</div>
-        </div>
+      <div class="flex flex-col items-start leading-none">
+        <span class="aspire-mark text-navy-900 text-2xl">ASPIRE</span>
+        <span class="aspire-sub text-[0.55rem] mt-2" data-i18n="brand.sub">AIRPORT LOUNGES · SWITZERLAND</span>
       </div>
-      <p class="mt-4 text-[0.88rem] text-navy-500 leading-relaxed max-w-xs" data-i18n="footer.note"></p>
+      <p class="mt-5 text-[0.88rem] text-navy-500 leading-relaxed max-w-xs" data-i18n="footer.note"></p>
     </div>
     <div>
       <div class="swiss-eyebrow mb-3" data-i18n="home.hours"></div>
@@ -185,9 +179,9 @@
 </footer>
 
 <!-- ========================= FLOATING HELP ========================= -->
-<button id="helpBtn" class="fixed bottom-6 right-5 z-40 h-14 w-14 rounded-full bg-navy-900 text-ivory-50 shadow-lift flex items-center justify-center hover:scale-105 active:scale-100 transition-transform" aria-label="Help">
-  <svg class="w-5 h-5"><use href="#i-qr"/></svg>
-  <span class="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-gold-400 ring-2 ring-ivory-50"></span>
+<button id="helpBtn" class="fixed bottom-6 right-5 z-40 h-12 px-5 rounded-full bg-white text-navy-900 border border-navy-900/15 shadow-soft flex items-center gap-2 hover:border-navy-900/40 transition-colors" aria-label="Help">
+  <svg class="w-3.5 h-3.5"><use href="#i-bell"/></svg>
+  <span class="text-[0.68rem] uppercase tracking-[0.22em]" data-i18n="help.callstaff">Call a host</span>
 </button>
 
 <!-- ========================= MODAL HOST ========================= -->
@@ -202,7 +196,6 @@ const CATEGORIES = [
   { id: 'mains', labelKey: 'cat.mains' },
   { id: 'desserts', labelKey: 'cat.desserts' },
   { id: 'drinks', labelKey: 'cat.drinks' },
-  { id: 'premium', labelKey: 'cat.premium' },
 ];
 
 const DIETARY = ['vegetarian','vegan','gluten-free','halal-friendly','nut-free','dairy-free'];
@@ -233,12 +226,6 @@ const DISHES = [
   { id:'espresso-bar', name:'Swiss Espresso Bar', description:'Single-origin espresso, cappuccino, Schümli, herbal & alpine teas.', category:'drinks', image:'https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'local', dietary:['vegan','vegetarian','gluten-free','nut-free'], allergens:['dairy'] },
   { id:'fresh-juices', name:'Cold-Pressed Juice Selection', description:'Apple-elderflower, beetroot-ginger, orange and seasonal blends.', category:'drinks', image:'https://images.unsplash.com/photo-1600271886742-f049cd451bba?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'local', dietary:['vegan','vegetarian','gluten-free','dairy-free','halal-friendly','nut-free'], allergens:[] },
   { id:'house-wine', name:'Swiss House Wines', description:'A curated selection of Valais and Vaud reds and whites by the glass.', category:'drinks', image:'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'local', dietary:['vegan','vegetarian','gluten-free','dairy-free','nut-free'], allergens:[] },
-
-  // Premium
-  { id:'champagne-flute', name:'Champagne by the Flute', description:'Ruinart Blanc de Blancs, served chilled with seasonal garnish.', category:'premium', image:'https://images.unsplash.com/photo-1547595628-c61a29f496f0?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'international', dietary:['vegan','vegetarian','gluten-free','dairy-free','nut-free'], allergens:[], premium:true, price:'CHF 28' },
-  { id:'caviar-service', name:'Oscietra Caviar Service', description:'15g Oscietra caviar, blinis, crème fraîche, mother-of-pearl spoon.', category:'premium', image:'https://images.unsplash.com/photo-1625938145744-533e82c1a2b8?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'international', dietary:['nut-free'], allergens:['gluten','dairy','eggs'], premium:true, price:'CHF 65' },
-  { id:'truffle-pasta', name:'Black Truffle Tagliolini', description:'Hand-cut egg pasta, butter, aged Parmigiano, shaved Périgord truffle.', category:'premium', image:'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'international', dietary:['vegetarian'], allergens:['gluten','dairy','eggs'], premium:true, price:'CHF 42' },
-  { id:'sommelier-wine', name:'Sommelier Wine Pairing', description:'A curated three-glass flight selected by our head sommelier.', category:'premium', image:'https://images.unsplash.com/photo-1568213816046-0ee1c42bd559?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'international', dietary:['vegan','vegetarian','gluten-free','dairy-free','nut-free'], allergens:[], premium:true, price:'CHF 55' },
 ];
 
 const LOCALES = [
@@ -251,8 +238,8 @@ const LOCALES = [
 
 const I18N = {
   en: {
-    'brand.line1':'Aspire Lounge','brand.line2':'Switzerland',
-    'nav.home':'Home','nav.menu':'Menu','nav.drinks':'Drinks','nav.dietary':'Dietary','nav.premium':'Suite','nav.feedback':'Feedback','nav.about':'Local Sourcing',
+    'brand.line1':'Aspire Lounge','brand.line2':'Switzerland','brand.sub':'AIRPORT LOUNGES · SWITZERLAND',
+    'nav.home':'Home','nav.menu':'Menu','nav.drinks':'Drinks','nav.dietary':'Dietary','nav.feedback':'Feedback','nav.about':'Local Sourcing',
     'home.eyebrow':'Zürich · Geneva · Basel',
     'home.welcome':'Welcome to a quiet moment before your flight.',
     'home.subtitle':'Browse today’s buffet, discover Swiss ingredients, and travel with comfort.',
@@ -300,8 +287,8 @@ const I18N = {
     'footer.note':'A calm, premium moment before your flight.'
   },
   fr: {
-    'brand.line1':'Aspire Lounge','brand.line2':'Suisse',
-    'nav.home':'Accueil','nav.menu':'Menu','nav.drinks':'Boissons','nav.dietary':'Régimes','nav.premium':'Suite','nav.feedback':'Avis','nav.about':'Producteurs',
+    'brand.line1':'Aspire Lounge','brand.line2':'Suisse','brand.sub':'SALONS AÉROPORTUAIRES · SUISSE',
+    'nav.home':'Accueil','nav.menu':'Menu','nav.drinks':'Boissons','nav.dietary':'Régimes','nav.feedback':'Avis','nav.about':'Producteurs',
     'home.eyebrow':'Zurich · Genève · Bâle','home.welcome':'Bienvenue dans un moment de calme avant votre vol.',
     'home.subtitle':'Découvrez le buffet du jour, les ingrédients suisses, et voyagez sereinement.',
     'home.cta.menu':'Voir le buffet','home.cta.premium':'Service Suite',
@@ -347,8 +334,8 @@ const I18N = {
     'footer.note':'Un moment calme et raffiné avant votre vol.'
   },
   de: {
-    'brand.line1':'Aspire Lounge','brand.line2':'Schweiz',
-    'nav.home':'Start','nav.menu':'Menü','nav.drinks':'Getränke','nav.dietary':'Ernährung','nav.premium':'Suite','nav.feedback':'Feedback','nav.about':'Herkunft',
+    'brand.line1':'Aspire Lounge','brand.line2':'Schweiz','brand.sub':'AIRPORT LOUNGES · SCHWEIZ',
+    'nav.home':'Start','nav.menu':'Menü','nav.drinks':'Getränke','nav.dietary':'Ernährung','nav.feedback':'Feedback','nav.about':'Herkunft',
     'home.eyebrow':'Zürich · Genf · Basel','home.welcome':'Willkommen zu einem ruhigen Moment vor Ihrem Flug.',
     'home.subtitle':'Entdecken Sie das heutige Buffet, Schweizer Zutaten — und reisen Sie entspannt.',
     'home.cta.menu':'Zum Buffet','home.cta.premium':'Suite-Service',
@@ -394,8 +381,8 @@ const I18N = {
     'footer.note':'Ein ruhiger, edler Moment vor Ihrem Flug.'
   },
   it: {
-    'brand.line1':'Aspire Lounge','brand.line2':'Svizzera',
-    'nav.home':'Home','nav.menu':'Menu','nav.drinks':'Bevande','nav.dietary':'Dieta','nav.premium':'Suite','nav.feedback':'Feedback','nav.about':'Produttori',
+    'brand.line1':'Aspire Lounge','brand.line2':'Svizzera','brand.sub':'LOUNGE AEROPORTUALI · SVIZZERA',
+    'nav.home':'Home','nav.menu':'Menu','nav.drinks':'Bevande','nav.dietary':'Dieta','nav.feedback':'Feedback','nav.about':'Produttori',
     'home.eyebrow':'Zurigo · Ginevra · Basilea','home.welcome':'Benvenuto in un momento di calma prima del volo.',
     'home.subtitle':'Scopri il buffet di oggi e gli ingredienti svizzeri, viaggia sereno.',
     'home.cta.menu':'Scopri il buffet','home.cta.premium':'Servizio Suite',
@@ -441,8 +428,8 @@ const I18N = {
     'footer.note':'Un momento calmo e raffinato prima del volo.'
   },
   ar: {
-    'brand.line1':'صالة أسباير','brand.line2':'سويسرا',
-    'nav.home':'الرئيسية','nav.menu':'القائمة','nav.drinks':'المشروبات','nav.dietary':'النظام الغذائي','nav.premium':'سويت','nav.feedback':'الملاحظات','nav.about':'مصادرنا',
+    'brand.line1':'صالة أسباير','brand.line2':'سويسرا','brand.sub':'صالات المطارات · سويسرا',
+    'nav.home':'الرئيسية','nav.menu':'القائمة','nav.drinks':'المشروبات','nav.dietary':'النظام الغذائي','nav.feedback':'الملاحظات','nav.about':'مصادرنا',
     'home.eyebrow':'زيورخ · جنيف · بازل','home.welcome':'أهلاً بك في لحظة هدوء قبل رحلتك.',
     'home.subtitle':'تصفّح قائمة اليوم، اكتشف المكونات السويسرية، وسافر بكل راحة.',
     'home.cta.menu':'تصفح البوفيه','home.cta.premium':'خدمة السويت',
@@ -499,10 +486,6 @@ const STATE = {
   filters: new Set(),
   temperature: null,
   filtersOpen: false,
-  order: [],     // [{dish, qty}]
-  orderNote: '',
-  orderStatus: 'idle',
-  orderRef: null,
 };
 
 function t(key) { return (I18N[STATE.locale] && I18N[STATE.locale][key]) || I18N.en[key] || key; }
@@ -518,7 +501,6 @@ const NAV_ITEMS = [
   { href:'menu', key:'nav.menu' },
   { href:'drinks', key:'nav.drinks' },
   { href:'dietary', key:'nav.dietary' },
-  { href:'premium', key:'nav.premium' },
   { href:'about', key:'nav.about' },
   { href:'feedback', key:'nav.feedback' },
 ];
@@ -547,9 +529,9 @@ function renderHeader() {
   desk.innerHTML = NAV_ITEMS.map(n => {
     const active = STATE.route === n.href;
     return `<a href="#${n.href}" data-route="${n.href}"
-      class="relative pb-1 transition-colors ${active ? 'text-navy-900' : 'text-navy-500 hover:text-navy-900'}">
+      class="relative pb-1 text-[0.68rem] tracking-[0.28em] transition-colors ${active ? 'text-navy-900' : 'text-navy-500 hover:text-navy-900'}">
       ${esc(t(n.key))}
-      ${active ? '<span class="absolute left-0 right-0 -bottom-0.5 h-px bg-gold-500"></span>' : ''}
+      ${active ? '<span class="absolute left-0 right-0 -bottom-0.5 h-px bg-navy-900"></span>' : ''}
     </a>`;
   }).join('');
   mob.innerHTML = NAV_ITEMS.map(n => {
@@ -560,15 +542,15 @@ function renderHeader() {
 
   const langMenu = document.getElementById('langMenu');
   langMenu.innerHTML = `
-    <div class="px-4 py-2.5 swiss-eyebrow border-b border-ivory-200/60">${esc(t('lang.title'))}</div>
+    <div class="px-4 py-2.5 swiss-eyebrow border-b border-navy-900/10">${esc(t('lang.title'))}</div>
     <ul>
       ${LOCALES.map(l => `
-        <li><button data-lang="${l.code}" class="w-full px-4 py-2.5 flex items-center justify-between hover:bg-ivory-100 transition-colors text-[0.9rem]">
+        <li><button data-lang="${l.code}" class="w-full px-4 py-2.5 flex items-center justify-between hover:bg-navy-900/[0.04] transition-colors text-[0.9rem]">
           <span class="flex items-center gap-2">
-            <span class="text-[0.75rem] uppercase tracking-wider text-navy-500 w-6">${l.code}</span>
+            <span class="text-[0.7rem] uppercase tracking-[0.22em] text-navy-500 w-6">${l.code}</span>
             <span>${esc(l.native)}</span>
           </span>
-          ${l.code === STATE.locale ? `<span class="text-gold-500">${icon('i-check','w-3.5 h-3.5')}</span>` : ''}
+          ${l.code === STATE.locale ? `<span class="text-navy-900">${icon('i-check','w-3.5 h-3.5')}</span>` : ''}
         </button></li>`).join('')}
     </ul>`;
   document.getElementById('langCurrent').textContent = STATE.locale.toUpperCase();
@@ -583,79 +565,79 @@ function renderHeader() {
    =========================================================== */
 function pageHome() {
   return `
-  <section class="relative overflow-hidden">
-    <div class="absolute inset-0 -z-10">
-      ${image('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=2000&q=80','','absolute inset-0 h-full w-full')}
-      <div class="absolute inset-0 bg-gradient-to-b from-ivory-50/40 via-ivory-50/60 to-ivory-50"></div>
-    </div>
-    <div class="mx-auto max-w-6xl px-5 sm:px-8 pt-12 sm:pt-20 pb-16 sm:pb-28">
-      <div class="max-w-2xl anim-up">
+  <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-16 sm:pt-24 pb-12 sm:pb-20">
+    <div class="grid md:grid-cols-12 gap-10 md:gap-14 items-end">
+      <div class="md:col-span-7 anim-up">
         <div class="swiss-eyebrow">${esc(t('home.eyebrow'))}</div>
-        <h1 class="serif-heading text-4xl sm:text-6xl md:text-7xl mt-3 leading-[1.02]">${esc(t('home.welcome'))}</h1>
-        <p class="mt-5 text-[1.05rem] sm:text-[1.15rem] text-navy-500 max-w-xl leading-relaxed">${esc(t('home.subtitle'))}</p>
-        <div class="mt-8 flex flex-wrap items-center gap-3">
-          <a href="#menu" data-route="menu" class="group inline-flex items-center gap-3 px-7 py-4 rounded-full bg-navy-900 text-ivory-50 uppercase tracking-wider text-[0.78rem] hover:opacity-90 transition-all">
-            ${esc(t('home.cta.menu'))} ${icon('i-arrow','w-4 h-4')}
+        <h1 class="serif-heading text-[2.6rem] sm:text-6xl md:text-[5.2rem] mt-5 leading-[1.02] text-navy-900">${esc(t('home.welcome'))}</h1>
+        <p class="mt-7 text-[1rem] sm:text-[1.1rem] text-navy-500 max-w-lg leading-[1.7]">${esc(t('home.subtitle'))}</p>
+        <div class="mt-10 flex items-center gap-6">
+          <a href="#menu" data-route="menu" class="group inline-flex items-center gap-3 px-7 py-3.5 border border-navy-900 text-navy-900 uppercase tracking-[0.22em] text-[0.7rem] hover:bg-navy-900 hover:text-ivory-50 transition-colors">
+            ${esc(t('home.cta.menu'))} ${icon('i-arrow','w-3.5 h-3.5')}
           </a>
-          <a href="#premium" data-route="premium" class="inline-flex items-center gap-2 px-7 py-4 rounded-full border border-navy-900/30 text-navy-900 uppercase tracking-wider text-[0.78rem] hover:border-gold-500 transition-colors">
-            ${icon('i-sparkle','w-3.5 h-3.5')} ${esc(t('home.cta.premium'))}
+          <a href="#about" data-route="about" class="hidden sm:inline-flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.22em] text-navy-500 hover:text-navy-900 transition-colors">
+            ${esc(t('nav.about'))}
           </a>
         </div>
       </div>
-      <div class="mt-14 sm:mt-20 max-w-md card-glass rounded-3xl p-6 border border-white/60 shadow-soft anim-up">
-        <div class="flex items-start gap-4">
-          <div class="h-12 w-12 rounded-2xl bg-navy-900 text-ivory-50 flex items-center justify-center flex-shrink-0">${icon('i-qr','w-5 h-5')}</div>
-          <div>
-            <div class="swiss-eyebrow">${esc(t('home.qr.title'))}</div>
-            <p class="mt-1.5 text-[0.96rem] text-navy-700 leading-relaxed">${esc(t('home.qr.body'))}</p>
-            <div class="mt-3 text-[0.75rem] uppercase tracking-wider text-gold-600">${esc(t('home.hours'))}</div>
-          </div>
+      <div class="md:col-span-5">
+        <div class="relative aspect-[4/5] overflow-hidden">
+          ${image('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=80','','h-full w-full')}
         </div>
       </div>
     </div>
   </section>
 
-  <section class="mx-auto max-w-6xl px-5 sm:px-8 -mt-6">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
-      ${featureCard('menu','01',t('nav.menu'),'Today’s buffet, refreshed continuously by our chefs.','https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80')}
-      ${featureCard('drinks','02',t('nav.drinks'),'Espresso bar, alpine water and cold-pressed juices.','https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80')}
-      ${featureCard('premium','03',t('nav.premium'),'Discreet table service for Suite Lounge guests.','https://images.unsplash.com/photo-1547595628-c61a29f496f0?auto=format&fit=crop&w=1200&q=80',true)}
+  <div class="hairline mx-auto max-w-6xl"></div>
+
+  <section class="mx-auto max-w-6xl px-5 sm:px-8 py-12 sm:py-16">
+    <div class="flex flex-wrap items-center justify-between gap-6 text-[0.72rem] uppercase tracking-[0.28em] text-navy-500">
+      <span>${esc(t('home.hours'))}</span>
+      <span class="hidden sm:inline">Zürich · Genève · Basel</span>
+      <span>${esc(t('home.qr.title'))}</span>
     </div>
   </section>
 
-  <section class="mx-auto max-w-6xl px-5 sm:px-8 mt-24">
-    <div class="grid md:grid-cols-2 gap-10 items-center">
-      <div class="anim-up">
-        <div class="swiss-eyebrow inline-flex items-center gap-2">${icon('i-swiss','w-3.5 h-3.5')} About our sourcing</div>
-        <h2 class="serif-heading text-3xl sm:text-5xl mt-3">From Swiss valleys, lakes and farms.</h2>
-        <p class="mt-4 text-navy-500 leading-relaxed">We work with alpine cheesemakers, lake fisheries and family farms within 200 km of the lounge. Local first, world-aware — quietly.</p>
-        <a href="#about" data-route="about" class="mt-5 inline-flex items-center gap-2 text-gold-600 uppercase tracking-wider text-[0.78rem] hover:gap-3 transition-all">
-          ${esc(t('nav.about'))} ${icon('i-arrow','w-3.5 h-3.5')}
+  <div class="hairline mx-auto max-w-6xl"></div>
+
+  <section class="mx-auto max-w-6xl px-5 sm:px-8 py-16 sm:py-24">
+    <div class="grid md:grid-cols-12 gap-10 items-center">
+      <div class="md:col-span-5 anim-up">
+        <div class="swiss-eyebrow">— ${esc(t('nav.about'))}</div>
+        <h2 class="serif-heading text-3xl sm:text-5xl mt-4 text-navy-900">From Swiss valleys, lakes and farms.</h2>
+        <p class="mt-5 text-navy-500 leading-[1.7] max-w-md">${esc(t('about.subtitle'))}</p>
+        <a href="#about" data-route="about" class="mt-6 inline-flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.22em] text-navy-900 border-b border-navy-900/40 pb-1 hover:border-navy-900 transition-colors">
+          Discover sourcing ${icon('i-arrow','w-3 h-3')}
         </a>
       </div>
-      <div class="relative aspect-[5/4] rounded-3xl overflow-hidden shadow-soft">
-        ${image('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1400&q=80','Swiss alpine pasture','h-full w-full')}
+      <div class="md:col-span-7 relative aspect-[5/4] overflow-hidden">
+        ${image('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1600&q=80','Swiss alpine pasture','h-full w-full')}
       </div>
+    </div>
+  </section>
+
+  <div class="hairline mx-auto max-w-6xl"></div>
+
+  <section class="mx-auto max-w-6xl px-5 sm:px-8 py-16 sm:py-24">
+    <div class="grid md:grid-cols-2 gap-8 sm:gap-10">
+      ${editorialCard('menu','01',t('nav.menu'),t('home.qr.body'),'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=80')}
+      ${editorialCard('drinks','02',t('nav.drinks'),t('drinks.subtitle'),'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1400&q=80')}
     </div>
   </section>`;
 }
 
-function featureCard(href, eyebrow, title, body, img, premium) {
+function editorialCard(href, eyebrow, title, body, img) {
   return `
-  <a href="#${href}" data-route="${href}" class="group relative rounded-3xl overflow-hidden bg-white border border-ivory-200/60 shadow-soft hover:shadow-lift transition-all duration-300 hover:-translate-y-0.5">
-    <div class="relative aspect-[5/3]">
+  <a href="#${href}" data-route="${href}" class="group block">
+    <div class="relative aspect-[4/3] overflow-hidden">
       ${image(img,'','h-full w-full')}
-      <div class="absolute inset-0 bg-gradient-to-t from-navy-900/55 via-navy-900/10 to-transparent"></div>
-      ${premium ? `<span class="absolute top-3 right-3 inline-flex items-center gap-1 rounded-full bg-navy-900 text-gold-300 px-2.5 py-1 text-[0.66rem] uppercase tracking-wider">${icon('i-sparkle','w-3 h-3')} Suite</span>` : ''}
     </div>
-    <div class="p-5">
-      <div class="flex items-baseline justify-between">
-        <span class="swiss-eyebrow">${esc(eyebrow)}</span>
-        ${icon('i-arrow','w-3.5 h-3.5 text-navy-500 group-hover:text-gold-500 transition-colors')}
-      </div>
-      <h3 class="serif-heading text-2xl mt-1.5">${esc(title)}</h3>
-      <p class="mt-2 text-[0.9rem] text-navy-500 leading-relaxed">${esc(body)}</p>
+    <div class="pt-5 flex items-baseline justify-between">
+      <span class="swiss-eyebrow">${esc(eyebrow)}</span>
+      ${icon('i-arrow','w-3.5 h-3.5 text-navy-500 group-hover:text-navy-900 transition-colors')}
     </div>
+    <h3 class="serif-heading text-3xl sm:text-4xl mt-2 text-navy-900">${esc(title)}</h3>
+    <p class="mt-2 text-[0.92rem] text-navy-500 leading-relaxed max-w-md">${esc(body)}</p>
   </a>`;
 }
 
@@ -673,26 +655,25 @@ function dishesFiltered() {
 function pageMenu() {
   const activeCount = STATE.filters.size + (STATE.temperature ? 1 : 0);
   const filterPanel = STATE.filtersOpen ? `
-    <div class="mt-3 p-5 rounded-3xl bg-white border border-ivory-200/60 anim-up">
+    <div class="mt-4 py-6 border-t border-b border-navy-900/10 anim-fade">
       <div class="flex items-center justify-between mb-3">
         <div class="swiss-eyebrow">${esc(t('menu.dietary'))}</div>
-        ${activeCount ? `<button id="clearFilters" class="text-[0.72rem] uppercase tracking-wider text-navy-500 inline-flex items-center gap-1 hover:text-navy-900">${icon('i-x','w-3 h-3')} ${esc(t('menu.clear'))}</button>` : ''}
+        ${activeCount ? `<button id="clearFilters" class="text-[0.7rem] uppercase tracking-[0.22em] text-navy-500 inline-flex items-center gap-1 hover:text-navy-900">${icon('i-x','w-3 h-3')} ${esc(t('menu.clear'))}</button>` : ''}
       </div>
       <div class="flex flex-wrap gap-2">
         ${DIETARY.map(f => {
           const on = STATE.filters.has(f);
-          return `<button data-filter="${f}" class="inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[0.8rem] transition-colors border ${on ? 'bg-sage-500 text-white border-sage-500' : 'bg-ivory-100 text-navy-700 border-ivory-200 hover:border-sage-500/50'}">
+          return `<button data-filter="${f}" class="inline-flex items-center gap-1.5 px-4 py-2 text-[0.78rem] transition-colors border ${on ? 'bg-navy-900 text-ivory-50 border-navy-900' : 'text-navy-700 border-navy-900/15 hover:border-navy-900/40'}">
             ${icon('d-'+f,'w-3.5 h-3.5')} ${esc(t('diet.'+f))}
           </button>`;
         }).join('')}
       </div>
-      <div class="mt-5 pt-5 border-t border-ivory-200/60">
+      <div class="mt-6">
         <div class="swiss-eyebrow mb-3">${esc(t('menu.temperature'))}</div>
         <div class="flex flex-wrap gap-2">
           ${['hot','cold'].map(temp => {
             const on = STATE.temperature === temp;
-            const onColor = temp === 'hot' ? 'bg-[#C0481E]' : 'bg-[#2E7BB8]';
-            return `<button data-temp="${temp}" class="inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[0.8rem] transition-colors border ${on ? `${onColor} text-white border-transparent` : 'bg-ivory-100 text-navy-700 border-ivory-200'}">
+            return `<button data-temp="${temp}" class="inline-flex items-center gap-1.5 px-4 py-2 text-[0.78rem] transition-colors border ${on ? 'bg-navy-900 text-ivory-50 border-navy-900' : 'text-navy-700 border-navy-900/15 hover:border-navy-900/40'}">
               ${icon(temp === 'hot' ? 'i-flame' : 'i-snow','w-3.5 h-3.5')} ${esc(t('menu.'+temp))}
             </button>`;
           }).join('')}
@@ -709,88 +690,78 @@ function pageMenu() {
     const list = grouped[cat.id];
     if (!list.length && activeCount === 0 && !STATE.search) return '';
     return `
-    <section id="cat-${cat.id}" class="scroll-mt-32">
-      <div class="flex items-end justify-between mb-5">
-        <div>
-          <div class="swiss-eyebrow">— ${esc(t('menu.subtitle'))}</div>
-          <h2 class="serif-heading text-3xl sm:text-4xl mt-1.5">${esc(t(cat.labelKey))}</h2>
-        </div>
-        <span class="text-[0.75rem] tracking-wider text-navy-500/70">${list.length} ${list.length === 1 ? 'dish' : 'dishes'}</span>
+    <section id="cat-${cat.id}" class="scroll-mt-32 pt-10 first:pt-0">
+      <div class="flex items-end justify-between mb-8">
+        <h2 class="serif-heading text-3xl sm:text-5xl text-navy-900">${esc(t(cat.labelKey))}</h2>
+        <span class="text-[0.7rem] tracking-[0.22em] uppercase text-navy-500/70">${list.length.toString().padStart(2,'0')} · ${list.length === 1 ? 'dish' : 'dishes'}</span>
       </div>
       ${list.length === 0
-        ? `<div class="rounded-3xl border border-dashed border-ivory-200 p-10 text-center text-navy-500">${esc(t('menu.empty'))}</div>`
-        : `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">${list.map(dishCard).join('')}</div>`}
+        ? `<div class="border-t border-navy-900/10 py-16 text-center text-[0.9rem] tracking-wider uppercase text-navy-500">${esc(t('menu.empty'))}</div>`
+        : `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">${list.map(dishCard).join('')}</div>`}
     </section>`;
   }).join('');
 
   return `
-  <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-10 pb-6">
+  <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-14 sm:pt-20 pb-8">
     <div class="swiss-eyebrow">— ${esc(t('menu.subtitle'))}</div>
-    <h1 class="serif-heading text-4xl sm:text-5xl mt-2">${esc(t('menu.title'))}</h1>
+    <h1 class="serif-heading text-[2.4rem] sm:text-[4rem] mt-3 text-navy-900">${esc(t('menu.title'))}</h1>
   </section>
 
   <div class="mx-auto max-w-6xl px-5 sm:px-8">
-    <div class="flex flex-col sm:flex-row gap-3">
+    <div class="flex flex-col sm:flex-row gap-3 border-t border-b border-navy-900/10 py-3">
       <div class="relative flex-1">
-        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-navy-500">${icon('i-search','w-4 h-4')}</span>
+        <span class="absolute left-2 top-1/2 -translate-y-1/2 text-navy-500">${icon('i-search','w-4 h-4')}</span>
         <input id="searchInput" type="search" value="${esc(STATE.search)}" placeholder="${esc(t('menu.search'))}"
-          class="lounge-input w-full h-12 pl-11 pr-4 rounded-full bg-white border border-ivory-200 text-[0.95rem]" />
+          class="lounge-input w-full h-11 pl-9 pr-4 bg-transparent border-0 text-[0.95rem] focus:ring-0" />
       </div>
-      <button id="toggleFilters" class="h-12 px-5 rounded-full border flex items-center gap-2 uppercase tracking-wider text-[0.72rem] transition-colors ${activeCount || STATE.filtersOpen ? 'bg-navy-900 text-ivory-50 border-navy-900' : 'border-ivory-200'}">
+      <button id="toggleFilters" class="h-11 px-5 inline-flex items-center gap-2 uppercase tracking-[0.22em] text-[0.7rem] transition-colors ${activeCount || STATE.filtersOpen ? 'text-navy-900' : 'text-navy-500 hover:text-navy-900'}">
         ${icon('i-sliders','w-3.5 h-3.5')} ${esc(t('menu.filters'))}
-        ${activeCount ? `<span class="ml-1 h-5 min-w-5 px-1.5 rounded-full bg-gold-400 text-navy-900 text-[0.65rem] flex items-center justify-center">${activeCount}</span>` : ''}
+        ${activeCount ? `<span class="ml-1 text-navy-900">· ${activeCount}</span>` : ''}
       </button>
     </div>
     ${filterPanel}
   </div>
 
-  <div class="sticky top-[57px] z-30 mt-5 bg-ivory-50/85 backdrop-blur-md border-b border-ivory-200/60">
+  <div class="sticky top-[57px] z-30 mt-6 bg-ivory-50/90 backdrop-blur-md border-b border-navy-900/10">
     <div class="mx-auto max-w-6xl px-5 sm:px-8">
-      <div class="flex gap-1 overflow-x-auto scrollbar-hide py-3 -mx-2 px-2">
+      <div class="flex gap-8 overflow-x-auto scrollbar-hide py-3">
         ${CATEGORIES.map(c => `
-          <button data-jump="cat-${c.id}" class="whitespace-nowrap px-4 py-2 rounded-full text-[0.78rem] uppercase tracking-wider transition-all text-navy-500 hover:text-navy-900">
+          <button data-jump="cat-${c.id}" class="whitespace-nowrap text-[0.72rem] uppercase tracking-[0.28em] transition-all text-navy-500 hover:text-navy-900">
             ${esc(t(c.labelKey))}
           </button>`).join('')}
       </div>
     </div>
   </div>
 
-  <div class="mx-auto max-w-6xl px-5 sm:px-8 py-8 space-y-14">${sections}</div>`;
+  <div class="mx-auto max-w-6xl px-5 sm:px-8 py-12 space-y-16">${sections}</div>`;
 }
 
 function dishCard(d) {
   return `
-  <button data-dish="${d.id}" class="dish-card group text-left bg-white/80 backdrop-blur-sm rounded-3xl overflow-hidden border border-ivory-200/60 shadow-soft hover:shadow-lift focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 anim-up w-full">
-    <div class="relative aspect-[4/3]">
-      ${image(d.image, d.name, 'h-full w-full')}
-      <div class="absolute inset-0 bg-gradient-to-t from-navy-900/40 via-transparent to-transparent"></div>
-      <div class="absolute top-3 left-3 flex items-center gap-2">
+  <button data-dish="${d.id}" class="group text-left focus:outline-none anim-up w-full">
+    <div class="relative aspect-[4/5] overflow-hidden">
+      ${image(d.image, d.name, 'h-full w-full transition-transform duration-700 group-hover:scale-[1.02]')}
+      <div class="absolute top-3 left-3 right-3 flex items-start justify-between">
         ${d.source === 'local'
-          ? `<span class="inline-flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-[0.66rem] uppercase tracking-wider text-navy-900">${icon('i-swiss','w-3 h-3')} ${esc(t('menu.local'))}</span>`
-          : `<span class="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-2.5 py-1 text-[0.66rem] uppercase tracking-wider text-navy-500">${icon('i-globe','w-3 h-3')} ${esc(t('menu.international'))}</span>`}
-      </div>
-      <div class="absolute top-3 right-3 flex items-center gap-1.5">
-        ${d.premium ? `<span class="inline-flex items-center gap-1 rounded-full bg-navy-900 text-gold-300 px-2.5 py-1 text-[0.66rem] uppercase tracking-wider">${icon('i-sparkle','w-3 h-3')} Suite</span>` : ''}
-        <span class="h-7 w-7 rounded-full flex items-center justify-center bg-white/90 ${d.temperature === 'hot' ? 'text-[#C0481E]' : 'text-[#2E7BB8]'}" title="${esc(t('menu.'+d.temperature))}">
-          ${icon(d.temperature === 'hot' ? 'i-flame' : 'i-snow','w-3.5 h-3.5')}
+          ? `<span class="inline-flex items-center gap-1.5 bg-ivory-50/95 px-2 py-1 text-[0.6rem] uppercase tracking-[0.22em] text-navy-900">${icon('i-swiss','w-3 h-3')} ${esc(t('menu.local'))}</span>`
+          : `<span class="inline-flex items-center gap-1.5 bg-ivory-50/95 px-2 py-1 text-[0.6rem] uppercase tracking-[0.22em] text-navy-500">${icon('i-globe','w-3 h-3')} ${esc(t('menu.international'))}</span>`}
+        <span class="inline-flex items-center gap-1 bg-ivory-50/95 px-2 py-1 text-[0.6rem] uppercase tracking-[0.22em] ${d.temperature === 'hot' ? 'text-[#C0481E]' : 'text-[#2E7BB8]'}">
+          ${icon(d.temperature === 'hot' ? 'i-flame' : 'i-snow','w-3 h-3')} ${esc(t('menu.'+d.temperature))}
         </span>
       </div>
     </div>
-    <div class="p-5">
-      <div class="flex items-start justify-between gap-3">
-        <h3 class="serif-heading text-[1.3rem] leading-tight">${esc(d.name)}</h3>
-        ${d.price ? `<span class="text-[0.75rem] tracking-wider text-gold-600 whitespace-nowrap pt-1">${esc(d.price)}</span>` : ''}
-      </div>
-      <p class="mt-2 text-[0.88rem] text-navy-500 leading-relaxed line-clamp-2">${esc(d.description)}</p>
+    <div class="pt-5">
+      <h3 class="serif-heading text-[1.55rem] leading-tight text-navy-900">${esc(d.name)}</h3>
+      <p class="mt-2 text-[0.9rem] text-navy-500 leading-relaxed line-clamp-2">${esc(d.description)}</p>
       <div class="mt-4 flex items-center justify-between">
-        <div class="flex items-center gap-1.5 text-navy-500">
-          ${d.dietary.slice(0,3).map(f => `<span class="h-7 w-7 rounded-full bg-ivory-100 flex items-center justify-center" title="${esc(t('diet.'+f))}">${icon('d-'+f,'w-3.5 h-3.5')}</span>`).join('')}
-          ${d.allergens.length ? `<span class="ml-1 inline-flex items-center gap-1 text-[0.65rem] uppercase tracking-wider text-navy-500/70">
-            <span class="hidden sm:inline">${esc(t('menu.allergens'))}</span>
-            ${d.allergens.slice(0,3).map(a => icon('a-'+a,'w-3.5 h-3.5 opacity-70')).join('')}
+        <div class="flex items-center gap-2 text-navy-500">
+          ${d.dietary.slice(0,4).map(f => `<span title="${esc(t('diet.'+f))}">${icon('d-'+f,'w-4 h-4')}</span>`).join('')}
+          ${d.allergens.length ? `<span class="ml-2 inline-flex items-center gap-1.5 text-[0.62rem] uppercase tracking-[0.22em] text-navy-500/60">
+            <span>${esc(t('menu.allergens'))}</span>
+            ${d.allergens.slice(0,3).map(a => icon('a-'+a,'w-3.5 h-3.5')).join('')}
           </span>` : ''}
         </div>
-        <span class="inline-flex items-center gap-1 text-[0.7rem] uppercase tracking-wider text-gold-600 opacity-0 group-hover:opacity-100 transition-opacity">${esc(t('menu.viewdetails'))} ${icon('i-arrow','w-3 h-3')}</span>
+        <span class="text-[0.65rem] uppercase tracking-[0.22em] text-navy-500 group-hover:text-navy-900 transition-colors inline-flex items-center gap-1">${esc(t('menu.viewdetails'))} ${icon('i-arrow','w-3 h-3')}</span>
       </div>
     </div>
   </button>`;
@@ -803,17 +774,17 @@ function pageDrinks() {
     { key:'station3', img:'https://images.unsplash.com/photo-1600271886742-f049cd451bba?auto=format&fit=crop&w=1400&q=80' },
   ];
   return `
-  <div class="mx-auto max-w-6xl px-5 sm:px-8 pt-10 pb-16">
+  <div class="mx-auto max-w-6xl px-5 sm:px-8 pt-14 sm:pt-20 pb-16">
     <div class="swiss-eyebrow">— Aspire</div>
-    <h1 class="serif-heading text-4xl sm:text-5xl mt-2">${esc(t('drinks.title'))}</h1>
-    <p class="mt-3 text-navy-500 max-w-2xl leading-relaxed">${esc(t('drinks.subtitle'))}</p>
-    <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+    <h1 class="serif-heading text-[2.4rem] sm:text-[4rem] mt-3 text-navy-900">${esc(t('drinks.title'))}</h1>
+    <p class="mt-4 text-navy-500 max-w-xl leading-[1.7]">${esc(t('drinks.subtitle'))}</p>
+    <div class="mt-14 grid grid-cols-1 md:grid-cols-3 gap-10 sm:gap-12">
       ${stations.map((s,i)=>`
-        <div class="rounded-3xl overflow-hidden bg-white border border-ivory-200/60 shadow-soft anim-up" style="animation-delay:${i*80}ms">
-          <div class="relative aspect-[4/3]">${image(s.img,'','h-full w-full')}</div>
-          <div class="p-6">
+        <div class="anim-up" style="animation-delay:${i*80}ms">
+          <div class="relative aspect-[4/5] overflow-hidden">${image(s.img,'','h-full w-full')}</div>
+          <div class="pt-5">
             <div class="swiss-eyebrow">0${i+1}</div>
-            <h3 class="serif-heading text-2xl mt-1.5">${esc(t('drinks.'+s.key+'.title'))}</h3>
+            <h3 class="serif-heading text-2xl sm:text-3xl mt-2 text-navy-900">${esc(t('drinks.'+s.key+'.title'))}</h3>
             <p class="mt-2 text-[0.92rem] text-navy-500 leading-relaxed">${esc(t('drinks.'+s.key+'.body'))}</p>
           </div>
         </div>`).join('')}
@@ -823,177 +794,37 @@ function pageDrinks() {
 
 function pageDietary() {
   return `
-  <div class="mx-auto max-w-5xl px-5 sm:px-8 pt-10 pb-16">
+  <div class="mx-auto max-w-5xl px-5 sm:px-8 pt-14 sm:pt-20 pb-16">
     <div class="swiss-eyebrow">— Aspire</div>
-    <h1 class="serif-heading text-4xl sm:text-5xl mt-2">${esc(t('dietary.title'))}</h1>
-    <p class="mt-3 text-navy-500 max-w-2xl leading-relaxed">${esc(t('dietary.subtitle'))}</p>
+    <h1 class="serif-heading text-[2.4rem] sm:text-[4rem] mt-3 text-navy-900">${esc(t('dietary.title'))}</h1>
+    <p class="mt-4 text-navy-500 max-w-xl leading-[1.7]">${esc(t('dietary.subtitle'))}</p>
 
-    <section class="mt-10">
-      <h2 class="swiss-eyebrow mb-4">${esc(t('menu.dietary'))}</h2>
-      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+    <section class="mt-14">
+      <h2 class="swiss-eyebrow mb-5">${esc(t('menu.dietary'))}</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-4 border-t border-navy-900/10 pt-6">
         ${DIETARY.map(d=>`
-          <div class="flex items-center gap-3 p-4 rounded-2xl bg-white border border-ivory-200/60">
-            <div class="h-10 w-10 rounded-full bg-sage-500/15 text-sage-500 flex items-center justify-center">${icon('d-'+d,'w-5 h-5')}</div>
-            <div class="text-[0.9rem]">${esc(t('diet.'+d))}</div>
+          <div class="flex items-center gap-3 py-2">
+            <span class="text-navy-700">${icon('d-'+d,'w-5 h-5')}</span>
+            <div class="text-[0.92rem]">${esc(t('diet.'+d))}</div>
           </div>`).join('')}
       </div>
     </section>
 
-    <section class="mt-12">
-      <h2 class="swiss-eyebrow mb-4">${esc(t('menu.allergens'))}</h2>
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+    <section class="mt-14">
+      <h2 class="swiss-eyebrow mb-5">${esc(t('menu.allergens'))}</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-4 border-t border-navy-900/10 pt-6">
         ${ALLERGENS.map(a=>`
-          <div class="flex items-center gap-3 p-4 rounded-2xl bg-white border border-ivory-200/60">
-            <div class="h-10 w-10 rounded-full bg-ivory-200/60 text-navy-700 flex items-center justify-center">${icon('a-'+a,'w-5 h-5')}</div>
-            <div class="text-[0.9rem]">${esc(t('allergen.'+a))}</div>
+          <div class="flex items-center gap-3 py-2">
+            <span class="text-navy-700">${icon('a-'+a,'w-5 h-5')}</span>
+            <div class="text-[0.92rem]">${esc(t('allergen.'+a))}</div>
           </div>`).join('')}
       </div>
     </section>
 
-    <section class="mt-12 rounded-3xl border border-gold-500/30 bg-gold-500/5 p-6 sm:p-8">
+    <section class="mt-16 border-t border-navy-900/10 pt-8">
       <div class="swiss-eyebrow">— important</div>
-      <p class="mt-2 text-[0.98rem] leading-relaxed text-navy-700">${esc(t('dietary.contact'))}</p>
+      <p class="mt-3 text-[1.05rem] sm:text-[1.15rem] serif-heading text-navy-900 leading-snug max-w-2xl">${esc(t('dietary.contact'))}</p>
     </section>
-  </div>`;
-}
-
-/* Premium / order */
-const STATUS_ORDER = ['pending','confirmed','preparing','ontheway','delivered'];
-
-function etaMinutes() {
-  return Math.min(22, 6 + STATE.order.reduce((a,i)=>a + i.qty*2, 0));
-}
-
-function orderAdd(id) {
-  const dish = DISHES.find(d => d.id === id);
-  if (!dish) return;
-  const cur = STATE.order.find(i => i.dish.id === id);
-  if (cur) cur.qty++; else STATE.order.push({ dish, qty: 1 });
-  renderMain();
-}
-function orderRemove(id) {
-  const idx = STATE.order.findIndex(i => i.dish.id === id);
-  if (idx < 0) return;
-  if (STATE.order[idx].qty > 1) STATE.order[idx].qty--;
-  else STATE.order.splice(idx,1);
-  renderMain();
-}
-function orderClear() { STATE.order = []; renderMain(); }
-function orderPlace() {
-  if (!STATE.order.length) return;
-  STATE.orderRef = 'ASP-' + Math.random().toString(36).slice(2,7).toUpperCase();
-  STATE.orderStatus = 'pending';
-  showConfirmModal();
-  const steps = ['confirmed','preparing','ontheway','delivered'];
-  const delays = [900,2400,5200,8200];
-  steps.forEach((s,i)=>{
-    setTimeout(()=>{
-      STATE.orderStatus = s;
-      renderMain();
-      const modal = document.getElementById('confirmModal');
-      if (modal) showConfirmModal();
-    }, delays[i]);
-  });
-  renderMain();
-}
-
-function pagePremium() {
-  const premiumDishes = DISHES.filter(d => d.premium);
-  const totalCount = STATE.order.reduce((a,i)=>a+i.qty,0);
-  const totalLabel = totalCount + (totalCount === 1 ? ' item' : ' items');
-
-  return `
-  <div class="mx-auto max-w-6xl px-5 sm:px-8 pt-10 pb-16">
-    <div class="flex items-center gap-2">
-      <span class="text-gold-500">${icon('i-sparkle','w-4 h-4')}</span>
-      <span class="swiss-eyebrow text-gold-600">${esc(t('premium.eyebrow'))}</span>
-    </div>
-    <h1 class="serif-heading text-4xl sm:text-5xl mt-2">${esc(t('premium.title'))}</h1>
-    <p class="mt-3 text-navy-500 max-w-2xl leading-relaxed">${esc(t('premium.subtitle'))}</p>
-    <div class="mt-4 text-[0.78rem] uppercase tracking-wider text-gold-600">${esc(t('premium.access'))}</div>
-
-    <div class="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-5">
-        ${premiumDishes.map(d => {
-          const inOrder = STATE.order.find(i => i.dish.id === d.id);
-          return `
-          <div class="rounded-3xl overflow-hidden bg-white border border-ivory-200/60 shadow-soft">
-            <div class="relative aspect-[5/3]">
-              ${image(d.image,d.name,'h-full w-full')}
-              <span class="absolute top-3 right-3 inline-flex items-center gap-1 rounded-full bg-navy-900 text-gold-300 px-2.5 py-1 text-[0.66rem] uppercase tracking-wider">${icon('i-sparkle','w-3 h-3')} Suite</span>
-            </div>
-            <div class="p-5">
-              <div class="flex items-start justify-between gap-3">
-                <h3 class="serif-heading text-xl leading-tight">${esc(d.name)}</h3>
-                <span class="text-[0.8rem] tracking-wider text-gold-600 whitespace-nowrap pt-1">${esc(d.price)}</span>
-              </div>
-              <p class="mt-2 text-[0.85rem] text-navy-500 leading-relaxed line-clamp-2">${esc(d.description)}</p>
-              <div class="mt-4">
-                ${inOrder ? `
-                  <div class="inline-flex items-center gap-3 rounded-full border border-navy-900/15 px-2 py-1.5">
-                    <button data-rm="${d.id}" class="h-7 w-7 rounded-full bg-ivory-100 flex items-center justify-center">${icon('i-minus','w-3.5 h-3.5')}</button>
-                    <span class="w-4 text-center text-[0.9rem]">${inOrder.qty}</span>
-                    <button data-add="${d.id}" class="h-7 w-7 rounded-full bg-navy-900 text-ivory-50 flex items-center justify-center">${icon('i-plus','w-3.5 h-3.5')}</button>
-                  </div>` : `
-                  <button data-add="${d.id}" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-navy-900/20 text-[0.78rem] uppercase tracking-wider hover:border-gold-500 transition-colors">
-                    ${icon('i-plus','w-3.5 h-3.5')} ${esc(t('premium.cta'))}
-                  </button>`}
-              </div>
-            </div>
-          </div>`;
-        }).join('')}
-      </div>
-
-      <aside class="lg:sticky lg:top-32 self-start">
-        <div class="rounded-3xl bg-navy-900 text-ivory-50 p-6 shadow-lift">
-          <div class="flex items-center justify-between">
-            <div class="swiss-eyebrow text-gold-300">${esc(t('premium.order.title'))}</div>
-            ${STATE.order.length ? `<button id="orderClear" class="text-[0.7rem] uppercase tracking-wider text-ivory-50/70 hover:text-ivory-50 inline-flex items-center gap-1">${icon('i-x','w-3 h-3')} ${esc(t('menu.clear'))}</button>` : ''}
-          </div>
-          ${STATE.order.length === 0 ? `<p class="mt-4 text-[0.92rem] text-ivory-100/80 leading-relaxed">${esc(t('premium.order.empty'))}</p>` : `
-            <ul class="mt-4 divide-y divide-ivory-50/10">
-              ${STATE.order.map(i=>`
-                <li class="py-3 flex items-center justify-between gap-3">
-                  <div>
-                    <div class="text-[0.95rem]">${esc(i.dish.name)}</div>
-                    <div class="text-[0.72rem] tracking-wider text-gold-300/80">${esc(i.dish.price)} · ×${i.qty}</div>
-                  </div>
-                  <button data-rm="${i.dish.id}" class="h-7 w-7 rounded-full bg-ivory-50/10 flex items-center justify-center hover:bg-ivory-50/20">${icon('i-minus','w-3 h-3')}</button>
-                </li>`).join('')}
-            </ul>`}
-
-          <div class="mt-4">
-            <label class="swiss-eyebrow text-gold-300 block mb-2">${esc(t('premium.order.note'))}</label>
-            <textarea id="orderNote" rows="2" placeholder="${esc(t('premium.order.notepl'))}" class="lounge-input w-full rounded-2xl bg-ivory-50/5 border border-ivory-50/15 px-4 py-3 text-[0.9rem] focus:bg-ivory-50/10">${esc(STATE.orderNote)}</textarea>
-          </div>
-
-          <div class="mt-5 flex items-center justify-between text-[0.8rem] tracking-wider text-ivory-100/80">
-            <span>${esc(t('premium.order.total'))}</span><span>${esc(totalLabel)}</span>
-          </div>
-
-          <button id="orderPlace" ${STATE.order.length === 0 ? 'disabled' : ''} class="mt-4 w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-full bg-gold-500 text-navy-900 uppercase tracking-wider text-[0.78rem] hover:bg-gold-400 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
-            ${esc(t('premium.order.place'))} ${icon('i-arrow','w-3.5 h-3.5')}
-          </button>
-
-          ${STATE.orderStatus !== 'idle' ? `
-            <div class="mt-5">
-              <div class="text-[0.72rem] uppercase tracking-wider text-gold-300 mb-2">${esc(t('premium.estimated'))} · <span class="text-ivory-50">${etaMinutes()} ${esc(t('premium.minutes'))}</span></div>
-              <ol class="space-y-2">
-                ${STATUS_ORDER.map((s,i)=>{
-                  const idx = STATUS_ORDER.indexOf(STATE.orderStatus);
-                  const done = i <= idx;
-                  return `<li class="flex items-center gap-3">
-                    <span class="h-5 w-5 rounded-full flex items-center justify-center transition-colors ${done ? 'bg-gold-400 text-navy-900' : 'bg-ivory-50/10 text-ivory-100/60'}">
-                      ${done ? icon('i-check','w-3 h-3') : '<span class="h-1.5 w-1.5 rounded-full bg-current"></span>'}
-                    </span>
-                    <span class="text-[0.85rem] ${done ? 'text-ivory-50' : 'text-ivory-100/50'}">${esc(t('premium.status.'+s))}</span>
-                  </li>`;
-                }).join('')}
-              </ol>
-            </div>` : ''}
-        </div>
-      </aside>
-    </div>
   </div>`;
 }
 
@@ -1005,17 +836,17 @@ function pageAbout() {
     { key:'coffee', img:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1400&q=80' },
   ];
   return `
-  <div class="mx-auto max-w-6xl px-5 sm:px-8 pt-10 pb-16">
-    <div class="swiss-eyebrow inline-flex items-center gap-2">${icon('i-swiss','w-3.5 h-3.5')} Swiss sourcing</div>
-    <h1 class="serif-heading text-4xl sm:text-5xl mt-2">${esc(t('about.title'))}</h1>
-    <p class="mt-3 text-navy-500 max-w-2xl leading-relaxed">${esc(t('about.subtitle'))}</p>
-    <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+  <div class="mx-auto max-w-6xl px-5 sm:px-8 pt-14 sm:pt-20 pb-16">
+    <div class="swiss-eyebrow">— Swiss sourcing</div>
+    <h1 class="serif-heading text-[2.4rem] sm:text-[4rem] mt-3 text-navy-900">${esc(t('about.title'))}</h1>
+    <p class="mt-4 text-navy-500 max-w-xl leading-[1.7]">${esc(t('about.subtitle'))}</p>
+    <div class="mt-14 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-14 sm:gap-y-20">
       ${items.map((it,i)=>`
-        <article class="rounded-3xl overflow-hidden bg-white border border-ivory-200/60 shadow-soft anim-up" style="animation-delay:${i*80}ms">
-          <div class="relative aspect-[5/3]">${image(it.img,'','h-full w-full')}</div>
-          <div class="p-6">
+        <article class="anim-up" style="animation-delay:${i*80}ms">
+          <div class="relative aspect-[5/4] overflow-hidden">${image(it.img,'','h-full w-full')}</div>
+          <div class="pt-5">
             <div class="swiss-eyebrow">0${i+1}</div>
-            <h3 class="serif-heading text-2xl mt-1.5">${esc(t('about.'+it.key+'.title'))}</h3>
+            <h3 class="serif-heading text-2xl sm:text-3xl mt-2 text-navy-900">${esc(t('about.'+it.key+'.title'))}</h3>
             <p class="mt-2 text-[0.92rem] text-navy-500 leading-relaxed">${esc(t('about.'+it.key+'.body'))}</p>
           </div>
         </article>`).join('')}
@@ -1025,36 +856,38 @@ function pageAbout() {
 
 function pageFeedback() {
   return `
-  <div class="mx-auto max-w-2xl px-5 sm:px-8 pt-10 pb-16">
+  <div class="mx-auto max-w-2xl px-5 sm:px-8 pt-14 sm:pt-20 pb-16">
     <div class="swiss-eyebrow">— Aspire</div>
-    <h1 class="serif-heading text-4xl sm:text-5xl mt-2">${esc(t('feedback.title'))}</h1>
-    <p class="mt-3 text-navy-500 leading-relaxed">${esc(t('feedback.subtitle'))}</p>
-    <form id="feedbackForm" class="mt-10 space-y-8">
+    <h1 class="serif-heading text-[2.4rem] sm:text-[4rem] mt-3 text-navy-900">${esc(t('feedback.title'))}</h1>
+    <p class="mt-4 text-navy-500 leading-[1.7]">${esc(t('feedback.subtitle'))}</p>
+    <form id="feedbackForm" class="mt-12 divide-y divide-navy-900/10">
       ${ratingRow('overall',t('feedback.overall'))}
       ${ratingRow('food',t('feedback.food'))}
       ${ratingRow('service',t('feedback.service'))}
-      <div>
+      <div class="py-6">
         <label class="swiss-eyebrow block mb-3">${esc(t('feedback.dishrating'))}</label>
-        <div class="grid grid-cols-1 sm:grid-cols-[2fr_1fr] gap-3">
-          <select id="dishSelect" class="lounge-input h-12 px-4 rounded-full bg-white border border-ivory-200 text-[0.95rem]">
+        <div class="grid grid-cols-1 sm:grid-cols-[2fr_1fr] gap-3 items-center">
+          <select id="dishSelect" class="lounge-input h-11 px-3 bg-transparent border-b border-navy-900/15 text-[0.95rem] focus:ring-0 focus:border-navy-900">
             <option value="">${esc(t('feedback.choose'))}</option>
             ${DISHES.map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('')}
           </select>
-          <div class="h-12 px-4 rounded-full bg-white border border-ivory-200 flex items-center justify-center">${stars('dish')}</div>
+          <div class="flex items-center justify-start sm:justify-end">${stars('dish')}</div>
         </div>
       </div>
-      <div>
+      <div class="py-6">
         <label class="swiss-eyebrow block mb-3">${esc(t('feedback.comment'))}</label>
-        <textarea rows="4" placeholder="${esc(t('feedback.commentpl'))}" class="lounge-input w-full rounded-3xl bg-white border border-ivory-200 px-4 py-3 text-[0.95rem]"></textarea>
+        <textarea rows="3" placeholder="${esc(t('feedback.commentpl'))}" class="lounge-input w-full bg-transparent border-b border-navy-900/15 px-1 py-2 text-[0.95rem] focus:ring-0 focus:border-navy-900"></textarea>
       </div>
-      <button type="submit" class="w-full inline-flex items-center justify-center gap-2 py-4 rounded-full bg-navy-900 text-ivory-50 uppercase tracking-wider text-[0.78rem] hover:opacity-90 transition-opacity">${esc(t('feedback.submit'))}</button>
+      <div class="pt-8">
+        <button type="submit" class="inline-flex items-center justify-center gap-2 px-8 py-3.5 border border-navy-900 text-navy-900 uppercase tracking-[0.22em] text-[0.7rem] hover:bg-navy-900 hover:text-ivory-50 transition-colors">${esc(t('feedback.submit'))} ${icon('i-arrow','w-3 h-3')}</button>
+      </div>
     </form>
   </div>`;
 }
 
 function ratingRow(name, label) {
-  return `<div class="flex items-center justify-between gap-4">
-    <div class="text-[0.95rem]">${esc(label)}</div>
+  return `<div class="flex items-center justify-between gap-4 py-5 first:pt-0">
+    <div class="text-[0.95rem] text-navy-900">${esc(label)}</div>
     ${stars(name)}
   </div>`;
 }
@@ -1073,43 +906,38 @@ function showDishModal(id) {
   document.body.style.overflow = 'hidden';
   document.getElementById('modalHost').innerHTML = `
   <div id="dishModal" class="fixed inset-0 z-50 modal-bg flex items-end sm:items-center justify-center anim-fade" data-close>
-    <div class="w-full max-w-2xl bg-ivory-50 rounded-t-3xl sm:rounded-3xl shadow-lift overflow-hidden sm:m-5 max-h-[92vh] flex flex-col anim-up">
-      <div class="relative aspect-[16/10] flex-shrink-0">
+    <div class="w-full max-w-2xl bg-ivory-50 sm:m-5 max-h-[92vh] flex flex-col anim-up">
+      <div class="relative aspect-[5/4] flex-shrink-0">
         ${image(d.image,d.name,'h-full w-full')}
-        <button data-close class="absolute top-4 right-4 h-10 w-10 rounded-full bg-white/90 flex items-center justify-center shadow-soft" aria-label="${esc(t('menu.close'))}">${icon('i-x','w-4 h-4')}</button>
+        <button data-close class="absolute top-4 right-4 h-10 w-10 bg-ivory-50 flex items-center justify-center" aria-label="${esc(t('menu.close'))}">${icon('i-x','w-4 h-4')}</button>
         <div class="absolute bottom-4 left-4 flex flex-wrap items-center gap-2">
-          <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[0.66rem] uppercase tracking-wider bg-white ${d.temperature === 'hot' ? 'text-[#C0481E]' : 'text-[#2E7BB8]'}">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[0.62rem] uppercase tracking-[0.22em] bg-ivory-50 ${d.temperature === 'hot' ? 'text-[#C0481E]' : 'text-[#2E7BB8]'}">
             ${icon(d.temperature === 'hot' ? 'i-flame' : 'i-snow','w-3 h-3')} ${esc(t('menu.'+d.temperature))}
           </span>
           ${d.source === 'local'
-            ? `<span class="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-2.5 py-1 text-[0.66rem] uppercase tracking-wider text-navy-900">${icon('i-swiss','w-3 h-3')} ${esc(t('menu.local'))}</span>`
-            : `<span class="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-2.5 py-1 text-[0.66rem] uppercase tracking-wider text-navy-500">${icon('i-globe','w-3 h-3')} ${esc(t('menu.international'))}</span>`}
-          ${d.premium ? `<span class="inline-flex items-center gap-1 rounded-full bg-navy-900 text-gold-300 px-2.5 py-1 text-[0.66rem] uppercase tracking-wider">${icon('i-sparkle','w-3 h-3')} Suite</span>` : ''}
+            ? `<span class="inline-flex items-center gap-1.5 bg-ivory-50 px-2.5 py-1 text-[0.62rem] uppercase tracking-[0.22em] text-navy-900">${icon('i-swiss','w-3 h-3')} ${esc(t('menu.local'))}</span>`
+            : `<span class="inline-flex items-center gap-1.5 bg-ivory-50 px-2.5 py-1 text-[0.62rem] uppercase tracking-[0.22em] text-navy-500">${icon('i-globe','w-3 h-3')} ${esc(t('menu.international'))}</span>`}
         </div>
       </div>
-      <div class="p-6 overflow-y-auto">
-        <div class="flex items-start justify-between gap-3">
-          <h2 class="serif-heading text-3xl">${esc(d.name)}</h2>
-          ${d.price ? `<span class="text-[0.95rem] tracking-wider text-gold-600">${esc(d.price)}</span>` : ''}
-        </div>
-        <p class="mt-3 text-[0.96rem] text-navy-500 leading-relaxed">${esc(d.description)}</p>
-        ${d.chefNote ? `<div class="mt-5 rounded-2xl border border-gold-500/30 bg-gold-500/5 p-4">
-          <div class="swiss-eyebrow mb-1.5">${esc(t('menu.chefnote'))}</div>
-          <p class="text-[0.9rem] italic text-navy-700 leading-relaxed">${esc(d.chefNote)}</p>
+      <div class="p-8 overflow-y-auto">
+        <h2 class="serif-heading text-3xl sm:text-4xl text-navy-900">${esc(d.name)}</h2>
+        <p class="mt-4 text-[0.98rem] text-navy-500 leading-[1.7]">${esc(d.description)}</p>
+        ${d.chefNote ? `<div class="mt-7 pt-6 border-t border-navy-900/10">
+          <div class="swiss-eyebrow mb-2">${esc(t('menu.chefnote'))}</div>
+          <p class="text-[1.05rem] serif-heading italic text-navy-900 leading-snug">${esc(d.chefNote)}</p>
         </div>` : ''}
-        ${d.dietary.length ? `<div class="mt-5">
-          <div class="swiss-eyebrow mb-2">${esc(t('menu.dietary'))}</div>
-          <div class="flex flex-wrap gap-2">
-            ${d.dietary.map(x=>`<span class="inline-flex items-center gap-1.5 rounded-full bg-sage-500/10 text-sage-500 px-3 py-1.5 text-[0.78rem]">${icon('d-'+x,'w-3.5 h-3.5')} ${esc(t('diet.'+x))}</span>`).join('')}
+        ${d.dietary.length ? `<div class="mt-7 pt-6 border-t border-navy-900/10">
+          <div class="swiss-eyebrow mb-3">${esc(t('menu.dietary'))}</div>
+          <div class="flex flex-wrap gap-x-5 gap-y-2 text-navy-700">
+            ${d.dietary.map(x=>`<span class="inline-flex items-center gap-1.5 text-[0.85rem]">${icon('d-'+x,'w-4 h-4')} ${esc(t('diet.'+x))}</span>`).join('')}
           </div>
         </div>` : ''}
-        ${d.allergens.length ? `<div class="mt-5">
-          <div class="swiss-eyebrow mb-2">${esc(t('menu.allergens'))}</div>
-          <div class="flex flex-wrap gap-2">
-            ${d.allergens.map(a=>`<span class="inline-flex items-center gap-1.5 rounded-full bg-ivory-200/60 px-3 py-1.5 text-[0.78rem] text-navy-700">${icon('a-'+a,'w-3.5 h-3.5')} ${esc(t('allergen.'+a))}</span>`).join('')}
+        ${d.allergens.length ? `<div class="mt-7 pt-6 border-t border-navy-900/10">
+          <div class="swiss-eyebrow mb-3">${esc(t('menu.allergens'))}</div>
+          <div class="flex flex-wrap gap-x-5 gap-y-2 text-navy-700">
+            ${d.allergens.map(a=>`<span class="inline-flex items-center gap-1.5 text-[0.85rem]">${icon('a-'+a,'w-4 h-4')} ${esc(t('allergen.'+a))}</span>`).join('')}
           </div>
         </div>` : ''}
-        ${d.premium ? `<button data-add="${d.id}" data-then-close class="mt-6 w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-full bg-navy-900 text-ivory-50 uppercase tracking-wider text-[0.78rem] hover:opacity-90 transition-opacity">${icon('i-plus','w-3.5 h-3.5')} ${esc(t('menu.order'))}</button>` : ''}
       </div>
     </div>
   </div>`;
@@ -1119,17 +947,17 @@ function showHelpModal() {
   document.body.style.overflow = 'hidden';
   document.getElementById('modalHost').innerHTML = `
   <div id="helpModal" class="fixed inset-0 z-50 modal-bg flex items-end sm:items-center justify-center anim-fade" data-close>
-    <div class="w-full max-w-md bg-white rounded-t-3xl sm:rounded-3xl shadow-lift overflow-hidden sm:m-5 anim-up">
-      <div class="flex items-start justify-between p-5">
+    <div class="w-full max-w-md bg-ivory-50 sm:m-5 anim-up">
+      <div class="flex items-start justify-between p-7">
         <div>
           <div class="swiss-eyebrow">${esc(t('home.qr.title'))}</div>
-          <h3 class="serif-heading text-2xl mt-1">${esc(t('help.title'))}</h3>
+          <h3 class="serif-heading text-3xl mt-2 text-navy-900">${esc(t('help.title'))}</h3>
         </div>
-        <button data-close class="h-9 w-9 rounded-full border border-ivory-200 flex items-center justify-center">${icon('i-x','w-3.5 h-3.5')}</button>
+        <button data-close class="h-9 w-9 flex items-center justify-center text-navy-500 hover:text-navy-900">${icon('i-x','w-4 h-4')}</button>
       </div>
-      <p class="px-5 text-[0.95rem] text-navy-500 leading-relaxed">${esc(t('help.body'))}</p>
-      <div class="p-5">
-        <button id="callHost" class="w-full flex items-center justify-center gap-2 py-3.5 rounded-full bg-navy-900 text-ivory-50 uppercase tracking-wider text-[0.78rem] hover:opacity-90 transition-opacity">
+      <p class="px-7 text-[0.95rem] text-navy-500 leading-[1.7]">${esc(t('help.body'))}</p>
+      <div class="p-7 pt-6">
+        <button id="callHost" class="w-full inline-flex items-center justify-center gap-2 py-3.5 border border-navy-900 text-navy-900 uppercase tracking-[0.22em] text-[0.7rem] hover:bg-navy-900 hover:text-ivory-50 transition-colors">
           ${icon('i-bell','w-3.5 h-3.5')} ${esc(t('help.callstaff'))}
         </button>
       </div>
@@ -1137,32 +965,6 @@ function showHelpModal() {
   </div>`;
 }
 
-function showConfirmModal() {
-  document.body.style.overflow = 'hidden';
-  const idx = STATUS_ORDER.indexOf(STATE.orderStatus);
-  document.getElementById('modalHost').innerHTML = `
-  <div id="confirmModal" class="fixed inset-0 z-50 modal-bg flex items-end sm:items-center justify-center anim-fade" data-close>
-    <div class="w-full max-w-md bg-white rounded-t-3xl sm:rounded-3xl shadow-lift overflow-hidden sm:m-5 anim-up">
-      <div class="p-7 text-center">
-        <div class="mx-auto h-14 w-14 rounded-full bg-gold-500/15 text-gold-600 flex items-center justify-center">${icon('i-check','w-7 h-7')}</div>
-        <div class="swiss-eyebrow mt-4">${esc(t('premium.confirm.ref'))}</div>
-        <div class="serif-heading text-3xl mt-1">${esc(STATE.orderRef || '')}</div>
-        <h3 class="serif-heading text-2xl mt-4">${esc(t('premium.confirm.title'))}</h3>
-        <p class="mt-2 text-[0.95rem] text-navy-500 leading-relaxed">${esc(t('premium.confirm.body'))}</p>
-        <div class="mt-4 inline-flex items-center gap-2 rounded-full bg-ivory-100 px-4 py-2 text-[0.8rem] tracking-wider">
-          ${esc(t('premium.confirm.eta'))} · <span class="text-gold-600">${etaMinutes()} ${esc(t('premium.minutes'))}</span>
-        </div>
-        <div class="mt-5 text-left">
-          <div class="swiss-eyebrow mb-2">${esc(t('premium.status.'+STATE.orderStatus))}</div>
-          <div class="h-1.5 rounded-full bg-ivory-200 overflow-hidden">
-            <div class="h-full bg-gold-500 transition-all duration-700" style="width:${((idx+1)/STATUS_ORDER.length)*100}%"></div>
-          </div>
-        </div>
-      </div>
-      <button data-close class="w-full py-4 border-t border-ivory-200/60 uppercase tracking-wider text-[0.78rem]">${esc(t('menu.close'))}</button>
-    </div>
-  </div>`;
-}
 
 function closeModals() {
   document.getElementById('modalHost').innerHTML = '';
@@ -1179,7 +981,6 @@ function renderMain() {
     case 'menu':     html = pageMenu(); break;
     case 'drinks':   html = pageDrinks(); break;
     case 'dietary':  html = pageDietary(); break;
-    case 'premium':  html = pagePremium(); break;
     case 'about':    html = pageAbout(); break;
     case 'feedback': html = pageFeedback(); break;
     default:         html = pageHome();
@@ -1198,16 +999,6 @@ function attachPageEvents() {
   document.querySelectorAll('[data-dish]').forEach(b => b.addEventListener('click', e => {
     showDishModal(b.getAttribute('data-dish'));
   }));
-  // Premium add/remove
-  document.querySelectorAll('[data-add]').forEach(b => b.addEventListener('click', () => {
-    orderAdd(b.getAttribute('data-add'));
-    if (b.hasAttribute('data-then-close')) closeModals();
-  }));
-  document.querySelectorAll('[data-rm]').forEach(b => b.addEventListener('click', () => orderRemove(b.getAttribute('data-rm'))));
-  const oc = document.getElementById('orderClear'); if (oc) oc.addEventListener('click', orderClear);
-  const op = document.getElementById('orderPlace'); if (op) op.addEventListener('click', orderPlace);
-  const on = document.getElementById('orderNote'); if (on) on.addEventListener('input', e => STATE.orderNote = e.target.value);
-
   // Menu filters
   const si = document.getElementById('searchInput');
   if (si) si.addEventListener('input', e => { STATE.search = e.target.value; renderMain(); requestAnimationFrame(()=>document.getElementById('searchInput').focus()); });
@@ -1241,7 +1032,7 @@ function attachPageEvents() {
     let value = 0;
     const paint = (v) => buttons.forEach((btn,i) => {
       const path = btn.querySelector('svg');
-      if (i < v) { path.setAttribute('fill', '#B89855'); path.setAttribute('stroke', '#B89855'); }
+      if (i < v) { path.setAttribute('fill', '#0A1729'); path.setAttribute('stroke', '#0A1729'); }
       else { path.setAttribute('fill', 'none'); path.setAttribute('stroke', 'currentColor'); }
     });
     buttons.forEach((btn,i) => btn.addEventListener('click', () => { value = i + 1; paint(value); }));
@@ -1249,10 +1040,10 @@ function attachPageEvents() {
   const ff = document.getElementById('feedbackForm');
   if (ff) ff.addEventListener('submit', (e) => {
     e.preventDefault();
-    ff.outerHTML = `<div class="text-center anim-up py-10">
-      <div class="mx-auto h-16 w-16 rounded-full bg-gold-500/15 text-gold-600 flex items-center justify-center">${icon('i-check','w-7 h-7')}</div>
-      <h2 class="serif-heading text-3xl mt-5">${esc(t('feedback.thanks'))}</h2>
-      <p class="mt-3 text-navy-500 leading-relaxed">${esc(t('footer.note'))}</p>
+    ff.outerHTML = `<div class="anim-up py-10 border-t border-navy-900/10">
+      <div class="swiss-eyebrow">— ${esc(t('feedback.submit'))}</div>
+      <h2 class="serif-heading text-3xl sm:text-4xl mt-3 text-navy-900">${esc(t('feedback.thanks'))}</h2>
+      <p class="mt-3 text-navy-500 leading-[1.7]">${esc(t('footer.note'))}</p>
     </div>`;
   });
 }
@@ -1307,7 +1098,7 @@ document.getElementById('modalHost').addEventListener('click', (e) => {
   const callBtn = e.target.closest('#callHost');
   if (callBtn) {
     callBtn.outerHTML = `
-      <div class="flex items-center justify-center gap-2 py-3.5 rounded-full bg-gold-500/10 text-gold-600 uppercase tracking-wider text-[0.78rem]">
+      <div class="flex items-center justify-center gap-2 py-3.5 border border-navy-900/15 text-navy-700 uppercase tracking-[0.22em] text-[0.7rem]">
         ${icon('i-check','w-3.5 h-3.5')} ${esc(t('help.called'))}
       </div>`;
     setTimeout(closeModals, 1800);
