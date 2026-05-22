@@ -234,13 +234,13 @@
     <div>
       <div class="swiss-eyebrow mb-3" data-i18n="home.hours"></div>
       <div class="space-y-1 text-[0.88rem] text-navy-500">
-        <div>Zürich Airport · Terminal A</div>
-        <div>Genève Aéroport · Terminal 1</div>
-        <div>Basel EuroAirport · Departures</div>
+        <div data-i18n="addr.zurich"></div>
+        <div data-i18n="addr.geneva"></div>
+        <div data-i18n="addr.basel"></div>
       </div>
     </div>
     <div>
-      <div class="swiss-eyebrow mb-3">— Aspire</div>
+      <div class="swiss-eyebrow mb-3" data-i18n="eyebrow.aspire"></div>
       <div class="space-y-1 text-[0.88rem] text-navy-500">
         <a href="#dietary" data-route="dietary" class="block hover:text-navy-900" data-i18n="nav.dietary"></a>
         <a href="#about" data-route="about" class="block hover:text-navy-900" data-i18n="nav.about"></a>
@@ -250,8 +250,8 @@
   </div>
   <div class="hairline mx-auto max-w-6xl"></div>
   <div class="mx-auto max-w-6xl px-5 sm:px-8 py-6 flex items-center justify-between text-[0.72rem] uppercase tracking-wider text-navy-500/70">
-    <span>© Aspire Lounge Switzerland</span>
-    <span>Crafted in Zürich</span>
+    <span data-i18n="footer.copy"></span>
+    <span data-i18n="footer.crafted"></span>
   </div>
 </footer>
 
@@ -372,7 +372,25 @@ const I18N = {
     'feedback.dishrating':'Rate a specific dish','feedback.choose':'Choose a dish',
     'lang.title':'Language','help.title':'Need a hand?','help.body':'Press the call button or ask any host — we’re close by.',
     'help.callstaff':'Call a host','help.called':'A host has been notified.','help.close':'Close',
-    'footer.note':'A calm, premium moment before your flight.'
+    'footer.note':'A calm, premium moment before your flight.',
+    'footer.crafted':'Crafted in Zürich','footer.copy':'© Aspire Lounge Switzerland',
+    'addr.zurich':'Zürich Airport · Terminal A','addr.geneva':'Genève Aéroport · Terminal 1','addr.basel':'Basel EuroAirport · Departures',
+    'eyebrow.aspire':'— Aspire','eyebrow.important':'— important','eyebrow.swiss':'— Swiss sourcing',
+    'home.scroll':'Scroll','home.tap':'Tap any glowing point to discover the buffet',
+    'home.cities':'Zürich · Genève · Basel',
+    'home.quiet.eyebrow':'— Our quiet promise',
+    'home.story.body':'From the first sip of alpine coffee to the last bite of Zuger Kirschtorte, every detail is composed to feel like a calm pause between cities.',
+    'home.farms.title':'From Swiss valleys, lakes and farms.','home.farms.cta':'Discover sourcing',
+    'home.choose.eyebrow':'— Today in the lounge','home.choose.title':'Choose where to begin.',
+    'hotspot.eyebrow':'— On the buffet',
+    'hotspot.bread.title':'Artisan Breads','hotspot.bread.desc':'Sourdough, walnut and seeded loaves, sliced to order.',
+    'hotspot.pretzel.title':'Swiss Pretzel Garland','hotspot.pretzel.desc':'Hand-twisted in the lounge kitchen each morning.',
+    'hotspot.pastry.title':'Mini French Pastries','hotspot.pastry.desc':'Pain au chocolat, croissants, brioche and palmier.',
+    'hotspot.preserve.title':'Seasonal Preserves','hotspot.preserve.desc':'Apricot, fig, wild berry and alpine honey.',
+    'hotspot.porcelain.title':'Hand-painted Porcelain','hotspot.porcelain.desc':'A quiet table setting curated for the season.',
+    'hotspot.citrus.title':'Mediterranean Citrus','hotspot.citrus.desc':'Today’s fruit feature — kumquats and bergamot.',
+    'drinks.footer.left':'Self-serve · refreshed throughout the day','drinks.footer.right':'Ask a host for additional requests',
+    'menu.count.one':'dish','menu.count.many':'dishes'
   },
   fr: {
     'brand.line1':'Aspire Lounge','brand.line2':'Suisse','brand.sub':'SALONS AÉROPORTUAIRES · SUISSE',
@@ -420,7 +438,25 @@ const I18N = {
     'feedback.dishrating':'Noter un plat précis','feedback.choose':'Choisir un plat',
     'lang.title':'Langue','help.title':'Besoin d’aide ?','help.body':'Appelez un hôte ou faites-nous signe — nous sommes proches.',
     'help.callstaff':'Appeler un hôte','help.called':'Un hôte a été prévenu.','help.close':'Fermer',
-    'footer.note':'Un moment calme et raffiné avant votre vol.'
+    'footer.note':'Un moment calme et raffiné avant votre vol.',
+    'footer.crafted':'Conçu à Zurich','footer.copy':'© Aspire Lounge Suisse',
+    'addr.zurich':'Aéroport de Zurich · Terminal A','addr.geneva':'Aéroport de Genève · Terminal 1','addr.basel':'EuroAirport de Bâle · Départs',
+    'eyebrow.aspire':'— Aspire','eyebrow.important':'— important','eyebrow.swiss':'— Origine suisse',
+    'home.scroll':'Faire défiler','home.tap':'Touchez un point lumineux pour découvrir le buffet',
+    'home.cities':'Zurich · Genève · Bâle',
+    'home.quiet.eyebrow':'— Notre promesse silencieuse',
+    'home.story.body':'De la première gorgée de café alpin à la dernière bouchée de Zuger Kirschtorte, chaque détail compose une pause calme entre deux villes.',
+    'home.farms.title':'Des vallées, des lacs et des fermes de Suisse.','home.farms.cta':'Découvrir nos producteurs',
+    'home.choose.eyebrow':'— Aujourd’hui au salon','home.choose.title':'Choisissez par où commencer.',
+    'hotspot.eyebrow':'— Au buffet',
+    'hotspot.bread.title':'Pains artisanaux','hotspot.bread.desc':'Levain, noix et graines, tranchés à la demande.',
+    'hotspot.pretzel.title':'Bretzels suisses','hotspot.pretzel.desc':'Torsadés à la main chaque matin en cuisine.',
+    'hotspot.pastry.title':'Mini-viennoiseries','hotspot.pastry.desc':'Pain au chocolat, croissant, brioche, palmier.',
+    'hotspot.preserve.title':'Confitures de saison','hotspot.preserve.desc':'Abricot, figue, fruits des bois, miel d’alpage.',
+    'hotspot.porcelain.title':'Porcelaine peinte main','hotspot.porcelain.desc':'Un dressage discret, choisi pour la saison.',
+    'hotspot.citrus.title':'Agrumes méditerranéens','hotspot.citrus.desc':'Fruits du jour — kumquats et bergamote.',
+    'drinks.footer.left':'En libre-service · renouvelé toute la journée','drinks.footer.right':'Demandez à un hôte pour toute requête',
+    'menu.count.one':'plat','menu.count.many':'plats'
   },
   de: {
     'brand.line1':'Aspire Lounge','brand.line2':'Schweiz','brand.sub':'AIRPORT LOUNGES · SCHWEIZ',
@@ -468,7 +504,25 @@ const I18N = {
     'feedback.dishrating':'Ein Gericht bewerten','feedback.choose':'Gericht wählen',
     'lang.title':'Sprache','help.title':'Brauchen Sie Hilfe?','help.body':'Rufen Sie einen Gastgeber — wir sind in der Nähe.',
     'help.callstaff':'Gastgeber rufen','help.called':'Ein Gastgeber wurde informiert.','help.close':'Schliessen',
-    'footer.note':'Ein ruhiger, edler Moment vor Ihrem Flug.'
+    'footer.note':'Ein ruhiger, edler Moment vor Ihrem Flug.',
+    'footer.crafted':'Gestaltet in Zürich','footer.copy':'© Aspire Lounge Schweiz',
+    'addr.zurich':'Flughafen Zürich · Terminal A','addr.geneva':'Flughafen Genf · Terminal 1','addr.basel':'EuroAirport Basel · Abflug',
+    'eyebrow.aspire':'— Aspire','eyebrow.important':'— wichtig','eyebrow.swiss':'— Schweizer Herkunft',
+    'home.scroll':'Scrollen','home.tap':'Berühren Sie einen leuchtenden Punkt, um das Buffet zu entdecken',
+    'home.cities':'Zürich · Genf · Basel',
+    'home.quiet.eyebrow':'— Unser leises Versprechen',
+    'home.story.body':'Vom ersten Schluck Alpenkaffee bis zum letzten Bissen Zuger Kirschtorte ist jedes Detail darauf abgestimmt, wie eine ruhige Pause zwischen den Städten zu wirken.',
+    'home.farms.title':'Aus Schweizer Tälern, Seen und Höfen.','home.farms.cta':'Herkunft entdecken',
+    'home.choose.eyebrow':'— Heute in der Lounge','home.choose.title':'Wählen Sie, wo Sie beginnen.',
+    'hotspot.eyebrow':'— Am Buffet',
+    'hotspot.bread.title':'Handwerksbrote','hotspot.bread.desc':'Sauerteig, Walnuss und Saatenbrote — frisch geschnitten.',
+    'hotspot.pretzel.title':'Schweizer Brezeln','hotspot.pretzel.desc':'Jeden Morgen von Hand geschlungen in unserer Küche.',
+    'hotspot.pastry.title':'Mini-Patisserie','hotspot.pastry.desc':'Pain au chocolat, Croissant, Brioche und Palmier.',
+    'hotspot.preserve.title':'Saisonale Konfitüren','hotspot.preserve.desc':'Aprikose, Feige, Waldbeere und Alpenhonig.',
+    'hotspot.porcelain.title':'Handbemaltes Porzellan','hotspot.porcelain.desc':'Ein stilles, saisonal abgestimmtes Gedeck.',
+    'hotspot.citrus.title':'Mediterrane Zitrusfrüchte','hotspot.citrus.desc':'Frucht des Tages — Kumquat und Bergamotte.',
+    'drinks.footer.left':'Selbstbedienung · ständig aufgefrischt','drinks.footer.right':'Für Sonderwünsche fragen Sie unsere Gastgeber',
+    'menu.count.one':'Gericht','menu.count.many':'Gerichte'
   },
   it: {
     'brand.line1':'Aspire Lounge','brand.line2':'Svizzera','brand.sub':'LOUNGE AEROPORTUALI · SVIZZERA',
@@ -516,7 +570,25 @@ const I18N = {
     'feedback.dishrating':'Valuta un piatto specifico','feedback.choose':'Scegli un piatto',
     'lang.title':'Lingua','help.title':'Serve aiuto?','help.body':'Chiama un host — siamo vicini.',
     'help.callstaff':'Chiama un host','help.called':'Un host è stato avvisato.','help.close':'Chiudi',
-    'footer.note':'Un momento calmo e raffinato prima del volo.'
+    'footer.note':'Un momento calmo e raffinato prima del volo.',
+    'footer.crafted':'Realizzato a Zurigo','footer.copy':'© Aspire Lounge Svizzera',
+    'addr.zurich':'Aeroporto di Zurigo · Terminal A','addr.geneva':'Aeroporto di Ginevra · Terminal 1','addr.basel':'EuroAirport Basilea · Partenze',
+    'eyebrow.aspire':'— Aspire','eyebrow.important':'— importante','eyebrow.swiss':'— Origine svizzera',
+    'home.scroll':'Scorri','home.tap':'Tocca un punto luminoso per scoprire il buffet',
+    'home.cities':'Zurigo · Ginevra · Basilea',
+    'home.quiet.eyebrow':'— La nostra quieta promessa',
+    'home.story.body':'Dal primo sorso di caffè alpino all’ultimo morso di Zuger Kirschtorte, ogni dettaglio è composto per essere una pausa silenziosa tra una città e l’altra.',
+    'home.farms.title':'Dalle valli, dai laghi e dalle fattorie svizzere.','home.farms.cta':'Scopri i produttori',
+    'home.choose.eyebrow':'— Oggi in lounge','home.choose.title':'Scegli da dove iniziare.',
+    'hotspot.eyebrow':'— Al buffet',
+    'hotspot.bread.title':'Pani artigianali','hotspot.bread.desc':'Lievito madre, noci e semi — tagliati al momento.',
+    'hotspot.pretzel.title':'Brezel svizzeri','hotspot.pretzel.desc':'Intrecciati a mano ogni mattina nella nostra cucina.',
+    'hotspot.pastry.title':'Mini pasticceria francese','hotspot.pastry.desc':'Pain au chocolat, croissant, brioche e palmier.',
+    'hotspot.preserve.title':'Confetture di stagione','hotspot.preserve.desc':'Albicocca, fico, frutti di bosco e miele d’alpe.',
+    'hotspot.porcelain.title':'Porcellana dipinta a mano','hotspot.porcelain.desc':'Una tavola discreta, curata per la stagione.',
+    'hotspot.citrus.title':'Agrumi mediterranei','hotspot.citrus.desc':'Frutto del giorno — kumquat e bergamotto.',
+    'drinks.footer.left':'Self-service · rinnovato durante la giornata','drinks.footer.right':'Per richieste speciali chieda al nostro host',
+    'menu.count.one':'piatto','menu.count.many':'piatti'
   },
   ar: {
     'brand.line1':'صالة أسباير','brand.line2':'سويسرا','brand.sub':'صالات المطارات · سويسرا',
@@ -564,7 +636,25 @@ const I18N = {
     'feedback.dishrating':'قيّم طبقاً محدداً','feedback.choose':'اختر طبقاً',
     'lang.title':'اللغة','help.title':'هل تحتاج مساعدة؟','help.body':'استدع مضيفاً — نحن قريبون.',
     'help.callstaff':'استدعاء مضيف','help.called':'تم إخطار المضيف.','help.close':'إغلاق',
-    'footer.note':'لحظة هادئة وراقية قبل رحلتك.'
+    'footer.note':'لحظة هادئة وراقية قبل رحلتك.',
+    'footer.crafted':'صُمِّم في زيورخ','footer.copy':'© صالة أسباير سويسرا',
+    'addr.zurich':'مطار زيورخ · المبنى A','addr.geneva':'مطار جنيف · المبنى 1','addr.basel':'مطار بازل · بوابات المغادرة',
+    'eyebrow.aspire':'— أسباير','eyebrow.important':'— تنبيه','eyebrow.swiss':'— مصدر سويسري',
+    'home.scroll':'مرّر للأسفل','home.tap':'المس أي نقطة مضيئة لاكتشاف البوفيه',
+    'home.cities':'زيورخ · جنيف · بازل',
+    'home.quiet.eyebrow':'— وعدنا الهادئ',
+    'home.story.body':'من أول رشفة قهوة ألبية إلى آخر قضمة من كعكة زوغ، كل تفصيلة مُعدّة لتمنحك استراحة هادئة بين المدن.',
+    'home.farms.title':'من وديان سويسرا وبحيراتها ومزارعها.','home.farms.cta':'اكتشف مصادرنا',
+    'home.choose.eyebrow':'— اليوم في الصالة','home.choose.title':'اختر من أين تبدأ.',
+    'hotspot.eyebrow':'— على البوفيه',
+    'hotspot.bread.title':'خبز حِرَفي','hotspot.bread.desc':'خبز العجين المخمّر والجوز والبذور — يُقطّع عند الطلب.',
+    'hotspot.pretzel.title':'بريتزل سويسري','hotspot.pretzel.desc':'يُلَفّ يدوياً في مطبخنا كل صباح.',
+    'hotspot.pastry.title':'حلويات فرنسية صغيرة','hotspot.pastry.desc':'بان أو شوكولا، كرواسون، بريوش، بالميه.',
+    'hotspot.preserve.title':'مربّيات موسمية','hotspot.preserve.desc':'مشمش، تين، توت برّي وعسل الجبال.',
+    'hotspot.porcelain.title':'بورسلين مرسوم يدوياً','hotspot.porcelain.desc':'طاولة هادئة، مُختارة بحسب الموسم.',
+    'hotspot.citrus.title':'حمضيات متوسطية','hotspot.citrus.desc':'فاكهة اليوم — كمكوات وبرغموت.',
+    'drinks.footer.left':'خدمة ذاتية · يتجدد طوال اليوم','drinks.footer.right':'للطلبات الخاصة اسأل أحد المضيفين',
+    'menu.count.one':'طبق','menu.count.many':'أطباق'
   }
 };
 
@@ -675,12 +765,12 @@ function pageHome() {
 
     <!-- Interactive hotspots over the image -->
     <div class="absolute inset-0 z-10">
-      ${hotspot(20, 64, 'Artisan Breads', 'Sourdough, walnut and seeded loaves, sliced to order.', 'down')}
-      ${hotspot(32, 50, 'Swiss Pretzel Garland', 'Hand-twisted in the lounge kitchen each morning.')}
-      ${hotspot(46, 72, 'Mini French Pastries', 'Pain au chocolat, croissants, brioche and palmier.', 'down')}
-      ${hotspot(58, 76, 'Seasonal Preserves', 'Apricot, fig, wild berry and alpine honey.', 'down', 'right')}
-      ${hotspot(70, 65, 'Hand-painted Porcelain', 'A quiet table setting curated for the season.', null, 'right')}
-      ${hotspot(50, 36, 'Mediterranean Citrus', 'Today’s fruit feature — kumquats and bergamot.', null, 'right')}
+      ${hotspot(20, 64, t('hotspot.bread.title'), t('hotspot.bread.desc'), 'down')}
+      ${hotspot(32, 50, t('hotspot.pretzel.title'), t('hotspot.pretzel.desc'))}
+      ${hotspot(46, 72, t('hotspot.pastry.title'), t('hotspot.pastry.desc'), 'down')}
+      ${hotspot(58, 76, t('hotspot.preserve.title'), t('hotspot.preserve.desc'), 'down', 'right')}
+      ${hotspot(70, 65, t('hotspot.porcelain.title'), t('hotspot.porcelain.desc'), null, 'right')}
+      ${hotspot(50, 36, t('hotspot.citrus.title'), t('hotspot.citrus.desc'), null, 'right')}
     </div>
 
     <!-- Foreground typography -->
@@ -696,12 +786,12 @@ function pageHome() {
           ${esc(t('home.cta.menu'))} ${icon('i-arrow','w-3.5 h-3.5')}
         </a>
       </div>
-      <div class="mt-6 text-[0.6rem] uppercase tracking-[0.4em] text-navy-500/80 anim-fade" style="animation-delay:.8s">Tap any glowing point to discover the buffet</div>
+      <div class="mt-6 text-[0.6rem] uppercase tracking-[0.4em] text-navy-500/80 anim-fade" style="animation-delay:.8s">${esc(t('home.tap'))}</div>
     </div>
 
     <div class="absolute bottom-7 inset-x-0 flex justify-center z-20 pointer-events-none">
       <div class="flex flex-col items-center gap-3 text-navy-500/80">
-        <span class="text-[0.58rem] uppercase tracking-[0.4em]">Scroll</span>
+        <span class="text-[0.58rem] uppercase tracking-[0.4em]">${esc(t('home.scroll'))}</span>
         <span class="scroll-cue block w-px h-10 bg-gradient-to-b from-navy-500/70 to-transparent"></span>
       </div>
     </div>
@@ -711,7 +801,7 @@ function pageHome() {
   <section class="bg-ivory-50 border-y border-navy-900/10">
     <div class="mx-auto max-w-6xl px-5 sm:px-8 py-7 flex flex-wrap items-center justify-between gap-6 text-[0.66rem] uppercase tracking-[0.4em] text-navy-500">
       <span>${esc(t('home.hours'))}</span>
-      <span class="hidden sm:inline">Zürich · Genève · Basel</span>
+      <span class="hidden sm:inline">${esc(t('home.cities'))}</span>
       <span>${esc(t('home.qr.title'))}</span>
     </div>
   </section>
@@ -721,11 +811,11 @@ function pageHome() {
     <div class="mx-auto max-w-6xl px-5 sm:px-8 py-28 sm:py-44">
       <div class="grid md:grid-cols-12 gap-10 md:gap-16 items-end">
         <div class="md:col-span-7 reveal">
-          <div class="swiss-eyebrow">— Our quiet promise</div>
+          <div class="swiss-eyebrow">${esc(t('home.quiet.eyebrow'))}</div>
           <h2 class="serif-heading text-[2.2rem] sm:text-[3.6rem] md:text-[4.4rem] mt-5 leading-[1.05] text-navy-900">${esc(t('home.subtitle'))}</h2>
         </div>
         <div class="md:col-span-5 reveal" style="transition-delay:.15s">
-          <p class="text-[0.95rem] sm:text-[1rem] leading-[1.8] text-navy-500 max-w-md">From the first sip of alpine coffee to the last bite of Zuger Kirschtorte, every detail is composed to feel like a calm pause between cities.</p>
+          <p class="text-[0.95rem] sm:text-[1rem] leading-[1.8] text-navy-500 max-w-md">${esc(t('home.story.body'))}</p>
         </div>
       </div>
       <div class="relative aspect-[16/8] mt-16 sm:mt-24 overflow-hidden">
@@ -742,10 +832,10 @@ function pageHome() {
       <div class="grid md:grid-cols-12 gap-10 md:gap-16 items-center">
         <div class="md:col-span-5 reveal">
           <div class="swiss-eyebrow">— ${esc(t('nav.about'))}</div>
-          <h2 class="serif-heading text-3xl sm:text-5xl md:text-[3.6rem] mt-4 leading-[1.05] text-navy-900">From Swiss valleys, lakes and farms.</h2>
+          <h2 class="serif-heading text-3xl sm:text-5xl md:text-[3.6rem] mt-4 leading-[1.05] text-navy-900">${esc(t('home.farms.title'))}</h2>
           <p class="mt-6 text-navy-500 leading-[1.7] max-w-md">${esc(t('about.subtitle'))}</p>
           <a href="#about" data-route="about" class="mt-7 inline-flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.22em] text-navy-900 border-b border-navy-900/40 pb-1 hover:border-navy-900 transition-colors">
-            Discover sourcing ${icon('i-arrow','w-3 h-3')}
+            ${esc(t('home.farms.cta'))} ${icon('i-arrow','w-3 h-3')}
           </a>
         </div>
         <div class="md:col-span-7 reveal" style="transition-delay:.1s">
@@ -763,8 +853,8 @@ function pageHome() {
   <section class="bg-ivory-50">
     <div class="mx-auto max-w-6xl px-5 sm:px-8 py-20 sm:py-32">
       <div class="text-center mb-14 sm:mb-20 reveal">
-        <div class="swiss-eyebrow">— Today in the lounge</div>
-        <h2 class="serif-heading text-3xl sm:text-5xl mt-3 text-navy-900">Choose where to begin.</h2>
+        <div class="swiss-eyebrow">${esc(t('home.choose.eyebrow'))}</div>
+        <h2 class="serif-heading text-3xl sm:text-5xl mt-3 text-navy-900">${esc(t('home.choose.title'))}</h2>
       </div>
       <div class="grid md:grid-cols-2 gap-10 sm:gap-14" style="perspective: 1400px">
         ${editorialCard('menu','01',t('nav.menu'),t('home.qr.body'),'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=80')}
@@ -800,7 +890,7 @@ function hotspot(left, top, title, desc, flip, anchor) {
   <button class="hotspot" style="left:${left}%; top:${top}%;"${flipAttr}${anchorAttr} aria-label="${esc(title)}">
     <span class="hotspot-dot"></span>
     <span class="hotspot-card" role="tooltip">
-      <span class="hotspot-eyebrow">— On the buffet</span>
+      <span class="hotspot-eyebrow">${esc(t('hotspot.eyebrow'))}</span>
       <span class="hotspot-title">${esc(title)}</span>
       <span class="hotspot-desc">${esc(desc)}</span>
     </span>
@@ -831,7 +921,8 @@ function dishesFiltered() {
     if (STATE.filters.size && ![...STATE.filters].every(f => d.dietary.includes(f))) return false;
     if (STATE.temperature && d.temperature !== STATE.temperature) return false;
     if (!q) return true;
-    return d.name.toLowerCase().includes(q) || d.description.toLowerCase().includes(q);
+    const ld = localizedDish(d);
+    return ld.name.toLowerCase().includes(q) || ld.description.toLowerCase().includes(q);
   });
 }
 
@@ -960,10 +1051,11 @@ function localSpecialityHeader() {
 }
 
 function dishCard(d) {
+  const ld = localizedDish(d);
   return `
   <button data-dish="${d.id}" class="group text-left focus:outline-none anim-up w-full">
     <div class="relative aspect-[4/5] overflow-hidden">
-      ${image(d.image, d.name, 'h-full w-full transition-transform duration-700 group-hover:scale-[1.02]')}
+      ${image(d.image, ld.name, 'h-full w-full transition-transform duration-700 group-hover:scale-[1.02]')}
       <div class="absolute top-3 right-3">
         <span class="inline-flex items-center gap-1 bg-ivory-50/95 px-2 py-1 text-[0.6rem] uppercase tracking-[0.22em] ${d.temperature === 'hot' ? 'text-[#C0481E]' : 'text-[#2E7BB8]'}">
           ${icon(d.temperature === 'hot' ? 'i-flame' : 'i-snow','w-3 h-3')} ${esc(t('menu.'+d.temperature))}
@@ -971,8 +1063,8 @@ function dishCard(d) {
       </div>
     </div>
     <div class="pt-5">
-      <h3 class="serif-heading text-[1.55rem] leading-tight text-navy-900">${esc(d.name)}</h3>
-      <p class="mt-2 text-[0.9rem] text-navy-500 leading-relaxed line-clamp-2">${esc(d.description)}</p>
+      <h3 class="serif-heading text-[1.55rem] leading-tight text-navy-900">${esc(ld.name)}</h3>
+      <p class="mt-2 text-[0.9rem] text-navy-500 leading-relaxed line-clamp-2">${esc(ld.description)}</p>
       <div class="mt-4 flex items-center justify-between">
         <div class="flex items-center gap-2 text-gold-500">
           ${d.dietary.slice(0,4).map(f => `<span title="${esc(t('diet.'+f))}">${icon('d-'+f,'w-[18px] h-[18px]')}</span>`).join('')}
@@ -986,6 +1078,315 @@ function dishCard(d) {
     </div>
   </button>`;
 }
+
+/* ===========================================================
+   Localized dish & drink overrides
+   =========================================================== */
+const DISH_I18N = {
+  en: {},
+  fr: {
+    'cheese-charcuterie': { name:'Plateau de fromages & charcuterie suisses', description:'Gruyère AOP affiné, Tête de Moine, Bündnerfleisch, viandes séchées du Valais et compotée de figues.', chefNote:'Sélection renouvelée chaque semaine avec nos affineurs locaux.' },
+    'bircher-muesli': { name:'Coupes de Birchermüesli', description:'Flocons trempés, pomme râpée, yaourt suisse, miel et noisettes torréfiées.' },
+    'smoked-trout-salad': { name:'Salade de pommes de terre à la truite fumée', description:'Truite alpine fumée à froid, pommes Ratte, crème fraîche à l’aneth, zeste de citron.', chefNote:'Truite issue des pêcheries du lac de Lucerne.' },
+    'cucumber-radish-salad': { name:'Salade de concombre & radis aux herbes', description:'Concombre croquant, radis breakfast, herbes du jardin, vinaigrette citron.' },
+    'pretzel-butter': { name:'Petits bretzels & sélection de beurres', description:'Bretzels suisses chauds, beurre cultivé, beurre aux herbes et fleur de sel des Alpes.' },
+    'fruit-compote': { name:'Compotes de fruits de saison', description:'Fruits de saison mijotés, gousse de vanille, léger sirop au miel d’alpage.' },
+    'greek-yogurt-parfait': { name:'Station de parfait au yaourt grec', description:'Yaourt grec épais, miel, granola, fruits rouges et fruits de saison.' },
+    'french-pastry': { name:'Sélection de mini-viennoiseries', description:'Pain au chocolat, croissant, brioche et palmier — cuits chaque matin.' },
+    'chickpea-salad': { name:'Salade de pois chiches à l’orientale', description:'Pois chiches, tomate, concombre, persil, citron, cumin et huile d’olive.' },
+    'avocado-wraps': { name:'Wraps avocat & tomate du petit-déjeuner', description:'Avocat écrasé, tomate mûrie au soleil, jeunes pousses d’épinard, citron, tortilla de blé.' },
+    'zurcher-geschnetzeltes': { name:'Émincé de veau à la zurichoise', description:'Émincé de veau au vin blanc et sauce crémeuse aux champignons, à la mode de Zurich.', chefNote:'Spécialité emblématique du canton de Zurich depuis les années 1940.' },
+    'rosti-alpine-cheese': { name:'Rösti au fromage d’alpage', description:'Rösti de pomme de terre dorée, Hobelkäse bernois fondu et ciboulette.' },
+    'veal-bratwurst': { name:'Bratwurst de veau, sauce aux oignons', description:'Bratwurst de veau à la suisse, sauce aux oignons mijotée, rösti au beurre.' },
+    'herb-lake-fish': { name:'Filet de perche du lac aux herbes', description:'Filet de perche du lac de Zurich, beurre aux herbes, beurre blanc aux agrumes, légumes du jardin.', chefNote:'Pêche durable dans les lacs suisses.' },
+    'shakshuka': { name:'Shakshuka méditerranéenne', description:'Tomates mijotées, poivrons, épices et œufs cuits au four, pain croustillant.' },
+    'chicken-skillet': { name:'Skillet de saucisse de poulet', description:'Saucisse de poulet halal, poivrons, oignons, pommes de terre dorées, œufs cuits au four.' },
+    'asian-fried-rice': { name:'Riz sauté aux légumes à l’asiatique', description:'Riz jasmin, gingembre, ail, soja, légumes de saison, finition au sésame.' },
+    'zuger-kirschtorte': { name:'Mini Zuger Kirschtorte', description:'Meringue aux noisettes, crème au beurre et biscuit imbibé de kirsch — spécialité du canton de Zoug.', chefNote:'Spécialité suisse protégée depuis 1915.' },
+    'chocolate-mousse': { name:'Verrines de mousse au chocolat suisse', description:'Chocolat Lindt grand cru 70 %, crème fouettée, éclats de cacao, feuille d’or.' },
+    'panna-cotta': { name:'Panna cotta aux fruits tropicaux', description:'Panna cotta à la vanille, coulis de fruit de la passion, mangue, basilic micro-pousses.' },
+    'frozen-yoghurt': { name:'Yaourt glacé', description:'Yaourt glacé maison, sauces fruits rouges, vanille et chocolat noir.' },
+  },
+  de: {
+    'cheese-charcuterie': { name:'Schweizer Käse- & Charcuterieplatte', description:'Gereifter Gruyère AOP, Tête de Moine, Bündnerfleisch, Walliser Trockenfleisch und Feigenkompott.', chefNote:'Wöchentlich wechselnde Auswahl mit unseren lokalen Affineuren.' },
+    'bircher-muesli': { name:'Birchermüesli im Glas', description:'Eingeweichte Haferflocken, geriebener Apfel, Schweizer Joghurt, Honig und geröstete Haselnüsse.' },
+    'smoked-trout-salad': { name:'Kartoffelsalat mit Räucherforelle', description:'Kalt geräucherte Alpenforelle, Ratte-Kartoffeln, Dill-Crème-fraîche, Zitronenabrieb.', chefNote:'Forelle aus den Vierwaldstättersee-Fischereien.' },
+    'cucumber-radish-salad': { name:'Gurken- & Radieschensalat mit Kräutern', description:'Knackige Gurke, Breakfast-Radieschen, Gartenkräuter, Zitronenvinaigrette.' },
+    'pretzel-butter': { name:'Brezeln & Butterauswahl', description:'Warme Schweizer Brezeln mit kultivierter Butter, Kräuterbutter und Alpenmeersalz.' },
+    'fruit-compote': { name:'Saisonale Fruchtkompottschalen', description:'Saisonale Früchte, langsam geschmort, Vanilleschote, leichter Alpenhonig-Sirup.' },
+    'greek-yogurt-parfait': { name:'Griechisches Joghurt-Parfait', description:'Dickes griechisches Joghurt, Honig, Granola, frische Beeren und saisonale Früchte.' },
+    'french-pastry': { name:'Mini-Patisserieauswahl', description:'Pain au chocolat, Croissant, Brioche und Palmier — jeden Morgen frisch gebacken.' },
+    'chickpea-salad': { name:'Orientalischer Kichererbsensalat', description:'Kichererbsen, Tomate, Gurke, Petersilie, Zitrone, Kreuzkümmel und Olivenöl.' },
+    'avocado-wraps': { name:'Avocado-Tomaten-Frühstückswraps', description:'Avocado, sonnengereifte Tomate, Babyspinat, Zitrone, Weizenwrap.' },
+    'zurcher-geschnetzeltes': { name:'Zürcher Geschnetzeltes', description:'Geschnetzeltes Kalbfleisch in Weisswein-Rahmsauce mit Champignons, klassisch Zürcher Art.', chefNote:'Signaturgericht des Kantons Zürich seit den 1940er-Jahren.' },
+    'rosti-alpine-cheese': { name:'Rösti mit Alpkäse', description:'Goldbraune Kartoffelrösti, überbacken mit Berner Hobelkäse und Schnittlauch.' },
+    'veal-bratwurst': { name:'Kalbsbratwurst mit Zwiebelsauce', description:'Schweizer Kalbsbratwurst, geschmorte Zwiebelsauce, butterzarte Rösti.' },
+    'herb-lake-fish': { name:'Eglifilet aus dem See mit Kräutern', description:'Eglifilet aus dem Zürichsee, Kräuterbutter, Zitrus-Beurre-Blanc, Gartengemüse.', chefNote:'Nachhaltig gefangen in regionalen Schweizer Seen.' },
+    'shakshuka': { name:'Mediterrane Shakshuka', description:'Langsam geschmorte Tomaten, Paprika, Gewürze und gebackene Eier mit knusprigem Brot.' },
+    'chicken-skillet': { name:'Hühnerwurst-Frühstückspfanne', description:'Halal-Hühnerwurst, Paprika, Zwiebeln, goldene Kartoffeln und gebackene Eier.' },
+    'asian-fried-rice': { name:'Asiatisch gebratener Reis mit Gemüse', description:'Jasminreis, Ingwer, Knoblauch, Soja, saisonales Gemüse, abgerundet mit Sesam.' },
+    'zuger-kirschtorte': { name:'Mini Zuger Kirschtorte', description:'Geschichteter Haselnussbaiser, Buttercreme und kirschgetränkter Biskuit aus dem Kanton Zug.', chefNote:'Geschützte Schweizer Spezialität seit 1915.' },
+    'chocolate-mousse': { name:'Schweizer Schokoladenmousse', description:'70 % Lindt Grand Cru, Schlagrahm, Kakaonibs, Blattgold.' },
+    'panna-cotta': { name:'Panna Cotta mit tropischen Früchten', description:'Vanille-Panna-Cotta, Maracuja-Coulis, Mango, Mikrobasilikum.' },
+    'frozen-yoghurt': { name:'Frozen Yoghurt', description:'Hausgemachtes Frozen Yoghurt mit Beeren-, Vanille- und Zartbitterschokoladensauce.' },
+  },
+  it: {
+    'cheese-charcuterie': { name:'Tagliere di formaggi & salumi svizzeri', description:'Gruyère AOP stagionato, Tête de Moine, Bündnerfleisch, salumi vallesani e composta di fichi.', chefNote:'Selezione rinnovata ogni settimana con i nostri affinatori locali.' },
+    'bircher-muesli': { name:'Bicchierini di Birchermüesli', description:'Fiocchi d’avena in ammollo, mela grattugiata, yogurt svizzero, miele e nocciole tostate.' },
+    'smoked-trout-salad': { name:'Insalata di patate alla trota affumicata', description:'Trota alpina affumicata a freddo, patate Ratte, crème fraîche all’aneto, scorza di limone.', chefNote:'Trota dei laghi di Lucerna.' },
+    'cucumber-radish-salad': { name:'Insalata di cetrioli & ravanelli alle erbe', description:'Cetriolo croccante, ravanelli breakfast, erbe dell’orto, vinaigrette al limone.' },
+    'pretzel-butter': { name:'Pretzel & selezione di burri', description:'Pretzel svizzeri tiepidi, burro coltivato, burro alle erbe e sale marino alpino.' },
+    'fruit-compote': { name:'Composte di frutta di stagione', description:'Frutta di stagione cotta lentamente, baccello di vaniglia, sciroppo leggero al miele d’alpe.' },
+    'greek-yogurt-parfait': { name:'Stazione di parfait allo yogurt greco', description:'Yogurt greco denso, miele, granola, frutti di bosco e frutta di stagione.' },
+    'french-pastry': { name:'Selezione di mini pasticceria francese', description:'Pain au chocolat, croissant, brioche e palmier — cotti ogni mattina.' },
+    'chickpea-salad': { name:'Insalata di ceci mediorientale', description:'Ceci, pomodoro, cetriolo, prezzemolo, limone, cumino e olio d’oliva.' },
+    'avocado-wraps': { name:'Wrap colazione avocado & pomodoro', description:'Avocado schiacciato, pomodoro maturo, spinacino, limone, piadina di grano.' },
+    'zurcher-geschnetzeltes': { name:'Zürcher Geschnetzeltes', description:'Vitello a fettine in salsa cremosa al vino bianco e funghi, alla zurighese.', chefNote:'Piatto simbolo del canton Zurigo dagli anni ’40.' },
+    'rosti-alpine-cheese': { name:'Rösti con formaggio d’alpe', description:'Rösti di patate dorate, Berner Hobelkäse fuso ed erba cipollina.' },
+    'veal-bratwurst': { name:'Bratwurst di vitello con salsa di cipolle', description:'Bratwurst di vitello alla svizzera, salsa di cipolle stufata, rösti al burro.' },
+    'herb-lake-fish': { name:'Filetto di pesce di lago alle erbe', description:'Filetto di pesce persico del lago di Zurigo, burro alle erbe, beurre blanc agli agrumi, verdure dell’orto.', chefNote:'Pesca sostenibile nei laghi svizzeri.' },
+    'shakshuka': { name:'Shakshuka mediterranea', description:'Pomodori stufati, peperoni, spezie e uova al forno con pane croccante.' },
+    'chicken-skillet': { name:'Skillet di colazione con salsiccia di pollo', description:'Salsiccia di pollo halal, peperoni, cipolle, patate dorate, uova al forno.' },
+    'asian-fried-rice': { name:'Riso saltato alla verdura asiatico', description:'Riso jasmine, zenzero, aglio, soia, verdure di stagione, sesamo a fine cottura.' },
+    'zuger-kirschtorte': { name:'Mini Zuger Kirschtorte', description:'Meringa alla nocciola, crema al burro e pan di Spagna al kirsch, dal cantone di Zugo.', chefNote:'Specialità svizzera protetta dal 1915.' },
+    'chocolate-mousse': { name:'Coppette di mousse al cioccolato svizzero', description:'Cioccolato Lindt grand cru 70 %, panna montata, granella di cacao, foglia d’oro.' },
+    'panna-cotta': { name:'Panna cotta ai frutti tropicali', description:'Panna cotta alla vaniglia, coulis di frutto della passione, mango, basilico in micro-foglie.' },
+    'frozen-yoghurt': { name:'Yogurt gelato', description:'Yogurt gelato fatto in casa, salse ai frutti di bosco, vaniglia e cioccolato fondente.' },
+  },
+  ar: {
+    'cheese-charcuterie': { name:'لوح الأجبان واللحوم السويسرية', description:'غرويير AOP معتق، تيت دو موان، بوندنرفلايش، لحوم مجففة من فاليه، وكومبوت التين.', chefNote:'تشكيلة تتجدد أسبوعياً بالتعاون مع كبار المعتقين المحليين.' },
+    'bircher-muesli': { name:'كؤوس بيرشرمويسلي', description:'شوفان منقوع ليلاً، تفاح مبشور، لبن سويسري، عسل وبندق محمص.' },
+    'smoked-trout-salad': { name:'سلطة بطاطس بسمك التروتة المدخن', description:'تروتة ألبية مدخنة باردة، بطاطس راتيه، كريما حامضة بالشبت، بشر الليمون.', chefNote:'التروتة من مصائد بحيرة لوزيرن.' },
+    'cucumber-radish-salad': { name:'سلطة الخيار والفجل بالأعشاب', description:'خيار مقرمش، فجل صغير، أعشاب الحديقة، صلصة بالليمون.' },
+    'pretzel-butter': { name:'البريتزل وتشكيلة من الزبدة', description:'بريتزل سويسري دافئ، زبدة معتقة، زبدة بالأعشاب وملح الجبال.' },
+    'fruit-compote': { name:'كؤوس كومبوت الفواكه الموسمية', description:'فواكه الموسم مطهية على نار هادئة، فانيليا، شراب خفيف بعسل الجبال.' },
+    'greek-yogurt-parfait': { name:'محطة بارفيه باللبن اليوناني', description:'لبن يوناني كثيف، عسل، غرانولا، توت طازج وفواكه موسمية.' },
+    'french-pastry': { name:'تشكيلة معجنات فرنسية صغيرة', description:'بان أو شوكولا، كرواسون، بريوش وبالميه — تُخبز كل صباح.' },
+    'chickpea-salad': { name:'سلطة الحمص الشرقية', description:'حمص، طماطم، خيار، بقدونس، ليمون، كمون وزيت زيتون.' },
+    'avocado-wraps': { name:'لفائف الإفطار بالأفوكادو والطماطم', description:'أفوكادو مهروس، طماطم ناضجة، سبانخ صغيرة، ليمون، لفافة قمح طرية.' },
+    'zurcher-geschnetzeltes': { name:'تسوقّى الزوريخ بلحم العجل', description:'شرائح لحم العجل بصلصة كريمية بالنبيذ الأبيض والفطر — على الطريقة الزوريخية التقليدية.', chefNote:'طبق رمزي لكانتون زيورخ منذ أربعينيات القرن الماضي.' },
+    'rosti-alpine-cheese': { name:'روستي بجبن الألب', description:'روستي ذهبي مقرمش مع جبنة هوبلكيزه البرنية وبقدونس بصلي.' },
+    'veal-bratwurst': { name:'سجق العجل بصلصة البصل', description:'سجق العجل السويسري، صلصة بصل بطيئة الطهي، روستي بالزبدة.' },
+    'herb-lake-fish': { name:'سمك البحيرة المشوي بالأعشاب', description:'فيليه سمك الفرخ من بحيرة زيورخ، زبدة الأعشاب، بور بلان بالحمضيات، خضار الحديقة.', chefNote:'صيد مستدام من البحيرات السويسرية.' },
+    'shakshuka': { name:'شكشوكة متوسطية', description:'طماطم وفلفل ببطء على النار، توابل وبيض مخبوز مع خبز مقرمش.' },
+    'chicken-skillet': { name:'مقلاة الإفطار بسجق الدجاج', description:'سجق دجاج حلال، فلفل، بصل، بطاطس ذهبية وبيض مخبوز.' },
+    'asian-fried-rice': { name:'أرز مقلي بالخضار على الطريقة الآسيوية', description:'أرز جاسمين، زنجبيل، ثوم، صويا وخضار موسمية مع لمسة من السمسم.' },
+    'zuger-kirschtorte': { name:'ميني زوغر كيرشتورته', description:'طبقات من المرنغ بالبندق والكريمة مع كيك مغموس بالكيرش — من كانتون زوغ.', chefNote:'تخصص سويسري محمي منذ 1915.' },
+    'chocolate-mousse': { name:'كؤوس موس الشوكولاتة السويسرية', description:'شوكولاتة ليندت غران كرو 70 %، كريمة مخفوقة، شظايا كاكاو، رقاقة ذهب.' },
+    'panna-cotta': { name:'بانا كوتا بالفواكه الاستوائية', description:'بانا كوتا بالفانيليا، صلصة فاكهة الباشن، مانجو، أوراق ريحان صغيرة.' },
+    'frozen-yoghurt': { name:'لبن مجمّد', description:'لبن مجمّد منزلي مع صلصات التوت الموسمي والفانيليا والشوكولاتة الداكنة.' },
+  },
+};
+
+function localizedDish(d) {
+  const o = (DISH_I18N[STATE.locale] && DISH_I18N[STATE.locale][d.id]) || {};
+  return {
+    ...d,
+    name: o.name || d.name,
+    description: o.description || d.description,
+    chefNote: o.chefNote || d.chefNote,
+  };
+}
+
+const DRINK_I18N = {
+  en: {},
+  fr: {
+    coffee: { title:'Café & Espresso', items:[
+      { name:'Espresso', desc:'Double dose, origine unique torréfiée en Suisse.' },
+      { name:'Cappuccino', desc:'Mousse soyeuse, espresso équilibré.' },
+      { name:'Flat White', desc:'Café corsé, lait velouté.' },
+      { name:'Americano', desc:'Allongé, ample et lisse.' },
+      { name:'Café Latte', desc:'Classique, ou parfumé caramel ou vanille.' },
+      { name:'Schümli', desc:'Café traditionnel suisse avec crème.' },
+      { name:'Mocha', desc:'Espresso, lait chaud, chocolat suisse.' },
+      { name:'Décaféiné', desc:'Mêmes grains d’origine, sans caféine.' },
+    ]},
+    tea: { title:'Thés & infusions', items:[
+      { name:'Earl Grey', desc:'Thé noir, bergamote, fleurs de bleuet.' },
+      { name:'English Breakfast', desc:'Corsé, riche, malté.' },
+      { name:'Sencha vert', desc:'Délicat, herbacé, légèrement vaporisé.' },
+      { name:'Herbes alpines', desc:'Thym, camomille, fleurs de tilleul.' },
+      { name:'Verveine', desc:'Verveine citronnée, apaisante, sans caféine.' },
+      { name:'Rooibos', desc:'Notes de miel, sans caféine.' },
+      { name:'Thé marocain à la menthe', desc:'Thé vert, menthe fraîche.' },
+      { name:'Chai', desc:'Thé noir, cardamome, cannelle, gingembre.' },
+    ]},
+    water: { title:'Espace eau alpine', items:[
+      { name:'Eau plate', desc:'Eau de source suisse filtrée naturellement.' },
+      { name:'Eau pétillante', desc:'Légèrement gazeuse, fraîche.' },
+      { name:'Concombre & menthe', desc:'Infusion fraîche du jardin.' },
+      { name:'Agrumes & citronnelle', desc:'Citron, lime, citronnelle.' },
+      { name:'Fruits rouges & sauge', desc:'Baies sauvages, sauge du jardin.' },
+      { name:'Romarin & lavande', desc:'Herbes alpines, légèrement aromatiques.' },
+    ]},
+    juice: { title:'Jus pressés à froid', items:[
+      { name:'Orange', desc:'Oranges Valencia pressées à la demande.' },
+      { name:'Pomme & sureau', desc:'Pomme suisse, fleur de sureau alpine.' },
+      { name:'Betterave & gingembre', desc:'Terreux, réchauffant, riche en minéraux.' },
+      { name:'Carotte & curcuma', desc:'Mélange anti-inflammatoire, finition agrumes.' },
+      { name:'Green Detox', desc:'Concombre, épinard, pomme verte, citron.' },
+      { name:'Pressé du jour', desc:'Sélection du chef, qui change chaque jour.' },
+      { name:'Kombucha', desc:'Maison, fermenté au gingembre ou à l’hibiscus.' },
+    ]},
+    wine: { title:'Vins & apéritifs', items:[
+      { name:'Fendant du Valais', desc:'Blanc vif, minéral, accent alpin.' },
+      { name:'Chasselas de Vaud', desc:'Léger, floral, légèrement salin.' },
+      { name:'Pinot Noir', desc:'Bündner-Herrschaft, fruits rouges délicats.' },
+      { name:'Merlot del Ticino', desc:'Rouge suisse élégant du Tessin.' },
+      { name:'Prosecco DOC', desc:'Vénétie, fines bulles, à la flûte.' },
+      { name:'Champagne Brut', desc:'Cuvée Réserve, servi frais.' },
+      { name:'Sélection d’apéritifs', desc:'Aperol, Campari, vermouths, gin tonic.' },
+      { name:'Bière artisanale suisse', desc:'Feldschlösschen, Quöllfrisch, sur demande.' },
+    ]},
+  },
+  de: {
+    coffee: { title:'Espresso & Kaffee', items:[
+      { name:'Espresso', desc:'Doppelter Schuss, einsortig in der Schweiz geröstet.' },
+      { name:'Cappuccino', desc:'Seidiger Mikroschaum, ausgewogener Espresso.' },
+      { name:'Flat White', desc:'Kräftiger Kaffee, samtige Milch.' },
+      { name:'Americano', desc:'Kräftig, sanft, lang gezogen.' },
+      { name:'Café Latte', desc:'Klassisch oder mit Karamell- bzw. Vanillenote.' },
+      { name:'Schümli', desc:'Traditioneller Schweizer Kaffee mit Rahm.' },
+      { name:'Mocha', desc:'Espresso, heisse Milch, Schweizer Schokolade.' },
+      { name:'Entkoffeiniert', desc:'Gleiche sortenreine Bohnen, ohne Koffein.' },
+    ]},
+    tea: { title:'Tee & Infusionen', items:[
+      { name:'Earl Grey', desc:'Schwarztee, Bergamotte, Kornblume.' },
+      { name:'English Breakfast', desc:'Kräftig, vollmundig, malzig.' },
+      { name:'Sencha Grün', desc:'Delikat, grasig, leicht gedämpft.' },
+      { name:'Alpenkräuter', desc:'Thymian, Kamille, Lindenblüte.' },
+      { name:'Verveine', desc:'Zitronenverbene, beruhigend, koffeinfrei.' },
+      { name:'Rooibos', desc:'Honignoten, koffeinfrei.' },
+      { name:'Marokkanische Minze', desc:'Grüntee, frische Spearmint.' },
+      { name:'Chai', desc:'Schwarztee, Kardamom, Zimt, Ingwer.' },
+    ]},
+    water: { title:'Alpenwasserstation', items:[
+      { name:'Stilles Wasser', desc:'Natürlich gefiltertes Schweizer Quellwasser.' },
+      { name:'Sprudelwasser', desc:'Leicht kohlensäurehaltig, gekühlt.' },
+      { name:'Gurke & Minze', desc:'Frische Garteninfusion.' },
+      { name:'Zitrus & Zitronengras', desc:'Zitrone, Limette, Zitronengras.' },
+      { name:'Beere & Salbei', desc:'Wildbeeren, Gartensalbei.' },
+      { name:'Rosmarin & Lavendel', desc:'Alpenkräuter, leicht aromatisch.' },
+    ]},
+    juice: { title:'Kaltgepresste Säfte', items:[
+      { name:'Orange', desc:'Frisch gepresste Valencia-Orangen.' },
+      { name:'Apfel & Holunder', desc:'Schweizer Apfel, alpiner Holunder.' },
+      { name:'Randen & Ingwer', desc:'Erdig, wärmend, mineralreich.' },
+      { name:'Karotte & Kurkuma', desc:'Entzündungshemmende Mischung, Zitrus-Finish.' },
+      { name:'Green Detox', desc:'Gurke, Spinat, grüner Apfel, Zitrone.' },
+      { name:'Tagespresse', desc:'Wechselnde Auswahl des Küchenchefs.' },
+      { name:'Kombucha', desc:'Hausgemacht, mit Ingwer oder Hibiskus.' },
+    ]},
+    wine: { title:'Weine & Aperitifs', items:[
+      { name:'Fendant du Valais', desc:'Frischer Weisser, mineralisch, alpin.' },
+      { name:'Chasselas de Vaud', desc:'Leicht, blumig, dezent salzig.' },
+      { name:'Pinot Noir', desc:'Bündner Herrschaft, weiche rote Beeren.' },
+      { name:'Merlot del Ticino', desc:'Eleganter Tessiner Rotwein.' },
+      { name:'Prosecco DOC', desc:'Veneto, feine Perlage, im Glas.' },
+      { name:'Champagne Brut', desc:'Reserve-Cuvée, gekühlt serviert.' },
+      { name:'Aperitif-Auswahl', desc:'Aperol, Campari, Vermouth, Gin Tonic.' },
+      { name:'Schweizer Craft-Bier', desc:'Feldschlösschen, Quöllfrisch, auf Anfrage.' },
+    ]},
+  },
+  it: {
+    coffee: { title:'Espresso & Caffè', items:[
+      { name:'Espresso', desc:'Doppia dose, single-origin tostato in Svizzera.' },
+      { name:'Cappuccino', desc:'Microschiuma vellutata, espresso bilanciato.' },
+      { name:'Flat White', desc:'Caffè intenso, latte vellutato.' },
+      { name:'Americano', desc:'Deciso, morbido, lungo.' },
+      { name:'Café Latte', desc:'Classico o con caramello o vaniglia.' },
+      { name:'Schümli', desc:'Caffè svizzero tradizionale con panna.' },
+      { name:'Mocha', desc:'Espresso, latte caldo, cioccolato svizzero.' },
+      { name:'Decaffeinato', desc:'Stessi chicchi single-origin, senza caffeina.' },
+    ]},
+    tea: { title:'Tè & Infusi', items:[
+      { name:'Earl Grey', desc:'Tè nero, bergamotto, fiordaliso.' },
+      { name:'English Breakfast', desc:'Robusto, pieno, maltato.' },
+      { name:'Sencha verde', desc:'Delicato, erbaceo, lievemente vaporizzato.' },
+      { name:'Erbe alpine', desc:'Timo, camomilla, fiori di tiglio.' },
+      { name:'Verveine', desc:'Verbena al limone, rilassante, senza caffeina.' },
+      { name:'Rooibos', desc:'Note di miele, senza caffeina.' },
+      { name:'Tè alla menta marocchina', desc:'Tè verde, menta fresca.' },
+      { name:'Chai', desc:'Tè nero, cardamomo, cannella, zenzero.' },
+    ]},
+    water: { title:'Stazione acque alpine', items:[
+      { name:'Acqua naturale', desc:'Acqua di sorgente svizzera filtrata naturalmente.' },
+      { name:'Acqua frizzante', desc:'Leggermente gassata, fredda.' },
+      { name:'Cetriolo & menta', desc:'Infuso fresco dell’orto.' },
+      { name:'Agrumi & lemongrass', desc:'Limone, lime, citronella.' },
+      { name:'Frutti di bosco & salvia', desc:'Bacche selvatiche, salvia dell’orto.' },
+      { name:'Rosmarino & lavanda', desc:'Erbe alpine, leggermente aromatiche.' },
+    ]},
+    juice: { title:'Succhi a freddo', items:[
+      { name:'Arancia', desc:'Arance Valencia spremute al momento.' },
+      { name:'Mela & sambuco', desc:'Mela svizzera, sambuco alpino.' },
+      { name:'Barbabietola & zenzero', desc:'Terroso, scaldante, ricco di minerali.' },
+      { name:'Carota & curcuma', desc:'Mix antinfiammatorio, finale agrumato.' },
+      { name:'Green Detox', desc:'Cetriolo, spinaci, mela verde, limone.' },
+      { name:'Spremuta del giorno', desc:'Selezione dello chef, in rotazione.' },
+      { name:'Kombucha', desc:'Casalingo, allo zenzero o all’ibisco.' },
+    ]},
+    wine: { title:'Vini & aperitivi', items:[
+      { name:'Fendant del Vallese', desc:'Bianco fresco, minerale, accento alpino.' },
+      { name:'Chasselas di Vaud', desc:'Leggero, floreale, lievemente sapido.' },
+      { name:'Pinot Nero', desc:'Bündner Herrschaft, morbidi frutti rossi.' },
+      { name:'Merlot del Ticino', desc:'Rosso elegante del sud della Svizzera.' },
+      { name:'Prosecco DOC', desc:'Veneto, bollicine fini, al calice.' },
+      { name:'Champagne Brut', desc:'Cuvée Réserve, servita fredda.' },
+      { name:'Selezione aperitivi', desc:'Aperol, Campari, vermouth, gin tonic.' },
+      { name:'Birra svizzera', desc:'Feldschlösschen, Quöllfrisch, su richiesta.' },
+    ]},
+  },
+  ar: {
+    coffee: { title:'الإسبريسو والقهوة', items:[
+      { name:'إسبريسو', desc:'جرعة مزدوجة، حبوب أحادية المصدر مُحمَّصة في سويسرا.' },
+      { name:'كابتشينو', desc:'رغوة حريرية، إسبريسو متوازن.' },
+      { name:'فلات وايت', desc:'قهوة قوية وحليب مخملي.' },
+      { name:'أمريكانو', desc:'طويل، ناعم، جريء.' },
+      { name:'كافيه لاتيه', desc:'كلاسيكي، أو بنكهة الكراميل أو الفانيليا.' },
+      { name:'شوميلي', desc:'قهوة سويسرية تقليدية بالكريمة.' },
+      { name:'موكا', desc:'إسبريسو، حليب ساخن، شوكولاتة سويسرية.' },
+      { name:'منزوع الكافيين', desc:'نفس الحبوب أحادية المصدر، بدون كافيين.' },
+    ]},
+    tea: { title:'الشاي ومنقوعات الأعشاب', items:[
+      { name:'إيرل غراي', desc:'شاي أسود، برغموت، زهور القنطريون.' },
+      { name:'إنجلش بريكفاست', desc:'قوي وممتلئ وغني بالشعير.' },
+      { name:'سينشا الأخضر', desc:'رقيق وعشبي، مبخر بلطف.' },
+      { name:'أعشاب ألبية', desc:'زعتر، بابونج، زهر الزيزفون.' },
+      { name:'فيرفين', desc:'لويزة الليمون، مهدّئة وخالية من الكافيين.' },
+      { name:'رويبوس', desc:'نكهات العسل، خالٍ من الكافيين.' },
+      { name:'نعناع مغربي', desc:'شاي أخضر مع نعناع طازج.' },
+      { name:'تشاي', desc:'شاي أسود، هيل، قرفة وزنجبيل.' },
+    ]},
+    water: { title:'محطة المياه الألبية', items:[
+      { name:'مياه ثابتة', desc:'مياه ينابيع سويسرية مرشحة طبيعياً.' },
+      { name:'مياه فوارة', desc:'فوارة قليلاً ومُبرّدة.' },
+      { name:'خيار ونعناع', desc:'نقع منعش من الحديقة.' },
+      { name:'حمضيات وحشيشة الليمون', desc:'ليمون، لايم، عشبة الليمون.' },
+      { name:'توت بري ومرمية', desc:'توت برّي وأوراق مرمية.' },
+      { name:'إكليل الجبل والخزامى', desc:'أعشاب ألبية برائحة هادئة.' },
+    ]},
+    juice: { title:'عصائر معصورة على البارد', items:[
+      { name:'برتقال', desc:'برتقال فالنسيا طازج.' },
+      { name:'تفاح وزهر البلسان', desc:'تفاح سويسري مع زهر بلسان ألبي.' },
+      { name:'شمندر وزنجبيل', desc:'مذاق ترابي ومُدفئ، غني بالمعادن.' },
+      { name:'جزر وكركم', desc:'مزيج مضاد للالتهابات بلمسة حمضية.' },
+      { name:'غرين ديتوكس', desc:'خيار، سبانخ، تفاح أخضر وليمون.' },
+      { name:'عصير اليوم', desc:'اختيار الشيف، يتغيّر يومياً.' },
+      { name:'كومبوتشا', desc:'بيتيّ، بالزنجبيل أو الكركديه.' },
+    ]},
+    wine: { title:'النبيذ والمشروبات المنعشة', items:[
+      { name:'فاندان دو فاليه', desc:'أبيض منعش وغني بالمعادن، بنكهة ألبية.' },
+      { name:'شاسلا دو فو', desc:'خفيف، زهري، بلمسة مالحة خفيفة.' },
+      { name:'بينو نوار', desc:'من بوندنر هرشافت، بفواكه حمراء ناعمة.' },
+      { name:'ميرلو ديل تيتشينو', desc:'أحمر سويسري أنيق من تيتشينو.' },
+      { name:'بروسيكو DOC', desc:'فينيتو، فقاعات دقيقة، بالكأس.' },
+      { name:'شامبانيا بروت', desc:'كوفيه ريزيرف، تقدّم باردة.' },
+      { name:'تشكيلة فاتح للشهية', desc:'أبيرول، كامباري، فيرموث وجن تونيك.' },
+      { name:'بيرة حرفية سويسرية', desc:'فيلدشلوسشين، كولفريش، عند الطلب.' },
+    ]},
+  },
+};
 
 const DRINK_SECTIONS = [
   {
@@ -1064,17 +1465,32 @@ const DRINK_SECTIONS = [
   },
 ];
 
+function localizedDrink(section, idx) {
+  const dict = (DRINK_I18N[STATE.locale] && DRINK_I18N[STATE.locale][section.key]) || {};
+  const items = (dict.items && dict.items.length) ? dict.items : section.items;
+  const item = items[idx] || section.items[idx];
+  return item;
+}
+function localizedDrinkSection(section) {
+  const dict = (DRINK_I18N[STATE.locale] && DRINK_I18N[STATE.locale][section.key]) || {};
+  return {
+    title: dict.title || section.title,
+    items: (dict.items && dict.items.length) ? dict.items : section.items,
+  };
+}
+
 function renderDrinkSections(query) {
   const q = (query || '').trim().toLowerCase();
   return DRINK_SECTIONS.map((s) => {
+    const loc = localizedDrinkSection(s);
     const items = q
-      ? s.items.filter(it => it.name.toLowerCase().includes(q) || it.desc.toLowerCase().includes(q))
-      : s.items;
+      ? loc.items.filter(it => it.name.toLowerCase().includes(q) || it.desc.toLowerCase().includes(q))
+      : loc.items;
     if (!items.length) return '';
     return `
     <section class="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-center">
       <div class="md:col-span-7 ${s.reverse ? 'md:order-2' : ''}">
-        <h2 class="serif-heading text-3xl sm:text-[2.6rem] text-navy-900">${esc(s.title)}</h2>
+        <h2 class="serif-heading text-3xl sm:text-[2.6rem] text-navy-900">${esc(loc.title)}</h2>
         <div class="mt-8 space-y-6">
           ${items.map(it => `
             <div>
@@ -1089,7 +1505,7 @@ function renderDrinkSections(query) {
       </div>
       <div class="md:col-span-5 ${s.reverse ? 'md:order-1' : ''}">
         <div class="relative aspect-[4/5] overflow-hidden">
-          ${image(s.img, s.title, 'h-full w-full')}
+          ${image(s.img, loc.title, 'h-full w-full')}
         </div>
       </div>
     </section>`;
@@ -1100,15 +1516,15 @@ function pageDrinks() {
   const sections = renderDrinkSections('');
   return `
   <div class="mx-auto max-w-6xl px-5 sm:px-8 pt-14 sm:pt-20 pb-16">
-    <div class="swiss-eyebrow">— Aspire</div>
+    <div class="swiss-eyebrow">${esc(t('eyebrow.aspire'))}</div>
     <h1 class="serif-heading text-[2.4rem] sm:text-[4rem] mt-3 text-navy-900">${esc(t('drinks.title'))}</h1>
     <p class="mt-4 text-navy-500 max-w-xl leading-[1.7]">${esc(t('drinks.subtitle'))}</p>
 
     <div class="mt-16 sm:mt-24">${sections}</div>
 
     <div class="mt-20 pt-8 border-t border-navy-900/10 flex flex-wrap items-center justify-between gap-4 text-[0.7rem] uppercase tracking-[0.28em] text-navy-500">
-      <span>Self-serve · refreshed throughout the day</span>
-      <span>Ask a host for additional requests</span>
+      <span>${esc(t('drinks.footer.left'))}</span>
+      <span>${esc(t('drinks.footer.right'))}</span>
     </div>
   </div>`;
 }
@@ -1116,7 +1532,7 @@ function pageDrinks() {
 function pageDietary() {
   return `
   <div class="mx-auto max-w-5xl px-5 sm:px-8 pt-14 sm:pt-20 pb-16">
-    <div class="swiss-eyebrow">— Aspire</div>
+    <div class="swiss-eyebrow">${esc(t('eyebrow.aspire'))}</div>
     <h1 class="serif-heading text-[2.4rem] sm:text-[4rem] mt-3 text-navy-900">${esc(t('dietary.title'))}</h1>
     <p class="mt-4 text-navy-500 max-w-xl leading-[1.7]">${esc(t('dietary.subtitle'))}</p>
 
@@ -1143,7 +1559,7 @@ function pageDietary() {
     </section>
 
     <section class="mt-16 border-t border-navy-900/10 pt-8">
-      <div class="swiss-eyebrow">— important</div>
+      <div class="swiss-eyebrow">${esc(t('eyebrow.important'))}</div>
       <p class="mt-3 text-[1.05rem] sm:text-[1.15rem] serif-heading text-navy-900 leading-snug max-w-2xl">${esc(t('dietary.contact'))}</p>
     </section>
   </div>`;
@@ -1158,7 +1574,7 @@ function pageAbout() {
   ];
   return `
   <div class="mx-auto max-w-6xl px-5 sm:px-8 pt-14 sm:pt-20 pb-16">
-    <div class="swiss-eyebrow">— Swiss sourcing</div>
+    <div class="swiss-eyebrow">${esc(t('eyebrow.swiss'))}</div>
     <h1 class="serif-heading text-[2.4rem] sm:text-[4rem] mt-3 text-navy-900">${esc(t('about.title'))}</h1>
     <p class="mt-4 text-navy-500 max-w-xl leading-[1.7]">${esc(t('about.subtitle'))}</p>
     <div class="mt-14 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-14 sm:gap-y-20">
@@ -1178,7 +1594,7 @@ function pageAbout() {
 function pageFeedback() {
   return `
   <div class="mx-auto max-w-2xl px-5 sm:px-8 pt-14 sm:pt-20 pb-16">
-    <div class="swiss-eyebrow">— Aspire</div>
+    <div class="swiss-eyebrow">${esc(t('eyebrow.aspire'))}</div>
     <h1 class="serif-heading text-[2.4rem] sm:text-[4rem] mt-3 text-navy-900">${esc(t('feedback.title'))}</h1>
     <p class="mt-4 text-navy-500 leading-[1.7]">${esc(t('feedback.subtitle'))}</p>
     <form id="feedbackForm" class="mt-12 divide-y divide-navy-900/10">
@@ -1190,7 +1606,7 @@ function pageFeedback() {
         <div class="grid grid-cols-1 sm:grid-cols-[2fr_1fr] gap-3 items-center">
           <select id="dishSelect" class="lounge-input h-11 px-3 bg-transparent border-b border-navy-900/15 text-[0.95rem] focus:ring-0 focus:border-navy-900">
             <option value="">${esc(t('feedback.choose'))}</option>
-            ${DISHES.map(d=>`<option value="${d.id}">${esc(d.name)}</option>`).join('')}
+            ${DISHES.map(d=>{ const ld = localizedDish(d); return `<option value="${d.id}">${esc(ld.name)}</option>`; }).join('')}
           </select>
           <div class="flex items-center justify-start sm:justify-end">${stars('dish')}</div>
         </div>
@@ -1224,12 +1640,13 @@ function stars(name) {
 function showDishModal(id) {
   const d = DISHES.find(x => x.id === id);
   if (!d) return;
+  const ld = localizedDish(d);
   document.body.style.overflow = 'hidden';
   document.getElementById('modalHost').innerHTML = `
   <div id="dishModal" class="fixed inset-0 z-50 modal-bg flex items-end sm:items-center justify-center anim-fade" data-close>
     <div class="w-full max-w-2xl bg-ivory-50 sm:m-5 max-h-[92vh] flex flex-col anim-up">
       <div class="relative aspect-[5/4] flex-shrink-0">
-        ${image(d.image,d.name,'h-full w-full')}
+        ${image(d.image, ld.name,'h-full w-full')}
         <button data-close class="absolute top-4 right-4 h-10 w-10 bg-ivory-50 flex items-center justify-center" aria-label="${esc(t('menu.close'))}">${icon('i-x','w-4 h-4')}</button>
         <div class="absolute bottom-4 left-4 flex flex-wrap items-center gap-2">
           <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[0.62rem] uppercase tracking-[0.22em] bg-ivory-50 ${d.temperature === 'hot' ? 'text-[#C0481E]' : 'text-[#2E7BB8]'}">
@@ -1241,11 +1658,11 @@ function showDishModal(id) {
         </div>
       </div>
       <div class="p-8 overflow-y-auto">
-        <h2 class="serif-heading text-3xl sm:text-4xl text-navy-900">${esc(d.name)}</h2>
-        <p class="mt-4 text-[0.98rem] text-navy-500 leading-[1.7]">${esc(d.description)}</p>
-        ${d.chefNote ? `<div class="mt-7 pt-6 border-t border-navy-900/10">
+        <h2 class="serif-heading text-3xl sm:text-4xl text-navy-900">${esc(ld.name)}</h2>
+        <p class="mt-4 text-[0.98rem] text-navy-500 leading-[1.7]">${esc(ld.description)}</p>
+        ${ld.chefNote ? `<div class="mt-7 pt-6 border-t border-navy-900/10">
           <div class="swiss-eyebrow mb-2">${esc(t('menu.chefnote'))}</div>
-          <p class="text-[1.05rem] serif-heading italic text-navy-900 leading-snug">${esc(d.chefNote)}</p>
+          <p class="text-[1.05rem] serif-heading italic text-navy-900 leading-snug">${esc(ld.chefNote)}</p>
         </div>` : ''}
         ${d.dietary.length ? `<div class="mt-7 pt-6 border-t border-navy-900/10">
           <div class="swiss-eyebrow mb-3">${esc(t('menu.dietary'))}</div>
