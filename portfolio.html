@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hanny Sanusi · Marketing Portfolio</title>
+<meta name="description" content="Marketing portfolio of Hanny Sanusi — hospitality, brand strategy, customer experience, design." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#f6f3ee;
+    --bg-soft:#efeae1;
+    --paper:#ffffff;
+    --ink:#0e0e10;
+    --ink-soft:#2a2a2e;
+    --muted:#7a766f;
+    --line:#e5dfd3;
+    --accent:#0a2540;
+    --accent-2:#b08a4a;
+    --shadow: 0 30px 80px -30px rgba(14,14,16,.25), 0 8px 24px -12px rgba(14,14,16,.12);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    font-weight:300;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--accent);color:#fff}
+
+  /* ============ NAV ============ */
+  .nav{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    backdrop-filter:saturate(140%) blur(14px);
+    -webkit-backdrop-filter:saturate(140%) blur(14px);
+    background:rgba(246,243,238,.78);
+    border-bottom:1px solid transparent;
+    transition:border-color .3s ease, background .3s ease;
+  }
+  .nav.scrolled{border-bottom-color:var(--line); background:rgba(246,243,238,.92)}
+  .nav-inner{
+    max-width:1280px; margin:0 auto;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 28px;
+  }
+  .brand{
+    font-family:'Cormorant Garamond',serif;
+    font-size:18px; letter-spacing:.32em; text-transform:uppercase;
+    font-weight:500;
+  }
+  .brand span{color:var(--accent-2)}
+  .nav-links{display:flex; gap:28px; align-items:center}
+  .nav-links a{
+    color:var(--ink-soft); text-decoration:none; font-size:12px;
+    letter-spacing:.22em; text-transform:uppercase; font-weight:400;
+    position:relative; padding:6px 0;
+  }
+  .nav-links a::after{
+    content:""; position:absolute; left:0; bottom:0; height:1px; width:0;
+    background:var(--ink); transition:width .35s ease;
+  }
+  .nav-links a:hover::after,.nav-links a.active::after{width:100%}
+  .nav-toggle{display:none; background:none; border:0; cursor:pointer; padding:8px}
+  .nav-toggle span{display:block; width:22px; height:1px; background:var(--ink); margin:5px 0; transition:.3s}
+
+  /* ============ HERO ============ */
+  .hero{
+    min-height:100vh;
+    display:grid; place-items:center;
+    position:relative;
+    padding:120px 28px 80px;
+    overflow:hidden;
+  }
+  .hero-grid{
+    max-width:1280px; width:100%;
+    display:grid; grid-template-columns:1fr; gap:48px; align-items:center;
+  }
+  .hero-kicker{
+    font-size:11px; letter-spacing:.5em; text-transform:uppercase; color:var(--muted);
+    margin-bottom:24px; font-weight:500;
+  }
+  .hero-title{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:300; font-size:clamp(48px,9vw,128px);
+    line-height:.95; letter-spacing:-.01em; margin:0;
+  }
+  .hero-title em{font-style:italic; color:var(--accent-2)}
+  .hero-art{
+    margin-top:48px; position:relative;
+    aspect-ratio:16/9; width:100%; max-width:920px;
+    border-radius:6px; overflow:hidden;
+    box-shadow:var(--shadow);
+  }
+  .hero-art img{width:100%; height:100%; object-fit:cover; display:block; transition:transform 8s ease}
+  .hero-art:hover img{transform:scale(1.04)}
+  .hero-meta{
+    margin-top:36px; display:flex; flex-wrap:wrap; gap:32px;
+    color:var(--muted); font-size:13px; letter-spacing:.04em;
+  }
+  .hero-meta span strong{color:var(--ink); font-weight:500; display:block; font-size:11px; letter-spacing:.24em; text-transform:uppercase; margin-bottom:4px}
+  .scroll-hint{
+    position:absolute; bottom:32px; left:50%; transform:translateX(-50%);
+    font-size:10px; letter-spacing:.4em; text-transform:uppercase; color:var(--muted);
+    display:flex; flex-direction:column; align-items:center; gap:10px;
+  }
+  .scroll-hint::after{
+    content:""; width:1px; height:36px; background:var(--muted);
+    animation:scrollDown 2.2s ease-in-out infinite;
+  }
+  @keyframes scrollDown{0%,100%{transform:scaleY(.4); transform-origin:top}50%{transform:scaleY(1); transform-origin:top}}
+
+  /* ============ SECTIONS ============ */
+  section{padding:120px 28px; position:relative}
+  .container{max-width:1280px; margin:0 auto}
+  .section-head{
+    display:grid; grid-template-columns:auto 1fr; gap:32px; align-items:end;
+    border-bottom:1px solid var(--line); padding-bottom:24px; margin-bottom:64px;
+  }
+  .section-num{
+    font-family:'Cormorant Garamond',serif; font-style:italic;
+    font-size:22px; color:var(--accent-2); font-weight:400;
+  }
+  .section-title{
+    font-family:'Cormorant Garamond',serif; font-weight:300;
+    font-size:clamp(36px,6vw,72px); line-height:1; margin:0; letter-spacing:-.01em;
+  }
+  .section-sub{
+    color:var(--muted); font-size:13px; letter-spacing:.18em; text-transform:uppercase;
+    margin-top:8px;
+  }
+
+  /* ============ SLIDES ============ */
+  .slide{
+    background:var(--paper);
+    border-radius:6px;
+    overflow:hidden;
+    box-shadow:var(--shadow);
+    cursor:zoom-in;
+    transition:transform .55s cubic-bezier(.2,.7,.2,1), box-shadow .55s ease;
+    opacity:0; transform:translateY(40px);
+    border:1px solid var(--line);
+  }
+  .slide.in{opacity:1; transform:none}
+  .slide:hover{transform:translateY(-6px); box-shadow:0 40px 100px -30px rgba(14,14,16,.3), 0 12px 32px -12px rgba(14,14,16,.18)}
+  .slide img{display:block; width:100%; height:auto}
+  .slide-caption{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:14px 20px; border-top:1px solid var(--line);
+    font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--muted);
+  }
+  .slide-caption strong{color:var(--ink); font-weight:500}
+  .slide-grid{display:grid; gap:48px}
+  .grid-1{grid-template-columns:1fr}
+  .grid-2{grid-template-columns:repeat(2,1fr)}
+  .grid-3{grid-template-columns:repeat(3,1fr)}
+  @media (max-width:900px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+  /* feature/full slide */
+  .slide-feature{max-width:1100px; margin:0 auto}
+  .slide-feature .slide img{aspect-ratio:16/9; object-fit:cover}
+
+  /* ============ ALTERNATING INTRO SECTION ============ */
+  .intro-grid{
+    display:grid; grid-template-columns:1.1fr .9fr; gap:64px; align-items:center;
+  }
+  @media (max-width:900px){.intro-grid{grid-template-columns:1fr; gap:32px}}
+  .intro-grid p{font-size:17px; color:var(--ink-soft); line-height:1.75; max-width:560px}
+  .intro-tags{display:flex; flex-wrap:wrap; gap:8px; margin-top:24px}
+  .tag{
+    display:inline-block; padding:6px 14px; border:1px solid var(--line);
+    border-radius:999px; font-size:11px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--ink-soft); background:var(--paper);
+  }
+  .availability{
+    display:inline-flex; align-items:center; gap:10px;
+    margin-top:28px; padding:10px 16px; background:var(--ink); color:#fff;
+    font-size:11px; letter-spacing:.22em; text-transform:uppercase; border-radius:999px;
+  }
+  .availability::before{
+    content:""; width:6px; height:6px; border-radius:50%; background:#7dd87d;
+    box-shadow:0 0 0 4px rgba(125,216,125,.25);
+  }
+
+  /* ============ PROJECT NAV PILLS ============ */
+  .project-tabs{
+    display:flex; gap:8px; flex-wrap:wrap; margin-bottom:48px;
+  }
+  .project-tabs a{
+    text-decoration:none; padding:10px 20px; border:1px solid var(--line);
+    border-radius:999px; font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--ink-soft); background:var(--paper); transition:.25s;
+  }
+  .project-tabs a:hover{background:var(--ink); color:#fff; border-color:var(--ink)}
+
+  /* ============ DIVIDER CARD ============ */
+  .divider{
+    text-align:center; padding:80px 24px; margin:0 auto 64px;
+    max-width:880px;
+    background:linear-gradient(180deg, transparent, var(--bg-soft));
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  }
+  .divider .num{
+    font-family:'Cormorant Garamond',serif; font-style:italic; color:var(--accent-2);
+    font-size:18px; margin-bottom:14px;
+  }
+  .divider .label{
+    font-family:'Cormorant Garamond',serif; font-weight:300;
+    font-size:clamp(40px,7vw,84px); line-height:1; letter-spacing:.02em;
+  }
+  .divider .desc{color:var(--muted); margin-top:16px; font-size:13px; letter-spacing:.18em; text-transform:uppercase}
+
+  /* ============ FOOTER ============ */
+  footer{
+    padding:80px 28px 40px; border-top:1px solid var(--line);
+    background:var(--bg-soft);
+  }
+  .footer-inner{
+    max-width:1280px; margin:0 auto;
+    display:grid; grid-template-columns:1fr auto; gap:32px; align-items:end;
+  }
+  @media (max-width:700px){.footer-inner{grid-template-columns:1fr}}
+  .footer-title{
+    font-family:'Cormorant Garamond',serif; font-weight:300;
+    font-size:clamp(32px,5vw,56px); line-height:1; margin:0 0 12px;
+  }
+  .footer-sub{color:var(--muted); font-size:13px; letter-spacing:.08em}
+  .footer-meta{font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); text-align:right}
+
+  /* ============ LIGHTBOX ============ */
+  .lightbox{
+    position:fixed; inset:0; z-index:100;
+    background:rgba(14,14,16,.94);
+    display:none; align-items:center; justify-content:center;
+    padding:40px;
+    opacity:0; transition:opacity .35s ease;
+  }
+  .lightbox.open{display:flex; opacity:1}
+  .lightbox img{
+    max-width:100%; max-height:100%;
+    border-radius:4px; box-shadow:0 50px 120px rgba(0,0,0,.6);
+    object-fit:contain;
+  }
+  .lb-close,.lb-prev,.lb-next{
+    position:absolute; background:rgba(255,255,255,.06); color:#fff; border:1px solid rgba(255,255,255,.18);
+    width:48px; height:48px; border-radius:50%; cursor:pointer;
+    display:grid; place-items:center; font-size:18px;
+    transition:background .25s ease;
+  }
+  .lb-close:hover,.lb-prev:hover,.lb-next:hover{background:rgba(255,255,255,.16)}
+  .lb-close{top:24px; right:24px}
+  .lb-prev{left:24px; top:50%; transform:translateY(-50%)}
+  .lb-next{right:24px; top:50%; transform:translateY(-50%)}
+  .lb-counter{
+    position:absolute; bottom:24px; left:50%; transform:translateX(-50%);
+    color:rgba(255,255,255,.6); font-size:11px; letter-spacing:.3em; text-transform:uppercase;
+  }
+
+  /* ============ RESPONSIVE NAV ============ */
+  @media (max-width:780px){
+    .nav-links{display:none; position:absolute; top:100%; left:0; right:0;
+      background:rgba(246,243,238,.98); flex-direction:column;
+      padding:24px 28px; gap:18px; border-bottom:1px solid var(--line)}
+    .nav-links.open{display:flex}
+    .nav-toggle{display:block}
+    .hero{padding-top:110px}
+    section{padding:80px 20px}
+    .section-head{grid-template-columns:1fr; gap:8px; align-items:start}
+  }
+
+  /* ============ REVEAL ============ */
+  .reveal{opacity:0; transform:translateY(28px); transition:opacity .8s ease, transform .8s ease}
+  .reveal.in{opacity:1; transform:none}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <div class="brand">Hanny <span>·</span> Sanusi</div>
+    <button class="nav-toggle" aria-label="Menu" onclick="document.getElementById('navlinks').classList.toggle('open')">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links" id="navlinks">
+      <a href="#about">About</a>
+      <a href="#skills">Skills</a>
+      <a href="#credentials">Credentials</a>
+      <a href="#school">School</a>
+      <a href="#work">Work</a>
+      <a href="#personal">Personal</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-grid">
+    <div>
+      <div class="hero-kicker">Marketing Portfolio · 2026</div>
+      <h1 class="hero-title">Hanny<br/><em>Sanusi</em></h1>
+      <div class="hero-meta">
+        <span><strong>Discipline</strong>Marketing · Brand · CX</span>
+        <span><strong>Status</strong>EHL Graduate · July 2026</span>
+        <span><strong>Availability</strong>August 2026</span>
+      </div>
+    </div>
+    <div class="hero-art" onclick="openLightbox(0)">
+      <img src="public/portfolio/page-01.jpg" alt="Cover artwork — original mixed-media painting" />
+    </div>
+  </div>
+  <div class="scroll-hint">Scroll</div>
+</header>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="section-num">01 — Introduction</div>
+      </div>
+      <div>
+        <h2 class="section-title">About <em style="font-style:italic;color:var(--accent-2)">myself</em></h2>
+        <div class="section-sub">Hospitality · Marketing · Brand</div>
+      </div>
+    </div>
+
+    <div class="intro-grid reveal">
+      <div>
+        <p>A soon-to-be Graduate Hospitality Business Management student (July 2026) with experience in luxury guest experience, marketing and sales-support roles. Detail-oriented, confident communicating with clients, and energised by work that combines organisation, customer experience, and brand presentation.</p>
+        <div class="intro-tags">
+          <span class="tag">Luxury Hospitality</span>
+          <span class="tag">Brand Strategy</span>
+          <span class="tag">Customer Experience</span>
+          <span class="tag">Sales Support</span>
+          <span class="tag">Editorial Design</span>
+        </div>
+        <div class="availability">Available · August 2026</div>
+      </div>
+      <div class="slide" onclick="openLightbox(1)">
+        <img src="public/portfolio/page-02.jpg" alt="About — Hanny Sanusi portrait with affiliated brands" loading="lazy" />
+        <div class="slide-caption"><strong>Profile</strong><span>02</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" style="background:var(--bg-soft)">
+  <div class="container">
+    <div class="section-head">
+      <div><div class="section-num">02 — Toolkit</div></div>
+      <div>
+        <h2 class="section-title"><em style="font-style:italic;color:var(--accent-2)">Skills</em> & software</h2>
+        <div class="section-sub">Design · Analytics · Productivity</div>
+      </div>
+    </div>
+    <div class="slide-feature reveal">
+      <div class="slide" onclick="openLightbox(2)">
+        <img src="public/portfolio/page-03.jpg" alt="Skills — software toolkit grid" loading="lazy" />
+        <div class="slide-caption"><strong>Creative & analytical toolkit</strong><span>03</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CREDENTIALS -->
+<section id="credentials">
+  <div class="container">
+    <div class="section-head">
+      <div><div class="section-num">03 — Credentials</div></div>
+      <div>
+        <h2 class="section-title">Certifications & <em style="font-style:italic;color:var(--accent-2)">eligibility</em></h2>
+        <div class="section-sub">Advanced Hospitality Analytics · Swiss Work Visa</div>
+      </div>
+    </div>
+    <div class="slide-grid grid-2">
+      <div class="slide reveal" onclick="openLightbox(3)">
+        <img src="public/portfolio/page-04.jpg" alt="Certificate in Advanced Hospitality and Tourism Analytics" loading="lazy" />
+        <div class="slide-caption"><strong>Certificate · Analytics</strong><span>04</span></div>
+      </div>
+      <div class="slide reveal" onclick="openLightbox(4)">
+        <img src="public/portfolio/page-05.jpg" alt="Young Professionals — Swiss work visa eligibility" loading="lazy" />
+        <div class="slide-caption"><strong>Young Professionals · Swiss Permit</strong><span>05</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS OVERVIEW -->
+<section id="projects" style="background:var(--bg-soft)">
+  <div class="container">
+    <div class="section-head">
+      <div><div class="section-num">04 — Projects</div></div>
+      <div>
+        <h2 class="section-title">Selected <em style="font-style:italic;color:var(--accent-2)">work</em></h2>
+        <div class="section-sub">School · Work · Personal</div>
+      </div>
+    </div>
+    <div class="project-tabs">
+      <a href="#school">School Projects</a>
+      <a href="#work">Work Projects</a>
+      <a href="#personal">Personal Projects</a>
+    </div>
+    <div class="slide-feature reveal">
+      <div class="slide" onclick="openLightbox(5)">
+        <img src="public/portfolio/page-06.jpg" alt="Projects index — School, Work, Personal" loading="lazy" />
+        <div class="slide-caption"><strong>Projects index</strong><span>06</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCHOOL -->
+<section id="school">
+  <div class="container">
+    <div class="divider reveal">
+      <div class="num">i.</div>
+      <div class="label">School <em style="font-style:italic;color:var(--accent-2)">Projects</em></div>
+      <div class="desc">EHL · Strategy · Data · Design</div>
+    </div>
+    <div class="slide-grid grid-1">
+      <div class="slide reveal" onclick="openLightbox(6)">
+        <img src="public/portfolio/page-07.jpg" alt="School Projects intro" loading="lazy" />
+        <div class="slide-caption"><strong>School · Overview</strong><span>07</span></div>
+      </div>
+    </div>
+    <div class="slide-grid grid-2" style="margin-top:48px">
+      <div class="slide reveal" onclick="openLightbox(7)">
+        <img src="public/portfolio/page-08.jpg" alt="Champagne Client Strategy Challenge — UK On-Trade Market" loading="lazy" />
+        <div class="slide-caption"><strong>Champagne · Infographic</strong><span>08</span></div>
+      </div>
+      <div class="slide reveal" onclick="openLightbox(8)">
+        <img src="public/portfolio/page-09.jpg" alt="UNIFLAT — Student Housing Platform" loading="lazy" />
+        <div class="slide-caption"><strong>UNIFLAT · Platform Strategy</strong><span>09</span></div>
+      </div>
+      <div class="slide reveal" onclick="openLightbox(9)">
+        <img src="public/portfolio/page-10.jpg" alt="UNIFLAT — Customer Journey Map" loading="lazy" />
+        <div class="slide-caption"><strong>UNIFLAT · Customer Journey</strong><span>10</span></div>
+      </div>
+      <div class="slide reveal" onclick="openLightbox(10)">
+        <img src="public/portfolio/page-11.jpg" alt="KFC Data Strategy" loading="lazy" />
+        <div class="slide-caption"><strong>KFC · Data Strategy</strong><span>11</span></div>
+      </div>
+      <div class="slide reveal" onclick="openLightbox(11)">
+        <img src="public/portfolio/page-12.jpg" alt="IKEA — AI-Powered CX Audit" loading="lazy" />
+        <div class="slide-caption"><strong>IKEA · AI-Powered CX</strong><span>12</span></div>
+      </div>
+      <div class="slide reveal" onclick="openLightbox(12)">
+        <img src="public/portfolio/page-13.jpg" alt="Figma — Travel social media app" loading="lazy" />
+        <div class="slide-caption"><strong>Figma · Travel App</strong><span>13</span></div>
+      </div>
+      <div class="slide reveal" onclick="openLightbox(13)">
+        <img src="public/portfolio/page-14.jpg" alt="Figma — App interface preview" loading="lazy" />
+        <div class="slide-caption"><strong>Figma · Interface</strong><span>14</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WORK -->
+<section id="work" style="background:var(--bg-soft)">
+  <div class="container">
+    <div class="divider reveal">
+      <div class="num">ii.</div>
+      <div class="label">Work <em style="font-style:italic;color:var(--accent-2)">Projects</em></div>
+      <div class="desc">Four Seasons · Guest Experience</div>
+    </div>
+    <div class="slide-grid grid-2">
+      <div class="slide reveal" onclick="openLightbox(14)">
+        <img src="public/portfolio/page-15.jpg" alt="Work Projects intro" loading="lazy" />
+        <div class="slide-caption"><strong>Work · Overview</strong><span>15</span></div>
+      </div>
+      <div class="slide reveal" onclick="openLightbox(15)">
+        <img src="public/portfolio/page-16.jpg" alt="Four Seasons — Guest Dining Concierge Guide, Singapore" loading="lazy" />
+        <div class="slide-caption"><strong>Four Seasons · Concierge Guide</strong><span>16</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PERSONAL -->
+<section id="personal">
+  <div class="container">
+    <div class="divider reveal">
+      <div class="num">iii.</div>
+      <div class="label">Personal <em style="font-style:italic;color:var(--accent-2)">Projects</em></div>
+      <div class="desc">Art · Apparel · Photography</div>
+    </div>
+    <div class="slide-grid grid-1">
+      <div class="slide reveal" onclick="openLightbox(16)">
+        <img src="public/portfolio/page-17.jpg" alt="Personal Projects intro" loading="lazy" />
+        <div class="slide-caption"><strong>Personal · Overview</strong><span>17</span></div>
+      </div>
+    </div>
+    <div class="slide-grid grid-3" style="margin-top:48px">
+      <div class="slide reveal" onclick="openLightbox(17)">
+        <img src="public/portfolio/page-18.jpg" alt="Art — original mixed-media works" loading="lazy" />
+        <div class="slide-caption"><strong>Art</strong><span>18</span></div>
+      </div>
+      <div class="slide reveal" onclick="openLightbox(18)">
+        <img src="public/portfolio/page-19.jpg" alt="Graphic T-Shirt designs" loading="lazy" />
+        <div class="slide-caption"><strong>Graphic T-Shirt</strong><span>19</span></div>
+      </div>
+      <div class="slide reveal" onclick="openLightbox(19)">
+        <img src="public/portfolio/page-20.jpg" alt="Photography portfolio" loading="lazy" />
+        <div class="slide-caption"><strong>Photography</strong><span>20</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div style="font-size:11px; letter-spacing:.4em; text-transform:uppercase; color:var(--muted); margin-bottom:16px">Thank you for your time</div>
+      <h3 class="footer-title">Let's create<br/><em style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--accent-2)">something together.</em></h3>
+      <div class="footer-sub">All pictures are my original work / photograph.</div>
+    </div>
+    <div class="footer-meta">
+      Hanny Sanusi<br/>
+      Marketing Portfolio · 2026<br/>
+      EHL · Lausanne
+    </div>
+  </div>
+</footer>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lb" onclick="if(event.target.id==='lb')closeLightbox()">
+  <button class="lb-close" onclick="closeLightbox()" aria-label="Close">✕</button>
+  <button class="lb-prev" onclick="navLightbox(-1)" aria-label="Previous">‹</button>
+  <button class="lb-next" onclick="navLightbox(1)" aria-label="Next">›</button>
+  <img id="lb-img" src="" alt="" />
+  <div class="lb-counter" id="lb-counter"></div>
+</div>
+
+<script>
+  // images list (matches order of onclick indices)
+  const images = Array.from({length:20}, (_,i)=>`public/portfolio/page-${String(i+1).padStart(2,'0')}.jpg`);
+  let lbIdx = 0;
+  const lb = document.getElementById('lb');
+  const lbImg = document.getElementById('lb-img');
+  const lbCounter = document.getElementById('lb-counter');
+
+  function openLightbox(i){
+    lbIdx = i;
+    lbImg.src = images[i];
+    lbCounter.textContent = `${String(i+1).padStart(2,'0')} / ${String(images.length).padStart(2,'0')}`;
+    lb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox(){
+    lb.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function navLightbox(d){
+    lbIdx = (lbIdx + d + images.length) % images.length;
+    lbImg.src = images[lbIdx];
+    lbCounter.textContent = `${String(lbIdx+1).padStart(2,'0')} / ${String(images.length).padStart(2,'0')}`;
+  }
+  document.addEventListener('keydown', e=>{
+    if(!lb.classList.contains('open')) return;
+    if(e.key==='Escape') closeLightbox();
+    if(e.key==='ArrowRight') navLightbox(1);
+    if(e.key==='ArrowLeft') navLightbox(-1);
+  });
+
+  // Nav scroll state & active link
+  const nav = document.getElementById('nav');
+  const links = document.querySelectorAll('.nav-links a');
+  const sections = Array.from(links).map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  window.addEventListener('scroll', ()=>{
+    nav.classList.toggle('scrolled', window.scrollY > 20);
+    const y = window.scrollY + 120;
+    let active = sections[0];
+    sections.forEach(s=>{ if(s.offsetTop <= y) active = s; });
+    links.forEach(l=>l.classList.toggle('active', l.getAttribute('href') === '#' + (active?.id||'')));
+  }, {passive:true});
+
+  // Reveal on scroll
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, {threshold:.12, rootMargin:'0px 0px -60px 0px'});
+  document.querySelectorAll('.slide, .reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
