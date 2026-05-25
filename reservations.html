@@ -118,11 +118,17 @@
       <a href="#dashboard" data-view="dashboard" class="nav-link">My Stay</a>
     </nav>
     <div class="flex items-center gap-2">
-      <div class="hidden sm:flex rounded-full border border-aspire-border bg-white p-1 text-[0.72rem]">
-        <button data-lang="en" class="lang-btn px-2.5 py-1 rounded-full bg-aspire-navy text-white">EN</button>
-        <button data-lang="de" class="lang-btn px-2.5 py-1 rounded-full text-navy-500">DE</button>
-        <button data-lang="fr" class="lang-btn px-2.5 py-1 rounded-full text-navy-500">FR</button>
-        <button data-lang="it" class="lang-btn px-2.5 py-1 rounded-full text-navy-500">IT</button>
+      <div class="relative hidden sm:block">
+        <button id="lang-toggle" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-aspire-border bg-white text-aspire-navy text-[0.82rem] hover:border-aspire-taupe transition-colors" aria-haspopup="listbox" aria-expanded="false">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a13.5 13.5 0 010 18M12 3a13.5 13.5 0 000 18"/></svg>
+          <span id="lang-current">EN</span>
+        </button>
+        <div id="lang-menu" class="hidden absolute right-0 top-full mt-2 w-40 rounded-xl border border-aspire-border bg-white shadow-lift p-1.5 z-50">
+          <button data-lang="en" class="lang-opt w-full text-left px-3 py-2 rounded-lg hover:bg-aspire-soft text-[0.88rem] text-aspire-navy flex items-center justify-between">English<span class="text-navy-500 text-[0.72rem]">EN</span></button>
+          <button data-lang="de" class="lang-opt w-full text-left px-3 py-2 rounded-lg hover:bg-aspire-soft text-[0.88rem] text-aspire-navy flex items-center justify-between">Deutsch<span class="text-navy-500 text-[0.72rem]">DE</span></button>
+          <button data-lang="fr" class="lang-opt w-full text-left px-3 py-2 rounded-lg hover:bg-aspire-soft text-[0.88rem] text-aspire-navy flex items-center justify-between">Français<span class="text-navy-500 text-[0.72rem]">FR</span></button>
+          <button data-lang="it" class="lang-opt w-full text-left px-3 py-2 rounded-lg hover:bg-aspire-soft text-[0.88rem] text-aspire-navy flex items-center justify-between">Italiano<span class="text-navy-500 text-[0.72rem]">IT</span></button>
+        </div>
       </div>
       <button id="mobile-menu" class="md:hidden h-9 w-9 rounded-full border border-aspire-border flex items-center justify-center" aria-label="Open menu">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
@@ -1192,10 +1198,24 @@ document.addEventListener('click', (e) => {
   if (a) { e.preventDefault(); go(a.dataset.view); }
 });
 $('#mobile-menu')?.addEventListener('click', () => $('#mobile-nav').classList.toggle('hidden'));
-$$('.lang-btn').forEach(b => b.addEventListener('click', () => {
-  $$('.lang-btn').forEach(x => { x.classList.remove('bg-aspire-navy','text-white'); x.classList.add('text-navy-500'); });
-  b.classList.remove('text-navy-500'); b.classList.add('bg-aspire-navy','text-white');
+// Language switcher — globe pill + dropdown
+$('#lang-toggle')?.addEventListener('click', (e) => {
+  e.stopPropagation();
+  const menu = $('#lang-menu');
+  const open = menu.classList.toggle('hidden');
+  $('#lang-toggle').setAttribute('aria-expanded', String(!open));
+});
+$$('.lang-opt').forEach(b => b.addEventListener('click', () => {
+  $('#lang-current').textContent = b.dataset.lang.toUpperCase();
+  $('#lang-menu').classList.add('hidden');
+  $('#lang-toggle').setAttribute('aria-expanded', 'false');
 }));
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#lang-toggle') && !e.target.closest('#lang-menu')) {
+    $('#lang-menu')?.classList.add('hidden');
+    $('#lang-toggle')?.setAttribute('aria-expanded', 'false');
+  }
+});
 
 /* ----------------------- HOME ----------------------- */
 function initHome() {
@@ -1407,6 +1427,8 @@ document.addEventListener('input', (e) => {
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     closeLoungePicker();
+    $('#lang-menu')?.classList.add('hidden');
+    $('#lang-toggle')?.setAttribute('aria-expanded', 'false');
   }
 });
 document.addEventListener('change', (e) => {
