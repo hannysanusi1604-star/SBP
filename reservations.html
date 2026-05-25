@@ -223,15 +223,15 @@
     </div>
   </div>
 
-  <!-- Featured lounges -->
+  <!-- Selected lounge -->
   <section class="mx-auto max-w-7xl px-5 sm:px-8 pt-4">
     <div class="flex items-end justify-between mb-8">
       <div>
-        <div class="swiss-eyebrow">Featured lounges</div>
-        <h2 class="serif-heading text-3xl sm:text-5xl mt-2 text-aspire-navy">Available this week</h2>
+        <div class="swiss-eyebrow">Your selection</div>
+        <h2 class="serif-heading text-3xl sm:text-5xl mt-2 text-aspire-navy">The lounge for your trip</h2>
       </div>
       <a href="#search" data-view="search" class="hidden sm:inline-flex items-center gap-2 text-aspire-navy text-[0.78rem] uppercase tracking-widest hover:gap-3 transition-all">
-        View all <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        Browse network <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
     </div>
     <div id="featured-lounges" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5"></div>
@@ -341,8 +341,8 @@
       <!-- STEP 1: Lounge -->
       <div class="reserve-step" data-step="1">
         <div class="text-center mt-6 mb-10">
-          <h1 class="serif-heading text-4xl sm:text-6xl text-aspire-navy">Choose your lounge</h1>
-          <p class="mt-3 text-navy-500">Browse premium lounges available across our network.</p>
+          <h1 class="serif-heading text-4xl sm:text-6xl text-aspire-navy">Your lounge</h1>
+          <p class="mt-3 text-navy-500">Review your selection — or tap Change lounge to browse the worldwide Aspire network.</p>
         </div>
         <div id="reserve-lounges" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         <div class="mt-10 flex items-center justify-between gap-4">
@@ -784,7 +784,7 @@
       <div>
         <div class="swiss-eyebrow">Aspire network</div>
         <div class="serif-heading text-2xl sm:text-3xl text-aspire-navy mt-1">Choose your lounge</div>
-        <p class="mt-2 text-[0.88rem] text-navy-500">Browse the global Aspire network. Tap any lounge to set it as your booking destination — the <strong class="text-aspire-navy font-medium">Zurich Aspire Lounge Gates A, B &amp; D</strong> is currently featured.</p>
+        <p class="mt-2 text-[0.88rem] text-navy-500">Tap any lounge in our worldwide network to set it as your booking destination. Your current selection is shown with a navy "Selected" pill.</p>
       </div>
       <button onclick="closeLoungePicker()" aria-label="Close" class="h-9 w-9 rounded-full border border-aspire-border bg-white text-aspire-navy flex items-center justify-center hover:bg-aspire-soft">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 6l12 12M6 18L18 6"/></svg>
@@ -797,7 +797,7 @@
       </div>
       <div class="mt-3 flex items-center justify-between text-[0.72rem] uppercase tracking-widest text-navy-500">
         <span><span id="lounge-modal-count"></span> lounges</span>
-        <span class="inline-flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-emerald-500"></span>Currently featured</span>
+        <span class="inline-flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-aspire-navy"></span>Your current selection</span>
       </div>
     </div>
     <div id="lounge-modal-list" class="flex-1 overflow-y-auto p-5 sm:p-6 space-y-6"></div>
@@ -882,15 +882,15 @@
 <script>
 /* ----------------------- DATA ----------------------- */
 const LOUNGES = [
-  { id:'zrh-abd', name:'Aspire Lounge Gates A, B & D', airport:'Zurich Airport', airportCode:'ZRH', terminal:'Gates A · B · D', city:'Zurich', country:'Switzerland',
+  { id:'zrh-abd', name:'Aspire Lounge Gates A, B & D', airport:'Zurich Airport', airportCode:'ZRH', terminal:'Airside · Schengen · Gates A, B & D', city:'Zurich', country:'Switzerland', region:'Europe',
     image:'https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1600&q=80',
-    amenities:['Showers','Champagne bar','À la carte dining','Quiet zone','Workstations'],
-    capacity:240, rating:4.8, reviews:1842, priceFrom:65, currency:'CHF', occupancyPct:64, hours:'05:00 — 22:30' },
+    amenities: ['Free WiFi','Charging points','Complimentary food & drinks','Major card schemes accepted','Guaranteed flight delay cover','Free cancellations & amends'],
+    capacity:240, rating:4.8, reviews:1842, priceFrom:65, currency:'CHF', occupancyPct:64, hours:'05:15 — 21:00 · daily' },
 ];
 
 const LOUNGE_NETWORK = [
   { region:'Europe', lounges:[
-    { name:'Zurich Aspire Lounge Gates A, B & D', city:'Zurich', country:'Switzerland', count:2, code:'ZRH', id:'zrh-abd', featured:true },
+    { name:'Zurich Aspire Lounge Gates A, B & D', city:'Zurich', country:'Switzerland', count:2, code:'ZRH', id:'zrh-abd' },
     { name:'Zurich Aspire Lounge Midfield',        city:'Zurich', country:'Switzerland', count:2, code:'ZRH' },
     { name:'Zurich Swiss Airlines Lounges',        city:'Zurich', country:'Switzerland', count:10, code:'ZRH' },
     { name:'Amsterdam Schiphol Aspire Lounge 26',  city:'Amsterdam', country:'Netherlands', code:'AMS' },
@@ -964,6 +964,73 @@ const LOUNGE_NETWORK = [
 ];
 
 const NETWORK_TOTAL = LOUNGE_NETWORK.reduce((s, r) => s + r.lounges.reduce((a, l) => a + (l.count || 1), 0), 0);
+
+/* Region-aware lounge imagery */
+const REGION_IMAGES = {
+  'Europe':                       'https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1600&q=80',
+  'United Kingdom':               'https://images.unsplash.com/photo-1578894381163-e72c17f2d45f?auto=format&fit=crop&w=1600&q=80',
+  'UK Joint Ventures':            'https://images.unsplash.com/photo-1551776235-dde6d482980b?auto=format&fit=crop&w=1600&q=80',
+  'Canada':                       'https://images.unsplash.com/photo-1517935706615-2717063c2225?auto=format&fit=crop&w=1600&q=80',
+  'Americas':                     'https://images.unsplash.com/photo-1542223616-740d5dff7f56?auto=format&fit=crop&w=1600&q=80',
+  'Asia':                         'https://images.unsplash.com/photo-1542640244-7e672d6cef4e?auto=format&fit=crop&w=1600&q=80',
+  'Middle East · Joint Venture':  'https://images.unsplash.com/photo-1547595628-c61a29f496f0?auto=format&fit=crop&w=1600&q=80',
+  'Africa':                       'https://images.unsplash.com/photo-1521295121783-8a321d551ad2?auto=format&fit=crop&w=1600&q=80',
+  'Australia':                    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1600&q=80',
+};
+const COUNTRY_CURRENCY = {
+  'Switzerland':'CHF','United Kingdom':'GBP','Israel':'USD',
+  'Canada':'CAD','United States':'USD','Argentina':'USD',
+  'Japan':'JPY','South Korea':'KRW','Kenya':'USD',
+  'South Africa':'ZAR','Tanzania':'USD','Australia':'AUD',
+  'Trinidad and Tobago':'USD',
+  'Netherlands':'EUR','Greece':'EUR','Denmark':'EUR',
+  'Ireland':'EUR','Finland':'EUR','Italy':'EUR','Bulgaria':'EUR',
+};
+const STANDARD_AMENITIES = [
+  'Free WiFi',
+  'Charging points',
+  'Complimentary food & drinks',
+  'Major card schemes accepted',
+  'Guaranteed flight delay cover',
+  'Free cancellations & amends',
+];
+function seedHash(s) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h) + s.charCodeAt(i);
+  return Math.abs(h);
+}
+function loungeProfileFromNetwork(net, region) {
+  const code = net.code || '—';
+  const id = net.id || (code.toLowerCase() + '-' + net.city.toLowerCase().replace(/[^a-z0-9]/g,''));
+  const seed = seedHash(id);
+  const currency = COUNTRY_CURRENCY[net.country] || 'EUR';
+  const image = REGION_IMAGES[region] || REGION_IMAGES['Europe'];
+  // Deterministic per-lounge price/occupancy/rating so it doesn't flicker on re-render
+  const rating = (4.4 + (seed % 5) * 0.1).toFixed(1);
+  const reviews = 220 + (seed % 1400);
+  const priceFromBase = currency === 'GBP' ? 30 : currency === 'CHF' ? 55 : currency === 'CAD' ? 45 : currency === 'AUD' ? 55 : currency === 'JPY' ? 4500 : currency === 'KRW' ? 38000 : currency === 'ZAR' ? 450 : 35;
+  const priceFrom = priceFromBase + (seed % 30);
+  const occupancyPct = 25 + (seed % 60);
+  return {
+    id,
+    name: net.name,
+    airport: `${net.city} Airport`,
+    airportCode: code,
+    terminal: 'Airside · Departures',
+    city: net.city,
+    country: net.country,
+    region,
+    image,
+    amenities: STANDARD_AMENITIES,
+    capacity: 140 + (seed % 100),
+    rating: Number(rating),
+    reviews,
+    priceFrom,
+    currency,
+    occupancyPct,
+    hours: '05:15 — 21:00 · daily',
+  };
+}
 
 const ZONE_META = {
   quiet:       { label:'Quiet Zone',  description:'Silent area for rest, reading and reflection.',     color:'#9FB4A8' },
@@ -1114,36 +1181,48 @@ function initHome() {
   const gs = $('#search-guests');
   [1,2,3,4,5,6].forEach(n => gs.append(new Option(`${n} ${n===1?'guest':'guests'}`, n)));
   $('#search-date').value = state.booking.date;
+  updateLoungePickerLabel();
+  renderHomeFeatured();
+}
+function updateLoungePickerLabel() {
+  const l = lounge();
+  const lbl = $('#lounge-picker-label');
+  if (lbl) lbl.textContent = `${l.city} · ${l.name}`;
+}
 
-  const grid = $('#featured-lounges');
-  const accessible = LOUNGES[0];
-  const tone = accessible.occupancyPct > 75 ? 'red' : accessible.occupancyPct > 50 ? 'amber' : '';
-  // Accessible lounge — prominent card spanning 2 columns
+function renderHomeFeatured() {
+  const grid = $('#featured-lounges'); if (!grid) return;
+  grid.innerHTML = '';
+  const sel = lounge();
+  const tone = sel.occupancyPct > 75 ? 'red' : sel.occupancyPct > 50 ? 'amber' : '';
+  // Selected lounge — prominent card spanning the full width
   grid.append(el('div', { class:'lg:col-span-2 rounded-3xl overflow-hidden bg-white border border-aspire-navy/40 flex flex-col sm:flex-row shadow-card' },
     el('div', { class:'relative sm:w-1/2 aspect-[4/3] sm:aspect-auto overflow-hidden' },
-      el('img', { src:accessible.image, alt:accessible.name, class:'h-full w-full object-cover' }),
+      el('img', { src:sel.image, alt:sel.name, class:'h-full w-full object-cover' }),
       el('div', { class:'absolute top-3 left-3 flex flex-col gap-2' },
-        el('span', { class:'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/95 text-white text-[0.7rem] uppercase tracking-widest', html:'<span class="h-1.5 w-1.5 rounded-full bg-white"></span>Featured lounge' }),
-        el('span', { class:'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-aspire-border text-[0.7rem] uppercase tracking-widest text-aspire-navy', html:`<span class="live-dot ${tone}"></span>${accessible.occupancyPct}% full · live` })
+        el('span', { class:'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-aspire-navy text-white text-[0.7rem] uppercase tracking-widest', html:'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5L20 6"/></svg>Your selection' }),
+        el('span', { class:'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-aspire-border text-[0.7rem] uppercase tracking-widest text-aspire-navy', html:`<span class="live-dot ${tone}"></span>${sel.occupancyPct}% full · live` })
       )
     ),
     el('div', { class:'p-6 sm:p-8 flex-1 flex flex-col' },
-      el('div', { class:'text-[0.72rem] uppercase tracking-widest text-navy-500' }, `${accessible.airportCode} · ${accessible.city}, ${accessible.country}`),
-      el('div', { class:'serif-heading text-3xl mt-1 text-aspire-navy' }, accessible.name),
-      el('div', { class:'text-[0.88rem] text-navy-500 mt-1' }, `${accessible.terminal} · ${accessible.hours}`),
+      el('div', { class:'text-[0.72rem] uppercase tracking-widest text-navy-500' }, `${sel.airportCode} · ${sel.city}, ${sel.country}`),
+      el('div', { class:'serif-heading text-3xl mt-1 text-aspire-navy' }, sel.name),
+      el('div', { class:'text-[0.88rem] text-navy-500 mt-1' }, `${sel.terminal} · ${sel.hours}`),
       el('div', { class:'mt-4 flex flex-wrap gap-1.5' },
-        ...accessible.amenities.map(a => el('span', { class:'text-[0.7rem] px-2.5 py-1 rounded-full bg-aspire-soft text-aspire-navy/80 border border-aspire-border' }, a))
+        ...sel.amenities.slice(0, 6).map(a => el('span', { class:'text-[0.7rem] px-2.5 py-1 rounded-full bg-aspire-soft text-aspire-navy/80 border border-aspire-border' }, a))
       ),
-      el('div', { class:'mt-auto pt-6 flex items-end justify-between' },
+      el('div', { class:'mt-auto pt-6 flex items-end justify-between gap-3 flex-wrap' },
         el('div', {},
           el('div', { class:'text-[0.7rem] uppercase tracking-widest text-navy-500' }, 'from'),
-          el('div', { class:'serif-heading text-2xl text-aspire-navy' }, `${accessible.currency} ${accessible.priceFrom}`)
+          el('div', { class:'serif-heading text-2xl text-aspire-navy' }, `${sel.currency} ${sel.priceFrom}`)
         ),
-        el('button', { class:'btn-primary', onclick: () => { state.booking.loungeId = accessible.id; state.step = 2; go('reserve'); }, html:'Reserve <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>' })
+        el('div', { class:'flex gap-2 flex-wrap' },
+          el('button', { class:'btn-outline', onclick: () => openLoungePicker(), html:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 4v5h5"/></svg>Change lounge' }),
+          el('button', { class:'btn-primary', onclick: () => { state.step = 2; go('reserve'); }, html:'Reserve <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>' })
+        )
       )
     )
   ));
-  // Browse the network teaser
   grid.append(el('a', { href:'#search', 'data-view':'search', class:'lg:col-span-2 group rounded-3xl bg-aspire-card p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 hover:bg-aspire-taupe/30 transition-colors block' },
     el('div', {},
       el('div', { class:'swiss-eyebrow text-aspire-navy/70' }, `Global network · ${NETWORK_TOTAL} lounges`),
@@ -1190,98 +1269,80 @@ function renderLoungePickerList(q) {
       )
     );
     const list = el('div', { class:'space-y-2' });
-    matches.forEach(l => list.append(loungeRow(l)));
+    matches.forEach(l => list.append(loungeRow(l, group.region)));
     section.append(list);
     host.append(section);
   });
   $('#lounge-modal-count').textContent = total === NETWORK_TOTAL ? `All ${NETWORK_TOTAL}` : String(total);
   if (total === 0) host.append(el('div', { class:'text-center py-12 text-navy-500' }, 'No lounges match your search.'));
 }
-function loungeRow(l) {
-  const featured = !!l.featured;
+function loungeRow(net, region) {
+  const profile = loungeProfileFromNetwork(net, region);
+  const selected = state.booking.loungeId === profile.id;
   const wrap = el('button', {
-    class:`w-full text-left flex items-center gap-4 p-4 rounded-2xl border transition-all cursor-pointer ${featured ? 'border-aspire-navy bg-aspire-soft hover:bg-aspire-card' : 'border-aspire-border bg-white hover:border-aspire-taupe hover:bg-aspire-soft/60'}`,
-    onclick: () => pickLounge(l)
+    class:`w-full text-left flex items-center gap-4 p-4 rounded-2xl border transition-all cursor-pointer ${selected ? 'border-aspire-navy bg-aspire-soft' : 'border-aspire-border bg-white hover:border-aspire-taupe hover:bg-aspire-soft/60'}`,
+    onclick: () => pickLounge(net, region)
   });
   wrap.append(
-    el('div', { class:`h-11 w-11 rounded-xl flex items-center justify-center text-[0.7rem] font-medium tracking-widest ${featured ? 'bg-aspire-navy text-white' : 'bg-aspire-soft text-aspire-navy border border-aspire-border'}` }, l.code || '—'),
+    el('div', { class:`h-11 w-11 rounded-xl flex items-center justify-center text-[0.7rem] font-medium tracking-widest flex-shrink-0 ${selected ? 'bg-aspire-navy text-white' : 'bg-aspire-soft text-aspire-navy border border-aspire-border'}` }, net.code || '—'),
     el('div', { class:'flex-1 min-w-0' },
-      el('div', { class:'text-aspire-navy text-[0.95rem] truncate' }, l.name + (l.count && l.count > 1 ? `  ×${l.count}` : '')),
-      el('div', { class:'text-[0.78rem] text-navy-500 truncate' }, `${l.city} · ${l.country}`)
+      el('div', { class:'text-aspire-navy text-[0.95rem] truncate' }, net.name + (net.count && net.count > 1 ? `  ×${net.count}` : '')),
+      el('div', { class:'text-[0.78rem] text-navy-500 truncate' }, `${net.city} · ${net.country}`)
     ),
-    featured
-      ? el('span', { class:'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-700 text-[0.7rem] uppercase tracking-widest flex-shrink-0', html:'<span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>Featured' })
+    selected
+      ? el('span', { class:'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-aspire-navy text-white text-[0.7rem] uppercase tracking-widest flex-shrink-0', html:'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5L20 6"/></svg>Selected' })
       : el('span', { class:'inline-flex items-center gap-1.5 text-[0.7rem] uppercase tracking-widest text-navy-500 flex-shrink-0', html:'Select <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m9 6 6 6-6 6"/></svg>' })
   );
   return wrap;
 }
-function pickLounge(l) {
-  // Build a LOUNGES-shape record for any picked network lounge. The
-  // canonical featured lounge keeps its full data; other lounges inherit
-  // sensible defaults so the booking flow works for the whole network.
-  const baseId = l.id || (l.code || 'apl').toLowerCase() + '-' + l.city.toLowerCase().replace(/[^a-z0-9]/g,'');
-  let entry = LOUNGES.find(x => x.id === baseId);
-  if (!entry) {
-    const fallback = LOUNGES[0];
-    entry = {
-      id: baseId,
-      name: l.name.replace(/^(Zurich|Amsterdam|Geneva|Helsinki|London|Birmingham|Manchester|Calgary|Montreal|Toronto|Ottawa|Chicago|Ontario|San Diego|Buenos Aires|Piarco|Seoul|Tokyo|Tel Aviv|Nairobi|Johannesburg|Kilimanjaro|Perth|Melbourne|Sydney|Belfast|Edinburgh|Humberside|Inverness|Liverpool|Newcastle|Athens|Basel|Copenhagen|Cork|Milan|Sofia|Jersey)\s+/i, ''),
-      airport: `${l.city} Airport`,
-      airportCode: l.code || '—',
-      terminal: 'Departures',
-      city: l.city,
-      country: l.country,
-      image: fallback.image,
-      amenities: ['Showers','Bar','Hot buffet','Quiet zone','Workstations'],
-      capacity: 160,
-      rating: 4.6,
-      reviews: 412,
-      priceFrom: 55,
-      currency: 'EUR',
-      occupancyPct: 30 + Math.floor(Math.random() * 50),
-      hours: '05:00 — 22:00',
-    };
-    LOUNGES.push(entry);
-  }
+function pickLounge(net, region) {
+  // Look up the cached profile, or build & cache one from network data.
+  const profile = loungeProfileFromNetwork(net, region);
+  let entry = LOUNGES.find(x => x.id === profile.id);
+  if (!entry) { LOUNGES.push(profile); entry = profile; }
   state.booking.loungeId = entry.id;
-  $('#lounge-picker-label').textContent = `${entry.city} · ${entry.name}`;
+  updateLoungePickerLabel();
   closeLoungePicker();
+  // Re-render any open view that depends on the selected lounge
+  if ($('#view-home').classList.contains('active'))      renderHomeFeatured();
+  if ($('#view-search').classList.contains('active'))    renderSearch();
+  if ($('#view-reserve').classList.contains('active'))   renderReserve();
+  if ($('#view-dashboard').classList.contains('active')) renderDashboard();
 }
 
 /* ----------------------- SEARCH ----------------------- */
 function renderSearch() {
   const q = ($('#search-q')?.value || '').toLowerCase().trim();
-  const sort = $('#search-sort')?.value || 'availability';
   const out = $('#search-results'); out.innerHTML = '';
 
-  // Featured: the accessible Zurich lounge
-  const accessible = LOUNGES[0];
-  const tone = accessible.occupancyPct > 75 ? 'red' : accessible.occupancyPct > 50 ? 'amber' : '';
-  if (!q || `${accessible.airport} ${accessible.airportCode} ${accessible.city} ${accessible.name}`.toLowerCase().includes(q)) {
+  // Selected lounge — always featured at the top of /search
+  const sel = lounge();
+  const tone = sel.occupancyPct > 75 ? 'red' : sel.occupancyPct > 50 ? 'amber' : '';
+  if (!q || `${sel.airport} ${sel.airportCode} ${sel.city} ${sel.name}`.toLowerCase().includes(q)) {
     out.append(el('div', { class:'lg:col-span-2 rounded-3xl overflow-hidden bg-white border border-aspire-navy flex flex-col sm:flex-row shadow-card' },
       el('div', { class:'relative sm:w-2/5 aspect-[4/3] sm:aspect-auto overflow-hidden' },
-        el('img', { src:accessible.image, alt:accessible.name, class:'h-full w-full object-cover' }),
+        el('img', { src:sel.image, alt:sel.name, class:'h-full w-full object-cover' }),
         el('div', { class:'absolute top-3 left-3 flex flex-col gap-2' },
-          el('span', { class:'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/95 text-white text-[0.7rem] uppercase tracking-widest', html:'<span class="h-1.5 w-1.5 rounded-full bg-white"></span>Currently featured' }),
-          el('span', { class:'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-aspire-border text-[0.7rem] uppercase tracking-widest text-aspire-navy', html:`<span class="live-dot ${tone}"></span>${accessible.occupancyPct}% full` })
+          el('span', { class:'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-aspire-navy text-white text-[0.7rem] uppercase tracking-widest', html:'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5L20 6"/></svg>Your selection' }),
+          el('span', { class:'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-aspire-border text-[0.7rem] uppercase tracking-widest text-aspire-navy', html:`<span class="live-dot ${tone}"></span>${sel.occupancyPct}% full` })
         )
       ),
       el('div', { class:'p-6 flex-1 flex flex-col' },
         el('div', { class:'flex items-center justify-between text-[0.72rem] uppercase tracking-widest text-navy-500' },
-          el('span', {}, `${accessible.airportCode} · ${accessible.city}, ${accessible.country}`),
-          el('span', { html:`★ ${accessible.rating} (${accessible.reviews})` })
+          el('span', {}, `${sel.airportCode} · ${sel.city}, ${sel.country}`),
+          el('span', { html:`★ ${sel.rating} (${sel.reviews})` })
         ),
-        el('div', { class:'serif-heading text-2xl mt-2 text-aspire-navy' }, accessible.name),
-        el('div', { class:'text-[0.85rem] text-navy-500' }, `${accessible.terminal} · ${accessible.hours}`),
+        el('div', { class:'serif-heading text-2xl mt-2 text-aspire-navy' }, sel.name),
+        el('div', { class:'text-[0.85rem] text-navy-500' }, `${sel.terminal} · ${sel.hours}`),
         el('div', { class:'mt-4 flex flex-wrap gap-1.5' },
-          ...accessible.amenities.slice(0,4).map(a => el('span', { class:'text-[0.7rem] px-2.5 py-1 rounded-full bg-aspire-soft text-aspire-navy/80 border border-aspire-border' }, a))
+          ...sel.amenities.slice(0,6).map(a => el('span', { class:'text-[0.7rem] px-2.5 py-1 rounded-full bg-aspire-soft text-aspire-navy/80 border border-aspire-border' }, a))
         ),
-        el('div', { class:'mt-auto pt-5 flex items-end justify-between' },
+        el('div', { class:'mt-auto pt-5 flex items-end justify-between gap-3 flex-wrap' },
           el('div', {},
             el('div', { class:'text-[0.7rem] uppercase tracking-widest text-navy-500' }, 'from'),
-            el('div', { class:'text-aspire-navy text-xl' }, `${accessible.currency} ${accessible.priceFrom}`)
+            el('div', { class:'text-aspire-navy text-xl' }, `${sel.currency} ${sel.priceFrom}`)
           ),
-          el('button', { class:'btn-primary', onclick: () => { state.booking.loungeId = accessible.id; state.step = 2; go('reserve'); }, html:'Reserve <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>' })
+          el('button', { class:'btn-primary', onclick: () => { state.step = 2; go('reserve'); }, html:'Reserve this lounge <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>' })
         )
       )
     ));
@@ -1291,14 +1352,13 @@ function renderSearch() {
   out.append(el('div', { class:'lg:col-span-2 mt-2' },
     el('div', { class:'swiss-eyebrow' }, 'Global Aspire network'),
     el('div', { class:'serif-heading text-2xl text-aspire-navy mt-1' }, `${NETWORK_TOTAL} lounges worldwide`),
-    el('p', { class:'text-[0.88rem] text-navy-500 mt-1' }, "Tap any lounge to set it as your booking destination. The featured lounge above is currently selected.")
+    el('p', { class:'text-[0.88rem] text-navy-500 mt-1' }, "Tap any lounge to make it your booking destination. Your current selection sits at the top of this page.")
   ));
 
-  // Network list grouped by region
+  // Full network list grouped by region — selected lounge stays clickable so users can confirm again
   let total = 0;
   LOUNGE_NETWORK.forEach(group => {
     const matches = group.lounges.filter(l => {
-      if (l.featured) return false; // already shown as featured at the top
       const hay = `${l.name} ${l.city} ${l.country} ${l.code || ''}`.toLowerCase();
       return hay.includes(q);
     });
@@ -1311,7 +1371,7 @@ function renderSearch() {
       )
     );
     const grid = el('div', { class:'grid grid-cols-1 sm:grid-cols-2 gap-2' });
-    matches.forEach(l => grid.append(loungeRow(l)));
+    matches.forEach(l => grid.append(loungeRow(l, group.region)));
     section.append(grid);
     out.append(section);
   });
@@ -1362,33 +1422,79 @@ function goStep(n) {
   renderReserve();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+const AMENITY_ICONS = {
+  'Free WiFi':                       '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 12.5a10 10 0 0114 0M8 16a5 5 0 018 0"/><circle cx="12" cy="19" r="1.2" fill="currentColor"/></svg>',
+  'Charging points':                 '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M13 3 5 14h6l-1 7 8-11h-6z"/></svg>',
+  'Complimentary food & drinks':     '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M7 3l2 8a3 3 0 003 3 3 3 0 003-3l2-8M12 14v7M9 21h6"/></svg>',
+  'Major card schemes accepted':     '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 11h18"/></svg>',
+  'Guaranteed flight delay cover':   '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>',
+  'Free cancellations & amends':     '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>',
+};
+
 function renderStep1() {
   const out = $('#reserve-lounges'); out.innerHTML = '';
-  LOUNGES.forEach(l => {
-    out.append(el('div', { class:'md:col-span-2 rounded-3xl overflow-hidden border border-aspire-navy bg-white shadow-card' },
-      el('div', { class:'flex flex-col sm:flex-row' },
-        el('div', { class:'sm:w-1/2 aspect-[4/3] sm:aspect-auto overflow-hidden relative' },
-          el('img', { src:l.image, alt:l.name, class:'h-full w-full object-cover' }),
-          el('span', { class:'absolute top-3 left-3 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/95 text-white text-[0.7rem] uppercase tracking-widest', html:'<span class="h-1.5 w-1.5 rounded-full bg-white"></span>Included with your access' })
-        ),
-        el('div', { class:'flex-1 p-5 sm:p-6' },
-          el('div', { class:'text-[0.7rem] uppercase tracking-widest text-navy-500' }, `${l.airportCode} · ${l.terminal}`),
-          el('div', { class:'serif-heading text-2xl mt-1 text-aspire-navy' }, l.name),
-          el('div', { class:'text-[0.85rem] text-navy-500 mt-1' }, `${l.city}, ${l.country} · ${l.hours}`),
-          el('div', { class:'mt-3 flex flex-wrap gap-1.5' },
-            ...l.amenities.slice(0,4).map(a => el('span', { class:'text-[0.7rem] px-2.5 py-1 rounded-full bg-aspire-soft text-aspire-navy/80 border border-aspire-border' }, a))
+  const l = lounge();
+
+  // Big lounge card mirroring the Aspire site layout
+  out.append(el('div', { class:'md:col-span-2 rounded-3xl overflow-hidden border border-aspire-navy bg-white shadow-card' },
+    el('div', { class:'flex flex-col md:flex-row' },
+      el('div', { class:'md:w-2/5 aspect-[4/3] md:aspect-auto overflow-hidden relative' },
+        el('img', { src:l.image, alt:l.name, class:'h-full w-full object-cover' }),
+        el('span', { class:'absolute top-3 left-3 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-aspire-navy text-white text-[0.7rem] uppercase tracking-widest', html:'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5L20 6"/></svg>Your selection' })
+      ),
+      el('div', { class:'flex-1 p-5 sm:p-6' },
+        el('div', { class:'flex items-start justify-between gap-3' },
+          el('div', {},
+            el('div', { class:'text-[0.7rem] uppercase tracking-widest text-navy-500' }, `${l.airportCode} · ${l.city}, ${l.country}`),
+            el('div', { class:'serif-heading text-2xl sm:text-3xl mt-1 text-aspire-navy' }, l.name)
           ),
-          el('div', { class:'mt-4 flex items-center justify-between text-[0.85rem]' },
-            el('span', { class:'text-navy-500' }, `${l.occupancyPct}% occupancy · ★ ${l.rating}`),
-            el('span', { class:'text-aspire-navy' }, `${l.currency} ${l.priceFrom}`)
+          el('button', { class:'btn-outline whitespace-nowrap', onclick:() => openLoungePicker(), html:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 4v5h5"/></svg>Change lounge' })
+        ),
+        el('div', { class:'text-[0.85rem] text-navy-500 mt-2' }, `${l.terminal} · ${l.hours}`),
+        el('div', { class:'mt-4 grid grid-cols-2 gap-3 text-[0.85rem]' },
+          el('div', { class:'p-3 rounded-xl bg-aspire-soft' },
+            el('div', { class:'text-[0.7rem] uppercase tracking-widest text-navy-500' }, 'Duration'),
+            el('div', { class:'mt-0.5 text-aspire-navy' }, 'Up to 3 hours')
+          ),
+          el('div', { class:'p-3 rounded-xl bg-aspire-soft' },
+            el('div', { class:'text-[0.7rem] uppercase tracking-widest text-navy-500' }, 'From'),
+            el('div', { class:'mt-0.5 text-aspire-navy' }, `${l.currency} ${l.priceFrom}`)
           )
         )
       )
-    ));
-  });
-  out.append(el('div', { class:'md:col-span-2 mt-2 p-5 rounded-2xl bg-aspire-soft border border-aspire-border flex items-start gap-3' },
-    el('span', { class:'h-8 w-8 rounded-full bg-white border border-aspire-border flex items-center justify-center text-aspire-navy flex-shrink-0', html:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>' }),
-    el('div', { class:'text-[0.88rem] text-navy-500 leading-relaxed', html:'Currently selected: <strong class="text-aspire-navy font-medium">Zurich Aspire Lounge Gates A, B & D</strong>. Want a different lounge? Browse the wider Aspire network in the <a href="#search" data-view="search" class="text-aspire-navy underline underline-offset-4">global directory</a>.' })
+    )
+  ));
+
+  // Amenities grid (matches Aspire's lounge-detail page)
+  out.append(el('div', { class:'md:col-span-2 card-cream p-6 sm:p-8' },
+    el('div', { class:'flex items-end justify-between mb-5' },
+      el('div', {},
+        el('div', { class:'swiss-eyebrow' }, 'Amenities'),
+        el('div', { class:'serif-heading text-2xl text-aspire-navy mt-1' }, "What's included")
+      ),
+      el('span', { class:'text-[0.78rem] text-navy-500' }, `${l.amenities.length} amenities`)
+    ),
+    el('div', { class:'grid grid-cols-2 sm:grid-cols-3 gap-3' },
+      ...l.amenities.map(a => el('div', { class:'p-4 rounded-2xl border border-aspire-border bg-white flex flex-col items-center text-center gap-2 text-aspire-taupeDark' },
+        el('div', { class:'h-8 w-8 flex items-center justify-center', html: AMENITY_ICONS[a] || AMENITY_ICONS['Free WiFi'] }),
+        el('div', { class:'text-[0.85rem] text-aspire-navy leading-tight' }, a)
+      ))
+    )
+  ));
+
+  // Opening hours card
+  out.append(el('div', { class:'md:col-span-2 card-cream p-6 sm:p-8' },
+    el('div', { class:'swiss-eyebrow mb-1' }, 'Opening / Closing times'),
+    el('div', { class:'serif-heading text-2xl text-aspire-navy mb-5' }, l.hours),
+    el('div', { class:'divide-y divide-aspire-border' },
+      ...['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].map(d =>
+        el('div', { class:'py-3 flex items-center justify-between text-[0.92rem]' },
+          el('span', { class:'text-aspire-navy' }, d),
+          el('span', { class:'text-navy-500 tabular-nums' }, l.hours.split(' · ')[0])
+        )
+      )
+    ),
+    el('p', { class:'mt-4 text-[0.78rem] text-navy-500 italic' }, 'Hours may vary on public holidays.')
   ));
 }
 function renderStep2() {
