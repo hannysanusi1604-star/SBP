@@ -428,7 +428,7 @@ const LOCALES = [
 const I18N = {
   en: {
     'brand.line1':'Aspire Lounge','brand.line2':'Switzerland','brand.sub':'AIRPORT LOUNGES · SWITZERLAND',
-    'nav.home':'Home','nav.menu':'Menu','nav.drinks':'Drinks','nav.dietary':'Dietary','nav.feedback':'Feedback','nav.about':'Local Sourcing',
+    'nav.home':'Home','nav.menu':'Menu','nav.drinks':'Drinks','nav.dietary':'Dietary','nav.partner':'Partnerships','nav.feedback':'Feedback','nav.about':'Local Sourcing',
     'home.eyebrow':'Zürich · Geneva · Basel',
     'home.welcome':'Welcome to a quiet moment before your flight.',
     'home.subtitle':'Browse today’s buffet, discover Swiss ingredients, and travel with comfort.',
@@ -523,7 +523,7 @@ const I18N = {
   },
   fr: {
     'brand.line1':'Aspire Lounge','brand.line2':'Suisse','brand.sub':'SALONS AÉROPORTUAIRES · SUISSE',
-    'nav.home':'Accueil','nav.menu':'Menu','nav.drinks':'Boissons','nav.dietary':'Régimes','nav.feedback':'Avis','nav.about':'Producteurs',
+    'nav.home':'Accueil','nav.menu':'Menu','nav.drinks':'Boissons','nav.dietary':'Régimes','nav.partner':'Partenariats','nav.feedback':'Avis','nav.about':'Producteurs',
     'home.eyebrow':'Zurich · Genève · Bâle','home.welcome':'Bienvenue dans un moment de calme avant votre vol.',
     'home.subtitle':'Découvrez le buffet du jour, les ingrédients suisses, et voyagez sereinement.',
     'home.cta.menu':'Voir le buffet','home.cta.premium':'Service Suite',
@@ -614,7 +614,7 @@ const I18N = {
   },
   de: {
     'brand.line1':'Aspire Lounge','brand.line2':'Schweiz','brand.sub':'AIRPORT LOUNGES · SCHWEIZ',
-    'nav.home':'Start','nav.menu':'Menü','nav.drinks':'Getränke','nav.dietary':'Ernährung','nav.feedback':'Feedback','nav.about':'Herkunft',
+    'nav.home':'Start','nav.menu':'Menü','nav.drinks':'Getränke','nav.dietary':'Ernährung','nav.partner':'Partner','nav.feedback':'Feedback','nav.about':'Herkunft',
     'home.eyebrow':'Zürich · Genf · Basel','home.welcome':'Willkommen zu einem ruhigen Moment vor Ihrem Flug.',
     'home.subtitle':'Entdecken Sie das heutige Buffet, Schweizer Zutaten — und reisen Sie entspannt.',
     'home.cta.menu':'Zum Buffet','home.cta.premium':'Suite-Service',
@@ -705,7 +705,7 @@ const I18N = {
   },
   it: {
     'brand.line1':'Aspire Lounge','brand.line2':'Svizzera','brand.sub':'LOUNGE AEROPORTUALI · SVIZZERA',
-    'nav.home':'Home','nav.menu':'Menu','nav.drinks':'Bevande','nav.dietary':'Dieta','nav.feedback':'Feedback','nav.about':'Produttori',
+    'nav.home':'Home','nav.menu':'Menu','nav.drinks':'Bevande','nav.dietary':'Dieta','nav.partner':'Partner','nav.feedback':'Feedback','nav.about':'Produttori',
     'home.eyebrow':'Zurigo · Ginevra · Basilea','home.welcome':'Benvenuto in un momento di calma prima del volo.',
     'home.subtitle':'Scopri il buffet di oggi e gli ingredienti svizzeri, viaggia sereno.',
     'home.cta.menu':'Scopri il buffet','home.cta.premium':'Servizio Suite',
@@ -796,7 +796,7 @@ const I18N = {
   },
   ar: {
     'brand.line1':'صالة أسباير','brand.line2':'سويسرا','brand.sub':'صالات المطارات · سويسرا',
-    'nav.home':'الرئيسية','nav.menu':'القائمة','nav.drinks':'المشروبات','nav.dietary':'النظام الغذائي','nav.feedback':'الملاحظات','nav.about':'مصادرنا',
+    'nav.home':'الرئيسية','nav.menu':'القائمة','nav.drinks':'المشروبات','nav.dietary':'النظام الغذائي','nav.partner':'الشراكات','nav.feedback':'الملاحظات','nav.about':'مصادرنا',
     'home.eyebrow':'زيورخ · جنيف · بازل','home.welcome':'أهلاً بك في لحظة هدوء قبل رحلتك.',
     'home.subtitle':'تصفّح قائمة اليوم، اكتشف المكونات السويسرية، وسافر بكل راحة.',
     'home.cta.menu':'تصفح البوفيه','home.cta.premium':'خدمة السويت',
@@ -912,6 +912,7 @@ const NAV_ITEMS = [
   { href:'home', key:'nav.home' },
   { href:'menu', key:'nav.menu' },
   { href:'dietary', key:'nav.dietary' },
+  { href:'home', key:'nav.partner', scroll:'partner' },
   { href:'about', key:'nav.about' },
   { href:'feedback', key:'nav.feedback' },
 ];
@@ -938,16 +939,18 @@ function renderHeader() {
   const desk = document.getElementById('desktopNav');
   const mob = document.getElementById('mobileNavList');
   desk.innerHTML = NAV_ITEMS.map(n => {
-    const active = STATE.route === n.href;
-    return `<a href="#${n.href}" data-route="${n.href}"
-      class="relative pb-1 text-[0.68rem] tracking-[0.28em] transition-colors ${active ? 'text-navy-900' : 'text-navy-500 hover:text-navy-900'}">
+    const active = STATE.route === n.href && !n.scroll;
+    const scrollAttr = n.scroll ? ` data-scroll="${n.scroll}"` : '';
+    return `<a href="#${n.href}" data-route="${n.href}"${scrollAttr}
+      class="relative pb-1 text-[0.62rem] tracking-[0.32em] transition-colors ${active ? 'text-navy-900' : 'text-navy-500 hover:text-navy-900'}">
       ${esc(t(n.key))}
       ${active ? '<span class="absolute left-0 right-0 -bottom-0.5 h-px bg-navy-900"></span>' : ''}
     </a>`;
   }).join('');
   mob.innerHTML = NAV_ITEMS.map(n => {
-    const active = STATE.route === n.href;
-    return `<a href="#${n.href}" data-route="${n.href}"
+    const active = STATE.route === n.href && !n.scroll;
+    const scrollAttr = n.scroll ? ` data-scroll="${n.scroll}"` : '';
+    return `<a href="#${n.href}" data-route="${n.href}"${scrollAttr}
       class="py-2 ${active ? 'text-navy-900' : 'text-navy-500'}">${esc(t(n.key))}</a>`;
   }).join('');
 
@@ -976,21 +979,16 @@ function renderHeader() {
    =========================================================== */
 function pageHome() {
   return `
-  <!-- ===== Immersive buffet hero ===== -->
+  <!-- ===== Buffet hero (static) ===== -->
   <section id="hero" class="hero-immersive relative h-[100svh] min-h-[640px] overflow-hidden">
-    <!-- Background buffet photograph (replace src with your own image to swap) -->
-    <div id="heroImageWrap" class="hero-image-wrap absolute inset-0">
-      <div class="hero-image absolute -inset-[4%]">
-        <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=2400&q=85" alt="Aspire Lounge breakfast buffet" class="h-full w-full object-cover" />
-      </div>
+    <!-- Background buffet photograph -->
+    <div class="absolute inset-0">
+      <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=2400&q=85" alt="Aspire Lounge breakfast buffet" class="h-full w-full object-cover" />
     </div>
 
     <!-- Atmospheric overlays -->
     <div class="absolute inset-0 bg-gradient-to-b from-ivory-50/15 via-ivory-50/0 to-ivory-50/80 pointer-events-none"></div>
     <div class="absolute inset-0 hero-glow pointer-events-none"></div>
-
-    <!-- Champagne dust over the image -->
-    <canvas id="heroCanvas" class="absolute inset-0 w-full h-full block pointer-events-none"></canvas>
 
     <!-- Interactive hotspots over the image -->
     <div class="absolute inset-0 z-10">
@@ -1088,114 +1086,16 @@ function pageHome() {
           </div>
         </div>
 
-        <!-- Right: animated falling-fries scene -->
+        <!-- Right: photo crossfade per variant -->
         <div class="md:col-span-7 reveal" style="transition-delay:.1s">
           <div class="frites-stage aspect-[4/5]">
-            <!-- Big editorial backdrop text -->
             ${[1,2,3,4].map(n => `<div class="frites-bigtype ${n===1?'active':''}" data-variant="${n-1}">${esc(t('signature.v'+n+'.name'))}</div>`).join('')}
-
-            <!-- Falling fries (populated/replayed by JS) -->
-            <div class="fries-rain" id="friesRain" aria-hidden="true"></div>
-
-            <!-- ASPIRE fry box with settled fries -->
-            <div class="fries-box">
-              <svg viewBox="0 0 220 300" preserveAspectRatio="xMidYMid meet" class="w-full h-auto" aria-hidden="true">
-                <defs>
-                  <linearGradient id="boxGrad" x1="0" y1="0" x2="1" y2="0.05">
-                    <stop offset="0%" stop-color="#FFFFFF"/>
-                    <stop offset="55%" stop-color="#FCFAF5"/>
-                    <stop offset="100%" stop-color="#E8E2D2"/>
-                  </linearGradient>
-                  <linearGradient id="boxShade" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="rgba(20,38,63,0.06)"/>
-                    <stop offset="40%" stop-color="rgba(20,38,63,0)"/>
-                  </linearGradient>
-                </defs>
-
-                <!-- Settled fries spilling out of the box -->
-                <g>
-                  <rect x="60" y="42" width="6" height="92"  rx="2" fill="#E0B468" transform="rotate(-12 63 88)"/>
-                  <rect x="75" y="32" width="6" height="100" rx="2" fill="#D8AC5E" transform="rotate(-6 78 82)"/>
-                  <rect x="90" y="28" width="6" height="106" rx="2" fill="#E5B96B" transform="rotate(0 93 81)"/>
-                  <rect x="105" y="30" width="6" height="104" rx="2" fill="#D4A858" transform="rotate(6 108 82)"/>
-                  <rect x="120" y="40" width="6" height="94"  rx="2" fill="#DCB060" transform="rotate(12 123 87)"/>
-                  <rect x="135" y="52" width="6" height="82"  rx="2" fill="#C99C50" transform="rotate(18 138 93)"/>
-                  <rect x="82" y="56" width="6" height="78"  rx="2" fill="#D4A858" transform="rotate(-3 85 95)"/>
-                  <rect x="98" y="52" width="6" height="82"  rx="2" fill="#E0B468" transform="rotate(4 101 93)"/>
-                  <rect x="114" y="55" width="6" height="80" rx="2" fill="#C99C50" transform="rotate(10 117 95)"/>
-                </g>
-
-                <!-- Garnish per salt variant -->
-                <g class="frites-garnish-svg active" data-variant="0">
-                  <circle cx="86"  cy="50" r="1.3" fill="#FFFFFF" opacity="0.95"/>
-                  <circle cx="100" cy="44" r="1.6" fill="#FFFFFF" opacity="0.95"/>
-                  <circle cx="115" cy="50" r="1.2" fill="#FFFFFF" opacity="0.9"/>
-                  <circle cx="93"  cy="60" r="1.4" fill="#FFFFFF" opacity="0.85"/>
-                  <circle cx="108" cy="58" r="1.3" fill="#FFFFFF" opacity="0.9"/>
-                  <circle cx="125" cy="55" r="1"   fill="#FFFFFF" opacity="0.8"/>
-                </g>
-                <g class="frites-garnish-svg" data-variant="1">
-                  <ellipse cx="90"  cy="50" rx="3"   ry="1"   fill="#F4E6A8" opacity="0.92"/>
-                  <ellipse cx="105" cy="44" rx="3.5" ry="1.2" fill="#F4E6A8" opacity="0.92"/>
-                  <ellipse cx="120" cy="54" rx="3"   ry="1"   fill="#F4E6A8" opacity="0.92"/>
-                  <circle  cx="98"  cy="60" r="1"               fill="#7A8C73" opacity="0.78"/>
-                  <circle  cx="112" cy="62" r="1"               fill="#7A8C73" opacity="0.78"/>
-                </g>
-                <g class="frites-garnish-svg" data-variant="2">
-                  <circle cx="88"  cy="50" r="1.3" fill="#7A8C73" opacity="0.9"/>
-                  <circle cx="100" cy="44" r="1"   fill="#5C7A6A" opacity="0.95"/>
-                  <circle cx="115" cy="50" r="1.3" fill="#7A8C73" opacity="0.85"/>
-                  <circle cx="95"  cy="60" r="1"   fill="#5C7A6A" opacity="0.9"/>
-                  <circle cx="110" cy="58" r="1.4" fill="#7A8C73" opacity="0.85"/>
-                  <circle cx="83"  cy="64" r="0.9" fill="#3C3A28" opacity="0.65"/>
-                </g>
-                <g class="frites-garnish-svg" data-variant="3">
-                  <circle cx="88"  cy="50" r="1.6" fill="#2A1810" opacity="0.72"/>
-                  <circle cx="100" cy="44" r="1.8" fill="#2A1810" opacity="0.78"/>
-                  <circle cx="116" cy="50" r="1.4" fill="#2A1810" opacity="0.72"/>
-                  <circle cx="98"  cy="62" r="1.5" fill="#2A1810" opacity="0.72"/>
-                  <circle cx="83"  cy="58" r="1"   fill="#5C7A6A" opacity="0.78"/>
-                  <circle cx="120" cy="60" r="1"   fill="#5C7A6A" opacity="0.78"/>
-                </g>
-
-                <!-- Box body (front face) -->
-                <path d="M 12 115
-                         C 22 78, 60 78, 80 110
-                         C 92 128, 108 128, 120 110
-                         C 140 78, 178 78, 188 115
-                         L 178 282
-                         L 22 282 Z"
-                      fill="url(#boxGrad)"
-                      stroke="rgba(20,38,63,0.12)"
-                      stroke-width="0.6"/>
-                <path d="M 12 115
-                         C 22 78, 60 78, 80 110
-                         C 92 128, 108 128, 120 110
-                         C 140 78, 178 78, 188 115
-                         L 178 282
-                         L 22 282 Z"
-                      fill="url(#boxShade)"/>
-
-                <!-- ASPIRE wordmark -->
-                <text x="100" y="200" text-anchor="middle"
-                      font-family="Inter, sans-serif" font-weight="500"
-                      font-size="17" letter-spacing="5" fill="#0A1729">ASPIRE</text>
-                <!-- Tagline -->
-                <text x="100" y="215" text-anchor="middle"
-                      font-family="Inter, sans-serif" font-weight="400"
-                      font-size="4.6" letter-spacing="1.8" fill="rgba(20,38,63,0.6)">PRE-FLIGHT HOSPITALITY</text>
-
-                <!-- French Fries label with dashes -->
-                <line x1="55"  y1="258" x2="74" y2="258" stroke="rgba(184,152,85,0.8)" stroke-width="0.6"/>
-                <text x="100" y="261" text-anchor="middle"
-                      font-family="Inter, sans-serif" font-weight="500"
-                      font-size="5.4" letter-spacing="2.6" fill="rgba(20,38,63,0.72)">FRENCH FRIES</text>
-                <line x1="126" y1="258" x2="145" y2="258" stroke="rgba(184,152,85,0.8)" stroke-width="0.6"/>
-
-                <!-- Gold bottom rule -->
-                <line x1="24" y1="276" x2="176" y2="276" stroke="rgba(184,152,85,0.85)" stroke-width="0.9"/>
-              </svg>
-            </div>
+            ${[
+              { src:'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=1400&q=85', alt:'signature.v1.name' },
+              { src:'https://images.unsplash.com/photo-1639024471283-03518883512d?auto=format&fit=crop&w=1400&q=85', alt:'signature.v2.name' },
+              { src:'https://images.unsplash.com/photo-1576107232684-1279f390859f?auto=format&fit=crop&w=1400&q=85', alt:'signature.v3.name' },
+              { src:'https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=1400&q=85', alt:'signature.v4.name' },
+            ].map((p, i) => `<div class="frites-photo ${i===0?'active':''}" data-variant="${i}">${image(p.src, t(p.alt), 'h-full w-full')}</div>`).join('')}
           </div>
         </div>
       </div>
@@ -2197,8 +2097,6 @@ function teardownHomeImmersive() {
 
 function setupHomeImmersive() {
   IMMERSIVE.running = true;
-  setupHeroImageParallax();
-  setupHeroScene();
   setupHotspotTouch();
   setupRevealObserver();
   setupTiltCards();
@@ -2224,13 +2122,7 @@ const FRY_POSITIONS = [
   { x:'36%', d:'2.0s',  dx:'-2px',  r0:'6deg',   r1:'-22deg' },
 ];
 
-function pourFries() {
-  const rain = document.getElementById('friesRain');
-  if (!rain) return;
-  rain.innerHTML = FRY_POSITIONS.map(p =>
-    `<span class="fry" style="--x:${p.x}; --d:${p.d}; --dx:${p.dx}; --r0:${p.r0}; --r1:${p.r1};"></span>`
-  ).join('');
-}
+function pourFries() { /* fries animation disabled — static photos now */ }
 
 function setupFritesChooser() {
   const root = document.getElementById('signature');
@@ -2631,7 +2523,24 @@ document.body.addEventListener('click', (e) => {
   if (a) {
     e.preventDefault();
     const r = a.getAttribute('data-route');
-    location.hash = '#' + r;
+    const scroll = a.getAttribute('data-scroll');
+    const onHome = (location.hash.replace('#','') || 'home') === 'home';
+    if (scroll) {
+      const doScroll = () => {
+        const el = document.getElementById(scroll);
+        if (!el) return;
+        const top = el.getBoundingClientRect().top + window.scrollY - 12;
+        window.scrollTo({ top, behavior: 'smooth' });
+      };
+      if (onHome && r === 'home') {
+        doScroll();
+      } else {
+        location.hash = '#' + r;
+        setTimeout(doScroll, 260);
+      }
+    } else {
+      location.hash = '#' + r;
+    }
   }
 });
 
