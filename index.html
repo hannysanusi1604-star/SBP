@@ -155,6 +155,18 @@
   /* Magnetic CTA */
   .magnetic { transition: transform .45s cubic-bezier(.2,.8,.2,1); }
 
+  /* Header chameleon — transparent + light-on-dark while over the hero */
+  #siteHeader.on-hero { background: transparent !important; border-bottom-color: transparent !important; }
+  #siteHeader.on-hero .aspire-mark { color: #FBF9F5 !important; }
+  #siteHeader.on-hero .aspire-sub { color: rgba(251,249,245,0.6) !important; }
+  #siteHeader.on-hero #desktopNav a { color: rgba(251,249,245,0.75); }
+  #siteHeader.on-hero #desktopNav a:hover,
+  #siteHeader.on-hero #desktopNav a.text-navy-900 { color: #FBF9F5; }
+  #siteHeader.on-hero #desktopNav a > span.bg-navy-900 { background: #FBF9F5; }
+  #siteHeader.on-hero #langBtn { color: #FBF9F5; border-color: rgba(251,249,245,0.3); }
+  #siteHeader.on-hero #langBtn:hover { border-color: rgba(251,249,245,0.6); }
+  #siteHeader.on-hero #mobileBtn { color: #FBF9F5; border-color: rgba(251,249,245,0.3); }
+
   /* Signature variant chooser (House Frites) */
   .frites-list { border-top: 1px solid rgba(20,38,63,.1); }
   .frites-choice {
@@ -295,7 +307,7 @@
 </svg>
 
 <!-- ========================= HEADER ========================= -->
-<header class="sticky top-0 z-40 backdrop-blur-md bg-ivory-50/80 border-b border-ivory-200/60">
+<header id="siteHeader" class="sticky top-0 z-40 backdrop-blur-md bg-ivory-50/80 border-b border-ivory-200/60 transition-colors duration-300">
   <div class="mx-auto max-w-6xl px-5 sm:px-8 py-3 flex items-center justify-between">
     <a href="#home" data-route="home" class="group flex flex-col items-start leading-none" aria-label="Aspire Lounge Switzerland">
       <span class="aspire-mark text-navy-900 text-[1.35rem] sm:text-[1.45rem]">ASPIRE</span>
@@ -481,6 +493,9 @@ const I18N = {
     'addr.zurich':'Zürich Airport · Terminal A','addr.geneva':'Genève Aéroport · Terminal 1','addr.basel':'Basel EuroAirport · Departures',
     'eyebrow.aspire':'— Aspire','eyebrow.important':'— important','eyebrow.swiss':'— Swiss sourcing',
     'home.scroll':'Scroll','home.tap':'Tap any glowing point to discover the buffet',
+    'hero.head1':'Between','hero.head.italic':'the','hero.head.tail':'Cities.',
+    'hero.body':'A quiet pause between gates. Swiss-rooted dining, alpine light, and the slow warmth of an evening before take-off — for travellers who’d rather arrive unhurried.',
+    'hero.cta.secondary':'Explore the lounge','hero.serving':'Serving daily','hero.est':'Est. 2010 — Terminal A',
     'home.cities':'Zürich · Genève · Basel',
     'home.quiet.eyebrow':'— Our quiet promise',
     'home.story.body':'From the first sip of alpine coffee to the last bite of Zuger Kirschtorte, every detail is composed to feel like a calm pause between cities.',
@@ -574,6 +589,9 @@ const I18N = {
     'addr.zurich':'Aéroport de Zurich · Terminal A','addr.geneva':'Aéroport de Genève · Terminal 1','addr.basel':'EuroAirport de Bâle · Départs',
     'eyebrow.aspire':'— Aspire','eyebrow.important':'— important','eyebrow.swiss':'— Origine suisse',
     'home.scroll':'Faire défiler','home.tap':'Touchez un point lumineux pour découvrir le buffet',
+    'hero.head1':'Entre','hero.head.italic':'les','hero.head.tail':'villes.',
+    'hero.body':'Une pause discrète entre les portes. Cuisine d’origine suisse, lumière alpine et chaleur lente d’un soir avant l’envol — pour les voyageurs qui préfèrent arriver sans hâte.',
+    'hero.cta.secondary':'Découvrir le salon','hero.serving':'Service quotidien','hero.est':'Fondé en 2010 — Terminal A',
     'home.cities':'Zurich · Genève · Bâle',
     'home.quiet.eyebrow':'— Notre promesse silencieuse',
     'home.story.body':'De la première gorgée de café alpin à la dernière bouchée de Zuger Kirschtorte, chaque détail compose une pause calme entre deux villes.',
@@ -667,6 +685,9 @@ const I18N = {
     'addr.zurich':'Flughafen Zürich · Terminal A','addr.geneva':'Flughafen Genf · Terminal 1','addr.basel':'EuroAirport Basel · Abflug',
     'eyebrow.aspire':'— Aspire','eyebrow.important':'— wichtig','eyebrow.swiss':'— Schweizer Herkunft',
     'home.scroll':'Scrollen','home.tap':'Berühren Sie einen leuchtenden Punkt, um das Buffet zu entdecken',
+    'hero.head1':'Zwischen','hero.head.italic':'den','hero.head.tail':'Städten.',
+    'hero.body':'Eine stille Pause zwischen den Gates. Schweizer Küche, Alpenlicht und die langsame Wärme eines Abends vor dem Abflug — für Reisende, die lieber unbeeilt ankommen.',
+    'hero.cta.secondary':'Lounge entdecken','hero.serving':'Täglich geöffnet','hero.est':'Gegründet 2010 — Terminal A',
     'home.cities':'Zürich · Genf · Basel',
     'home.quiet.eyebrow':'— Unser leises Versprechen',
     'home.story.body':'Vom ersten Schluck Alpenkaffee bis zum letzten Bissen Zuger Kirschtorte ist jedes Detail darauf abgestimmt, wie eine ruhige Pause zwischen den Städten zu wirken.',
@@ -760,6 +781,9 @@ const I18N = {
     'addr.zurich':'Aeroporto di Zurigo · Terminal A','addr.geneva':'Aeroporto di Ginevra · Terminal 1','addr.basel':'EuroAirport Basilea · Partenze',
     'eyebrow.aspire':'— Aspire','eyebrow.important':'— importante','eyebrow.swiss':'— Origine svizzera',
     'home.scroll':'Scorri','home.tap':'Tocca un punto luminoso per scoprire il buffet',
+    'hero.head1':'Tra','hero.head.italic':'le','hero.head.tail':'città.',
+    'hero.body':'Una quieta pausa tra i gate. Cucina di radici svizzere, luce alpina e il calore lento di una sera prima del decollo — per chi preferisce arrivare senza fretta.',
+    'hero.cta.secondary':'Esplora la lounge','hero.serving':'Aperto ogni giorno','hero.est':'Fondato nel 2010 — Terminal A',
     'home.cities':'Zurigo · Ginevra · Basilea',
     'home.quiet.eyebrow':'— La nostra quieta promessa',
     'home.story.body':'Dal primo sorso di caffè alpino all’ultimo morso di Zuger Kirschtorte, ogni dettaglio è composto per essere una pausa silenziosa tra una città e l’altra.',
@@ -853,6 +877,9 @@ const I18N = {
     'addr.zurich':'مطار زيورخ · المبنى A','addr.geneva':'مطار جنيف · المبنى 1','addr.basel':'مطار بازل · بوابات المغادرة',
     'eyebrow.aspire':'— أسباير','eyebrow.important':'— تنبيه','eyebrow.swiss':'— مصدر سويسري',
     'home.scroll':'مرّر للأسفل','home.tap':'المس أي نقطة مضيئة لاكتشاف البوفيه',
+    'hero.head1':'بين','hero.head.italic':'','hero.head.tail':'المدن.',
+    'hero.body':'استراحة هادئة بين البوابات. مطبخ بجذور سويسرية، ضوء الجبال، ودفء بطيء لمساء يسبق الإقلاع — لمسافرين يفضّلون الوصول دون عجلة.',
+    'hero.cta.secondary':'اكتشف الصالة','hero.serving':'خدمة يومية','hero.est':'تأسست 2010 — المبنى A',
     'home.cities':'زيورخ · جنيف · بازل',
     'home.quiet.eyebrow':'— وعدنا الهادئ',
     'home.story.body':'من أول رشفة قهوة ألبية إلى آخر قضمة من كعكة زوغ، كل تفصيلة مُعدّة لتمنحك استراحة هادئة بين المدن.',
@@ -989,48 +1016,69 @@ function renderHeader() {
    =========================================================== */
 function pageHome() {
   return `
-  <!-- ===== Buffet hero (static) ===== -->
-  <section id="hero" class="hero-immersive relative h-[100svh] min-h-[640px] overflow-hidden">
-    <!-- Background buffet photograph -->
+  <!-- ===== Editorial hero ===== -->
+  <section id="hero" class="hero-immersive relative h-[100svh] min-h-[680px] overflow-hidden">
+    <!-- Background photograph -->
     <div class="absolute inset-0">
-      <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=2400&q=85" alt="Aspire Lounge breakfast buffet" class="h-full w-full object-cover" />
+      <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=2400&q=85" alt="Aspire Lounge" class="h-full w-full object-cover" />
     </div>
 
-    <!-- Atmospheric overlays -->
-    <div class="absolute inset-0 bg-gradient-to-b from-ivory-50/15 via-ivory-50/0 to-ivory-50/80 pointer-events-none"></div>
-    <div class="absolute inset-0 hero-glow pointer-events-none"></div>
+    <!-- Cinematic overlays -->
+    <div class="absolute inset-0 bg-gradient-to-br from-navy-900/75 via-navy-900/35 to-navy-900/85 pointer-events-none"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-navy-900/30 via-transparent to-navy-900/40 pointer-events-none"></div>
 
-    <!-- Interactive hotspots over the image -->
-    <div class="absolute inset-0 z-10">
-      ${hotspot(20, 64, t('hotspot.bread.title'), t('hotspot.bread.desc'), 'down')}
-      ${hotspot(32, 50, t('hotspot.pretzel.title'), t('hotspot.pretzel.desc'))}
-      ${hotspot(46, 72, t('hotspot.pastry.title'), t('hotspot.pastry.desc'), 'down')}
-      ${hotspot(58, 76, t('hotspot.preserve.title'), t('hotspot.preserve.desc'), 'down', 'right')}
-      ${hotspot(70, 65, t('hotspot.porcelain.title'), t('hotspot.porcelain.desc'), null, 'right')}
-      ${hotspot(50, 36, t('hotspot.citrus.title'), t('hotspot.citrus.desc'), null, 'right')}
+    <!-- Top-left brand label -->
+    <div class="absolute top-7 left-7 sm:top-9 sm:left-9 z-20 flex items-center gap-3 text-ivory-50/75 text-[0.55rem] uppercase tracking-[0.4em] anim-fade">
+      <span class="block w-7 h-px bg-ivory-50/35"></span>
+      <span>${esc(t('brand.sub'))}</span>
     </div>
 
-    <!-- Foreground typography -->
-    <div class="relative z-20 h-full flex flex-col items-center justify-center text-center px-5">
-      <div class="swiss-eyebrow anim-fade" style="animation-delay:.1s">${esc(t('home.eyebrow'))}</div>
-      <div class="mt-7 sm:mt-9 anim-up" style="animation-delay:.2s">
-        <div class="aspire-mark text-navy-900 text-[3.4rem] sm:text-[6rem] md:text-[8rem] leading-none" style="text-shadow: 0 4px 30px rgba(251,249,245,0.5);">ASPIRE</div>
-        <div class="aspire-sub mt-3 sm:mt-4 text-[0.55rem] sm:text-[0.7rem]">${esc(t('brand.sub'))}</div>
+    <!-- Top-right coordinates -->
+    <div class="absolute top-7 right-7 sm:top-9 sm:right-9 z-20 text-right text-ivory-50/65 text-[0.55rem] uppercase tracking-[0.4em] leading-[1.8] anim-fade" style="animation-delay:.1s">
+      <div>ZRH · 47.4647° N</div>
+      <div>8.5492° E</div>
+    </div>
+
+    <!-- Vertical EST label (left edge) -->
+    <div class="hidden md:block absolute left-9 top-1/2 z-20 origin-top-left -rotate-90 anim-fade" style="animation-delay:.2s">
+      <div class="flex items-center gap-3 text-ivory-50/55 text-[0.5rem] uppercase tracking-[0.4em] whitespace-nowrap">
+        <span>${esc(t('hero.est'))}</span>
       </div>
-      <p class="serif-heading italic text-navy-900 mt-10 sm:mt-14 text-[1.4rem] sm:text-[2rem] md:text-[2.4rem] max-w-2xl leading-[1.2] anim-up" style="animation-delay:.4s; text-shadow: 0 2px 22px rgba(251,249,245,0.55);">${esc(t('home.welcome'))}</p>
-      <div class="mt-12 anim-fade" style="animation-delay:.6s">
-        <a href="#menu" data-route="menu" class="magnetic group inline-flex items-center gap-3 px-8 py-3.5 border border-navy-900 bg-ivory-50/60 backdrop-blur-sm text-navy-900 uppercase tracking-[0.28em] text-[0.66rem] hover:bg-navy-900 hover:text-ivory-50 transition-colors">
-          ${esc(t('home.cta.menu'))} ${icon('i-arrow','w-3 h-3')}
+    </div>
+
+    <!-- Main editorial content (left-aligned) -->
+    <div class="relative z-10 h-full flex flex-col justify-center px-7 sm:px-16 md:px-24 lg:px-32 max-w-[1500px]">
+      <h1 class="serif-heading text-ivory-50 leading-[0.94] tracking-[-0.01em] anim-up" style="font-size: clamp(3.2rem, 11vw, 10.5rem); font-weight: 400; animation-delay:.1s">
+        ${esc(t('hero.head1'))}<br/>
+        ${t('hero.head.italic')
+          ? `<em class="not-italic"><span class="italic text-gold-400" style="font-weight: 300;">${esc(t('hero.head.italic'))}</span> <span>${esc(t('hero.head.tail'))}</span></em>`
+          : `<span class="text-gold-400 italic" style="font-weight: 300;">${esc(t('hero.head.tail'))}</span>`}
+      </h1>
+
+      <p class="mt-10 sm:mt-14 text-ivory-50/85 text-[0.95rem] sm:text-[1.02rem] leading-[1.7] max-w-md font-light anim-up" style="animation-delay:.3s">${esc(t('hero.body'))}</p>
+
+      <div class="mt-10 sm:mt-12 flex flex-wrap items-center gap-3 anim-up" style="animation-delay:.5s">
+        <a href="#menu" data-route="menu" class="magnetic inline-flex items-center gap-3 px-8 py-4 bg-gold-500 text-ivory-50 uppercase tracking-[0.28em] text-[0.66rem] hover:bg-gold-400 transition-colors">
+          ${esc(t('home.cta.menu'))} ${icon('i-arrow','w-3.5 h-3.5')}
+        </a>
+        <a href="#about" data-route="about" class="inline-flex items-center gap-2 px-8 py-4 border border-ivory-50/45 text-ivory-50 uppercase tracking-[0.28em] text-[0.66rem] hover:bg-ivory-50/10 transition-colors">
+          ${esc(t('hero.cta.secondary'))}
         </a>
       </div>
-      <div class="mt-8 text-[0.55rem] uppercase tracking-[0.42em] text-navy-500/60 anim-fade" style="animation-delay:.8s">${esc(t('home.tap'))}</div>
     </div>
 
+    <!-- Bottom-center SCROLL -->
     <div class="absolute bottom-7 inset-x-0 flex justify-center z-20 pointer-events-none">
-      <div class="flex flex-col items-center gap-3 text-navy-500/80">
-        <span class="text-[0.58rem] uppercase tracking-[0.4em]">${esc(t('home.scroll'))}</span>
-        <span class="scroll-cue block w-px h-10 bg-gradient-to-b from-navy-500/70 to-transparent"></span>
+      <div class="flex flex-col items-center gap-3 text-ivory-50/65">
+        <span class="text-[0.55rem] uppercase tracking-[0.42em]">${esc(t('home.scroll'))}</span>
+        <span class="scroll-cue block w-px h-10 bg-gradient-to-b from-ivory-50/65 to-transparent"></span>
       </div>
+    </div>
+
+    <!-- Bottom-right SERVING -->
+    <div class="absolute bottom-7 right-7 sm:bottom-9 sm:right-9 z-20 text-right text-ivory-50/65 text-[0.55rem] uppercase tracking-[0.4em] leading-[1.8]">
+      <div>${esc(t('hero.serving'))}</div>
+      <div class="mt-1">04:30 — 23:00</div>
     </div>
   </section>
 
@@ -2163,6 +2211,31 @@ function setupHomeImmersive() {
   setupPartnerSlider();
   setupSectionDots();
   setupMagnetic();
+  setupHeaderChameleon();
+}
+
+function setupHeaderChameleon() {
+  const header = document.getElementById('siteHeader');
+  const hero = document.getElementById('hero');
+  if (!header || !hero) return;
+  let raf = 0;
+  function update() {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(() => {
+      const rect = hero.getBoundingClientRect();
+      const onHero = rect.bottom > 80;
+      header.classList.toggle('on-hero', onHero);
+    });
+  }
+  update();
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  IMMERSIVE.cleanup.push(() => {
+    cancelAnimationFrame(raf);
+    window.removeEventListener('scroll', update);
+    window.removeEventListener('resize', update);
+    header.classList.remove('on-hero');
+  });
 }
 
 const FRY_POSITIONS = [
