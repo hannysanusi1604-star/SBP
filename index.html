@@ -42,7 +42,7 @@
   body { background: var(--color-bg); color: var(--color-ink); font-family: 'Inter', system-ui, sans-serif; font-weight: 300; letter-spacing: .005em; }
   [dir='rtl'] { text-align: right; }
   .hairline { background: linear-gradient(90deg, transparent, rgba(20,38,63,.18), transparent); height: 1px; }
-  .swiss-eyebrow { font-family: 'Inter', sans-serif; font-weight: 400; font-size: .68rem; text-transform: uppercase; letter-spacing: .32em; color: #8A8475; }
+  .swiss-eyebrow { font-family: 'Inter', sans-serif; font-weight: 400; font-size: .62rem; text-transform: uppercase; letter-spacing: .36em; color: #8A8475; }
   .serif-heading { font-family: 'Cormorant Garamond', serif; font-weight: 300; letter-spacing: -.012em; line-height: 1.05; }
   .card-glass { background: rgba(255,255,255,.72); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
   ::selection { background: rgba(184,152,85,.2); color: #0A1729; }
@@ -486,6 +486,8 @@ const I18N = {
     'home.story.body':'From the first sip of alpine coffee to the last bite of Zuger Kirschtorte, every detail is composed to feel like a calm pause between cities.',
     'home.farms.title':'From Swiss valleys, lakes and farms.','home.farms.cta':'Discover sourcing',
     'home.choose.eyebrow':'— Today in the lounge','home.choose.title':'Choose where to begin.',
+    'home.food':'Food','home.food.body':'Today’s buffet, refreshed continuously by our chefs.',
+    'home.drinks.body':'Self-serve coffee, alpine water and cold-pressed juices.',
     'hotspot.eyebrow':'— On the buffet',
     'hotspot.bread.title':'Artisan Breads','hotspot.bread.desc':'Sourdough, walnut and seeded loaves, sliced to order.',
     'hotspot.pretzel.title':'Swiss Pretzel Garland','hotspot.pretzel.desc':'Hand-twisted in the lounge kitchen each morning.',
@@ -575,6 +577,8 @@ const I18N = {
     'home.story.body':'De la première gorgée de café alpin à la dernière bouchée de Zuger Kirschtorte, chaque détail compose une pause calme entre deux villes.',
     'home.farms.title':'Des vallées, des lacs et des fermes de Suisse.','home.farms.cta':'Découvrir nos producteurs',
     'home.choose.eyebrow':'— Aujourd’hui au salon','home.choose.title':'Choisissez par où commencer.',
+    'home.food':'Restauration','home.food.body':'Le buffet du jour, renouvelé par nos chefs en continu.',
+    'home.drinks.body':'Café, eau alpine et jus pressés à froid en libre-service.',
     'hotspot.eyebrow':'— Au buffet',
     'hotspot.bread.title':'Pains artisanaux','hotspot.bread.desc':'Levain, noix et graines, tranchés à la demande.',
     'hotspot.pretzel.title':'Bretzels suisses','hotspot.pretzel.desc':'Torsadés à la main chaque matin en cuisine.',
@@ -664,6 +668,8 @@ const I18N = {
     'home.story.body':'Vom ersten Schluck Alpenkaffee bis zum letzten Bissen Zuger Kirschtorte ist jedes Detail darauf abgestimmt, wie eine ruhige Pause zwischen den Städten zu wirken.',
     'home.farms.title':'Aus Schweizer Tälern, Seen und Höfen.','home.farms.cta':'Herkunft entdecken',
     'home.choose.eyebrow':'— Heute in der Lounge','home.choose.title':'Wählen Sie, wo Sie beginnen.',
+    'home.food':'Speisen','home.food.body':'Das heutige Buffet, laufend von unseren Köchen aufgefrischt.',
+    'home.drinks.body':'Kaffee, Alpenwasser und kaltgepresste Säfte zur Selbstbedienung.',
     'hotspot.eyebrow':'— Am Buffet',
     'hotspot.bread.title':'Handwerksbrote','hotspot.bread.desc':'Sauerteig, Walnuss und Saatenbrote — frisch geschnitten.',
     'hotspot.pretzel.title':'Schweizer Brezeln','hotspot.pretzel.desc':'Jeden Morgen von Hand geschlungen in unserer Küche.',
@@ -753,6 +759,8 @@ const I18N = {
     'home.story.body':'Dal primo sorso di caffè alpino all’ultimo morso di Zuger Kirschtorte, ogni dettaglio è composto per essere una pausa silenziosa tra una città e l’altra.',
     'home.farms.title':'Dalle valli, dai laghi e dalle fattorie svizzere.','home.farms.cta':'Scopri i produttori',
     'home.choose.eyebrow':'— Oggi in lounge','home.choose.title':'Scegli da dove iniziare.',
+    'home.food':'Cucina','home.food.body':'Il buffet di oggi, rinnovato di continuo dai nostri chef.',
+    'home.drinks.body':'Caffè, acqua alpina e succhi a freddo in self-service.',
     'hotspot.eyebrow':'— Al buffet',
     'hotspot.bread.title':'Pani artigianali','hotspot.bread.desc':'Lievito madre, noci e semi — tagliati al momento.',
     'hotspot.pretzel.title':'Brezel svizzeri','hotspot.pretzel.desc':'Intrecciati a mano ogni mattina nella nostra cucina.',
@@ -842,6 +850,8 @@ const I18N = {
     'home.story.body':'من أول رشفة قهوة ألبية إلى آخر قضمة من كعكة زوغ، كل تفصيلة مُعدّة لتمنحك استراحة هادئة بين المدن.',
     'home.farms.title':'من وديان سويسرا وبحيراتها ومزارعها.','home.farms.cta':'اكتشف مصادرنا',
     'home.choose.eyebrow':'— اليوم في الصالة','home.choose.title':'اختر من أين تبدأ.',
+    'home.food':'الطعام','home.food.body':'بوفيه اليوم، يتجدّد باستمرار من قِبَل طهاتنا.',
+    'home.drinks.body':'قهوة ومياه ألبية وعصائر طازجة — خدمة ذاتية.',
     'hotspot.eyebrow':'— على البوفيه',
     'hotspot.bread.title':'خبز حِرَفي','hotspot.bread.desc':'خبز العجين المخمّر والجوز والبذور — يُقطّع عند الطلب.',
     'hotspot.pretzel.title':'بريتزل سويسري','hotspot.pretzel.desc':'يُلَفّ يدوياً في مطبخنا كل صباح.',
@@ -996,16 +1006,16 @@ function pageHome() {
     <div class="relative z-20 h-full flex flex-col items-center justify-center text-center px-5">
       <div class="swiss-eyebrow anim-fade" style="animation-delay:.1s">${esc(t('home.eyebrow'))}</div>
       <div class="mt-7 sm:mt-9 anim-up" style="animation-delay:.2s">
-        <div class="aspire-mark text-navy-900 text-[3.4rem] sm:text-[6rem] md:text-[8rem] leading-none" style="text-shadow: 0 4px 30px rgba(251,249,245,0.65);">ASPIRE</div>
+        <div class="aspire-mark text-navy-900 text-[3.4rem] sm:text-[6rem] md:text-[8rem] leading-none" style="text-shadow: 0 4px 30px rgba(251,249,245,0.5);">ASPIRE</div>
         <div class="aspire-sub mt-3 sm:mt-4 text-[0.55rem] sm:text-[0.7rem]">${esc(t('brand.sub'))}</div>
       </div>
-      <p class="serif-heading italic text-navy-900 mt-10 sm:mt-14 text-[1.4rem] sm:text-[2rem] md:text-[2.4rem] max-w-2xl leading-[1.2] anim-up" style="animation-delay:.4s; text-shadow: 0 2px 20px rgba(251,249,245,0.7);">${esc(t('home.welcome'))}</p>
-      <div class="mt-10 anim-fade" style="animation-delay:.6s">
-        <a href="#menu" data-route="menu" class="magnetic group inline-flex items-center gap-3 px-7 py-3.5 border border-navy-900 bg-ivory-50/70 backdrop-blur-sm text-navy-900 uppercase tracking-[0.22em] text-[0.7rem] hover:bg-navy-900 hover:text-ivory-50 transition-colors">
-          ${esc(t('home.cta.menu'))} ${icon('i-arrow','w-3.5 h-3.5')}
+      <p class="serif-heading italic text-navy-900 mt-10 sm:mt-14 text-[1.4rem] sm:text-[2rem] md:text-[2.4rem] max-w-2xl leading-[1.2] anim-up" style="animation-delay:.4s; text-shadow: 0 2px 22px rgba(251,249,245,0.55);">${esc(t('home.welcome'))}</p>
+      <div class="mt-12 anim-fade" style="animation-delay:.6s">
+        <a href="#menu" data-route="menu" class="magnetic group inline-flex items-center gap-3 px-8 py-3.5 border border-navy-900 bg-ivory-50/60 backdrop-blur-sm text-navy-900 uppercase tracking-[0.28em] text-[0.66rem] hover:bg-navy-900 hover:text-ivory-50 transition-colors">
+          ${esc(t('home.cta.menu'))} ${icon('i-arrow','w-3 h-3')}
         </a>
       </div>
-      <div class="mt-6 text-[0.6rem] uppercase tracking-[0.4em] text-navy-500/80 anim-fade" style="animation-delay:.8s">${esc(t('home.tap'))}</div>
+      <div class="mt-8 text-[0.55rem] uppercase tracking-[0.42em] text-navy-500/60 anim-fade" style="animation-delay:.8s">${esc(t('home.tap'))}</div>
     </div>
 
     <div class="absolute bottom-7 inset-x-0 flex justify-center z-20 pointer-events-none">
@@ -1017,18 +1027,22 @@ function pageHome() {
   </section>
 
   <!-- ===== Strap line ===== -->
-  <section class="bg-ivory-50 border-y border-navy-900/10">
-    <div class="mx-auto max-w-6xl px-5 sm:px-8 py-7 flex flex-wrap items-center justify-between gap-6 text-[0.66rem] uppercase tracking-[0.4em] text-navy-500">
-      <span>${esc(t('home.hours'))}</span>
-      <span class="hidden sm:inline">${esc(t('home.cities'))}</span>
-      <span>${esc(t('home.qr.title'))}</span>
+  <section class="bg-ivory-50">
+    <div class="mx-auto max-w-6xl px-5 sm:px-8 py-10">
+      <div class="hairline mb-8"></div>
+      <div class="flex flex-wrap items-center justify-between gap-6 text-[0.6rem] uppercase tracking-[0.42em] text-navy-500/80">
+        <span>${esc(t('home.hours'))}</span>
+        <span class="hidden sm:inline">${esc(t('home.cities'))}</span>
+        <span>${esc(t('home.qr.title'))}</span>
+      </div>
+      <div class="hairline mt-8"></div>
     </div>
   </section>
 
   <!-- ===== Story I — Quiet promise ===== -->
   <section id="promise" class="relative bg-ivory-50 overflow-hidden">
-    <div class="mx-auto max-w-6xl px-5 sm:px-8 py-28 sm:py-44">
-      <div class="grid md:grid-cols-12 gap-10 md:gap-16 items-end">
+    <div class="mx-auto max-w-6xl px-5 sm:px-8 py-32 sm:py-52">
+      <div class="grid md:grid-cols-12 gap-12 md:gap-20 items-end">
         <div class="md:col-span-7 reveal">
           <div class="swiss-eyebrow">${esc(t('home.quiet.eyebrow'))}</div>
           <h2 class="serif-heading text-[2.2rem] sm:text-[3.6rem] md:text-[4.4rem] mt-5 leading-[1.05] text-navy-900">${esc(t('home.subtitle'))}</h2>
@@ -1240,19 +1254,16 @@ function pageHome() {
 
   <!-- ===== Editorial tilt cards ===== -->
   <section id="choose" class="bg-ivory-50">
-    <div class="mx-auto max-w-6xl px-5 sm:px-8 py-20 sm:py-32">
-      <div class="text-center mb-14 sm:mb-20 reveal">
+    <div class="mx-auto max-w-6xl px-5 sm:px-8 py-24 sm:py-40">
+      <div class="mb-14 sm:mb-20 reveal max-w-md">
         <div class="swiss-eyebrow">${esc(t('home.choose.eyebrow'))}</div>
-        <h2 class="serif-heading text-3xl sm:text-5xl mt-3 text-navy-900">${esc(t('home.choose.title'))}</h2>
       </div>
-      <div class="grid md:grid-cols-2 gap-10 sm:gap-14" style="perspective: 1400px">
-        ${editorialCard('menu','01',t('nav.menu'),t('home.qr.body'),'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=80')}
-        ${editorialCard('drinks','02',t('nav.drinks'),t('drinks.subtitle'),'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1400&q=80')}
+      <div class="grid md:grid-cols-2 gap-12 sm:gap-20" style="perspective: 1400px">
+        ${editorialCard('menu','01',t('home.food'),t('home.food.body'),'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=80')}
+        ${editorialCard('drinks','02',t('nav.drinks'),t('home.drinks.body'),'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1400&q=80')}
       </div>
     </div>
   </section>
-
-  <div class="hairline mx-auto max-w-6xl"></div>
 
   <!-- ===== QR section ===== -->
   <section id="qr" class="mx-auto max-w-6xl px-5 sm:px-8 py-20 sm:py-32">
