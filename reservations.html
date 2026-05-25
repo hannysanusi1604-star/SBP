@@ -717,7 +717,26 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Empty state — shown until a booking is confirmed -->
+    <div id="dash-empty" class="card-cream p-10 sm:p-16 text-center max-w-3xl mx-auto">
+      <div class="mx-auto h-16 w-16 rounded-full bg-aspire-soft border border-aspire-border flex items-center justify-center text-aspire-navy">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="4" y="6" width="16" height="14" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>
+      </div>
+      <div class="swiss-eyebrow mt-6">No bookings yet</div>
+      <h2 class="serif-heading text-3xl sm:text-4xl text-aspire-navy mt-2">Your stay starts here</h2>
+      <p class="mt-3 text-navy-500 leading-relaxed max-w-md mx-auto">When you reserve a lounge, your booking, QR check-in pass and 3-hour access window will appear here.</p>
+      <div class="mt-7 flex flex-wrap items-center justify-center gap-3">
+        <a href="#reserve" data-view="reserve" class="btn-primary">
+          Reserve a lounge
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a href="#search" data-view="search" class="btn-outline">
+          Browse network
+        </a>
+      </div>
+    </div>
+
+    <div id="dash-content" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div class="lg:col-span-2 space-y-6">
         <div id="dash-summary"></div>
 
@@ -2097,17 +2116,29 @@ setInterval(() => {
 
 /* ----------------------- DASHBOARD ----------------------- */
 function renderDashboard() {
+  // No booking yet — show empty state and bail out
+  if (!state.confirmed) {
+    $('#dash-welcome').textContent = 'My stay';
+    $('#dash-sub').textContent = "You haven't booked anything yet.";
+    $('#confirmed-banner').classList.add('hidden');
+    $('#dash-empty').classList.remove('hidden');
+    $('#dash-content').classList.add('hidden');
+    return;
+  }
+
+  // Booking confirmed — show the full dashboard
+  $('#dash-empty').classList.add('hidden');
+  $('#dash-content').classList.remove('hidden');
+
   const l = lounge();
   $('#dash-welcome').textContent = `Welcome${state.booking.guestName ? ', ' + state.booking.guestName.split(' ')[0] : ''}.`;
   $('#dash-sub').textContent = `Everything you need for a calm visit at ${l.name}.`;
   $('#dash-airport-feed').textContent = `${l.airportCode} airport feed`;
   $('#dash-ref').textContent = state.bookingRef;
 
-  $('#confirmed-banner').classList.toggle('hidden', !state.confirmed);
-  if (state.confirmed) {
-    const accessUntil = endTime(state.booking.arrivalTime);
-    $('#confirmed-sub').innerHTML = `<strong class="text-aspire-navy font-medium">3-hour access</strong> from ${state.booking.arrivalTime} until ${accessUntil}. Confirmation sent to ${state.booking.email || 'your inbox'}. Reference ${state.bookingRef}.`;
-  }
+  $('#confirmed-banner').classList.remove('hidden');
+  const accessUntil = endTime(state.booking.arrivalTime);
+  $('#confirmed-sub').innerHTML = `<strong class="text-aspire-navy font-medium">3-hour access</strong> from ${state.booking.arrivalTime} until ${accessUntil}. Confirmation sent to ${state.booking.email || 'your inbox'}. Reference ${state.bookingRef}.`;
 
   $('#dash-summary').innerHTML = bookingSummaryHTML(state.booking.membership === 'pay');
 
