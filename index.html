@@ -190,6 +190,39 @@
   }
   .frites-photo.active { opacity: 1; transform: scale(1); }
 
+  /* Animated fries scene */
+  .fries-rain { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .fry {
+    position: absolute; top: -80px; left: var(--x);
+    width: 7px; height: 64px; border-radius: 2px;
+    background: linear-gradient(180deg, #F2C97A 0%, #D9A858 50%, #B88240 100%);
+    box-shadow:
+      inset 0 -10px 0 rgba(120, 70, 30, .18),
+      inset 0 2px 0 rgba(255, 220, 180, .45),
+      inset -1px 0 0 rgba(0,0,0,.06);
+    transform: translate3d(0,0,0) rotate(var(--r0));
+    opacity: 0;
+    animation: fryFall 2.6s cubic-bezier(.5, .1, .4, 1) var(--d) forwards;
+  }
+  @keyframes fryFall {
+    0%   { transform: translate3d(0, 0, 0) rotate(var(--r0)); opacity: 0; }
+    10%  { opacity: .95; }
+    85%  { opacity: .9; }
+    100% { transform: translate3d(var(--dx), 540px, 0) rotate(var(--r1)); opacity: 0; }
+  }
+  .fries-cone { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); width: 60%; max-width: 280px; }
+  .fries-garnish-svg { opacity: 0; transition: opacity .6s cubic-bezier(.2,.8,.2,1); }
+  .fries-garnish-svg.active { opacity: 1; transition-delay: .25s; }
+  @media (max-width: 640px) {
+    .fry { height: 48px; width: 5px; }
+    @keyframes fryFall {
+      0%   { transform: translate3d(0, 0, 0) rotate(var(--r0)); opacity: 0; }
+      10%  { opacity: .95; }
+      85%  { opacity: .9; }
+      100% { transform: translate3d(var(--dx), 380px, 0) rotate(var(--r1)); opacity: 0; }
+    }
+  }
+
   .scroll-cue { animation: scrollPulse 2.4s ease-in-out infinite; }
   @keyframes scrollPulse {
     0%,100% { opacity: .25; transform: translateY(0); }
@@ -456,13 +489,17 @@ const I18N = {
     'hotspot.citrus.title':'Mediterranean Citrus','hotspot.citrus.desc':'Today’s fruit feature — kumquats and bergamot.',
     'drinks.footer.left':'Self-serve · refreshed throughout the day','drinks.footer.right':'Ask a host for additional requests',
     'menu.count.one':'dish','menu.count.many':'dishes',
-    'signature.eyebrow':'— Today’s signature','signature.title':'House Frites, served two ways.',
-    'signature.intro':'Hand-cut Swiss potato frites, fried twice in clarified butter and served throughout the day — choose your finish.',
+    'signature.eyebrow':'— Today’s signature','signature.title':'Hand-cut frites, four salts.',
+    'signature.intro':'Swiss Bintje potatoes cut by hand and fried twice in clarified butter — finished with one of four house-blended salts.',
     'signature.v1.name':'Fleur de Sel','signature.v1.desc':'Crisp, golden, finished with hand-harvested alpine sea salt.',
     'signature.v2.name':'Garlic & Parmesan','signature.v2.desc':'Roasted garlic butter, aged Parmigiano Reggiano, fresh parsley.',
+    'signature.v3.name':'Alpine Herb & Smoke','signature.v3.desc':'Wild thyme, rosemary and smoked Maldon flakes from the alpine cure house.',
+    'signature.v4.name':'Black Truffle & Rosemary','signature.v4.desc':'Périgord truffle dust, fresh rosemary, fleur de sel gris.',
     'signature.ing':'Ingredients',
     'signature.v1.ing':'Bintje potatoes · clarified butter · alpine sea salt',
     'signature.v2.ing':'Bintje potatoes · roasted garlic butter · aged Parmigiano · fresh parsley',
+    'signature.v3.ing':'Bintje potatoes · clarified butter · smoked Maldon salt · wild alpine herbs',
+    'signature.v4.ing':'Bintje potatoes · clarified butter · Périgord truffle · sel gris · fresh rosemary',
     'partner.eyebrow':'— In partnership','partner.title':'A glass with Laurent-Perrier.',
     'partner.body1':'A long-standing house collaboration. Four of Maison Laurent-Perrier’s emblematic cuvées are poured daily in the lounge, paired with seasonal canapés composed by our chef — Gruyère gougères, smoked trout rillettes and confit shallot tartlets.',
     'partner.body2':'A quiet moment of celebration before take-off — discreetly served at your table or at the champagne bar.',
@@ -541,13 +578,17 @@ const I18N = {
     'hotspot.citrus.title':'Agrumes méditerranéens','hotspot.citrus.desc':'Fruits du jour — kumquats et bergamote.',
     'drinks.footer.left':'En libre-service · renouvelé toute la journée','drinks.footer.right':'Demandez à un hôte pour toute requête',
     'menu.count.one':'plat','menu.count.many':'plats',
-    'signature.eyebrow':'— Signature du jour','signature.title':'Frites maison, déclinées en deux.',
-    'signature.intro':'Pommes de terre suisses coupées à la main, frites deux fois au beurre clarifié — choisissez votre finition.',
+    'signature.eyebrow':'— Signature du jour','signature.title':'Frites maison, quatre sels.',
+    'signature.intro':'Pommes Bintje suisses coupées à la main, frites deux fois au beurre clarifié — finies avec l’un de nos quatre sels maison.',
     'signature.v1.name':'Fleur de sel','signature.v1.desc':'Dorées et croustillantes, fleur de sel alpine récoltée à la main.',
     'signature.v2.name':'Ail & parmesan','signature.v2.desc':'Beurre à l’ail rôti, Parmigiano Reggiano affiné, persil frais.',
+    'signature.v3.name':'Herbes alpines & fumé','signature.v3.desc':'Thym sauvage, romarin et flocons Maldon fumés du fumoir alpin.',
+    'signature.v4.name':'Truffe noire & romarin','signature.v4.desc':'Poudre de truffe du Périgord, romarin frais, fleur de sel gris.',
     'signature.ing':'Ingrédients',
     'signature.v1.ing':'Pommes Bintje · beurre clarifié · fleur de sel alpine',
     'signature.v2.ing':'Pommes Bintje · beurre à l’ail rôti · Parmigiano affiné · persil frais',
+    'signature.v3.ing':'Pommes Bintje · beurre clarifié · sel Maldon fumé · herbes alpines',
+    'signature.v4.ing':'Pommes Bintje · beurre clarifié · truffe du Périgord · sel gris · romarin frais',
     'partner.eyebrow':'— En partenariat','partner.title':'Une coupe avec Laurent-Perrier.',
     'partner.body1':'Une collaboration de longue date. Quatre cuvées emblématiques de la Maison Laurent-Perrier sont servies chaque jour au salon, accompagnées de canapés de saison signés par notre chef : gougères au Gruyère, rillettes de truite fumée et tartelettes d’échalote confite.',
     'partner.body2':'Un moment discret de célébration avant l’envol — servi à votre table ou au bar à champagne.',
@@ -626,13 +667,17 @@ const I18N = {
     'hotspot.citrus.title':'Mediterrane Zitrusfrüchte','hotspot.citrus.desc':'Frucht des Tages — Kumquat und Bergamotte.',
     'drinks.footer.left':'Selbstbedienung · ständig aufgefrischt','drinks.footer.right':'Für Sonderwünsche fragen Sie unsere Gastgeber',
     'menu.count.one':'Gericht','menu.count.many':'Gerichte',
-    'signature.eyebrow':'— Signatur des Tages','signature.title':'Hausgemachte Frites — in zwei Variationen.',
-    'signature.intro':'Schweizer Kartoffel-Frites von Hand geschnitten, zweimal in geklärter Butter frittiert — wählen Sie Ihre Note.',
+    'signature.eyebrow':'— Signatur des Tages','signature.title':'Hausgemachte Frites, vier Salze.',
+    'signature.intro':'Schweizer Bintje-Kartoffeln von Hand geschnitten, zweimal in geklärter Butter frittiert — abgerundet mit einem unserer vier Hausssalze.',
     'signature.v1.name':'Fleur de Sel','signature.v1.desc':'Knusprig und golden, mit handgeerntetem Alpenmeersalz vollendet.',
     'signature.v2.name':'Knoblauch & Parmesan','signature.v2.desc':'Geröstete Knoblauchbutter, gereifter Parmigiano Reggiano, frische Petersilie.',
+    'signature.v3.name':'Alpenkräuter & Rauch','signature.v3.desc':'Wilder Thymian, Rosmarin und geräucherte Maldon-Flocken aus der alpinen Räucherei.',
+    'signature.v4.name':'Schwarze Trüffel & Rosmarin','signature.v4.desc':'Périgord-Trüffelpulver, frischer Rosmarin, Fleur de Sel gris.',
     'signature.ing':'Zutaten',
     'signature.v1.ing':'Bintje-Kartoffeln · geklärte Butter · Alpenmeersalz',
     'signature.v2.ing':'Bintje-Kartoffeln · geröstete Knoblauchbutter · gereifter Parmigiano · frische Petersilie',
+    'signature.v3.ing':'Bintje-Kartoffeln · geklärte Butter · geräuchertes Maldon-Salz · wilde Alpenkräuter',
+    'signature.v4.ing':'Bintje-Kartoffeln · geklärte Butter · Périgord-Trüffel · Sel gris · frischer Rosmarin',
     'partner.eyebrow':'— In Partnerschaft','partner.title':'Ein Glas mit Laurent-Perrier.',
     'partner.body1':'Eine langjährige Hauspartnerschaft. Vier emblematische Cuvées des Hauses Laurent-Perrier werden täglich in der Lounge ausgeschenkt, begleitet von saisonalen Canapés unseres Küchenchefs — Gruyère-Gougères, Räucherforellen-Rillettes und Schalotten-Confit-Tartelettes.',
     'partner.body2':'Ein leiser Moment des Feierns vor dem Abflug — diskret an Ihrem Tisch oder an der Champagnerbar serviert.',
@@ -711,13 +756,17 @@ const I18N = {
     'hotspot.citrus.title':'Agrumi mediterranei','hotspot.citrus.desc':'Frutto del giorno — kumquat e bergamotto.',
     'drinks.footer.left':'Self-service · rinnovato durante la giornata','drinks.footer.right':'Per richieste speciali chieda al nostro host',
     'menu.count.one':'piatto','menu.count.many':'piatti',
-    'signature.eyebrow':'— Firma di oggi','signature.title':'Frites della casa, in due varianti.',
-    'signature.intro':'Patate svizzere tagliate a mano, fritte due volte nel burro chiarificato — scegli il tuo tocco finale.',
+    'signature.eyebrow':'— Firma di oggi','signature.title':'Frites della casa, quattro sali.',
+    'signature.intro':'Patate svizzere Bintje tagliate a mano e fritte due volte nel burro chiarificato — rifinite con uno dei nostri quattro sali della casa.',
     'signature.v1.name':'Fleur de Sel','signature.v1.desc':'Croccanti e dorate, rifinite con sale marino alpino raccolto a mano.',
     'signature.v2.name':'Aglio & parmigiano','signature.v2.desc':'Burro all’aglio arrostito, Parmigiano Reggiano stagionato, prezzemolo fresco.',
+    'signature.v3.name':'Erbe alpine & affumicato','signature.v3.desc':'Timo selvatico, rosmarino e fiocchi Maldon affumicati dall’affumicatoio alpino.',
+    'signature.v4.name':'Tartufo nero & rosmarino','signature.v4.desc':'Polvere di tartufo del Périgord, rosmarino fresco, fleur de sel gris.',
     'signature.ing':'Ingredienti',
     'signature.v1.ing':'Patate Bintje · burro chiarificato · sale marino alpino',
     'signature.v2.ing':'Patate Bintje · burro all’aglio arrostito · Parmigiano stagionato · prezzemolo fresco',
+    'signature.v3.ing':'Patate Bintje · burro chiarificato · sale Maldon affumicato · erbe alpine selvatiche',
+    'signature.v4.ing':'Patate Bintje · burro chiarificato · tartufo del Périgord · sel gris · rosmarino fresco',
     'partner.eyebrow':'— In partnership','partner.title':'Un calice con Laurent-Perrier.',
     'partner.body1':'Una collaborazione storica. Quattro cuvée emblematiche della Maison Laurent-Perrier sono servite ogni giorno in lounge, accompagnate da canapés stagionali firmati dal nostro chef — gougères al Gruyère, rillettes di trota affumicata e tartellette di scalogno confit.',
     'partner.body2':'Un momento discreto di celebrazione prima del decollo — servito al tavolo o al banco champagne.',
@@ -796,13 +845,17 @@ const I18N = {
     'hotspot.citrus.title':'حمضيات متوسطية','hotspot.citrus.desc':'فاكهة اليوم — كمكوات وبرغموت.',
     'drinks.footer.left':'خدمة ذاتية · يتجدد طوال اليوم','drinks.footer.right':'للطلبات الخاصة اسأل أحد المضيفين',
     'menu.count.one':'طبق','menu.count.many':'أطباق',
-    'signature.eyebrow':'— توقيع اليوم','signature.title':'بطاطس البيت، بنكهتين.',
-    'signature.intro':'بطاطس سويسرية مقطوعة يدوياً ومقلية مرتين في زبدة مصفّاة — اختر اللمسة النهائية.',
+    'signature.eyebrow':'— توقيع اليوم','signature.title':'بطاطس البيت، أربعة أملاح.',
+    'signature.intro':'بطاطس بِنتجة سويسرية مقطوعة يدوياً ومقلية مرتين في زبدة مصفّاة — مُتوّجة بأحد أملاح البيت الأربعة.',
     'signature.v1.name':'فلور دو سيل','signature.v1.desc':'مقرمشة وذهبية، مع ملح بحر ألبي مقطوف يدوياً.',
     'signature.v2.name':'ثوم وبارميزان','signature.v2.desc':'زبدة ثوم محمصة، بارميجيانو معتق، وبقدونس طازج.',
+    'signature.v3.name':'أعشاب ألبية ودخان','signature.v3.desc':'زعتر بري وإكليل الجبل ورقائق ملح Maldon مدخنة من مدخنة الجبال.',
+    'signature.v4.name':'كمأة سوداء وإكليل الجبل','signature.v4.desc':'غبار كمأة بريغور، إكليل جبل طازج، فلور دو سيل غري.',
     'signature.ing':'المكونات',
     'signature.v1.ing':'بطاطس بنتجة · زبدة مصفّاة · ملح بحر ألبي',
     'signature.v2.ing':'بطاطس بنتجة · زبدة ثوم محمصة · بارميجيانو معتق · بقدونس طازج',
+    'signature.v3.ing':'بطاطس بنتجة · زبدة مصفّاة · ملح مدخن · أعشاب جبلية برية',
+    'signature.v4.ing':'بطاطس بنتجة · زبدة مصفّاة · كمأة بريغور · سيل غري · إكليل جبل طازج',
     'partner.eyebrow':'— شراكة','partner.title':'كأس مع لوران-بيرييه.',
     'partner.body1':'شراكة طويلة الأمد. تُقدَّم أربع كوفيهات أيقونية من بيت لوران-بيرييه يومياً في الصالة، إلى جانب كانابيهات موسمية من توقيع الشيف — غوجير بالغرويير، ريلا بسمك التروتة المدخن، وتارت صغيرة بالكراث المعتق.',
     'partner.body2':'لحظة احتفاء هادئة قبل الإقلاع — تُقدَّم بتمعّن على طاولتك أو عند بار الشامبانيا.',
@@ -998,47 +1051,82 @@ function pageHome() {
           <p class="mt-7 text-navy-500 leading-[1.75] max-w-md">${esc(t('signature.intro'))}</p>
 
           <div class="mt-12 frites-list">
-            <button class="frites-choice active" data-variant="0" aria-label="${esc(t('signature.v1.name'))}">
-              <span class="frites-index">01</span>
-              <span class="frites-name">${esc(t('signature.v1.name'))}</span>
+            ${[1,2,3,4].map(n => `
+            <button class="frites-choice ${n===1?'active':''}" data-variant="${n-1}" aria-label="${esc(t('signature.v'+n+'.name'))}">
+              <span class="frites-index">0${n}</span>
+              <span class="frites-name">${esc(t('signature.v'+n+'.name'))}</span>
               <span class="frites-marker"></span>
-            </button>
-            <button class="frites-choice" data-variant="1" aria-label="${esc(t('signature.v2.name'))}">
-              <span class="frites-index">02</span>
-              <span class="frites-name">${esc(t('signature.v2.name'))}</span>
-              <span class="frites-marker"></span>
-            </button>
+            </button>`).join('')}
           </div>
 
-          <div class="mt-8 relative" style="min-height: 80px;">
-            <p class="frites-shift active text-[0.95rem] text-navy-500 leading-[1.75] max-w-md" data-variant="0">${esc(t('signature.v1.desc'))}</p>
-            <p class="frites-shift text-[0.95rem] text-navy-500 leading-[1.75] max-w-md" data-variant="1">${esc(t('signature.v2.desc'))}</p>
+          <div class="mt-8 relative" style="min-height: 96px;">
+            ${[1,2,3,4].map(n => `<p class="frites-shift ${n===1?'active':''} text-[0.95rem] text-navy-500 leading-[1.75] max-w-md" data-variant="${n-1}">${esc(t('signature.v'+n+'.desc'))}</p>`).join('')}
           </div>
 
-          <div class="mt-7 relative" style="min-height: 64px;">
-            <div class="frites-shift active" data-variant="0">
-              <div class="swiss-eyebrow mb-1.5">${esc(t('signature.ing'))}</div>
-              <div class="text-[0.84rem] text-navy-500 leading-relaxed">${esc(t('signature.v1.ing'))}</div>
-            </div>
-            <div class="frites-shift" data-variant="1">
-              <div class="swiss-eyebrow mb-1.5">${esc(t('signature.ing'))}</div>
-              <div class="text-[0.84rem] text-navy-500 leading-relaxed">${esc(t('signature.v2.ing'))}</div>
-            </div>
+          <div class="mt-7 relative" style="min-height: 80px;">
+            ${[1,2,3,4].map(n => `<div class="frites-shift ${n===1?'active':''}" data-variant="${n-1}"><div class="swiss-eyebrow mb-1.5">${esc(t('signature.ing'))}</div><div class="text-[0.84rem] text-navy-500 leading-relaxed">${esc(t('signature.v'+n+'.ing'))}</div></div>`).join('')}
           </div>
         </div>
 
-        <!-- Right: visual stage -->
+        <!-- Right: animated falling-fries scene -->
         <div class="md:col-span-7 reveal" style="transition-delay:.1s">
           <div class="frites-stage aspect-[4/5]">
-            <!-- Big editorial type behind the photo -->
-            <div class="frites-bigtype active" data-variant="0">${esc(t('signature.v1.name'))}</div>
-            <div class="frites-bigtype" data-variant="1">${esc(t('signature.v2.name'))}</div>
-            <!-- Photo crossfade -->
-            <div class="frites-photo active" data-variant="0">
-              ${image('https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=1400&q=85', t('signature.v1.name'), 'h-full w-full')}
-            </div>
-            <div class="frites-photo" data-variant="1">
-              ${image('https://images.unsplash.com/photo-1639024471283-03518883512d?auto=format&fit=crop&w=1400&q=85', t('signature.v2.name'), 'h-full w-full')}
+            <!-- Big editorial backdrop text -->
+            ${[1,2,3,4].map(n => `<div class="frites-bigtype ${n===1?'active':''}" data-variant="${n-1}">${esc(t('signature.v'+n+'.name'))}</div>`).join('')}
+
+            <!-- Falling fries (populated/replayed by JS) -->
+            <div class="fries-rain" id="friesRain" aria-hidden="true"></div>
+
+            <!-- Paper cone with settled fries -->
+            <div class="fries-cone">
+              <svg viewBox="0 0 200 280" preserveAspectRatio="xMidYMid meet" class="w-full h-auto" aria-hidden="true">
+                <!-- Settled fries above the cone -->
+                <g>
+                  <rect x="74" y="42" width="6" height="56" rx="2" fill="#E0B468" transform="rotate(-12 77 70)"/>
+                  <rect x="86" y="34" width="6" height="64" rx="2" fill="#D8AC5E" transform="rotate(-5 89 66)"/>
+                  <rect x="98" y="30" width="6" height="68" rx="2" fill="#E5B96B" transform="rotate(3 101 64)"/>
+                  <rect x="110" y="36" width="6" height="62" rx="2" fill="#D4A858" transform="rotate(10 113 67)"/>
+                  <rect x="122" y="44" width="6" height="54" rx="2" fill="#DCB060" transform="rotate(18 125 71)"/>
+                  <rect x="92" y="50" width="6" height="48" rx="2" fill="#C99C50" transform="rotate(-2 95 74)"/>
+                  <rect x="104" y="48" width="6" height="50" rx="2" fill="#D4A858" transform="rotate(6 107 73)"/>
+                </g>
+                <!-- Garnish per variant (salt / parmesan / herb / truffle) -->
+                <g class="frites-garnish-svg active" data-variant="0">
+                  <circle cx="92" cy="56" r="1.2" fill="#FFFFFF" opacity="0.95"/>
+                  <circle cx="103" cy="50" r="1.5" fill="#FFFFFF" opacity="0.95"/>
+                  <circle cx="115" cy="58" r="1" fill="#FFFFFF" opacity="0.85"/>
+                  <circle cx="86" cy="64" r="1" fill="#FFFFFF" opacity="0.8"/>
+                  <circle cx="111" cy="68" r="1.2" fill="#FFFFFF" opacity="0.9"/>
+                </g>
+                <g class="frites-garnish-svg" data-variant="1">
+                  <ellipse cx="93" cy="55" rx="3" ry="1" fill="#F4E6A8" opacity="0.9"/>
+                  <ellipse cx="105" cy="50" rx="3.5" ry="1.2" fill="#F4E6A8" opacity="0.9"/>
+                  <ellipse cx="119" cy="60" rx="3" ry="1" fill="#F4E6A8" opacity="0.9"/>
+                  <circle cx="98" cy="64" r="1" fill="#7A8C73" opacity="0.75"/>
+                  <circle cx="112" cy="66" r="1" fill="#7A8C73" opacity="0.75"/>
+                </g>
+                <g class="frites-garnish-svg" data-variant="2">
+                  <circle cx="92" cy="56" r="1.3" fill="#7A8C73" opacity="0.9"/>
+                  <circle cx="103" cy="50" r="1" fill="#5C7A6A" opacity="0.95"/>
+                  <circle cx="115" cy="58" r="1.3" fill="#7A8C73" opacity="0.85"/>
+                  <circle cx="98" cy="66" r="1" fill="#5C7A6A" opacity="0.9"/>
+                  <circle cx="111" cy="64" r="1.4" fill="#7A8C73" opacity="0.85"/>
+                  <circle cx="88" cy="70" r="0.8" fill="#3C3A28" opacity="0.6"/>
+                </g>
+                <g class="frites-garnish-svg" data-variant="3">
+                  <circle cx="92" cy="56" r="1.6" fill="#2A1810" opacity="0.7"/>
+                  <circle cx="103" cy="50" r="1.8" fill="#2A1810" opacity="0.75"/>
+                  <circle cx="116" cy="58" r="1.4" fill="#2A1810" opacity="0.7"/>
+                  <circle cx="98" cy="68" r="1.5" fill="#2A1810" opacity="0.7"/>
+                  <circle cx="86" cy="64" r="1" fill="#5C7A6A" opacity="0.75"/>
+                  <circle cx="120" cy="66" r="1" fill="#5C7A6A" opacity="0.75"/>
+                </g>
+                <!-- Paper cone -->
+                <path d="M 30 100 L 100 270 L 170 100 Z" fill="#F4E8D2" stroke="rgba(184,152,85,0.6)" stroke-width="0.8"/>
+                <path d="M 35 100 L 100 260 L 165 100" fill="none" stroke="rgba(20,38,63,0.07)" stroke-width="3"/>
+                <ellipse cx="100" cy="100" rx="70" ry="5" fill="rgba(20,38,63,0.07)"/>
+                <text x="100" y="195" font-family="Inter, sans-serif" font-weight="800" font-size="9" letter-spacing="3" fill="rgba(20,38,63,0.45)" text-anchor="middle">ASPIRE</text>
+              </svg>
             </div>
           </div>
         </div>
@@ -2056,23 +2144,48 @@ function setupHomeImmersive() {
   setupMagnetic();
 }
 
+const FRY_POSITIONS = [
+  { x:'22%', d:'0s',    dx:'10px',  r0:'-10deg', r1:'40deg'  },
+  { x:'34%', d:'.18s',  dx:'-10px', r0:'8deg',   r1:'-30deg' },
+  { x:'46%', d:'.36s',  dx:'4px',   r0:'-6deg',  r1:'20deg'  },
+  { x:'56%', d:'.54s',  dx:'-8px',  r0:'14deg',  r1:'-40deg' },
+  { x:'66%', d:'.72s',  dx:'8px',   r0:'-12deg', r1:'30deg'  },
+  { x:'76%', d:'.90s',  dx:'-4px',  r0:'4deg',   r1:'-18deg' },
+  { x:'28%', d:'1.08s', dx:'6px',   r0:'-8deg',  r1:'22deg'  },
+  { x:'40%', d:'1.26s', dx:'-12px', r0:'16deg',  r1:'-26deg' },
+  { x:'52%', d:'1.44s', dx:'2px',   r0:'-4deg',  r1:'14deg'  },
+  { x:'62%', d:'1.62s', dx:'-6px',  r0:'10deg',  r1:'-34deg' },
+  { x:'72%', d:'1.80s', dx:'8px',   r0:'-14deg', r1:'28deg'  },
+  { x:'36%', d:'2.0s',  dx:'-2px',  r0:'6deg',   r1:'-22deg' },
+];
+
+function pourFries() {
+  const rain = document.getElementById('friesRain');
+  if (!rain) return;
+  rain.innerHTML = FRY_POSITIONS.map(p =>
+    `<span class="fry" style="--x:${p.x}; --d:${p.d}; --dx:${p.dx}; --r0:${p.r0}; --r1:${p.r1};"></span>`
+  ).join('');
+}
+
 function setupFritesChooser() {
   const root = document.getElementById('signature');
   if (!root) return;
   const buttons = root.querySelectorAll('.frites-choice');
   const groups = root.querySelectorAll('[data-variant]');
   if (!buttons.length) return;
+  const N = 4;
   let active = 0, auto = 0;
   function go(i) {
-    active = ((i % 2) + 2) % 2;
+    active = ((i % N) + N) % N;
     groups.forEach(el => el.classList.toggle('active', +el.dataset.variant === active));
+    pourFries();
   }
   buttons.forEach(b => {
     b.addEventListener('click', () => { go(+b.dataset.variant); restart(); });
     b.addEventListener('mouseenter', () => { go(+b.dataset.variant); clearInterval(auto); });
     b.addEventListener('mouseleave', () => restart());
   });
-  function restart() { clearInterval(auto); auto = setInterval(() => go(active + 1), 6500); }
+  function restart() { clearInterval(auto); auto = setInterval(() => go(active + 1), 5500); }
   go(0); restart();
   IMMERSIVE.cleanup.push(() => clearInterval(auto));
 }
