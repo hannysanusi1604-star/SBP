@@ -2,19 +2,20 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { LocaleProvider } from '@/components/LocaleProvider';
 import { OrderProvider } from '@/components/OrderProvider';
+import { BookingProvider } from '@/components/BookingProvider';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { FloatingHelp } from '@/components/FloatingHelp';
 
 export const metadata: Metadata = {
-  title: 'Aspire Lounge Switzerland · Digital Buffet Menu',
+  title: 'Aspire · Airport Lounge Reservations',
   description:
-    'A calm, premium digital buffet menu for Aspire Lounge guests at Swiss airports. Browse dishes, dietary info, and discreet table service.',
+    'Reserve airport lounges, tables and virtual queue places across Aspire Lounges. Real-time occupancy, frictionless check-in.',
   manifest: '/manifest.json',
-  applicationName: 'Aspire Lounge Switzerland',
+  applicationName: 'Aspire Reservations',
   appleWebApp: {
     capable: true,
-    title: 'Aspire Lounge',
+    title: 'Aspire',
     statusBarStyle: 'default',
   },
   icons: {
@@ -22,15 +23,15 @@ export const metadata: Metadata = {
     apple: '/icon.svg',
   },
   openGraph: {
-    title: 'Aspire Lounge Switzerland',
-    description: 'A calm, premium moment before your flight.',
+    title: 'Aspire · Airport Lounge Reservations',
+    description: 'Premium airport lounges. Reserve a table or join the queue in seconds.',
     type: 'website',
   },
   robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {
-  themeColor: '#FBF9F5',
+  themeColor: '#F7F5F3',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
@@ -46,10 +47,12 @@ export default function RootLayout({
       <body>
         <LocaleProvider>
           <OrderProvider>
-            <Header />
-            <main>{children}</main>
-            <Footer />
-            <FloatingHelp />
+            <BookingProvider>
+              <Header />
+              <main>{children}</main>
+              <Footer />
+              <FloatingHelp />
+            </BookingProvider>
           </OrderProvider>
         </LocaleProvider>
       </body>

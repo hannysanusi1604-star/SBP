@@ -1,56 +1,51 @@
 'use client';
 
-import { useLocale } from './LocaleProvider';
-import { SwissCross } from './icons';
-
 export function Footer() {
-  const { t } = useLocale();
   return (
-    <footer className="mt-24 border-t border-ivory-200/60 dark:border-navy-700/60">
-      <div className="mx-auto max-w-6xl px-5 sm:px-8 py-12 grid grid-cols-1 sm:grid-cols-3 gap-10">
+    <footer className="mt-24 border-t border-aspire-border/60 bg-aspire-bg">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 py-14 grid grid-cols-1 sm:grid-cols-4 gap-10">
         <div>
-          <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-sm bg-navy-900 flex items-center justify-center">
-              <SwissCross size={18} />
-            </div>
-            <div className="leading-tight">
-              <div className="serif-heading text-lg">{t('brand.line1')}</div>
-              <div className="swiss-eyebrow">{t('brand.line2')}</div>
-            </div>
-          </div>
-          <p className="mt-4 text-[0.88rem] text-navy-500 dark:text-ivory-100 leading-relaxed max-w-xs">
-            {t('footer.note')}
+          <div className="font-medium tracking-[0.42em] text-lg text-aspire-navy">ASPIRE</div>
+          <div className="swiss-eyebrow mt-1">Lounge Reservations</div>
+          <p className="mt-4 text-[0.88rem] text-navy-500 leading-relaxed max-w-xs">
+            Premium airport lounges across Europe. Reserve a table, join the queue, or check in with a tap.
           </p>
         </div>
 
         <div>
-          <div className="swiss-eyebrow mb-3">{t('home.hours')}</div>
-          <div className="space-y-1 text-[0.88rem] text-navy-500 dark:text-ivory-100">
-            <div>Zürich Airport · Terminal A</div>
-            <div>Genève Aéroport · Terminal 1</div>
-            <div>Basel EuroAirport · Departures</div>
+          <div className="swiss-eyebrow mb-3">Reserve</div>
+          <div className="space-y-1.5 text-[0.88rem] text-navy-500">
+            <a href="/reserve" className="block hover:text-aspire-navy">Lounge booking</a>
+            <a href="/tables" className="block hover:text-aspire-navy">Table selection</a>
+            <a href="/queue" className="block hover:text-aspire-navy">Virtual queue</a>
+            <a href="/dashboard" className="block hover:text-aspire-navy">My bookings</a>
           </div>
         </div>
 
         <div>
-          <div className="swiss-eyebrow mb-3">— Aspire</div>
-          <div className="space-y-1 text-[0.88rem] text-navy-500 dark:text-ivory-100">
-            <a href="/dietary" className="block hover:text-navy-900 dark:hover:text-ivory-50">
-              {t('nav.dietary')}
-            </a>
-            <a href="/about" className="block hover:text-navy-900 dark:hover:text-ivory-50">
-              {t('nav.about')}
-            </a>
-            <a href="/feedback" className="block hover:text-navy-900 dark:hover:text-ivory-50">
-              {t('nav.feedback')}
-            </a>
+          <div className="swiss-eyebrow mb-3">Lounges</div>
+          <div className="space-y-1.5 text-[0.88rem] text-navy-500">
+            <div>Zurich · ZRH</div>
+            <div>Geneva · GVA</div>
+            <div>Basel · BSL</div>
+            <div>Aberdeen · ABZ</div>
+          </div>
+        </div>
+
+        <div>
+          <div className="swiss-eyebrow mb-3">Company</div>
+          <div className="space-y-1.5 text-[0.88rem] text-navy-500">
+            <a href="/admin" className="block hover:text-aspire-navy">Operator portal</a>
+            <a href="/menu" className="block hover:text-aspire-navy">In-lounge menu</a>
+            <a href="/about" className="block hover:text-aspire-navy">About</a>
+            <a href="/feedback" className="block hover:text-aspire-navy">Feedback</a>
           </div>
         </div>
       </div>
-      <div className="hairline mx-auto max-w-6xl" />
-      <div className="mx-auto max-w-6xl px-5 sm:px-8 py-6 flex items-center justify-between text-[0.72rem] uppercase tracking-wider text-navy-500/70 dark:text-ivory-200/60">
-        <span>© Aspire Lounge Switzerland</span>
-        <span>Crafted in Zürich</span>
+      <div className="hairline mx-auto max-w-7xl" />
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 py-6 flex items-center justify-between text-[0.72rem] uppercase tracking-wider text-navy-500/70">
+        <span>© Aspire Reservations</span>
+        <span>Designed with calm.</span>
       </div>
     </footer>
   );

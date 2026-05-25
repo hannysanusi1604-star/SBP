@@ -13,30 +13,23 @@ export function Header() {
   const [open, setOpen] = useState(false);
 
   const nav = [
-    { href: '/menu', label: t('nav.menu') },
-    { href: '/drinks', label: t('nav.drinks') },
-    { href: '/dietary', label: t('nav.dietary') },
-    { href: '/premium', label: t('nav.premium') },
-    { href: '/about', label: t('nav.about') },
-    { href: '/feedback', label: t('nav.feedback') },
+    { href: '/search', label: 'Lounges' },
+    { href: '/reserve', label: 'Reserve' },
+    { href: '/tables', label: 'Tables' },
+    { href: '/queue', label: 'Queue' },
+    { href: '/dashboard', label: 'My Stay' },
+    { href: '/admin', label: 'Staff' },
   ];
 
   return (
-    <header className="sticky top-0 z-40 backdrop-blur-md bg-ivory-50/80 border-b border-ivory-200/60 dark:bg-navy-900/70 dark:border-navy-700/60">
-      <div className="mx-auto max-w-6xl px-5 sm:px-8 py-3 flex items-center justify-between">
-        <Link href="/" className="group flex items-center gap-3" aria-label="Aspire Lounge Switzerland">
-          <div className="relative">
-            <div className="h-8 w-8 rounded-sm bg-navy-900 flex items-center justify-center">
-              <SwissCross size={16} />
+    <header className="sticky top-0 z-40 backdrop-blur-md bg-aspire-bg/85 border-b border-aspire-border/60 dark:bg-navy-900/70 dark:border-navy-700/60">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 py-4 flex items-center justify-between">
+        <Link href="/" className="group flex items-center gap-3" aria-label="Aspire">
+          <div className="leading-none">
+            <div className="font-medium tracking-[0.42em] text-[1.05rem] text-aspire-navy">
+              ASPIRE
             </div>
-          </div>
-          <div className="leading-tight">
-            <div className="serif-heading text-[1.05rem] tracking-tight">
-              {t('brand.line1')}
-            </div>
-            <div className="swiss-eyebrow text-[0.6rem]">
-              {t('brand.line2')}
-            </div>
+            <div className="swiss-eyebrow text-[0.55rem] mt-0.5">Lounge Reservations</div>
           </div>
         </Link>
 
