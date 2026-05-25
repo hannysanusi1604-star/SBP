@@ -159,10 +159,11 @@
       <!-- Search card -->
       <div class="mt-12 sm:mt-16 max-w-5xl card-cream shadow-lift p-4 sm:p-6 animate-fade-up">
         <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-4">
-          <label class="relative block sm:col-span-4">
-            <span class="absolute top-2 left-4 text-[0.62rem] uppercase tracking-widest text-navy-500 z-10">Airport / Lounge</span>
-            <select id="search-airport" class="input-cream pt-6 appearance-none pr-9"></select>
-          </label>
+          <button type="button" id="lounge-picker-btn" onclick="openLoungePicker()" class="relative block sm:col-span-4 text-left input-cream pt-6 hover:border-aspire-taupe">
+            <span class="absolute top-2 left-4 text-[0.62rem] uppercase tracking-widest text-navy-500 z-10">Lounge</span>
+            <span id="lounge-picker-label" class="block text-aspire-navy truncate pr-6">Zurich · Aspire Lounge Gates A, B & D</span>
+            <svg class="absolute right-3 top-1/2 -translate-y-1/2 text-navy-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
           <label class="relative block sm:col-span-3">
             <span class="absolute top-2 left-4 text-[0.62rem] uppercase tracking-widest text-navy-500 z-10">Date</span>
             <input type="date" id="search-date" class="input-cream pt-6" />
@@ -752,6 +753,64 @@
 
 </main>
 
+<!-- ============================================================ LOUNGE PICKER MODAL -->
+<div id="lounge-modal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 sm:p-8" role="dialog" aria-modal="true">
+  <div class="absolute inset-0 bg-aspire-navy/40 backdrop-blur-sm" onclick="closeLoungePicker()"></div>
+  <div class="relative w-full max-w-3xl max-h-[90vh] overflow-hidden card-cream shadow-float flex flex-col">
+    <div class="p-6 sm:p-8 border-b border-aspire-border flex items-start justify-between gap-4">
+      <div>
+        <div class="swiss-eyebrow">Aspire network</div>
+        <div class="serif-heading text-2xl sm:text-3xl text-aspire-navy mt-1">Choose your lounge</div>
+        <p class="mt-2 text-[0.88rem] text-navy-500">Browse the global Aspire network. Your current access includes <strong class="text-aspire-navy font-medium">Zurich Aspire Lounge Gates A, B &amp; D</strong>.</p>
+      </div>
+      <button onclick="closeLoungePicker()" aria-label="Close" class="h-9 w-9 rounded-full border border-aspire-border bg-white text-aspire-navy flex items-center justify-center hover:bg-aspire-soft">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 6l12 12M6 18L18 6"/></svg>
+      </button>
+    </div>
+    <div class="p-5 sm:p-6 border-b border-aspire-border">
+      <div class="flex items-center gap-3 px-3 rounded-xl border border-aspire-border bg-white">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3D4A66" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="lounge-modal-search" placeholder="Search by city, airport or country" class="w-full bg-transparent outline-none py-3 text-aspire-navy placeholder:text-navy-500/60" />
+      </div>
+      <div class="mt-3 flex items-center justify-between text-[0.72rem] uppercase tracking-widest text-navy-500">
+        <span><span id="lounge-modal-count"></span> lounges</span>
+        <span class="inline-flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-emerald-500"></span>Included with your access</span>
+      </div>
+    </div>
+    <div id="lounge-modal-list" class="flex-1 overflow-y-auto p-5 sm:p-6 space-y-6"></div>
+  </div>
+</div>
+
+<!-- ============================================================ PAYMENT PROCESSING MODAL -->
+<div id="pay-modal" class="hidden fixed inset-0 z-50 items-center justify-center p-4" role="dialog" aria-modal="true">
+  <div class="absolute inset-0 bg-aspire-navy/40 backdrop-blur-sm"></div>
+  <div class="relative w-full max-w-md card-cream shadow-float p-8 text-center">
+    <div id="pay-stage-processing">
+      <div class="mx-auto h-14 w-14 rounded-full border-2 border-aspire-border border-t-aspire-navy animate-spin"></div>
+      <div class="swiss-eyebrow mt-6">Secure payment</div>
+      <div class="serif-heading text-2xl text-aspire-navy mt-2">Processing your payment…</div>
+      <p class="mt-3 text-[0.88rem] text-navy-500 leading-relaxed">Please don't refresh the page. We're confirming with your bank — this normally takes a few seconds.</p>
+      <div class="mt-6 flex items-center justify-center gap-2 text-[0.72rem] uppercase tracking-widest text-navy-500">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        Encrypted via 3D Secure
+      </div>
+    </div>
+    <div id="pay-stage-success" class="hidden">
+      <div class="mx-auto h-14 w-14 rounded-full bg-aspire-navy text-white flex items-center justify-center">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m4 12 5 5L20 6"/></svg>
+      </div>
+      <div class="swiss-eyebrow mt-6">Payment confirmed</div>
+      <div class="serif-heading text-2xl text-aspire-navy mt-2" id="pay-amount">Thank you</div>
+      <p class="mt-3 text-[0.88rem] text-navy-500 leading-relaxed">A receipt and your QR pass will be on the next screen.</p>
+      <div id="pay-receipt" class="mt-5 text-left text-[0.85rem] bg-aspire-soft rounded-xl p-4 space-y-1"></div>
+      <button onclick="finishPayment()" class="btn-primary w-full justify-center mt-6">
+        View my booking
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- ============================================================ FOOTER -->
 <footer class="mt-12 border-t border-aspire-border/60 bg-aspire-bg">
   <div class="mx-auto max-w-7xl px-5 sm:px-8 py-14 grid grid-cols-1 sm:grid-cols-4 gap-10">
@@ -800,23 +859,88 @@
 <script>
 /* ----------------------- DATA ----------------------- */
 const LOUNGES = [
-  { id:'zrh-aspire', name:'Aspire Lounge', airport:'Zurich Airport', airportCode:'ZRH', terminal:'Terminal 2 · Gate E', city:'Zurich', country:'Switzerland',
+  { id:'zrh-abd', name:'Aspire Lounge Gates A, B & D', airport:'Zurich Airport', airportCode:'ZRH', terminal:'Gates A · B · D', city:'Zurich', country:'Switzerland',
     image:'https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1600&q=80',
     amenities:['Showers','Champagne bar','À la carte dining','Quiet zone','Workstations'],
-    capacity:180, rating:4.8, reviews:1284, priceFrom:65, currency:'CHF', occupancyPct:64, hours:'05:00 — 22:30' },
-  { id:'gva-alpine', name:'Alpine Suite Lounge', airport:'Geneva Airport', airportCode:'GVA', terminal:'Terminal 1 · Gate B', city:'Geneva', country:'Switzerland',
-    image:'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1600&q=80',
-    amenities:['Spa','Sleeping pods','Wine bar','Family room'],
-    capacity:140, rating:4.7, reviews:942, priceFrom:70, currency:'CHF', occupancyPct:38, hours:'04:30 — 23:00' },
-  { id:'bsl-rhone', name:'Rhône Business Lounge', airport:'EuroAirport Basel', airportCode:'BSL', terminal:'Terminal · Gate 50', city:'Basel', country:'Switzerland',
-    image:'https://images.unsplash.com/photo-1551776235-dde6d482980b?auto=format&fit=crop&w=1600&q=80',
-    amenities:['Co-working','Espresso bar','Press lounge'],
-    capacity:95, rating:4.5, reviews:612, priceFrom:48, currency:'CHF', occupancyPct:22, hours:'06:00 — 21:00' },
-  { id:'abz-northern', name:'Northern Lights Lounge', airport:'Aberdeen Airport', airportCode:'ABZ', terminal:'Terminal · Departures', city:'Aberdeen', country:'United Kingdom',
-    image:'https://images.unsplash.com/photo-1578894381163-e72c17f2d45f?auto=format&fit=crop&w=1600&q=80',
-    amenities:['Window views','Hot buffet','Whisky bar'],
-    capacity:120, rating:4.6, reviews:533, priceFrom:42, currency:'GBP', occupancyPct:71, hours:'04:00 — 20:15' },
+    capacity:240, rating:4.8, reviews:1842, priceFrom:65, currency:'CHF', occupancyPct:64, hours:'05:00 — 22:30' },
 ];
+
+const LOUNGE_NETWORK = [
+  { region:'Europe', lounges:[
+    { name:'Zurich Aspire Lounge Gates A, B & D', city:'Zurich', country:'Switzerland', count:2, code:'ZRH', accessible:true, id:'zrh-abd' },
+    { name:'Zurich Aspire Lounge Midfield',        city:'Zurich', country:'Switzerland', count:2, code:'ZRH' },
+    { name:'Zurich Swiss Airlines Lounges',        city:'Zurich', country:'Switzerland', count:10, code:'ZRH' },
+    { name:'Amsterdam Schiphol Aspire Lounge 26',  city:'Amsterdam', country:'Netherlands', code:'AMS' },
+    { name:'Amsterdam Schiphol Aspire Lounge 41',  city:'Amsterdam', country:'Netherlands', code:'AMS' },
+    { name:'Amsterdam Schiphol Star Alliance Lounge', city:'Amsterdam', country:'Netherlands', code:'AMS' },
+    { name:'Amsterdam oneworld Lounge',            city:'Amsterdam', country:'Netherlands', code:'AMS' },
+    { name:'Athens Lounge',                        city:'Athens', country:'Greece', code:'ATH' },
+    { name:'Basel EuroAirport Skyview Lounge',     city:'Basel',  country:'Switzerland', code:'BSL' },
+    { name:'Copenhagen Aspire Lounge',             city:'Copenhagen', country:'Denmark', code:'CPH' },
+    { name:'Cork Aspire Lounge',                   city:'Cork',   country:'Ireland', code:'ORK' },
+    { name:'Geneva Lounge',                        city:'Geneva', country:'Switzerland', count:2, code:'GVA' },
+    { name:'Helsinki Aspire Lounge',               city:'Helsinki', country:'Finland', count:3, code:'HEL' },
+    { name:'Milan ITA Lounge',                     city:'Milan',  country:'Italy', code:'MXP' },
+    { name:'Sofia Vitosha Aspire Lounge',          city:'Sofia',  country:'Bulgaria', code:'SOF' },
+  ]},
+  { region:'United Kingdom', lounges:[
+    { name:'Belfast City Airport Aspire Lounge',   city:'Belfast',     country:'United Kingdom', code:'BHD' },
+    { name:'Birmingham Airport Aspire Lounge (North)', city:'Birmingham', country:'United Kingdom', code:'BHX' },
+    { name:'Birmingham Aspire Airport Lounge (South)', city:'Birmingham', country:'United Kingdom', code:'BHX' },
+    { name:'Edinburgh Airport Aspire Lounge',      city:'Edinburgh',   country:'United Kingdom', code:'EDI' },
+    { name:'Humberside Airport Aspire Lounge',     city:'Humberside',  country:'United Kingdom', code:'HUY' },
+    { name:'Inverness Airport Aspire Lounge',      city:'Inverness',   country:'United Kingdom', code:'INV' },
+    { name:'Liverpool John Lennon Airport Aspire Lounge', city:'Liverpool', country:'United Kingdom', code:'LPL' },
+    { name:'Manchester Terminal 1 Aspire Lounge',  city:'Manchester',  country:'United Kingdom', code:'MAN' },
+    { name:'Manchester Terminal 2 Aspire Lounge',  city:'Manchester',  country:'United Kingdom', code:'MAN' },
+    { name:'Newcastle Airport Aspire Lounge',      city:'Newcastle',   country:'United Kingdom', code:'NCL' },
+  ]},
+  { region:'UK Joint Ventures', lounges:[
+    { name:'London Gatwick North',                 city:'London',     country:'United Kingdom', count:3, code:'LGW' },
+    { name:'London Gatwick South',                 city:'London',     country:'United Kingdom', count:4, code:'LGW' },
+    { name:'London Heathrow Terminal 2',           city:'London',     country:'United Kingdom', code:'LHR' },
+    { name:'London Heathrow Terminal 3',           city:'London',     country:'United Kingdom', count:2, code:'LHR' },
+    { name:'London Heathrow Terminal 5',           city:'London',     country:'United Kingdom', code:'LHR' },
+    { name:'London Luton',                         city:'London',     country:'United Kingdom', count:2, code:'LTN' },
+    { name:'Birmingham Airport No1 Lounge',        city:'Birmingham', country:'United Kingdom', code:'BHX' },
+    { name:'Birmingham Airport Clubrooms',         city:'Birmingham', country:'United Kingdom', code:'BHX' },
+    { name:'Jersey Airport No1 Lounge',            city:'Jersey',     country:'United Kingdom', code:'JER' },
+  ]},
+  { region:'Canada', lounges:[
+    { name:'Calgary Aspire Lounge International',  city:'Calgary',   country:'Canada', code:'YYC' },
+    { name:'Calgary Aspire Lounge Transborder',    city:'Calgary',   country:'Canada', code:'YYC' },
+    { name:'Montreal National Bank Lounge',        city:'Montreal',  country:'Canada', code:'YUL' },
+    { name:'Montreal Domestic Aspire | AMEX Lounge', city:'Montreal', country:'Canada', code:'YUL' },
+    { name:'Ottawa Aspire Lounge',                 city:'Ottawa',    country:'Canada', code:'YOW' },
+    { name:'Toronto City Aspire Lounge',           city:'Toronto',   country:'Canada', code:'YTZ' },
+  ]},
+  { region:'Americas', lounges:[
+    { name:'Chicago Swissport Lounge',             city:'Chicago',      country:'United States', code:'ORD' },
+    { name:'Ontario Aspire Lounge',                city:'Ontario',      country:'United States', count:2, code:'ONT' },
+    { name:'San Diego Aspire Lounge',              city:'San Diego',    country:'United States', code:'SAN' },
+    { name:'Buenos Aires AMEX Lounge',             city:'Buenos Aires', country:'Argentina', code:'EZE' },
+    { name:'Piarco Caribbean Airlines Lounge',     city:'Piarco',       country:'Trinidad and Tobago', code:'POS' },
+  ]},
+  { region:'Asia', lounges:[
+    { name:'Incheon oneworld Lounge',              city:'Seoul',  country:'South Korea', code:'ICN' },
+    { name:'Narita Aspire Lounge',                 city:'Tokyo',  country:'Japan', code:'NRT' },
+  ]},
+  { region:'Middle East · Joint Venture', lounges:[
+    { name:'Dan Lounge Tel Aviv',                  city:'Tel Aviv', country:'Israel', count:5, code:'TLV' },
+  ]},
+  { region:'Africa', lounges:[
+    { name:'Nairobi Aspire Lounge',                city:'Nairobi',     country:'Kenya',    code:'NBO' },
+    { name:'Johannesburg Aspire Lounge',           city:'Johannesburg', country:'South Africa', code:'JNB' },
+    { name:'Kilimanjaro Aspire Lounge',            city:'Kilimanjaro', country:'Tanzania', code:'JRO' },
+  ]},
+  { region:'Australia', lounges:[
+    { name:'Perth Aspire Lounge',                  city:'Perth',     country:'Australia', code:'PER' },
+    { name:'Melbourne "The House by Aspire"',      city:'Melbourne', country:'Australia', code:'MEL' },
+    { name:'Sydney "The House by Aspire"',         city:'Sydney',    country:'Australia', code:'SYD' },
+  ]},
+];
+
+const NETWORK_TOTAL = LOUNGE_NETWORK.reduce((s, r) => s + r.lounges.reduce((a, l) => a + (l.count || 1), 0), 0);
 
 const ZONE_META = {
   quiet:       { label:'Quiet Zone',  description:'Silent area for rest, reading and reflection.',     color:'#9FB4A8' },
@@ -964,40 +1088,49 @@ $$('.lang-btn').forEach(b => b.addEventListener('click', () => {
 
 /* ----------------------- HOME ----------------------- */
 function initHome() {
-  // populate selects
-  const ap = $('#search-airport');
-  LOUNGES.forEach(l => ap.append(new Option(`${l.airportCode} · ${l.airport}`, l.id)));
   const gs = $('#search-guests');
   [1,2,3,4,5,6].forEach(n => gs.append(new Option(`${n} ${n===1?'guest':'guests'}`, n)));
   $('#search-date').value = state.booking.date;
 
   const grid = $('#featured-lounges');
-  LOUNGES.forEach(l => {
-    const tone = l.occupancyPct > 75 ? 'red' : l.occupancyPct > 50 ? 'amber' : '';
-    grid.append(el('a', { href:'#search', 'data-view':'search', class:'group rounded-3xl overflow-hidden bg-white border border-aspire-border hover:shadow-lift transition-all block' },
-      el('div', { class:'relative aspect-[4/3] overflow-hidden' },
-        el('img', { src:l.image, alt:l.name, class:'h-full w-full object-cover group-hover:scale-[1.04] transition-transform duration-700' }),
-        el('div', { class:'absolute top-3 left-3' },
-          el('span', { class:'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-aspire-border text-[0.7rem] uppercase tracking-widest text-aspire-navy', html:`<span class="live-dot ${tone}"></span>${l.occupancyPct}% full` })
-        )
-      ),
-      el('div', { class:'p-5' },
-        el('div', { class:'flex items-center justify-between text-[0.72rem] uppercase tracking-widest text-navy-500' },
-          el('span', {}, `${l.airportCode} · ${l.city}`),
-          el('span', {}, `★ ${l.rating}`),
-        ),
-        el('div', { class:'serif-heading text-xl mt-2 text-aspire-navy' }, l.name),
-        el('div', { class:'text-[0.85rem] text-navy-500 mt-1' }, l.terminal),
-        el('div', { class:'mt-4 flex items-end justify-between' },
-          el('div', { class:'text-aspire-navy' }, el('span', { class:'text-[0.7rem] uppercase tracking-widest text-navy-500 mr-1' }, 'from'), `${l.currency} ${l.priceFrom}`),
-          el('span', { class:'text-[0.72rem] uppercase tracking-widest text-aspire-taupe group-hover:underline' }, 'Reserve'),
-        )
+  const accessible = LOUNGES[0];
+  const tone = accessible.occupancyPct > 75 ? 'red' : accessible.occupancyPct > 50 ? 'amber' : '';
+  // Accessible lounge — prominent card spanning 2 columns
+  grid.append(el('div', { class:'lg:col-span-2 rounded-3xl overflow-hidden bg-white border border-aspire-navy/40 flex flex-col sm:flex-row shadow-card' },
+    el('div', { class:'relative sm:w-1/2 aspect-[4/3] sm:aspect-auto overflow-hidden' },
+      el('img', { src:accessible.image, alt:accessible.name, class:'h-full w-full object-cover' }),
+      el('div', { class:'absolute top-3 left-3 flex flex-col gap-2' },
+        el('span', { class:'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/95 text-white text-[0.7rem] uppercase tracking-widest', html:'<span class="h-1.5 w-1.5 rounded-full bg-white"></span>Your lounge' }),
+        el('span', { class:'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-aspire-border text-[0.7rem] uppercase tracking-widest text-aspire-navy', html:`<span class="live-dot ${tone}"></span>${accessible.occupancyPct}% full · live` })
       )
-    ));
-  });
+    ),
+    el('div', { class:'p-6 sm:p-8 flex-1 flex flex-col' },
+      el('div', { class:'text-[0.72rem] uppercase tracking-widest text-navy-500' }, `${accessible.airportCode} · ${accessible.city}, ${accessible.country}`),
+      el('div', { class:'serif-heading text-3xl mt-1 text-aspire-navy' }, accessible.name),
+      el('div', { class:'text-[0.88rem] text-navy-500 mt-1' }, `${accessible.terminal} · ${accessible.hours}`),
+      el('div', { class:'mt-4 flex flex-wrap gap-1.5' },
+        ...accessible.amenities.map(a => el('span', { class:'text-[0.7rem] px-2.5 py-1 rounded-full bg-aspire-soft text-aspire-navy/80 border border-aspire-border' }, a))
+      ),
+      el('div', { class:'mt-auto pt-6 flex items-end justify-between' },
+        el('div', {},
+          el('div', { class:'text-[0.7rem] uppercase tracking-widest text-navy-500' }, 'from'),
+          el('div', { class:'serif-heading text-2xl text-aspire-navy' }, `${accessible.currency} ${accessible.priceFrom}`)
+        ),
+        el('button', { class:'btn-primary', onclick: () => { state.booking.loungeId = accessible.id; state.step = 2; go('reserve'); }, html:'Reserve <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>' })
+      )
+    )
+  ));
+  // Browse the network teaser
+  grid.append(el('a', { href:'#search', 'data-view':'search', class:'lg:col-span-2 group rounded-3xl bg-aspire-card p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 hover:bg-aspire-taupe/30 transition-colors block' },
+    el('div', {},
+      el('div', { class:'swiss-eyebrow text-aspire-navy/70' }, `Global network · ${NETWORK_TOTAL} lounges`),
+      el('div', { class:'serif-heading text-2xl text-aspire-navy mt-1' }, 'Explore where Aspire operates'),
+      el('p', { class:'text-[0.92rem] text-aspire-navy/80 mt-1 max-w-md' }, "Browse our lounges in 40+ airports across Europe, the Americas, Asia, Africa, the Middle East and Australia.")
+    ),
+    el('span', { class:'inline-flex items-center gap-2 text-[0.78rem] uppercase tracking-widest text-aspire-navy group-hover:gap-3 transition-all', html:'Browse network <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>' })
+  ));
 }
 function searchAndGo() {
-  state.booking.loungeId   = $('#search-airport').value;
   state.booking.date       = $('#search-date').value || state.booking.date;
   state.booking.arrivalTime = $('#search-time').value || '14:00';
   state.booking.guests.adults = Number($('#search-guests').value) || 1;
@@ -1005,48 +1138,154 @@ function searchAndGo() {
   go('reserve');
 }
 
+/* ----------------------- LOUNGE PICKER ----------------------- */
+function openLoungePicker() {
+  const m = $('#lounge-modal');
+  m.classList.remove('hidden'); m.classList.add('flex');
+  renderLoungePickerList('');
+  setTimeout(() => { $('#lounge-modal-search')?.focus(); }, 50);
+}
+function closeLoungePicker() {
+  const m = $('#lounge-modal');
+  m.classList.add('hidden'); m.classList.remove('flex');
+}
+function renderLoungePickerList(q) {
+  q = (q || '').toLowerCase().trim();
+  const host = $('#lounge-modal-list'); host.innerHTML = '';
+  let total = 0;
+  LOUNGE_NETWORK.forEach(group => {
+    const matches = group.lounges.filter(l => {
+      const hay = `${l.name} ${l.city} ${l.country} ${l.code || ''}`.toLowerCase();
+      return hay.includes(q);
+    });
+    if (!matches.length) return;
+    total += matches.reduce((s, l) => s + (l.count || 1), 0);
+    const section = el('div', {},
+      el('div', { class:'flex items-center justify-between mb-3' },
+        el('div', { class:'swiss-eyebrow text-aspire-navy' }, group.region),
+        el('div', { class:'text-[0.72rem] text-navy-500' }, `${matches.reduce((s,l)=>s+(l.count||1),0)} lounge${matches.length === 1 ? '' : 's'}`)
+      )
+    );
+    const list = el('div', { class:'space-y-2' });
+    matches.forEach(l => list.append(loungeRow(l)));
+    section.append(list);
+    host.append(section);
+  });
+  $('#lounge-modal-count').textContent = total === NETWORK_TOTAL ? `All ${NETWORK_TOTAL}` : String(total);
+  if (total === 0) host.append(el('div', { class:'text-center py-12 text-navy-500' }, 'No lounges match your search.'));
+}
+function loungeRow(l) {
+  const access = !!l.accessible;
+  const wrap = el(access ? 'button' : 'div', {
+    class:`w-full text-left flex items-center gap-4 p-4 rounded-2xl border transition-all ${access ? 'border-aspire-navy bg-aspire-soft hover:bg-aspire-card cursor-pointer' : 'border-aspire-border bg-white opacity-80'}`,
+    ...(access ? { onclick: () => pickLounge(l) } : {})
+  });
+  wrap.append(
+    el('div', { class:`h-11 w-11 rounded-xl flex items-center justify-center text-[0.7rem] font-medium tracking-widest ${access ? 'bg-aspire-navy text-white' : 'bg-aspire-soft text-navy-500 border border-aspire-border'}` }, l.code || '—'),
+    el('div', { class:'flex-1 min-w-0' },
+      el('div', { class:'text-aspire-navy text-[0.95rem] truncate' }, l.name + (l.count && l.count > 1 ? `  ×${l.count}` : '')),
+      el('div', { class:'text-[0.78rem] text-navy-500 truncate' }, `${l.city} · ${l.country}`)
+    ),
+    el('span', {
+      class: access
+        ? 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-700 text-[0.7rem] uppercase tracking-widest flex-shrink-0'
+        : 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-aspire-border text-navy-500 text-[0.7rem] uppercase tracking-widest flex-shrink-0',
+      html: access
+        ? '<span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>Included'
+        : '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>Not in access'
+    })
+  );
+  return wrap;
+}
+function pickLounge(l) {
+  if (!l.accessible) return;
+  state.booking.loungeId = l.id;
+  const found = LOUNGES.find(x => x.id === l.id);
+  if (found) {
+    $('#lounge-picker-label').textContent = `${found.city} · ${found.name}`;
+  }
+  closeLoungePicker();
+}
+
 /* ----------------------- SEARCH ----------------------- */
 function renderSearch() {
-  const q = ($('#search-q')?.value || '').toLowerCase();
+  const q = ($('#search-q')?.value || '').toLowerCase().trim();
   const sort = $('#search-sort')?.value || 'availability';
-  let list = LOUNGES.filter(l => `${l.airport} ${l.airportCode} ${l.city} ${l.name}`.toLowerCase().includes(q));
-  if (sort === 'price') list.sort((a,b) => a.priceFrom - b.priceFrom);
-  else if (sort === 'rating') list.sort((a,b) => b.rating - a.rating);
-  else list.sort((a,b) => a.occupancyPct - b.occupancyPct);
   const out = $('#search-results'); out.innerHTML = '';
-  list.forEach(l => {
-    const tone = l.occupancyPct > 75 ? 'red' : l.occupancyPct > 50 ? 'amber' : '';
-    out.append(el('div', { class:'rounded-3xl overflow-hidden bg-white border border-aspire-border flex flex-col sm:flex-row' },
+
+  // Featured: the accessible Zurich lounge
+  const accessible = LOUNGES[0];
+  const tone = accessible.occupancyPct > 75 ? 'red' : accessible.occupancyPct > 50 ? 'amber' : '';
+  if (!q || `${accessible.airport} ${accessible.airportCode} ${accessible.city} ${accessible.name}`.toLowerCase().includes(q)) {
+    out.append(el('div', { class:'lg:col-span-2 rounded-3xl overflow-hidden bg-white border border-aspire-navy flex flex-col sm:flex-row shadow-card' },
       el('div', { class:'relative sm:w-2/5 aspect-[4/3] sm:aspect-auto overflow-hidden' },
-        el('img', { src:l.image, alt:l.name, class:'h-full w-full object-cover' }),
-        el('div', { class:'absolute top-3 left-3' },
-          el('span', { class:'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-aspire-border text-[0.7rem] uppercase tracking-widest text-aspire-navy', html:`<span class="live-dot ${tone}"></span>${l.occupancyPct}% full` })
+        el('img', { src:accessible.image, alt:accessible.name, class:'h-full w-full object-cover' }),
+        el('div', { class:'absolute top-3 left-3 flex flex-col gap-2' },
+          el('span', { class:'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/95 text-white text-[0.7rem] uppercase tracking-widest', html:'<span class="h-1.5 w-1.5 rounded-full bg-white"></span>Included with your access' }),
+          el('span', { class:'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-aspire-border text-[0.7rem] uppercase tracking-widest text-aspire-navy', html:`<span class="live-dot ${tone}"></span>${accessible.occupancyPct}% full` })
         )
       ),
       el('div', { class:'p-6 flex-1 flex flex-col' },
         el('div', { class:'flex items-center justify-between text-[0.72rem] uppercase tracking-widest text-navy-500' },
-          el('span', {}, `${l.airportCode} · ${l.city}, ${l.country}`),
-          el('span', { html:`★ ${l.rating} (${l.reviews})` })
+          el('span', {}, `${accessible.airportCode} · ${accessible.city}, ${accessible.country}`),
+          el('span', { html:`★ ${accessible.rating} (${accessible.reviews})` })
         ),
-        el('div', { class:'serif-heading text-2xl mt-2 text-aspire-navy' }, l.name),
-        el('div', { class:'text-[0.85rem] text-navy-500' }, `${l.terminal} · ${l.hours}`),
+        el('div', { class:'serif-heading text-2xl mt-2 text-aspire-navy' }, accessible.name),
+        el('div', { class:'text-[0.85rem] text-navy-500' }, `${accessible.terminal} · ${accessible.hours}`),
         el('div', { class:'mt-4 flex flex-wrap gap-1.5' },
-          ...l.amenities.slice(0,4).map(a => el('span', { class:'text-[0.7rem] px-2.5 py-1 rounded-full bg-aspire-soft text-aspire-navy/80 border border-aspire-border' }, a))
+          ...accessible.amenities.slice(0,4).map(a => el('span', { class:'text-[0.7rem] px-2.5 py-1 rounded-full bg-aspire-soft text-aspire-navy/80 border border-aspire-border' }, a))
         ),
         el('div', { class:'mt-auto pt-5 flex items-end justify-between' },
           el('div', {},
             el('div', { class:'text-[0.7rem] uppercase tracking-widest text-navy-500' }, 'from'),
-            el('div', { class:'text-aspire-navy text-xl' }, `${l.currency} ${l.priceFrom}`)
+            el('div', { class:'text-aspire-navy text-xl' }, `${accessible.currency} ${accessible.priceFrom}`)
           ),
-          el('button', { class:'btn-primary', onclick: () => { state.booking.loungeId = l.id; state.step = 2; go('reserve'); }, html:'Reserve <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>' })
+          el('button', { class:'btn-primary', onclick: () => { state.booking.loungeId = accessible.id; state.step = 2; go('reserve'); }, html:'Reserve <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>' })
         )
       )
     ));
+  }
+
+  // Network header
+  out.append(el('div', { class:'lg:col-span-2 mt-2' },
+    el('div', { class:'swiss-eyebrow' }, 'Global Aspire network'),
+    el('div', { class:'serif-heading text-2xl text-aspire-navy mt-1' }, `${NETWORK_TOTAL} lounges worldwide`),
+    el('p', { class:'text-[0.88rem] text-navy-500 mt-1' }, "Browse where Aspire operates. Your current access only includes the lounge highlighted above — other lounges aren't bookable from this site.")
+  ));
+
+  // Network list grouped by region
+  let total = 0;
+  LOUNGE_NETWORK.forEach(group => {
+    const matches = group.lounges.filter(l => {
+      if (l.accessible) return false; // already shown as featured
+      const hay = `${l.name} ${l.city} ${l.country} ${l.code || ''}`.toLowerCase();
+      return hay.includes(q);
+    });
+    if (!matches.length) return;
+    total += matches.length;
+    const section = el('div', { class:'lg:col-span-2 card-cream p-5 sm:p-6' },
+      el('div', { class:'flex items-center justify-between mb-4' },
+        el('div', { class:'swiss-eyebrow text-aspire-navy' }, group.region),
+        el('div', { class:'text-[0.72rem] text-navy-500' }, `${matches.reduce((s,l)=>s+(l.count||1),0)} lounges`)
+      )
+    );
+    const grid = el('div', { class:'grid grid-cols-1 sm:grid-cols-2 gap-2' });
+    matches.forEach(l => grid.append(loungeRow(l)));
+    section.append(grid);
+    out.append(section);
   });
-  if (list.length === 0) out.append(el('div', { class:'col-span-2 text-center py-20 text-navy-500' }, 'No lounges match your search.'));
+  if (total === 0 && q) {
+    out.append(el('div', { class:'lg:col-span-2 text-center py-12 text-navy-500' }, `No network lounges match "${q}".`));
+  }
 }
 document.addEventListener('input', (e) => {
   if (e.target.id === 'search-q') renderSearch();
+  if (e.target.id === 'lounge-modal-search') renderLoungePickerList(e.target.value);
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeLoungePicker();
+  }
 });
 document.addEventListener('change', (e) => {
   if (e.target.id === 'search-sort') renderSearch();
@@ -1085,19 +1324,20 @@ function goStep(n) {
 function renderStep1() {
   const out = $('#reserve-lounges'); out.innerHTML = '';
   LOUNGES.forEach(l => {
-    const active = state.booking.loungeId === l.id;
-    out.append(el('button', { class:`text-left rounded-3xl overflow-hidden border bg-white transition-all ${active ? 'border-aspire-navy shadow-lift' : 'border-aspire-border hover:border-aspire-taupe'}`, onclick:() => { state.booking.loungeId = l.id; renderStep1(); } },
-      el('div', { class:'flex' },
-        el('div', { class:'w-1/3 aspect-square overflow-hidden' }, el('img', { src:l.image, alt:l.name, class:'h-full w-full object-cover' })),
-        el('div', { class:'flex-1 p-4 sm:p-5' },
-          el('div', { class:'flex items-start justify-between' },
-            el('div', {},
-              el('div', { class:'text-[0.7rem] uppercase tracking-widest text-navy-500' }, `${l.airportCode} · ${l.terminal}`),
-              el('div', { class:'serif-heading text-xl mt-1 text-aspire-navy' }, l.name)
-            ),
-            active ? el('span', { class:'h-6 w-6 rounded-full bg-aspire-navy text-white flex items-center justify-center', html:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5L20 6"/></svg>' }) : ''
+    out.append(el('div', { class:'md:col-span-2 rounded-3xl overflow-hidden border border-aspire-navy bg-white shadow-card' },
+      el('div', { class:'flex flex-col sm:flex-row' },
+        el('div', { class:'sm:w-1/2 aspect-[4/3] sm:aspect-auto overflow-hidden relative' },
+          el('img', { src:l.image, alt:l.name, class:'h-full w-full object-cover' }),
+          el('span', { class:'absolute top-3 left-3 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/95 text-white text-[0.7rem] uppercase tracking-widest', html:'<span class="h-1.5 w-1.5 rounded-full bg-white"></span>Included with your access' })
+        ),
+        el('div', { class:'flex-1 p-5 sm:p-6' },
+          el('div', { class:'text-[0.7rem] uppercase tracking-widest text-navy-500' }, `${l.airportCode} · ${l.terminal}`),
+          el('div', { class:'serif-heading text-2xl mt-1 text-aspire-navy' }, l.name),
+          el('div', { class:'text-[0.85rem] text-navy-500 mt-1' }, `${l.city}, ${l.country} · ${l.hours}`),
+          el('div', { class:'mt-3 flex flex-wrap gap-1.5' },
+            ...l.amenities.slice(0,4).map(a => el('span', { class:'text-[0.7rem] px-2.5 py-1 rounded-full bg-aspire-soft text-aspire-navy/80 border border-aspire-border' }, a))
           ),
-          el('div', { class:'mt-3 flex items-center justify-between text-[0.85rem]' },
+          el('div', { class:'mt-4 flex items-center justify-between text-[0.85rem]' },
             el('span', { class:'text-navy-500' }, `${l.occupancyPct}% occupancy · ★ ${l.rating}`),
             el('span', { class:'text-aspire-navy' }, `${l.currency} ${l.priceFrom}`)
           )
@@ -1105,6 +1345,10 @@ function renderStep1() {
       )
     ));
   });
+  out.append(el('div', { class:'md:col-span-2 mt-2 p-5 rounded-2xl bg-aspire-soft border border-aspire-border flex items-start gap-3' },
+    el('span', { class:'h-8 w-8 rounded-full bg-white border border-aspire-border flex items-center justify-center text-aspire-navy flex-shrink-0', html:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>' }),
+    el('div', { class:'text-[0.88rem] text-navy-500 leading-relaxed', html:'Your access currently includes <strong class="text-aspire-navy font-medium">Zurich Aspire Lounge Gates A, B & D</strong>. Browse the wider Aspire network from the <a href="#search" data-view="search" class="text-aspire-navy underline underline-offset-4">global directory</a>.' })
+  ));
 }
 function renderStep2() {
   const l = lounge();
@@ -1202,7 +1446,34 @@ function renderStep4() {
   $('#pay-accept').onchange = (e) => $('#confirm-btn').classList.toggle('disabled', !e.target.checked);
 }
 function confirmBooking() {
-  state.confirmed = true;
+  // Open the fake payment processing modal
+  const l = lounge();
+  const guestsTotal = state.booking.guests.adults + state.booking.guests.children;
+  const amount = (l.priceFrom * Math.max(1, guestsTotal)).toFixed(2);
+  const method = state.payMethod === 'card' ? 'Visa •• 4242' : state.payMethod === 'apple' ? 'Apple Pay' : 'TWINT';
+  const refDate = formatDate(state.booking.date);
+
+  const m = $('#pay-modal');
+  m.classList.remove('hidden'); m.classList.add('flex');
+  $('#pay-stage-processing').classList.remove('hidden');
+  $('#pay-stage-success').classList.add('hidden');
+
+  setTimeout(() => {
+    $('#pay-stage-processing').classList.add('hidden');
+    $('#pay-stage-success').classList.remove('hidden');
+    $('#pay-amount').textContent = `${l.currency} ${amount} charged`;
+    $('#pay-receipt').innerHTML = `
+      <div class="flex justify-between"><span class="text-navy-500">Reference</span><span class="text-aspire-navy tabular-nums">${state.bookingRef}</span></div>
+      <div class="flex justify-between"><span class="text-navy-500">Lounge</span><span class="text-aspire-navy text-right">${l.name}</span></div>
+      <div class="flex justify-between"><span class="text-navy-500">Date</span><span class="text-aspire-navy">${refDate}</span></div>
+      <div class="flex justify-between"><span class="text-navy-500">Guests</span><span class="text-aspire-navy">${guestsTotal}</span></div>
+      <div class="flex justify-between"><span class="text-navy-500">Method</span><span class="text-aspire-navy">${method}</span></div>`;
+    state.confirmed = true;
+  }, 2200);
+}
+function finishPayment() {
+  const m = $('#pay-modal');
+  m.classList.add('hidden'); m.classList.remove('flex');
   go('dashboard');
 }
 
@@ -1362,9 +1633,12 @@ function renderQueue() {
   const maxWait = Math.max(...state.queue.map(q => q.estimatedWait), 0);
   $('#queue-summary').innerHTML = `<span class="live-dot amber"></span>${state.queue.length} in queue · ~${maxWait}m max wait`;
 
+  // Anonymized ticker — only zone + wait, never names or party sizes
   const ticker = $('#queue-ticker'); ticker.innerHTML = '';
-  const items = state.queue.slice(0, 6).map(e => `${e.initials} · ${ZONE_META[e.preference].label} · ${e.estimatedWait}m wait`);
-  const seq = [...items, ...items];
+  const zoneCounts = {};
+  state.queue.forEach(e => { zoneCounts[e.preference] = (zoneCounts[e.preference] || 0) + 1; });
+  const tickerLines = Object.entries(zoneCounts).map(([z, c]) => `${c} waiting · ${ZONE_META[z].label}`);
+  const seq = [...tickerLines, ...tickerLines, ...tickerLines];
   ticker.innerHTML = seq.map(it => `<span class="px-8 text-[0.78rem] uppercase tracking-widest text-aspire-navy/80"><span class="text-aspire-taupe mr-2">●</span>${it}</span>`).join('');
 
   // side panel: verification → join form → status
@@ -1466,22 +1740,51 @@ function renderQueue() {
     }, 0);
   }
 
-  // queue list
+  // Anonymized queue list — privacy-first, no names or party sizes
   const list = $('#queue-list'); list.innerHTML = '';
-  state.queue.forEach((e, i) => {
-    const mine = state.joined?.id === e.id;
-    const statusDot = e.status === 'notified' ? 'bg-amber-500' : e.status === 'seated' ? 'bg-emerald-500' : 'bg-aspire-taupe';
-    list.append(el('div', { class:`flex items-center gap-4 p-4 rounded-2xl border transition-all ${mine ? 'border-aspire-navy bg-aspire-soft' : 'border-aspire-border bg-white'}` },
-      el('div', { class:'h-11 w-11 rounded-full bg-aspire-taupe text-white flex items-center justify-center font-medium' }, e.initials),
-      el('div', { class:'flex-1' },
-        el('div', { class:'flex items-center gap-2', html:`<span class="text-aspire-navy">${e.name}${mine ? '<span class="ml-2 text-[0.7rem] uppercase tracking-widest text-aspire-taupe">You</span>' : ''}</span><span class="text-[0.72rem] text-navy-500">· party of ${e.party}</span>` }),
-        el('div', { class:'text-[0.78rem] text-navy-500', html:`<span class="inline-block h-2 w-2 rounded-full mr-1.5 align-middle" style="background:${ZONE_META[e.preference].color}"></span>${ZONE_META[e.preference].label} · joined ${e.joinedAt}` })
-      ),
-      el('div', { class:'text-right' }, el('div', { class:'text-[0.65rem] uppercase tracking-widest text-navy-500' }, 'Position'), el('div', { class:'text-aspire-navy text-lg' }, `#${i+1}`)),
-      el('div', { class:'text-right' }, el('div', { class:'text-[0.65rem] uppercase tracking-widest text-navy-500' }, 'Wait'), el('div', { class:'text-aspire-navy text-lg tabular-nums' }, `${e.estimatedWait}m`)),
-      el('span', { class:`hidden sm:inline-block w-2.5 h-2.5 rounded-full ${statusDot}` })
+  const myIdx = state.joined ? state.queue.findIndex(e => e.id === state.joined.id) : -1;
+  const ahead = myIdx >= 0 ? myIdx : state.queue.length;
+
+  list.append(el('div', { class:'card-aspire p-6 sm:p-8 text-center' },
+    el('div', { class:'swiss-eyebrow text-aspire-navy/70' }, state.joined ? 'Guests ahead of you' : 'People currently waiting'),
+    el('div', { class:'serif-heading text-6xl sm:text-7xl text-aspire-navy mt-2 tabular-nums' }, String(ahead)),
+    el('div', { class:'text-aspire-navy/80 mt-2' }, ahead === 1 ? 'guest' : 'guests'),
+    el('div', { class:'mt-5 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-aspire-border text-[0.72rem] uppercase tracking-widest text-aspire-navy' },
+      el('span', { class:'live-dot amber' }),
+      `~${maxWait || 0} min longest wait`
+    )
+  ));
+
+  // Position row: shows current guest's position (if joined) — anonymized timeline
+  list.append(el('div', { class:'card-cream p-5 sm:p-6' },
+    el('div', { class:'swiss-eyebrow mb-4' }, 'Queue progress'),
+    el('div', { class:'flex items-center gap-2' },
+      ...state.queue.slice(0, 12).map((e, i) => {
+        const mine = state.joined?.id === e.id;
+        return el('div', { class:`flex-1 h-2 rounded-full ${mine ? 'bg-aspire-navy' : i < ahead ? 'bg-aspire-taupe' : 'bg-aspire-soft'}` , title: mine ? 'You' : `Position ${i+1}` });
+      }),
+      state.queue.length > 12 ? el('span', { class:'text-[0.72rem] text-navy-500 pl-2' }, `+${state.queue.length - 12}`) : ''
+    ),
+    el('div', { class:'mt-3 flex items-center justify-between text-[0.78rem] text-navy-500' },
+      el('span', {}, 'Front of queue'),
+      el('span', {}, state.joined ? `You · position ${myIdx + 1}` : `${state.queue.length} waiting`)
+    )
+  ));
+
+  // Anonymized zone breakdown
+  const zoneRow = el('div', { class:'grid grid-cols-2 sm:grid-cols-4 gap-2.5' });
+  Object.entries(ZONE_META).forEach(([z, m]) => {
+    const c = state.queue.filter(e => e.preference === z).length;
+    zoneRow.append(el('div', { class:'card-cream p-4' },
+      el('div', { class:'inline-flex items-center gap-2 text-[0.7rem] uppercase tracking-widest text-navy-500', html:`<span class="h-2 w-2 rounded-full" style="background:${m.color}"></span>${m.label}` }),
+      el('div', { class:'serif-heading text-2xl text-aspire-navy mt-1 tabular-nums' }, String(c)),
+      el('div', { class:'text-[0.72rem] text-navy-500' }, c === 1 ? 'guest waiting' : 'guests waiting')
     ));
   });
+  list.append(zoneRow);
+
+  list.append(el('p', { class:'text-[0.78rem] text-navy-500 leading-relaxed mt-2 px-1' },
+    "For everyone's privacy, we only show how many guests are ahead of you. We never display other guests' names, party sizes or contact details."));
 }
 
 function triggerToast() {
