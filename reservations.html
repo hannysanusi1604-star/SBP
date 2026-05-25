@@ -2142,7 +2142,6 @@ function renderDashboard() {
 
   $('#dash-summary').innerHTML = bookingSummaryHTML(state.booking.membership === 'pay');
 
-  const accessUntil = endTime(state.booking.arrivalTime);
   $('#dash-access-card').innerHTML = `
     <div class="swiss-eyebrow text-aspire-navy/70">Lounge access</div>
     <div class="serif-heading text-3xl text-aspire-navy mt-1 tabular-nums">3 hours</div>
