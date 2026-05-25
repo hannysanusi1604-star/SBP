@@ -131,6 +131,29 @@
     60% { box-shadow: 0 0 0 18px rgba(184,152,85,0), 0 0 10px rgba(20,38,63,.35); }
     100% { box-shadow: 0 0 0 0 rgba(184,152,85,0), 0 0 10px rgba(20,38,63,.35); }
   }
+
+  /* Site-wide scroll progress hairline */
+  #scrollProgress { position: fixed; top: 0; left: 0; height: 2px; width: 0; background: linear-gradient(90deg, transparent, rgba(184,152,85,.9), rgba(184,152,85,.6)); z-index: 60; transition: width .12s linear; pointer-events: none; }
+
+  /* Homepage section indicator dots */
+  #sectionDots { position: fixed; right: 18px; top: 50%; transform: translateY(-50%); display: none; flex-direction: column; gap: 14px; z-index: 35; }
+  @media (min-width: 1024px) { #sectionDots.is-on { display: flex; } }
+  .section-dot { display: block; padding: 6px; background: transparent; border: 0; cursor: pointer; }
+  .section-dot span { display: block; width: 6px; height: 6px; border-radius: 999px; background: rgba(20,38,63,.25); transition: width .4s cubic-bezier(.2,.8,.2,1), background .3s; }
+  .section-dot.active span { background: rgba(184,152,85,.95); width: 22px; }
+  .section-dot:hover span { background: rgba(184,152,85,.7); }
+
+  /* Partnership slider */
+  .partner-track { display: grid; grid-template-areas: 'stack'; position: relative; }
+  .partner-track > .partner-slide { grid-area: stack; opacity: 0; visibility: hidden; transition: opacity .8s cubic-bezier(.2,.8,.2,1), transform .8s cubic-bezier(.2,.8,.2,1); pointer-events: none; transform: translateY(14px); }
+  .partner-track > .partner-slide.active { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0); transition-delay: .12s; }
+  .partner-dot { display: block; padding: 8px; background: transparent; border: 0; cursor: pointer; }
+  .partner-dot span { display: block; width: 8px; height: 8px; border-radius: 999px; border: 1px solid rgba(20,38,63,.35); background: transparent; transition: all .35s cubic-bezier(.2,.8,.2,1); }
+  .partner-dot.active span { background: rgba(184,152,85,.95); border-color: rgba(184,152,85,.95); transform: scale(1.25); }
+  .partner-dot:hover span { border-color: rgba(184,152,85,.75); }
+
+  /* Magnetic CTA */
+  .magnetic { transition: transform .45s cubic-bezier(.2,.8,.2,1); }
   .scroll-cue { animation: scrollPulse 2.4s ease-in-out infinite; }
   @keyframes scrollPulse {
     0%,100% { opacity: .25; transform: translateY(0); }
@@ -151,6 +174,12 @@
 </style>
 </head>
 <body class="min-h-screen">
+
+<!-- Site-wide scroll progress hairline -->
+<div id="scrollProgress" aria-hidden="true"></div>
+
+<!-- Homepage section indicator dots -->
+<nav id="sectionDots" aria-label="Page sections"></nav>
 
 <!-- ========================= ICON SVG SPRITES ========================= -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -398,7 +427,15 @@ const I18N = {
     'partner.eyebrow':'— In partnership','partner.title':'A glass with Laurent-Perrier.',
     'partner.body1':'A long-standing house collaboration. Four of Maison Laurent-Perrier’s emblematic cuvées are poured daily in the lounge, paired with seasonal canapés composed by our chef — Gruyère gougères, smoked trout rillettes and confit shallot tartlets.',
     'partner.body2':'A quiet moment of celebration before take-off — discreetly served at your table or at the champagne bar.',
-    'partner.detail':'Cuvée Brut · Blanc de Blancs · Cuvée Rosé · Grand Siècle'
+    'partner.detail':'Cuvée Brut · Blanc de Blancs · Cuvée Rosé · Grand Siècle',
+    'partner.lindt.title':'A Lindt Grand Cru moment.',
+    'partner.lindt.body1':'Maîtres chocolatiers since 1845. The lounge serves single-origin Lindt Grand Cru selections — Ecuador 75 %, Madagascar 70 %, Trinidad 65 % — paired with our pastry chef’s seasonal compotes and house-made pralinés.',
+    'partner.lindt.body2':'Find them at the dessert station throughout the day, or request a small tasting flight at your table.',
+    'partner.lindt.detail':'Ecuador 75 % · Madagascar 70 % · Trinidad 65 % · Dark Almond',
+    'partner.gruyere.title':'A taste of Le Gruyère AOP.',
+    'partner.gruyere.body1':'Crafted by alpine artisans since the 12th century. Three age statements daily — 6, 12 and 24 months — from family-run dairies in Fribourg and Vaud, alongside Swiss honey, walnut bread and seasonal compotes.',
+    'partner.gruyere.body2':'A quiet expression of the Swiss Pre-Alps, presented each morning at the cheese counter.',
+    'partner.gruyere.detail':'6 months · 12 months · 24 months · Réserve'
   },
   fr: {
     'brand.line1':'Aspire Lounge','brand.line2':'Suisse','brand.sub':'SALONS AÉROPORTUAIRES · SUISSE',
@@ -472,7 +509,15 @@ const I18N = {
     'partner.eyebrow':'— En partenariat','partner.title':'Une coupe avec Laurent-Perrier.',
     'partner.body1':'Une collaboration de longue date. Quatre cuvées emblématiques de la Maison Laurent-Perrier sont servies chaque jour au salon, accompagnées de canapés de saison signés par notre chef : gougères au Gruyère, rillettes de truite fumée et tartelettes d’échalote confite.',
     'partner.body2':'Un moment discret de célébration avant l’envol — servi à votre table ou au bar à champagne.',
-    'partner.detail':'Cuvée Brut · Blanc de Blancs · Cuvée Rosé · Grand Siècle'
+    'partner.detail':'Cuvée Brut · Blanc de Blancs · Cuvée Rosé · Grand Siècle',
+    'partner.lindt.title':'Un moment Lindt Grand Cru.',
+    'partner.lindt.body1':'Maîtres chocolatiers depuis 1845. Le salon propose une sélection Lindt Grand Cru d’origines pures — Équateur 75 %, Madagascar 70 %, Trinidad 65 % — accompagnée des compotes de saison de notre chef pâtissier et de pralinés maison.',
+    'partner.lindt.body2':'À retrouver au coin desserts toute la journée, ou en dégustation à votre table sur demande.',
+    'partner.lindt.detail':'Équateur 75 % · Madagascar 70 % · Trinidad 65 % · Noir Amande',
+    'partner.gruyere.title':'Le goût du Gruyère AOP.',
+    'partner.gruyere.body1':'Façonné par les artisans alpins depuis le XIIe siècle. Trois affinages chaque jour — 6, 12 et 24 mois — issus de laiteries familiales de Fribourg et Vaud, accompagnés de miel suisse, pain aux noix et compotes de saison.',
+    'partner.gruyere.body2':'Une expression discrète des Préalpes suisses, présentée chaque matin au comptoir des fromages.',
+    'partner.gruyere.detail':'6 mois · 12 mois · 24 mois · Réserve'
   },
   de: {
     'brand.line1':'Aspire Lounge','brand.line2':'Schweiz','brand.sub':'AIRPORT LOUNGES · SCHWEIZ',
@@ -546,7 +591,15 @@ const I18N = {
     'partner.eyebrow':'— In Partnerschaft','partner.title':'Ein Glas mit Laurent-Perrier.',
     'partner.body1':'Eine langjährige Hauspartnerschaft. Vier emblematische Cuvées des Hauses Laurent-Perrier werden täglich in der Lounge ausgeschenkt, begleitet von saisonalen Canapés unseres Küchenchefs — Gruyère-Gougères, Räucherforellen-Rillettes und Schalotten-Confit-Tartelettes.',
     'partner.body2':'Ein leiser Moment des Feierns vor dem Abflug — diskret an Ihrem Tisch oder an der Champagnerbar serviert.',
-    'partner.detail':'Cuvée Brut · Blanc de Blancs · Cuvée Rosé · Grand Siècle'
+    'partner.detail':'Cuvée Brut · Blanc de Blancs · Cuvée Rosé · Grand Siècle',
+    'partner.lindt.title':'Ein Lindt Grand Cru Moment.',
+    'partner.lindt.body1':'Maîtres Chocolatiers seit 1845. Die Lounge serviert sortenreine Lindt-Grand-Cru-Sorten — Ecuador 75 %, Madagaskar 70 %, Trinidad 65 % — kombiniert mit saisonalen Kompotten unseres Pâtissiers und hausgemachten Pralinés.',
+    'partner.lindt.body2':'Den ganzen Tag an der Dessertstation, oder als kleine Verkostung an Ihrem Tisch auf Anfrage.',
+    'partner.lindt.detail':'Ecuador 75 % · Madagaskar 70 % · Trinidad 65 % · Dark Almond',
+    'partner.gruyere.title':'Ein Stück Le Gruyère AOP.',
+    'partner.gruyere.body1':'Von alpinen Käsern seit dem 12. Jahrhundert. Drei Reifegrade täglich — 6, 12 und 24 Monate — aus Familienbetrieben in Freiburg und der Waadt, dazu Schweizer Honig, Walnussbrot und saisonale Kompotte.',
+    'partner.gruyere.body2':'Ein stiller Ausdruck der Schweizer Voralpen, jeden Morgen am Käsetresen präsentiert.',
+    'partner.gruyere.detail':'6 Monate · 12 Monate · 24 Monate · Réserve'
   },
   it: {
     'brand.line1':'Aspire Lounge','brand.line2':'Svizzera','brand.sub':'LOUNGE AEROPORTUALI · SVIZZERA',
@@ -620,7 +673,15 @@ const I18N = {
     'partner.eyebrow':'— In partnership','partner.title':'Un calice con Laurent-Perrier.',
     'partner.body1':'Una collaborazione storica. Quattro cuvée emblematiche della Maison Laurent-Perrier sono servite ogni giorno in lounge, accompagnate da canapés stagionali firmati dal nostro chef — gougères al Gruyère, rillettes di trota affumicata e tartellette di scalogno confit.',
     'partner.body2':'Un momento discreto di celebrazione prima del decollo — servito al tavolo o al banco champagne.',
-    'partner.detail':'Cuvée Brut · Blanc de Blancs · Cuvée Rosé · Grand Siècle'
+    'partner.detail':'Cuvée Brut · Blanc de Blancs · Cuvée Rosé · Grand Siècle',
+    'partner.lindt.title':'Un momento Lindt Grand Cru.',
+    'partner.lindt.body1':'Maîtres Chocolatiers dal 1845. La lounge propone selezioni Lindt Grand Cru a origine unica — Ecuador 75 %, Madagascar 70 %, Trinidad 65 % — accompagnate dalle composte di stagione del nostro chef pâtissier e dai pralinati della casa.',
+    'partner.lindt.body2':'Disponibili tutto il giorno al banco dei dolci, o in degustazione al tavolo su richiesta.',
+    'partner.lindt.detail':'Ecuador 75 % · Madagascar 70 % · Trinidad 65 % · Fondente alle mandorle',
+    'partner.gruyere.title':'Il gusto del Gruyère AOP.',
+    'partner.gruyere.body1':'Forgiato dagli artigiani alpini dal XII secolo. Tre stagionature al giorno — 6, 12 e 24 mesi — da caseifici familiari di Friburgo e Vaud, con miele svizzero, pane alle noci e composte di stagione.',
+    'partner.gruyere.body2':'Un’espressione silenziosa delle Prealpi svizzere, presentata ogni mattina al banco dei formaggi.',
+    'partner.gruyere.detail':'6 mesi · 12 mesi · 24 mesi · Réserve'
   },
   ar: {
     'brand.line1':'صالة أسباير','brand.line2':'سويسرا','brand.sub':'صالات المطارات · سويسرا',
@@ -694,7 +755,15 @@ const I18N = {
     'partner.eyebrow':'— شراكة','partner.title':'كأس مع لوران-بيرييه.',
     'partner.body1':'شراكة طويلة الأمد. تُقدَّم أربع كوفيهات أيقونية من بيت لوران-بيرييه يومياً في الصالة، إلى جانب كانابيهات موسمية من توقيع الشيف — غوجير بالغرويير، ريلا بسمك التروتة المدخن، وتارت صغيرة بالكراث المعتق.',
     'partner.body2':'لحظة احتفاء هادئة قبل الإقلاع — تُقدَّم بتمعّن على طاولتك أو عند بار الشامبانيا.',
-    'partner.detail':'كوفيه بروت · بلان دو بلانك · كوفيه روزيه · غران سيكل'
+    'partner.detail':'كوفيه بروت · بلان دو بلانك · كوفيه روزيه · غران سيكل',
+    'partner.lindt.title':'لحظة ليندت غران كرو.',
+    'partner.lindt.body1':'صنّاع شوكولاتة محترفون منذ 1845. تُقدِّم الصالة تشكيلة من ليندت غران كرو أحادية المصدر — الإكوادور 75 %، مدغشقر 70 %، ترينيداد 65 % — مع كومبوت موسمي من شيف الحلويات وبرالين بيتي.',
+    'partner.lindt.body2':'تجدها في ركن الحلويات طوال اليوم، أو اطلب تذوّقاً صغيراً على طاولتك.',
+    'partner.lindt.detail':'إكوادور 75 % · مدغشقر 70 % · ترينيداد 65 % · داكن باللوز',
+    'partner.gruyere.title':'مذاق لو غرويير AOP.',
+    'partner.gruyere.body1':'صناعة حرفية ألبية منذ القرن الثاني عشر. ثلاث درجات إنضاج يومياً — 6 و12 و24 شهراً — من مزارع عائلية في فريبور وفود، مع عسل سويسري وخبز الجوز وكومبوت موسمي.',
+    'partner.gruyere.body2':'تعبير هادئ عن جبال الألب السويسرية، يُقدَّم كل صباح عند ركن الأجبان.',
+    'partner.gruyere.detail':'6 أشهر · 12 شهراً · 24 شهراً · ريزرف'
   }
 };
 
@@ -788,7 +857,7 @@ function renderHeader() {
 function pageHome() {
   return `
   <!-- ===== Immersive buffet hero ===== -->
-  <section class="hero-immersive relative h-[100svh] min-h-[640px] overflow-hidden">
+  <section id="hero" class="hero-immersive relative h-[100svh] min-h-[640px] overflow-hidden">
     <!-- Background buffet photograph (replace src with your own image to swap) -->
     <div id="heroImageWrap" class="hero-image-wrap absolute inset-0">
       <div class="hero-image absolute -inset-[4%]">
@@ -822,7 +891,7 @@ function pageHome() {
       </div>
       <p class="serif-heading italic text-navy-900 mt-10 sm:mt-14 text-[1.4rem] sm:text-[2rem] md:text-[2.4rem] max-w-2xl leading-[1.2] anim-up" style="animation-delay:.4s; text-shadow: 0 2px 20px rgba(251,249,245,0.7);">${esc(t('home.welcome'))}</p>
       <div class="mt-10 anim-fade" style="animation-delay:.6s">
-        <a href="#menu" data-route="menu" class="group inline-flex items-center gap-3 px-7 py-3.5 border border-navy-900 bg-ivory-50/70 backdrop-blur-sm text-navy-900 uppercase tracking-[0.22em] text-[0.7rem] hover:bg-navy-900 hover:text-ivory-50 transition-colors">
+        <a href="#menu" data-route="menu" class="magnetic group inline-flex items-center gap-3 px-7 py-3.5 border border-navy-900 bg-ivory-50/70 backdrop-blur-sm text-navy-900 uppercase tracking-[0.22em] text-[0.7rem] hover:bg-navy-900 hover:text-ivory-50 transition-colors">
           ${esc(t('home.cta.menu'))} ${icon('i-arrow','w-3.5 h-3.5')}
         </a>
       </div>
@@ -847,7 +916,7 @@ function pageHome() {
   </section>
 
   <!-- ===== Story I — Quiet promise ===== -->
-  <section class="relative bg-ivory-50 overflow-hidden">
+  <section id="promise" class="relative bg-ivory-50 overflow-hidden">
     <div class="mx-auto max-w-6xl px-5 sm:px-8 py-28 sm:py-44">
       <div class="grid md:grid-cols-12 gap-10 md:gap-16 items-end">
         <div class="md:col-span-7 reveal">
@@ -867,7 +936,7 @@ function pageHome() {
   </section>
 
   <!-- ===== Signature plate — House Frites ===== -->
-  <section class="bg-ivory-50">
+  <section id="signature" class="bg-ivory-50">
     <div class="mx-auto max-w-6xl px-5 sm:px-8 py-20 sm:py-32">
       <div class="grid md:grid-cols-12 gap-10 md:gap-16 items-center">
         <div class="md:col-span-6 reveal">
@@ -902,7 +971,7 @@ function pageHome() {
   </section>
 
   <!-- ===== Story II — Sourcing parallax ===== -->
-  <section class="relative bg-ivory-50 overflow-hidden">
+  <section id="sourcing" class="relative bg-ivory-50 overflow-hidden">
     <div class="mx-auto max-w-7xl px-5 sm:px-8 py-24 sm:py-40">
       <div class="grid md:grid-cols-12 gap-10 md:gap-16 items-center">
         <div class="md:col-span-5 reveal">
@@ -924,30 +993,35 @@ function pageHome() {
     </div>
   </section>
 
-  <!-- ===== Partnership — Laurent-Perrier ===== -->
-  <section class="bg-ivory-50">
-    <div class="mx-auto max-w-7xl px-5 sm:px-8 py-20 sm:py-32">
-      <div class="grid md:grid-cols-12 gap-10 md:gap-16 items-stretch">
-        <div class="md:col-span-5 flex flex-col justify-center reveal order-2 md:order-1" style="transition-delay:.1s">
-          <div class="swiss-eyebrow">${esc(t('partner.eyebrow'))}</div>
-          <h2 class="serif-heading text-3xl sm:text-5xl md:text-[3.4rem] mt-4 leading-[1.05] text-navy-900">${esc(t('partner.title'))}</h2>
-          <span class="block w-12 h-px bg-gold-500/80 mt-7"></span>
-          <p class="mt-7 text-navy-500 leading-[1.75] max-w-md">${esc(t('partner.body1'))}</p>
-          <p class="mt-5 text-navy-500 leading-[1.75] max-w-md">${esc(t('partner.body2'))}</p>
-          <div class="mt-8 text-[0.65rem] uppercase tracking-[0.32em] text-gold-600/90">${esc(t('partner.detail'))}</div>
-          <div class="mt-7 serif-heading italic text-navy-900 text-2xl">Laurent-Perrier</div>
+  <!-- ===== Partnership slider (Laurent-Perrier · Lindt · Le Gruyère AOP) ===== -->
+  <section id="partner" class="bg-ivory-50 relative overflow-hidden">
+    <div class="mx-auto max-w-7xl px-5 sm:px-8 py-20 sm:py-32 reveal">
+      <div class="relative">
+        <div id="partnerTrack" class="partner-track">
+          ${partnerSlide(0, t('partner.title'),     t('partner.body1'),     t('partner.body2'),     t('partner.detail'),     'Laurent-Perrier',   'https://images.unsplash.com/photo-1547595628-c61a29f496f0?auto=format&fit=crop&w=1600&q=85', true)}
+          ${partnerSlide(1, t('partner.lindt.title'),   t('partner.lindt.body1'),   t('partner.lindt.body2'),   t('partner.lindt.detail'),   'Lindt Excellence',  'https://images.unsplash.com/photo-1541783245831-57d6fb0926d3?auto=format&fit=crop&w=1600&q=85')}
+          ${partnerSlide(2, t('partner.gruyere.title'), t('partner.gruyere.body1'), t('partner.gruyere.body2'), t('partner.gruyere.detail'), 'Le Gruyère AOP',    'https://images.unsplash.com/photo-1452195100486-9cc805987862?auto=format&fit=crop&w=1600&q=85')}
         </div>
-        <div class="md:col-span-7 order-1 md:order-2 reveal">
-          <div class="relative aspect-[4/5] md:aspect-[5/6] overflow-hidden">
-            ${image('https://images.unsplash.com/photo-1547595628-c61a29f496f0?auto=format&fit=crop&w=1600&q=85','Laurent-Perrier champagne','h-full w-full')}
-          </div>
-        </div>
+
+        <!-- Desktop dots — right edge -->
+        <nav id="partnerDots" class="hidden md:flex absolute right-2 lg:right-4 top-1/2 -translate-y-1/2 flex-col gap-2 z-10" aria-label="Partnerships">
+          <button class="partner-dot active" data-jump="0" aria-label="Laurent-Perrier"><span></span></button>
+          <button class="partner-dot" data-jump="1" aria-label="Lindt Excellence"><span></span></button>
+          <button class="partner-dot" data-jump="2" aria-label="Le Gruyère AOP"><span></span></button>
+        </nav>
+
+        <!-- Mobile dots — below -->
+        <nav id="partnerDotsMobile" class="md:hidden flex justify-center gap-2 mt-8" aria-label="Partnerships">
+          <button class="partner-dot active" data-jump="0"><span></span></button>
+          <button class="partner-dot" data-jump="1"><span></span></button>
+          <button class="partner-dot" data-jump="2"><span></span></button>
+        </nav>
       </div>
     </div>
   </section>
 
   <!-- ===== Editorial tilt cards ===== -->
-  <section class="bg-ivory-50">
+  <section id="choose" class="bg-ivory-50">
     <div class="mx-auto max-w-6xl px-5 sm:px-8 py-20 sm:py-32">
       <div class="text-center mb-14 sm:mb-20 reveal">
         <div class="swiss-eyebrow">${esc(t('home.choose.eyebrow'))}</div>
@@ -963,7 +1037,7 @@ function pageHome() {
   <div class="hairline mx-auto max-w-6xl"></div>
 
   <!-- ===== QR section ===== -->
-  <section class="mx-auto max-w-6xl px-5 sm:px-8 py-20 sm:py-32">
+  <section id="qr" class="mx-auto max-w-6xl px-5 sm:px-8 py-20 sm:py-32">
     <div class="grid md:grid-cols-12 gap-10 md:gap-14 items-center">
       <div class="md:col-span-7 reveal">
         <div class="swiss-eyebrow">— ${esc(t('home.qr.scan.eyebrow'))}</div>
@@ -992,6 +1066,28 @@ function hotspot(left, top, title, desc, flip, anchor) {
       <span class="hotspot-desc">${esc(desc)}</span>
     </span>
   </button>`;
+}
+
+function partnerSlide(idx, title, body1, body2, detail, brand, img, active) {
+  return `
+  <div class="partner-slide ${active ? 'active' : ''}" data-slide="${idx}" role="group" aria-roledescription="slide" aria-label="${esc(brand)}">
+    <div class="grid md:grid-cols-12 gap-10 md:gap-16 items-stretch">
+      <div class="md:col-span-5 flex flex-col justify-center order-2 md:order-1 pr-2 md:pr-8">
+        <div class="swiss-eyebrow">${esc(t('partner.eyebrow'))}</div>
+        <h2 class="serif-heading text-3xl sm:text-5xl md:text-[3.4rem] mt-4 leading-[1.05] text-navy-900">${esc(title)}</h2>
+        <span class="block w-12 h-px bg-gold-500/80 mt-7"></span>
+        <p class="mt-7 text-navy-500 leading-[1.75] max-w-md">${esc(body1)}</p>
+        <p class="mt-5 text-navy-500 leading-[1.75] max-w-md">${esc(body2)}</p>
+        <div class="mt-8 text-[0.65rem] uppercase tracking-[0.32em] text-gold-600/90">${esc(detail)}</div>
+        <div class="mt-7 serif-heading italic text-navy-900 text-2xl">${esc(brand)}</div>
+      </div>
+      <div class="md:col-span-7 order-1 md:order-2">
+        <div class="relative aspect-[4/5] md:aspect-[5/6] overflow-hidden">
+          ${image(img, brand, 'h-full w-full')}
+        </div>
+      </div>
+    </div>
+  </div>`;
 }
 
 function editorialCard(href, eyebrow, title, body, img) {
@@ -1878,6 +1974,110 @@ function setupHomeImmersive() {
   setupRevealObserver();
   setupTiltCards();
   setupParallax();
+  setupPartnerSlider();
+  setupSectionDots();
+  setupMagnetic();
+}
+
+function setupPartnerSlider() {
+  const slides = document.querySelectorAll('#partnerTrack [data-slide]');
+  const allDots = document.querySelectorAll('#partnerDots [data-jump], #partnerDotsMobile [data-jump]');
+  if (!slides.length) return;
+  let active = 0, auto = 0;
+  function go(i) {
+    active = ((i % slides.length) + slides.length) % slides.length;
+    slides.forEach(s => s.classList.toggle('active', +s.dataset.slide === active));
+    allDots.forEach(d => d.classList.toggle('active', +d.dataset.jump === active));
+  }
+  allDots.forEach(d => d.addEventListener('click', () => { go(+d.dataset.jump); restart(); }));
+  function restart() { clearInterval(auto); auto = setInterval(() => go(active + 1), 9000); }
+  go(0); restart();
+  IMMERSIVE.cleanup.push(() => clearInterval(auto));
+}
+
+function setupSectionDots() {
+  const nav = document.getElementById('sectionDots');
+  if (!nav) return;
+  const sections = [
+    { id:'hero',      label:'Hero' },
+    { id:'promise',   label:'Promise' },
+    { id:'signature', label:'Signature' },
+    { id:'sourcing',  label:'Sourcing' },
+    { id:'partner',   label:'Partnerships' },
+    { id:'choose',    label:'Today' },
+    { id:'qr',        label:'QR' },
+  ].filter(s => document.getElementById(s.id));
+  nav.innerHTML = sections.map(s => `<a href="#${s.id}" data-dot="${s.id}" class="section-dot" aria-label="${s.label}"><span></span></a>`).join('');
+  nav.classList.add('is-on');
+  const dots = nav.querySelectorAll('[data-dot]');
+
+  dots.forEach(d => d.addEventListener('click', (e) => {
+    e.preventDefault();
+    const el = document.getElementById(d.dataset.dot);
+    if (!el) return;
+    const top = el.getBoundingClientRect().top + window.scrollY - 12;
+    window.scrollTo({ top, behavior: 'smooth' });
+  }));
+
+  if (typeof IntersectionObserver === 'undefined') return;
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        dots.forEach(d => d.classList.toggle('active', d.dataset.dot === id));
+      }
+    });
+  }, { threshold: 0.45, rootMargin: '-15% 0px -35% 0px' });
+  sections.forEach(s => io.observe(document.getElementById(s.id)));
+  IMMERSIVE.cleanup.push(() => {
+    io.disconnect();
+    nav.classList.remove('is-on');
+    nav.innerHTML = '';
+  });
+}
+
+function setupMagnetic() {
+  const buttons = document.querySelectorAll('#main .magnetic');
+  if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return; // touch devices
+  buttons.forEach(btn => {
+    let raf = 0;
+    function onMove(e) {
+      const rect = btn.getBoundingClientRect();
+      const x = e.clientX - (rect.left + rect.width/2);
+      const y = e.clientY - (rect.top + rect.height/2);
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        btn.style.transform = `translate(${(x*0.18).toFixed(1)}px, ${(y*0.18).toFixed(1)}px)`;
+      });
+    }
+    function onLeave() {
+      cancelAnimationFrame(raf);
+      btn.style.transform = '';
+    }
+    btn.addEventListener('mousemove', onMove);
+    btn.addEventListener('mouseleave', onLeave);
+    IMMERSIVE.cleanup.push(() => {
+      btn.removeEventListener('mousemove', onMove);
+      btn.removeEventListener('mouseleave', onLeave);
+    });
+  });
+}
+
+function setupScrollProgress() {
+  const bar = document.getElementById('scrollProgress');
+  if (!bar) return;
+  let raf = 0;
+  function update() {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(() => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = max > 0 ? Math.min(100, (window.scrollY / max) * 100) : 0;
+      bar.style.width = pct + '%';
+    });
+  }
+  update();
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
 }
 
 function setupHeroImageParallax() {
@@ -2204,6 +2404,7 @@ document.getElementById('modalHost').addEventListener('click', (e) => {
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModals(); });
 
 // init
+setupScrollProgress();
 document.documentElement.lang = STATE.locale;
 document.documentElement.dir = STATE.locale === 'ar' ? 'rtl' : 'ltr';
 render();
