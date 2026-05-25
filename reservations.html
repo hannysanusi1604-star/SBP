@@ -457,34 +457,35 @@
 
             <section class="card-cream p-6 sm:p-8">
               <div class="flex items-center justify-between mb-5">
-                <h3 class="serif-heading text-2xl text-aspire-navy">Payment method</h3>
-                <span class="text-[0.7rem] uppercase tracking-widest text-navy-500">Secure · 3DS</span>
+                <h3 id="pay-section-title" class="serif-heading text-2xl text-aspire-navy">Payment method</h3>
+                <span id="pay-section-badge" class="text-[0.7rem] uppercase tracking-widest text-navy-500">Secure · 3DS</span>
               </div>
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-6">
-                <button data-pay="pass" class="pay-pill py-3 rounded-xl border text-[0.85rem] bg-aspire-navy text-white border-aspire-navy">
-                  <span class="block leading-tight">Pass /<br/>Membership</span>
-                </button>
-                <button data-pay="card" class="pay-pill py-3 rounded-xl border text-[0.85rem] bg-white text-aspire-navy border-aspire-border hover:border-aspire-taupe">Card</button>
+              <div id="pay-pill-row" class="grid grid-cols-3 gap-2.5 mb-6">
+                <button data-pay="card" class="pay-pill py-3 rounded-xl border text-[0.85rem] bg-aspire-navy text-white border-aspire-navy">Card</button>
                 <button data-pay="apple" class="pay-pill py-3 rounded-xl border text-[0.85rem] bg-white text-aspire-navy border-aspire-border hover:border-aspire-taupe">Apple Pay</button>
                 <button data-pay="twint" class="pay-pill py-3 rounded-xl border text-[0.85rem] bg-white text-aspire-navy border-aspire-border hover:border-aspire-taupe">TWINT</button>
               </div>
-              <div id="pay-pass" class="pay-panel">
-                <div class="p-5 rounded-2xl bg-aspire-soft border border-aspire-border">
-                  <div class="swiss-eyebrow">Direct entry via your pass</div>
-                  <div id="pay-pass-detail" class="mt-2 serif-heading text-xl text-aspire-navy">Priority Pass</div>
-                  <p id="pay-pass-note" class="mt-2 text-[0.88rem] text-navy-500 leading-relaxed">Your booking will be charged to your Priority Pass account. No payment card required — you'll be billed by your pass provider as usual.</p>
-                  <div class="mt-4 grid grid-cols-2 gap-3 text-[0.85rem]">
-                    <div class="p-3 rounded-xl bg-white border border-aspire-border">
-                      <div class="text-[0.7rem] uppercase tracking-widest text-navy-500">Pass holder</div>
-                      <div class="text-aspire-navy mt-1" id="pay-pass-holder">—</div>
-                    </div>
-                    <div class="p-3 rounded-xl bg-white border border-aspire-border">
-                      <div class="text-[0.7rem] uppercase tracking-widest text-navy-500">Pass number</div>
-                      <div class="text-aspire-navy mt-1 tabular-nums" id="pay-pass-number">••••••</div>
-                    </div>
+              <div id="pay-pass" class="pay-panel hidden space-y-4">
+                <div class="flex items-start gap-3 p-4 rounded-2xl bg-aspire-soft border border-aspire-border">
+                  <span class="h-8 w-8 rounded-full bg-aspire-navy text-white flex items-center justify-center flex-shrink-0">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 11h18M7 16h4"/></svg>
+                  </span>
+                  <div>
+                    <div class="text-aspire-navy text-[0.92rem]"><strong class="font-medium">No payment required</strong> · entry is covered by your <span id="pass-type-name">pass</span>.</div>
+                    <div class="text-[0.78rem] text-navy-500 mt-1">Just confirm the details on your pass below — we'll verify with your provider in the background.</div>
                   </div>
-                  <button onclick="openLoungeVerifyFromPay()" class="mt-4 text-[0.78rem] uppercase tracking-widest text-aspire-taupe hover:underline" id="pay-pass-change">Change pass details</button>
                 </div>
+                <div class="grid sm:grid-cols-2 gap-4">
+                  <label class="block">
+                    <div class="text-[0.72rem] uppercase tracking-widest text-navy-500 mb-2">Last name (as on pass)</div>
+                    <input id="pass-lastname" class="input-cream" placeholder="Zimmermann" />
+                  </label>
+                  <label class="block">
+                    <div class="text-[0.72rem] uppercase tracking-widest text-navy-500 mb-2"><span id="pass-num-label">Pass number</span></div>
+                    <input id="pass-number" class="input-cream" placeholder="PP-XXXX-XXXX" />
+                  </label>
+                </div>
+                <p class="text-[0.78rem] text-navy-500 leading-relaxed">Your pass details are only used to verify lounge eligibility with your provider. We never charge a card on file.</p>
               </div>
               <div id="pay-card" class="pay-panel hidden space-y-4">
                 <label class="block">
@@ -1069,10 +1070,11 @@ const QUEUE_INITIAL = [
 const TIME_SLOTS = ['06:00','06:30','07:00','07:30','08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30'];
 
 const MEMBERSHIPS = [
-  { id:'priority-pass', label:'Priority Pass',       perk:'Included' },
-  { id:'loyalty',       label:'Airline Loyalty',     perk:'Verify status' },
-  { id:'credit-card',   label:'Premium Credit Card', perk:'Verify card' },
-  { id:'pay',           label:'Direct payment',      perk:'Pay per visit' },
+  { id:'boarding-pass', label:'Boarding pass',         perk:'Business / First class' },
+  { id:'priority-pass', label:'Priority Pass',         perk:'Included' },
+  { id:'loyalty',       label:'Airline Loyalty',       perk:'Verify status' },
+  { id:'credit-card',   label:'Premium Credit Card',   perk:'Verify card' },
+  { id:'pay',           label:'Direct payment',        perk:'Pay per visit' },
 ];
 
 const OCCUPANCY_FORECAST = [
@@ -1537,7 +1539,7 @@ function validateStep3() {
   const v = state.booking.guestName.trim().length > 1 && /@/.test(state.booking.email);
   $('#step3-next').classList.toggle('disabled', !v);
 }
-function bookingSummaryHTML() {
+function bookingSummaryHTML(showPrice = true) {
   const l = lounge();
   const guestsTotal = state.booking.guests.adults + state.booking.guests.children;
   const memberLabel = (MEMBERSHIPS.find(m => m.id === state.booking.membership) || {}).label || '—';
@@ -1554,86 +1556,134 @@ function bookingSummaryHTML() {
     ['Access', `<span class="text-aspire-navy">3 hours</span> · until ${endTime(state.booking.arrivalTime)}`],
     ['Name', state.booking.guestName || '—'],
     ['Guests', `Adult (${state.booking.guests.adults})${state.booking.guests.children ? ` · Child (${state.booking.guests.children})` : ''}`],
-    ['Membership', memberLabel],
+    ['Access type', memberLabel],
     ['Seating', seating],
     ['Estimated Occupancy', `<span class="inline-flex items-center gap-2"><span class="live-dot ${tone}"></span>${l.occupancyPct}% full</span>`],
     ['Terminal', l.terminal],
   ];
+  const priceBlock = showPrice
+    ? `<div class="hairline my-7"></div>
+       <div class="flex items-end justify-between">
+         <div>
+           <div class="swiss-eyebrow">Total</div>
+           <div class="mt-1 text-3xl sm:text-4xl serif-heading">${l.currency} ${(l.priceFrom * Math.max(1, guestsTotal)).toFixed(2)}</div>
+           <div class="text-[0.78rem] text-navy-500 mt-1">Includes all amenities · taxes included</div>
+         </div>
+         <div class="text-right">
+           <div class="swiss-eyebrow">Per guest</div>
+           <div class="mt-1 text-aspire-navy">${l.currency} ${l.priceFrom.toFixed(2)}</div>
+         </div>
+       </div>`
+    : `<div class="hairline my-7"></div>
+       <div class="flex items-center gap-3 p-4 rounded-2xl bg-aspire-soft border border-aspire-border">
+         <span class="h-8 w-8 rounded-full bg-aspire-navy text-white flex items-center justify-center flex-shrink-0">
+           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m4 12 5 5L20 6"/></svg>
+         </span>
+         <div class="text-[0.92rem] text-aspire-navy">
+           <strong class="font-medium">No charge</strong> — entry is included with your ${(MEMBERSHIPS.find(m => m.id === state.booking.membership) || {}).label || 'pass'}.
+         </div>
+       </div>`;
   return `
     <section class="card-cream p-6 sm:p-8 shadow-card">
       <h3 class="serif-heading text-2xl sm:text-3xl mb-6">Booking Summary</h3>
       <div class="grid grid-cols-2 gap-y-6 gap-x-8">
         ${fields.map(([k,v]) => `<div><div class="text-[0.85rem] text-navy-500">${k}</div><div class="mt-1 text-aspire-navy">${v}</div></div>`).join('')}
       </div>
-      <div class="hairline my-7"></div>
-      <div class="flex items-end justify-between">
-        <div>
-          <div class="swiss-eyebrow">Total</div>
-          <div class="mt-1 text-3xl sm:text-4xl serif-heading">${l.currency} ${(l.priceFrom * Math.max(1, guestsTotal)).toFixed(2)}</div>
-          <div class="text-[0.78rem] text-navy-500 mt-1">Includes all amenities · taxes included</div>
-        </div>
-        <div class="text-right">
-          <div class="swiss-eyebrow">Per guest</div>
-          <div class="mt-1 text-aspire-navy">${l.currency} ${l.priceFrom.toFixed(2)}</div>
-        </div>
-      </div>
+      ${priceBlock}
     </section>`;
 }
+const PASS_FIELD_LABEL = {
+  'boarding-pass': 'Booking reference / PNR',
+  'priority-pass': 'Priority Pass number',
+  'loyalty':       'Frequent flyer number',
+  'credit-card':   'Card last 4 digits',
+};
+const PASS_FIELD_PLACEHOLDER = {
+  'boarding-pass': 'ABC123',
+  'priority-pass': 'PP-1234-5678',
+  'loyalty':       'FF 4421 9988',
+  'credit-card':   '4242',
+};
+
 function renderStep4() {
-  $('#booking-summary-card').innerHTML = bookingSummaryHTML();
+  const isPass = state.booking.membership !== 'pay';
+  $('#booking-summary-card').innerHTML = bookingSummaryHTML(/* showPrice */ !isPass);
   $('#pay-name').value = state.booking.guestName;
 
-  // Populate the pass / membership panel from verification data
-  const meta = VERIFY_TYPES.find(t => t.id === state.verification.type) || VERIFY_TYPES[1];
-  $('#pay-pass-detail').textContent = meta.label;
-  const note = state.verification.type === 'boarding-pass'
-    ? 'Entry is included with your boarding pass. No payment card required — your seat at the lounge is covered by your fare class.'
-    : state.verification.type === 'loyalty'
-    ? 'Charged against your airline loyalty status. No card required — you may earn or redeem tier points as usual.'
-    : state.verification.type === 'credit-card'
-    ? 'Charged through your premium credit card benefit. No additional payment required — entry is included with your card.'
-    : 'Your booking will be charged to your Priority Pass account. No payment card required — you will be billed by your pass provider as usual.';
-  $('#pay-pass-note').textContent = note;
-  $('#pay-pass-holder').textContent = state.verification.lastName ? state.verification.lastName : (state.booking.guestName || 'Verify your pass');
-  $('#pay-pass-number').textContent = state.verification.number ? `•••• ${state.verification.number.slice(-4)}` : 'Not verified yet';
+  // Section heading + side metadata
+  $('#pay-section-title').textContent = isPass ? 'Confirm your access' : 'Payment method';
+  $('#pay-section-badge').textContent = isPass ? 'No charge · pass verified with provider' : 'Secure · 3DS';
 
-  // Default to pass if user is verified; otherwise card.
-  const defaultMethod = state.verified ? 'pass' : 'card';
-  if (!state.payMethod) state.payMethod = defaultMethod;
+  // Show / hide the payment-method tile row (only for direct payment)
+  $('#pay-pill-row').classList.toggle('hidden', isPass);
 
-  function selectPayPill(method) {
-    state.payMethod = method;
-    $$('.pay-pill').forEach(x => {
-      x.classList.remove('bg-aspire-navy','text-white','border-aspire-navy');
-      x.classList.add('bg-white','text-aspire-navy','border-aspire-border','hover:border-aspire-taupe');
-    });
-    const active = $$('.pay-pill').find(b => b.dataset.pay === method);
-    if (active) {
-      active.classList.add('bg-aspire-navy','text-white','border-aspire-navy');
-      active.classList.remove('bg-white','text-aspire-navy','border-aspire-border','hover:border-aspire-taupe');
+  // Hide every panel, then show the one this membership needs
+  $$('.pay-panel').forEach(p => p.classList.add('hidden'));
+
+  if (isPass) {
+    state.payMethod = 'pass';
+    $('#pay-pass').classList.remove('hidden');
+    const passLabel = (MEMBERSHIPS.find(m => m.id === state.booking.membership) || {}).label || 'pass';
+    $('#pass-type-name').textContent = passLabel;
+    $('#pass-num-label').textContent = PASS_FIELD_LABEL[state.booking.membership] || 'Pass number';
+    // Pre-fill from any earlier verification (tables / queue)
+    const passInput = $('#pass-number');
+    const lnInput = $('#pass-lastname');
+    passInput.placeholder = PASS_FIELD_PLACEHOLDER[state.booking.membership] || 'XXXXXX';
+    if (!passInput.value && state.verification.type === state.booking.membership) {
+      passInput.value = state.verification.number || '';
     }
-    $$('.pay-panel').forEach(p => p.classList.add('hidden'));
-    $('#pay-' + method).classList.remove('hidden');
+    if (!lnInput.value) {
+      lnInput.value = state.verification.lastName || (state.booking.guestName ? state.booking.guestName.split(' ').slice(-1)[0] : '');
+    }
+    // Live validation: enable confirm only when both fields + accept are filled
+    const check = () => {
+      const ok = lnInput.value.trim().length > 1 && passInput.value.trim().length >= 3 && $('#pay-accept').checked;
+      $('#confirm-btn').classList.toggle('disabled', !ok);
+    };
+    lnInput.oninput = check;
+    passInput.oninput = check;
+    $('#pay-accept').onchange = check;
+    $('#pay-accept').checked = false;
+    check();
+  } else {
+    // Direct payment — show Card / Apple Pay / TWINT
+    if (state.payMethod === 'pass' || !state.payMethod) state.payMethod = 'card';
+    function selectPayPill(method) {
+      state.payMethod = method;
+      $$('.pay-pill').forEach(x => {
+        x.classList.remove('bg-aspire-navy','text-white','border-aspire-navy');
+        x.classList.add('bg-white','text-aspire-navy','border-aspire-border','hover:border-aspire-taupe');
+      });
+      const active = $$('.pay-pill').find(b => b.dataset.pay === method);
+      if (active) {
+        active.classList.add('bg-aspire-navy','text-white','border-aspire-navy');
+        active.classList.remove('bg-white','text-aspire-navy','border-aspire-border','hover:border-aspire-taupe');
+      }
+      $$('.pay-panel').forEach(p => p.classList.add('hidden'));
+      $('#pay-' + method).classList.remove('hidden');
+    }
+    $$('.pay-pill').forEach(b => { b.onclick = () => selectPayPill(b.dataset.pay); });
+    selectPayPill(state.payMethod);
+    $('#pay-accept').onchange = (e) => $('#confirm-btn').classList.toggle('disabled', !e.target.checked);
+    $('#pay-accept').checked = false;
+    $('#confirm-btn').classList.add('disabled');
   }
-  $$('.pay-pill').forEach(b => { b.onclick = () => selectPayPill(b.dataset.pay); });
-  selectPayPill(state.payMethod);
 
-  $('#pay-accept').onchange = (e) => $('#confirm-btn').classList.toggle('disabled', !e.target.checked);
-  $('#pay-accept').checked = false;
-  $('#confirm-btn').classList.add('disabled');
-}
-function openLoungeVerifyFromPay() {
-  state.verified = false;
-  go('tables');
+  // Confirm button copy adapts to mode
+  $('#confirm-btn').innerHTML = (isPass
+    ? 'Confirm booking'
+    : 'Confirm and pay') +
+    ' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m9 6 6 6-6 6"/></svg>';
 }
 function confirmBooking() {
   const l = lounge();
   const guestsTotal = state.booking.guests.adults + state.booking.guests.children;
-  const passLabel = (VERIFY_TYPES.find(t => t.id === state.verification.type) || {}).label || 'Pass';
-  const usingPass = state.payMethod === 'pass';
-  const amount = usingPass ? 'Included' : `${l.currency} ${(l.priceFrom * Math.max(1, guestsTotal)).toFixed(2)}`;
+  const usingPass = state.booking.membership !== 'pay';
+  const passLabel = (MEMBERSHIPS.find(m => m.id === state.booking.membership) || {}).label || 'Pass';
+  const passNum = ($('#pass-number')?.value || state.verification.number || '').trim();
   const methodLabel = usingPass
-    ? `${passLabel}${state.verification.number ? ' •• ' + state.verification.number.slice(-4) : ''}`
+    ? `${passLabel}${passNum ? ' •• ' + passNum.slice(-4) : ''}`
     : state.payMethod === 'card' ? 'Visa •• 4242'
     : state.payMethod === 'apple' ? 'Apple Pay'
     : 'TWINT';
@@ -1645,24 +1695,37 @@ function confirmBooking() {
   $('#pay-stage-processing').classList.remove('hidden');
   $('#pay-stage-success').classList.add('hidden');
 
-  // Tweak the processing copy depending on method
+  // Processing copy adapts to method
   const proc = $('#pay-stage-processing');
   const procHeading = proc.querySelector('.serif-heading');
-  if (procHeading) procHeading.textContent = usingPass ? 'Confirming your pass…' : 'Processing your payment…';
+  if (procHeading) procHeading.textContent = usingPass ? `Verifying your ${passLabel.toLowerCase()}…` : 'Processing your payment…';
+  const procBlurb = proc.querySelector('p');
+  if (procBlurb) procBlurb.textContent = usingPass
+    ? "Please don't refresh the page. We're confirming your pass with the provider — this normally takes a few seconds."
+    : "Please don't refresh the page. We're confirming with your bank — this normally takes a few seconds.";
 
   setTimeout(() => {
     $('#pay-stage-processing').classList.add('hidden');
     $('#pay-stage-success').classList.remove('hidden');
-    $('#pay-amount').textContent = usingPass ? 'Entry confirmed' : `${l.currency} ${(l.priceFrom * Math.max(1, guestsTotal)).toFixed(2)} charged`;
-    $('#pay-receipt').innerHTML = `
-      <div class="flex justify-between"><span class="text-navy-500">Reference</span><span class="text-aspire-navy tabular-nums">${state.bookingRef}</span></div>
-      <div class="flex justify-between"><span class="text-navy-500">Lounge</span><span class="text-aspire-navy text-right">${l.name}</span></div>
-      <div class="flex justify-between"><span class="text-navy-500">Date</span><span class="text-aspire-navy">${refDate}</span></div>
-      <div class="flex justify-between"><span class="text-navy-500">Arrival</span><span class="text-aspire-navy">${state.booking.arrivalTime}</span></div>
-      <div class="flex justify-between font-medium"><span class="text-aspire-navy">Access</span><span class="text-aspire-navy">3 hours · until ${accessUntil}</span></div>
-      <div class="flex justify-between"><span class="text-navy-500">Guests</span><span class="text-aspire-navy">${guestsTotal}</span></div>
-      <div class="flex justify-between"><span class="text-navy-500">Method</span><span class="text-aspire-navy text-right">${methodLabel}</span></div>
-      <div class="flex justify-between"><span class="text-navy-500">Amount</span><span class="text-aspire-navy">${amount}</span></div>`;
+    $('#pay-amount').textContent = usingPass
+      ? 'Booking confirmed'
+      : `${l.currency} ${(l.priceFrom * Math.max(1, guestsTotal)).toFixed(2)} charged`;
+
+    const rows = [
+      ['Reference', `<span class="tabular-nums">${state.bookingRef}</span>`],
+      ['Lounge',    l.name],
+      ['Date',      refDate],
+      ['Arrival',   state.booking.arrivalTime],
+      ['Access',    `3 hours · until ${accessUntil}`],
+      ['Guests',    String(guestsTotal)],
+      [usingPass ? 'Entry via' : 'Method', methodLabel],
+    ];
+    if (!usingPass) {
+      rows.push(['Amount', `${l.currency} ${(l.priceFrom * Math.max(1, guestsTotal)).toFixed(2)}`]);
+    }
+    $('#pay-receipt').innerHTML = rows.map(([k,v]) =>
+      `<div class="flex justify-between gap-3"><span class="text-navy-500">${k}</span><span class="text-aspire-navy text-right">${v}</span></div>`
+    ).join('');
     state.confirmed = true;
   }, 2200);
 }
@@ -2046,7 +2109,7 @@ function renderDashboard() {
     $('#confirmed-sub').innerHTML = `<strong class="text-aspire-navy font-medium">3-hour access</strong> from ${state.booking.arrivalTime} until ${accessUntil}. Confirmation sent to ${state.booking.email || 'your inbox'}. Reference ${state.bookingRef}.`;
   }
 
-  $('#dash-summary').innerHTML = bookingSummaryHTML();
+  $('#dash-summary').innerHTML = bookingSummaryHTML(state.booking.membership === 'pay');
 
   const accessUntil = endTime(state.booking.arrivalTime);
   $('#dash-access-card').innerHTML = `
