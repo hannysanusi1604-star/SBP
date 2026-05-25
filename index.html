@@ -163,8 +163,10 @@
   #siteHeader.on-hero #desktopNav a:hover,
   #siteHeader.on-hero #desktopNav a.text-navy-900 { color: #FBF9F5; }
   #siteHeader.on-hero #desktopNav a > span.bg-navy-900 { background: #FBF9F5; }
-  #siteHeader.on-hero #langBtn { color: #FBF9F5; border-color: rgba(251,249,245,0.3); }
-  #siteHeader.on-hero #langBtn:hover { border-color: rgba(251,249,245,0.6); }
+  #siteHeader.on-hero #langBtn,
+  #siteHeader.on-hero #loungeBtn { color: #FBF9F5; border-color: rgba(251,249,245,0.3); }
+  #siteHeader.on-hero #langBtn:hover,
+  #siteHeader.on-hero #loungeBtn:hover { border-color: rgba(251,249,245,0.6); }
   #siteHeader.on-hero #mobileBtn { color: #FBF9F5; border-color: rgba(251,249,245,0.3); }
 
   /* Signature variant chooser (House Frites) */
@@ -285,6 +287,7 @@
     <symbol id="i-qr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14h1M14 20h3M20 17v4"/></symbol>
     <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
     <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0112 0c0 7 3 7 3 9H3c0-2 3-2 3-9z"/><path d="M10 21a2 2 0 004 0"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 017 7c0 5-7 13-7 13S5 14 5 9a7 7 0 017-7z"/><circle cx="12" cy="9" r="2.4"/></symbol>
     <symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.7 5.7 6.3.9-4.6 4.4 1.1 6.3L12 17.8 6.5 20.3l1.1-6.3L3 9.6l6.3-.9L12 3z"/></symbol>
 
     <!-- Dietary -->
@@ -315,6 +318,10 @@
     </a>
     <nav class="hidden md:flex items-center gap-7 text-[0.78rem] tracking-wide uppercase" id="desktopNav"></nav>
     <div class="flex items-center gap-2">
+      <button id="loungeBtn" class="hidden sm:inline-flex h-9 px-3 border border-navy-900/15 items-center gap-2 text-[0.62rem] uppercase tracking-[0.3em] hover:border-navy-900/40 transition-colors" aria-label="Choose lounge">
+        <svg class="w-3 h-3"><use href="#i-pin"/></svg>
+        <span data-i18n="lounge.picker.button">Zürich</span>
+      </button>
       <div class="relative" id="langWrap">
         <button id="langBtn" class="h-9 px-3 border border-navy-900/15 flex items-center gap-2 text-[0.68rem] uppercase tracking-[0.22em] hover:border-navy-900/40 transition-colors">
           <svg class="w-3.5 h-3.5"><use href="#i-globe"/></svg>
@@ -486,7 +493,9 @@ const I18N = {
     'feedback.comment':'A note for the team (optional)','feedback.commentpl':'A dish you loved, anything we can refine…',
     'feedback.submit':'Send feedback','feedback.thanks':'Thank you — safe travels.',
     'feedback.dishrating':'Rate a specific dish','feedback.choose':'Choose a dish',
-    'lang.title':'Language','help.title':'Need a hand?','help.body':'Press the call button or ask any host — we’re close by.',
+    'lang.title':'Language',
+    'lounge.picker.button':'Zürich','lounge.picker.eyebrow':'— Aspire global network','lounge.picker.title':'Select your lounge','lounge.picker.search':'Search lounges, cities or regions…','lounge.picker.current':'You are here','lounge.picker.coming':'Coming soon','lounge.picker.none':'No lounges match your search.',
+    'help.title':'Need a hand?','help.body':'Press the call button or ask any host — we’re close by.',
     'help.callstaff':'Call a host','help.called':'A host has been notified.','help.close':'Close',
     'footer.note':'A calm, premium moment before your flight.',
     'footer.crafted':'Crafted in Zürich','footer.copy':'© Aspire Lounge Switzerland',
@@ -582,7 +591,9 @@ const I18N = {
     'feedback.comment':'Un mot pour l’équipe (facultatif)','feedback.commentpl':'Un plat aimé, un détail à améliorer…',
     'feedback.submit':'Envoyer','feedback.thanks':'Merci — bon voyage.',
     'feedback.dishrating':'Noter un plat précis','feedback.choose':'Choisir un plat',
-    'lang.title':'Langue','help.title':'Besoin d’aide ?','help.body':'Appelez un hôte ou faites-nous signe — nous sommes proches.',
+    'lang.title':'Langue',
+    'lounge.picker.button':'Zurich','lounge.picker.eyebrow':'— Réseau mondial Aspire','lounge.picker.title':'Choisissez votre salon','lounge.picker.search':'Rechercher un salon, une ville ou une région…','lounge.picker.current':'Vous êtes ici','lounge.picker.coming':'Bientôt','lounge.picker.none':'Aucun salon ne correspond à votre recherche.',
+    'help.title':'Besoin d’aide ?','help.body':'Appelez un hôte ou faites-nous signe — nous sommes proches.',
     'help.callstaff':'Appeler un hôte','help.called':'Un hôte a été prévenu.','help.close':'Fermer',
     'footer.note':'Un moment calme et raffiné avant votre vol.',
     'footer.crafted':'Conçu à Zurich','footer.copy':'© Aspire Lounge Suisse',
@@ -678,7 +689,9 @@ const I18N = {
     'feedback.comment':'Eine Notiz an das Team (optional)','feedback.commentpl':'Ein geliebtes Gericht, ein Vorschlag…',
     'feedback.submit':'Senden','feedback.thanks':'Vielen Dank — gute Reise.',
     'feedback.dishrating':'Ein Gericht bewerten','feedback.choose':'Gericht wählen',
-    'lang.title':'Sprache','help.title':'Brauchen Sie Hilfe?','help.body':'Rufen Sie einen Gastgeber — wir sind in der Nähe.',
+    'lang.title':'Sprache',
+    'lounge.picker.button':'Zürich','lounge.picker.eyebrow':'— Aspire weltweites Netz','lounge.picker.title':'Wählen Sie Ihre Lounge','lounge.picker.search':'Lounge, Stadt oder Region suchen…','lounge.picker.current':'Sie sind hier','lounge.picker.coming':'Demnächst','lounge.picker.none':'Keine Lounge entspricht der Suche.',
+    'help.title':'Brauchen Sie Hilfe?','help.body':'Rufen Sie einen Gastgeber — wir sind in der Nähe.',
     'help.callstaff':'Gastgeber rufen','help.called':'Ein Gastgeber wurde informiert.','help.close':'Schliessen',
     'footer.note':'Ein ruhiger, edler Moment vor Ihrem Flug.',
     'footer.crafted':'Gestaltet in Zürich','footer.copy':'© Aspire Lounge Schweiz',
@@ -774,7 +787,9 @@ const I18N = {
     'feedback.comment':'Una nota per il team (facoltativo)','feedback.commentpl':'Un piatto che ti è piaciuto…',
     'feedback.submit':'Invia','feedback.thanks':'Grazie — buon viaggio.',
     'feedback.dishrating':'Valuta un piatto specifico','feedback.choose':'Scegli un piatto',
-    'lang.title':'Lingua','help.title':'Serve aiuto?','help.body':'Chiama un host — siamo vicini.',
+    'lang.title':'Lingua',
+    'lounge.picker.button':'Zurigo','lounge.picker.eyebrow':'— Rete globale Aspire','lounge.picker.title':'Scegli la tua lounge','lounge.picker.search':'Cerca lounge, città o regione…','lounge.picker.current':'Sei qui','lounge.picker.coming':'In arrivo','lounge.picker.none':'Nessuna lounge corrisponde alla ricerca.',
+    'help.title':'Serve aiuto?','help.body':'Chiama un host — siamo vicini.',
     'help.callstaff':'Chiama un host','help.called':'Un host è stato avvisato.','help.close':'Chiudi',
     'footer.note':'Un momento calmo e raffinato prima del volo.',
     'footer.crafted':'Realizzato a Zurigo','footer.copy':'© Aspire Lounge Svizzera',
@@ -870,7 +885,9 @@ const I18N = {
     'feedback.comment':'ملاحظة للفريق (اختياري)','feedback.commentpl':'طبق أعجبك أو شيء يمكن تحسينه…',
     'feedback.submit':'إرسال','feedback.thanks':'شكراً — رحلة آمنة.',
     'feedback.dishrating':'قيّم طبقاً محدداً','feedback.choose':'اختر طبقاً',
-    'lang.title':'اللغة','help.title':'هل تحتاج مساعدة؟','help.body':'استدع مضيفاً — نحن قريبون.',
+    'lang.title':'اللغة',
+    'lounge.picker.button':'زيورخ','lounge.picker.eyebrow':'— شبكة أسباير العالمية','lounge.picker.title':'اختر صالتك','lounge.picker.search':'ابحث عن صالة أو مدينة أو منطقة…','lounge.picker.current':'أنت هنا','lounge.picker.coming':'قريباً','lounge.picker.none':'لا توجد صالات مطابقة لبحثك.',
+    'help.title':'هل تحتاج مساعدة؟','help.body':'استدع مضيفاً — نحن قريبون.',
     'help.callstaff':'استدعاء مضيف','help.called':'تم إخطار المضيف.','help.close':'إغلاق',
     'footer.note':'لحظة هادئة وراقية قبل رحلتك.',
     'footer.crafted':'صُمِّم في زيورخ','footer.copy':'© صالة أسباير سويسرا',
@@ -944,6 +961,81 @@ function setLocale(code) {
   document.documentElement.dir = code === 'ar' ? 'rtl' : 'ltr';
   render();
 }
+
+const LOUNGES = [
+  { region: 'Europe', items: [
+    { name: 'Zurich Aspire Lounge — Gates A, B & D', active: true },
+    { name: 'Zurich Aspire Lounge — Midfield', active: true },
+    { name: 'Zurich Swiss Airlines Lounge', active: true },
+    { name: 'Amsterdam Schiphol Aspire Lounge 26' },
+    { name: 'Amsterdam Schiphol Aspire Lounge 41' },
+    { name: 'Amsterdam Schiphol Star Alliance Lounge' },
+    { name: 'Amsterdam oneworld Lounge' },
+    { name: 'Athens Lounge' },
+    { name: 'Basel EuroAirport Skyview Lounge' },
+    { name: 'Copenhagen Aspire Lounge' },
+    { name: 'Cork Aspire Lounge' },
+    { name: 'Geneva Lounge' },
+    { name: 'Helsinki Aspire Lounge' },
+    { name: 'Milan ITA Lounge' },
+    { name: 'Sofia Vitosha Aspire Lounge' },
+  ]},
+  { region: 'United Kingdom', items: [
+    { name: 'Belfast City Airport Aspire Lounge' },
+    { name: 'Birmingham Airport Aspire Lounge (North)' },
+    { name: 'Birmingham Airport Aspire Lounge (South)' },
+    { name: 'Edinburgh Airport Aspire Lounge' },
+    { name: 'Humberside Airport Aspire Lounge' },
+    { name: 'Inverness Airport Aspire Lounge' },
+    { name: 'Liverpool John Lennon Airport Aspire Lounge' },
+    { name: 'Manchester Terminal 1 Aspire Airport Lounge' },
+    { name: 'Manchester Terminal 2 Aspire Airport Lounge' },
+    { name: 'Newcastle Airport Aspire Lounge' },
+  ]},
+  { region: 'UK Joint Ventures', items: [
+    { name: 'London Gatwick North' },
+    { name: 'London Gatwick South' },
+    { name: 'London Heathrow Terminal 2' },
+    { name: 'London Heathrow Terminal 3' },
+    { name: 'London Heathrow Terminal 5' },
+    { name: 'London Luton' },
+    { name: 'Birmingham Airport No1 Lounge' },
+    { name: 'Birmingham Airport Clubrooms' },
+    { name: 'Jersey Airport No1 Lounge' },
+  ]},
+  { region: 'Americas', items: [
+    { name: 'Chicago Swissport Lounge' },
+    { name: 'Ontario Aspire Lounge' },
+    { name: 'San Diego Aspire Lounge' },
+    { name: 'Buenos Aires AMEX Lounge' },
+    { name: 'Piarco Caribbean Airlines Lounge' },
+  ]},
+  { region: 'Canada', items: [
+    { name: 'Calgary Aspire Lounge International' },
+    { name: 'Calgary Aspire Lounge Transborder' },
+    { name: 'Montreal National Bank Lounge' },
+    { name: 'Montreal Domestic Aspire | AMEX Lounge' },
+    { name: 'Ottawa Aspire Lounge' },
+    { name: 'Toronto City Aspire Lounge' },
+  ]},
+  { region: 'Asia', items: [
+    { name: 'Incheon oneworld Lounge' },
+    { name: 'Narita Aspire Lounge' },
+  ]},
+  { region: 'Australia', items: [
+    { name: 'Perth Aspire Lounge' },
+    { name: 'Melbourne — The House by Aspire' },
+    { name: 'Sydney — The House by Aspire' },
+  ]},
+  { region: 'Africa', items: [
+    { name: 'Nairobi Aspire Lounge' },
+    { name: 'Johannesburg Aspire Lounge' },
+    { name: 'Kilimanjaro Aspire Lounge' },
+  ]},
+  { region: 'Middle East', items: [
+    { name: 'Dan Lounge — Tel Aviv' },
+  ]},
+];
 
 const NAV_ITEMS = [
   { href:'home', key:'nav.home' },
@@ -2128,6 +2220,82 @@ function showHelpModal() {
 }
 
 
+function showLoungePicker() {
+  document.body.style.overflow = 'hidden';
+  const total = LOUNGES.reduce((s, r) => s + r.items.length, 0);
+  document.getElementById('modalHost').innerHTML = `
+  <div id="loungeModal" class="fixed inset-0 z-50 modal-bg flex items-stretch sm:items-center justify-center anim-fade" data-close>
+    <div class="w-full max-w-3xl bg-ivory-50 flex flex-col anim-up max-h-[100svh] sm:max-h-[88vh] sm:my-10">
+      <div class="flex items-start justify-between p-6 sm:p-8 border-b border-navy-900/10">
+        <div>
+          <div class="swiss-eyebrow">${esc(t('lounge.picker.eyebrow'))}</div>
+          <h3 class="serif-heading text-2xl sm:text-[2rem] mt-2 text-navy-900 leading-tight">${esc(t('lounge.picker.title'))}</h3>
+        </div>
+        <button data-close class="h-9 w-9 flex items-center justify-center text-navy-500 hover:text-navy-900" aria-label="${esc(t('menu.close'))}">${icon('i-x','w-4 h-4')}</button>
+      </div>
+
+      <div class="px-6 sm:px-8 py-4 border-b border-navy-900/10">
+        <div class="relative">
+          <span class="absolute left-0 top-1/2 -translate-y-1/2 text-navy-500">${icon('i-search','w-4 h-4')}</span>
+          <input id="loungeSearch" type="search" placeholder="${esc(t('lounge.picker.search'))}" autocomplete="off" class="lounge-input w-full h-11 pl-8 pr-4 bg-transparent border-0 text-[0.95rem] focus:ring-0" />
+        </div>
+      </div>
+
+      <div id="loungeList" class="flex-1 overflow-y-auto px-6 sm:px-8 py-6 space-y-9"></div>
+
+      <div class="px-6 sm:px-8 py-4 border-t border-navy-900/10 flex items-center justify-between text-[0.6rem] uppercase tracking-[0.32em] text-navy-500/70">
+        <span>${total} lounges</span>
+        <span>aspirelounges.com</span>
+      </div>
+    </div>
+  </div>`;
+  renderLoungeList('');
+  const input = document.getElementById('loungeSearch');
+  if (input) {
+    input.addEventListener('input', (e) => renderLoungeList(e.target.value));
+    setTimeout(() => input.focus(), 80);
+  }
+}
+
+function renderLoungeList(query) {
+  const list = document.getElementById('loungeList');
+  if (!list) return;
+  const q = (query || '').toLowerCase().trim();
+  let any = false;
+  list.innerHTML = LOUNGES.map(r => {
+    const items = r.items.filter(it =>
+      !q || it.name.toLowerCase().includes(q) || r.region.toLowerCase().includes(q)
+    );
+    if (!items.length) return '';
+    any = true;
+    return `
+    <section>
+      <div class="swiss-eyebrow mb-3">— ${esc(r.region)}</div>
+      <ul class="divide-y divide-navy-900/10">
+        ${items.map(it => `
+          <li>
+            <button ${it.active ? 'data-lounge-go="zurich"' : 'disabled'} class="w-full text-left py-3.5 flex items-center justify-between gap-4 group ${it.active ? 'hover:pl-2 cursor-pointer' : 'opacity-45 cursor-not-allowed'} transition-[padding] duration-300">
+              <span class="text-[0.95rem] ${it.active ? 'text-navy-900' : 'text-navy-700'}">${esc(it.name)}</span>
+              <span class="text-[0.55rem] uppercase tracking-[0.32em] whitespace-nowrap ${it.active ? 'text-gold-600' : 'text-navy-500/70'}">
+                ${it.active ? esc(t('lounge.picker.current')) : esc(t('lounge.picker.coming'))}
+              </span>
+            </button>
+          </li>
+        `).join('')}
+      </ul>
+    </section>`;
+  }).join('');
+  if (!any) {
+    list.innerHTML = `<div class="text-center py-16 text-[0.85rem] tracking-[0.22em] uppercase text-navy-500">${esc(t('lounge.picker.none'))}</div>`;
+  }
+  list.querySelectorAll('[data-lounge-go]').forEach(b => {
+    b.addEventListener('click', () => {
+      closeModals();
+      if ((location.hash.replace('#','') || 'home') !== 'home') location.hash = '#home';
+    });
+  });
+}
+
 function closeModals() {
   document.getElementById('modalHost').innerHTML = '';
   document.body.style.overflow = '';
@@ -2697,6 +2865,8 @@ langMenu.addEventListener('click', (e) => {
 
 // Help
 document.getElementById('helpBtn').addEventListener('click', showHelpModal);
+const loungeBtnEl = document.getElementById('loungeBtn');
+if (loungeBtnEl) loungeBtnEl.addEventListener('click', showLoungePicker);
 
 // Modal close + call host (delegated)
 document.getElementById('modalHost').addEventListener('click', (e) => {
