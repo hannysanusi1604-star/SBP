@@ -210,16 +210,22 @@
     85%  { opacity: .9; }
     100% { transform: translate3d(var(--dx), 540px, 0) rotate(var(--r1)); opacity: 0; }
   }
-  .fries-cone { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); width: 60%; max-width: 280px; }
+  .fries-box { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); width: 62%; max-width: 320px; filter: drop-shadow(0 14px 22px rgba(20,38,63,0.12)); }
   .fries-garnish-svg { opacity: 0; transition: opacity .6s cubic-bezier(.2,.8,.2,1); }
   .fries-garnish-svg.active { opacity: 1; transition-delay: .25s; }
+  @keyframes fryFall {
+    0%   { transform: translate3d(0, 0, 0) rotate(var(--r0)); opacity: 0; }
+    10%  { opacity: .95; }
+    85%  { opacity: .9; }
+    100% { transform: translate3d(var(--dx), 420px, 0) rotate(var(--r1)); opacity: 0; }
+  }
   @media (max-width: 640px) {
     .fry { height: 48px; width: 5px; }
     @keyframes fryFall {
       0%   { transform: translate3d(0, 0, 0) rotate(var(--r0)); opacity: 0; }
       10%  { opacity: .95; }
       85%  { opacity: .9; }
-      100% { transform: translate3d(var(--dx), 380px, 0) rotate(var(--r1)); opacity: 0; }
+      100% { transform: translate3d(var(--dx), 280px, 0) rotate(var(--r1)); opacity: 0; }
     }
   }
 
@@ -1077,55 +1083,103 @@ function pageHome() {
             <!-- Falling fries (populated/replayed by JS) -->
             <div class="fries-rain" id="friesRain" aria-hidden="true"></div>
 
-            <!-- Paper cone with settled fries -->
-            <div class="fries-cone">
-              <svg viewBox="0 0 200 280" preserveAspectRatio="xMidYMid meet" class="w-full h-auto" aria-hidden="true">
-                <!-- Settled fries above the cone -->
+            <!-- ASPIRE fry box with settled fries -->
+            <div class="fries-box">
+              <svg viewBox="0 0 220 300" preserveAspectRatio="xMidYMid meet" class="w-full h-auto" aria-hidden="true">
+                <defs>
+                  <linearGradient id="boxGrad" x1="0" y1="0" x2="1" y2="0.05">
+                    <stop offset="0%" stop-color="#FFFFFF"/>
+                    <stop offset="55%" stop-color="#FCFAF5"/>
+                    <stop offset="100%" stop-color="#E8E2D2"/>
+                  </linearGradient>
+                  <linearGradient id="boxShade" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="rgba(20,38,63,0.06)"/>
+                    <stop offset="40%" stop-color="rgba(20,38,63,0)"/>
+                  </linearGradient>
+                </defs>
+
+                <!-- Settled fries spilling out of the box -->
                 <g>
-                  <rect x="74" y="42" width="6" height="56" rx="2" fill="#E0B468" transform="rotate(-12 77 70)"/>
-                  <rect x="86" y="34" width="6" height="64" rx="2" fill="#D8AC5E" transform="rotate(-5 89 66)"/>
-                  <rect x="98" y="30" width="6" height="68" rx="2" fill="#E5B96B" transform="rotate(3 101 64)"/>
-                  <rect x="110" y="36" width="6" height="62" rx="2" fill="#D4A858" transform="rotate(10 113 67)"/>
-                  <rect x="122" y="44" width="6" height="54" rx="2" fill="#DCB060" transform="rotate(18 125 71)"/>
-                  <rect x="92" y="50" width="6" height="48" rx="2" fill="#C99C50" transform="rotate(-2 95 74)"/>
-                  <rect x="104" y="48" width="6" height="50" rx="2" fill="#D4A858" transform="rotate(6 107 73)"/>
+                  <rect x="60" y="42" width="6" height="92"  rx="2" fill="#E0B468" transform="rotate(-12 63 88)"/>
+                  <rect x="75" y="32" width="6" height="100" rx="2" fill="#D8AC5E" transform="rotate(-6 78 82)"/>
+                  <rect x="90" y="28" width="6" height="106" rx="2" fill="#E5B96B" transform="rotate(0 93 81)"/>
+                  <rect x="105" y="30" width="6" height="104" rx="2" fill="#D4A858" transform="rotate(6 108 82)"/>
+                  <rect x="120" y="40" width="6" height="94"  rx="2" fill="#DCB060" transform="rotate(12 123 87)"/>
+                  <rect x="135" y="52" width="6" height="82"  rx="2" fill="#C99C50" transform="rotate(18 138 93)"/>
+                  <rect x="82" y="56" width="6" height="78"  rx="2" fill="#D4A858" transform="rotate(-3 85 95)"/>
+                  <rect x="98" y="52" width="6" height="82"  rx="2" fill="#E0B468" transform="rotate(4 101 93)"/>
+                  <rect x="114" y="55" width="6" height="80" rx="2" fill="#C99C50" transform="rotate(10 117 95)"/>
                 </g>
-                <!-- Garnish per variant (salt / parmesan / herb / truffle) -->
+
+                <!-- Garnish per salt variant -->
                 <g class="frites-garnish-svg active" data-variant="0">
-                  <circle cx="92" cy="56" r="1.2" fill="#FFFFFF" opacity="0.95"/>
-                  <circle cx="103" cy="50" r="1.5" fill="#FFFFFF" opacity="0.95"/>
-                  <circle cx="115" cy="58" r="1" fill="#FFFFFF" opacity="0.85"/>
-                  <circle cx="86" cy="64" r="1" fill="#FFFFFF" opacity="0.8"/>
-                  <circle cx="111" cy="68" r="1.2" fill="#FFFFFF" opacity="0.9"/>
+                  <circle cx="86"  cy="50" r="1.3" fill="#FFFFFF" opacity="0.95"/>
+                  <circle cx="100" cy="44" r="1.6" fill="#FFFFFF" opacity="0.95"/>
+                  <circle cx="115" cy="50" r="1.2" fill="#FFFFFF" opacity="0.9"/>
+                  <circle cx="93"  cy="60" r="1.4" fill="#FFFFFF" opacity="0.85"/>
+                  <circle cx="108" cy="58" r="1.3" fill="#FFFFFF" opacity="0.9"/>
+                  <circle cx="125" cy="55" r="1"   fill="#FFFFFF" opacity="0.8"/>
                 </g>
                 <g class="frites-garnish-svg" data-variant="1">
-                  <ellipse cx="93" cy="55" rx="3" ry="1" fill="#F4E6A8" opacity="0.9"/>
-                  <ellipse cx="105" cy="50" rx="3.5" ry="1.2" fill="#F4E6A8" opacity="0.9"/>
-                  <ellipse cx="119" cy="60" rx="3" ry="1" fill="#F4E6A8" opacity="0.9"/>
-                  <circle cx="98" cy="64" r="1" fill="#7A8C73" opacity="0.75"/>
-                  <circle cx="112" cy="66" r="1" fill="#7A8C73" opacity="0.75"/>
+                  <ellipse cx="90"  cy="50" rx="3"   ry="1"   fill="#F4E6A8" opacity="0.92"/>
+                  <ellipse cx="105" cy="44" rx="3.5" ry="1.2" fill="#F4E6A8" opacity="0.92"/>
+                  <ellipse cx="120" cy="54" rx="3"   ry="1"   fill="#F4E6A8" opacity="0.92"/>
+                  <circle  cx="98"  cy="60" r="1"               fill="#7A8C73" opacity="0.78"/>
+                  <circle  cx="112" cy="62" r="1"               fill="#7A8C73" opacity="0.78"/>
                 </g>
                 <g class="frites-garnish-svg" data-variant="2">
-                  <circle cx="92" cy="56" r="1.3" fill="#7A8C73" opacity="0.9"/>
-                  <circle cx="103" cy="50" r="1" fill="#5C7A6A" opacity="0.95"/>
-                  <circle cx="115" cy="58" r="1.3" fill="#7A8C73" opacity="0.85"/>
-                  <circle cx="98" cy="66" r="1" fill="#5C7A6A" opacity="0.9"/>
-                  <circle cx="111" cy="64" r="1.4" fill="#7A8C73" opacity="0.85"/>
-                  <circle cx="88" cy="70" r="0.8" fill="#3C3A28" opacity="0.6"/>
+                  <circle cx="88"  cy="50" r="1.3" fill="#7A8C73" opacity="0.9"/>
+                  <circle cx="100" cy="44" r="1"   fill="#5C7A6A" opacity="0.95"/>
+                  <circle cx="115" cy="50" r="1.3" fill="#7A8C73" opacity="0.85"/>
+                  <circle cx="95"  cy="60" r="1"   fill="#5C7A6A" opacity="0.9"/>
+                  <circle cx="110" cy="58" r="1.4" fill="#7A8C73" opacity="0.85"/>
+                  <circle cx="83"  cy="64" r="0.9" fill="#3C3A28" opacity="0.65"/>
                 </g>
                 <g class="frites-garnish-svg" data-variant="3">
-                  <circle cx="92" cy="56" r="1.6" fill="#2A1810" opacity="0.7"/>
-                  <circle cx="103" cy="50" r="1.8" fill="#2A1810" opacity="0.75"/>
-                  <circle cx="116" cy="58" r="1.4" fill="#2A1810" opacity="0.7"/>
-                  <circle cx="98" cy="68" r="1.5" fill="#2A1810" opacity="0.7"/>
-                  <circle cx="86" cy="64" r="1" fill="#5C7A6A" opacity="0.75"/>
-                  <circle cx="120" cy="66" r="1" fill="#5C7A6A" opacity="0.75"/>
+                  <circle cx="88"  cy="50" r="1.6" fill="#2A1810" opacity="0.72"/>
+                  <circle cx="100" cy="44" r="1.8" fill="#2A1810" opacity="0.78"/>
+                  <circle cx="116" cy="50" r="1.4" fill="#2A1810" opacity="0.72"/>
+                  <circle cx="98"  cy="62" r="1.5" fill="#2A1810" opacity="0.72"/>
+                  <circle cx="83"  cy="58" r="1"   fill="#5C7A6A" opacity="0.78"/>
+                  <circle cx="120" cy="60" r="1"   fill="#5C7A6A" opacity="0.78"/>
                 </g>
-                <!-- Paper cone -->
-                <path d="M 30 100 L 100 270 L 170 100 Z" fill="#F4E8D2" stroke="rgba(184,152,85,0.6)" stroke-width="0.8"/>
-                <path d="M 35 100 L 100 260 L 165 100" fill="none" stroke="rgba(20,38,63,0.07)" stroke-width="3"/>
-                <ellipse cx="100" cy="100" rx="70" ry="5" fill="rgba(20,38,63,0.07)"/>
-                <text x="100" y="195" font-family="Inter, sans-serif" font-weight="800" font-size="9" letter-spacing="3" fill="rgba(20,38,63,0.45)" text-anchor="middle">ASPIRE</text>
+
+                <!-- Box body (front face) -->
+                <path d="M 12 115
+                         C 22 78, 60 78, 80 110
+                         C 92 128, 108 128, 120 110
+                         C 140 78, 178 78, 188 115
+                         L 178 282
+                         L 22 282 Z"
+                      fill="url(#boxGrad)"
+                      stroke="rgba(20,38,63,0.12)"
+                      stroke-width="0.6"/>
+                <path d="M 12 115
+                         C 22 78, 60 78, 80 110
+                         C 92 128, 108 128, 120 110
+                         C 140 78, 178 78, 188 115
+                         L 178 282
+                         L 22 282 Z"
+                      fill="url(#boxShade)"/>
+
+                <!-- ASPIRE wordmark -->
+                <text x="100" y="200" text-anchor="middle"
+                      font-family="Inter, sans-serif" font-weight="500"
+                      font-size="17" letter-spacing="5" fill="#0A1729">ASPIRE</text>
+                <!-- Tagline -->
+                <text x="100" y="215" text-anchor="middle"
+                      font-family="Inter, sans-serif" font-weight="400"
+                      font-size="4.6" letter-spacing="1.8" fill="rgba(20,38,63,0.6)">PRE-FLIGHT HOSPITALITY</text>
+
+                <!-- French Fries label with dashes -->
+                <line x1="55"  y1="258" x2="74" y2="258" stroke="rgba(184,152,85,0.8)" stroke-width="0.6"/>
+                <text x="100" y="261" text-anchor="middle"
+                      font-family="Inter, sans-serif" font-weight="500"
+                      font-size="5.4" letter-spacing="2.6" fill="rgba(20,38,63,0.72)">FRENCH FRIES</text>
+                <line x1="126" y1="258" x2="145" y2="258" stroke="rgba(184,152,85,0.8)" stroke-width="0.6"/>
+
+                <!-- Gold bottom rule -->
+                <line x1="24" y1="276" x2="176" y2="276" stroke="rgba(184,152,85,0.85)" stroke-width="0.9"/>
               </svg>
             </div>
           </div>
