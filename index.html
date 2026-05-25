@@ -311,19 +311,19 @@
 
 <!-- ========================= HEADER ========================= -->
 <header id="siteHeader" class="sticky top-0 z-40 backdrop-blur-md bg-ivory-50/80 border-b border-ivory-200/60 transition-colors duration-300">
-  <div class="mx-auto max-w-6xl px-5 sm:px-8 py-3 flex items-center justify-between">
-    <a href="#home" data-route="home" class="group flex flex-col items-start leading-none" aria-label="Aspire Lounge Switzerland">
+  <div class="mx-auto max-w-7xl px-6 sm:px-10 py-4 sm:py-5 flex items-center justify-between gap-6">
+    <a href="#home" data-route="home" class="group flex flex-col items-start leading-none shrink-0" aria-label="Aspire Lounge Switzerland">
       <span class="aspire-mark text-navy-900 text-[1.35rem] sm:text-[1.45rem]">ASPIRE</span>
-      <span class="aspire-sub text-[0.5rem] sm:text-[0.55rem] mt-1.5" data-i18n="brand.sub">AIRPORT LOUNGES · SWITZERLAND</span>
+      <span class="aspire-sub text-[0.5rem] sm:text-[0.55rem] mt-1.5" data-i18n="brand.sub">PRE-FLIGHT HOSPITALITY · ZURICH, SWITZERLAND</span>
     </a>
-    <nav class="hidden md:flex items-center gap-7 text-[0.78rem] tracking-wide uppercase" id="desktopNav"></nav>
-    <div class="flex items-center gap-2">
-      <button id="loungeBtn" class="hidden sm:inline-flex h-9 px-3 border border-navy-900/15 items-center gap-2 text-[0.62rem] uppercase tracking-[0.3em] hover:border-navy-900/40 transition-colors" aria-label="Choose lounge">
+    <nav class="hidden md:flex items-center gap-9 lg:gap-12 text-[0.78rem] tracking-wide uppercase" id="desktopNav"></nav>
+    <div class="flex items-center gap-3 sm:gap-4 shrink-0">
+      <button id="loungeBtn" class="hidden md:inline-flex h-9 px-4 border border-navy-900/15 items-center gap-2.5 text-[0.6rem] uppercase tracking-[0.3em] hover:border-navy-900/40 transition-colors whitespace-nowrap" aria-label="Choose lounge">
         <svg class="w-3 h-3"><use href="#i-pin"/></svg>
-        <span data-i18n="lounge.picker.button">Zürich</span>
+        <span data-i18n="lounge.picker.button">Gates A, B &amp; D</span>
       </button>
       <div class="relative" id="langWrap">
-        <button id="langBtn" class="h-9 px-3 border border-navy-900/15 flex items-center gap-2 text-[0.68rem] uppercase tracking-[0.22em] hover:border-navy-900/40 transition-colors">
+        <button id="langBtn" class="h-9 px-3 border border-navy-900/15 flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.22em] hover:border-navy-900/40 transition-colors">
           <svg class="w-3.5 h-3.5"><use href="#i-globe"/></svg>
           <span id="langCurrent">EN</span>
         </button>
@@ -494,18 +494,18 @@ const I18N = {
     'feedback.submit':'Send feedback','feedback.thanks':'Thank you — safe travels.',
     'feedback.dishrating':'Rate a specific dish','feedback.choose':'Choose a dish',
     'lang.title':'Language',
-    'lounge.picker.button':'Zürich','lounge.picker.eyebrow':'— Aspire global network','lounge.picker.title':'Select your lounge','lounge.picker.search':'Search lounges, cities or regions…','lounge.picker.current':'You are here','lounge.picker.coming':'Coming soon','lounge.picker.none':'No lounges match your search.',
+    'lounge.picker.button':'Gates A, B & D','lounge.picker.eyebrow':'— Aspire global network','lounge.picker.title':'Select your lounge','lounge.picker.search':'Search lounges, cities or regions…','lounge.picker.current':'You are here','lounge.picker.coming':'Coming soon','lounge.picker.none':'No lounges match your search.',
     'help.title':'Need a hand?','help.body':'Press the call button or ask any host — we’re close by.',
     'help.callstaff':'Call a host','help.called':'A host has been notified.','help.close':'Close',
     'footer.note':'A calm, premium moment before your flight.',
     'footer.crafted':'Crafted in Zürich','footer.copy':'© Aspire Lounge Switzerland',
-    'addr.zurich':'Zürich Airport · Terminal A','addr.geneva':'Genève Aéroport · Terminal 1','addr.basel':'Basel EuroAirport · Departures',
+    'addr.zurich':'Zürich Aspire Lounge','addr.geneva':'Gates A, B & D · Terminal A','addr.basel':'Airside · Pre-flight',
     'eyebrow.aspire':'— Aspire','eyebrow.important':'— important','eyebrow.swiss':'— Swiss sourcing',
     'home.scroll':'Scroll','home.tap':'Tap any glowing point to discover the buffet',
     'hero.head1':'Beyond','hero.head.italic':'the','hero.head.tail':'Buffet.',
     'hero.body':'A quiet pause between gates. Swiss-rooted dining, alpine light, and the slow warmth of an evening before take-off — for travellers who’d rather arrive unhurried.',
     'hero.cta.secondary':'Explore the lounge','hero.serving':'Serving daily','hero.est':'Est. 2010 — Terminal A',
-    'home.cities':'Zürich · Genève · Basel',
+    'home.cities':'Zürich · Gates A, B & D',
     'home.quiet.eyebrow':'— Our quiet promise',
     'home.story.body':'From the first sip of alpine coffee to the last bite of Zuger Kirschtorte, every detail is composed to feel like a calm pause between cities.',
     'home.farms.title':'From Swiss valleys, lakes and farms.','home.farms.cta':'Discover sourcing',
@@ -592,18 +592,18 @@ const I18N = {
     'feedback.submit':'Envoyer','feedback.thanks':'Merci — bon voyage.',
     'feedback.dishrating':'Noter un plat précis','feedback.choose':'Choisir un plat',
     'lang.title':'Langue',
-    'lounge.picker.button':'Zurich','lounge.picker.eyebrow':'— Réseau mondial Aspire','lounge.picker.title':'Choisissez votre salon','lounge.picker.search':'Rechercher un salon, une ville ou une région…','lounge.picker.current':'Vous êtes ici','lounge.picker.coming':'Bientôt','lounge.picker.none':'Aucun salon ne correspond à votre recherche.',
+    'lounge.picker.button':'Portes A, B & D','lounge.picker.eyebrow':'— Réseau mondial Aspire','lounge.picker.title':'Choisissez votre salon','lounge.picker.search':'Rechercher un salon, une ville ou une région…','lounge.picker.current':'Vous êtes ici','lounge.picker.coming':'Bientôt','lounge.picker.none':'Aucun salon ne correspond à votre recherche.',
     'help.title':'Besoin d’aide ?','help.body':'Appelez un hôte ou faites-nous signe — nous sommes proches.',
     'help.callstaff':'Appeler un hôte','help.called':'Un hôte a été prévenu.','help.close':'Fermer',
     'footer.note':'Un moment calme et raffiné avant votre vol.',
     'footer.crafted':'Conçu à Zurich','footer.copy':'© Aspire Lounge Suisse',
-    'addr.zurich':'Aéroport de Zurich · Terminal A','addr.geneva':'Aéroport de Genève · Terminal 1','addr.basel':'EuroAirport de Bâle · Départs',
+    'addr.zurich':'Aspire Lounge Zurich','addr.geneva':'Portes A, B & D · Terminal A','addr.basel':'Côté piste · Pré-embarquement',
     'eyebrow.aspire':'— Aspire','eyebrow.important':'— important','eyebrow.swiss':'— Origine suisse',
     'home.scroll':'Faire défiler','home.tap':'Touchez un point lumineux pour découvrir le buffet',
     'hero.head1':'Au-delà','hero.head.italic':'du','hero.head.tail':'buffet.',
     'hero.body':'Une pause discrète entre les portes. Cuisine d’origine suisse, lumière alpine et chaleur lente d’un soir avant l’envol — pour les voyageurs qui préfèrent arriver sans hâte.',
     'hero.cta.secondary':'Découvrir le salon','hero.serving':'Service quotidien','hero.est':'Fondé en 2010 — Terminal A',
-    'home.cities':'Zurich · Genève · Bâle',
+    'home.cities':'Zurich · Portes A, B & D',
     'home.quiet.eyebrow':'— Notre promesse silencieuse',
     'home.story.body':'De la première gorgée de café alpin à la dernière bouchée de Zuger Kirschtorte, chaque détail compose une pause calme entre deux villes.',
     'home.farms.title':'Des vallées, des lacs et des fermes de Suisse.','home.farms.cta':'Découvrir nos producteurs',
@@ -690,18 +690,18 @@ const I18N = {
     'feedback.submit':'Senden','feedback.thanks':'Vielen Dank — gute Reise.',
     'feedback.dishrating':'Ein Gericht bewerten','feedback.choose':'Gericht wählen',
     'lang.title':'Sprache',
-    'lounge.picker.button':'Zürich','lounge.picker.eyebrow':'— Aspire weltweites Netz','lounge.picker.title':'Wählen Sie Ihre Lounge','lounge.picker.search':'Lounge, Stadt oder Region suchen…','lounge.picker.current':'Sie sind hier','lounge.picker.coming':'Demnächst','lounge.picker.none':'Keine Lounge entspricht der Suche.',
+    'lounge.picker.button':'Gates A, B & D','lounge.picker.eyebrow':'— Aspire weltweites Netz','lounge.picker.title':'Wählen Sie Ihre Lounge','lounge.picker.search':'Lounge, Stadt oder Region suchen…','lounge.picker.current':'Sie sind hier','lounge.picker.coming':'Demnächst','lounge.picker.none':'Keine Lounge entspricht der Suche.',
     'help.title':'Brauchen Sie Hilfe?','help.body':'Rufen Sie einen Gastgeber — wir sind in der Nähe.',
     'help.callstaff':'Gastgeber rufen','help.called':'Ein Gastgeber wurde informiert.','help.close':'Schliessen',
     'footer.note':'Ein ruhiger, edler Moment vor Ihrem Flug.',
     'footer.crafted':'Gestaltet in Zürich','footer.copy':'© Aspire Lounge Schweiz',
-    'addr.zurich':'Flughafen Zürich · Terminal A','addr.geneva':'Flughafen Genf · Terminal 1','addr.basel':'EuroAirport Basel · Abflug',
+    'addr.zurich':'Aspire Lounge Zürich','addr.geneva':'Gates A, B & D · Terminal A','addr.basel':'Airside · Pre-Flight',
     'eyebrow.aspire':'— Aspire','eyebrow.important':'— wichtig','eyebrow.swiss':'— Schweizer Herkunft',
     'home.scroll':'Scrollen','home.tap':'Berühren Sie einen leuchtenden Punkt, um das Buffet zu entdecken',
     'hero.head1':'Jenseits','hero.head.italic':'des','hero.head.tail':'Buffets.',
     'hero.body':'Eine stille Pause zwischen den Gates. Schweizer Küche, Alpenlicht und die langsame Wärme eines Abends vor dem Abflug — für Reisende, die lieber unbeeilt ankommen.',
     'hero.cta.secondary':'Lounge entdecken','hero.serving':'Täglich geöffnet','hero.est':'Gegründet 2010 — Terminal A',
-    'home.cities':'Zürich · Genf · Basel',
+    'home.cities':'Zürich · Gates A, B & D',
     'home.quiet.eyebrow':'— Unser leises Versprechen',
     'home.story.body':'Vom ersten Schluck Alpenkaffee bis zum letzten Bissen Zuger Kirschtorte ist jedes Detail darauf abgestimmt, wie eine ruhige Pause zwischen den Städten zu wirken.',
     'home.farms.title':'Aus Schweizer Tälern, Seen und Höfen.','home.farms.cta':'Herkunft entdecken',
@@ -788,18 +788,18 @@ const I18N = {
     'feedback.submit':'Invia','feedback.thanks':'Grazie — buon viaggio.',
     'feedback.dishrating':'Valuta un piatto specifico','feedback.choose':'Scegli un piatto',
     'lang.title':'Lingua',
-    'lounge.picker.button':'Zurigo','lounge.picker.eyebrow':'— Rete globale Aspire','lounge.picker.title':'Scegli la tua lounge','lounge.picker.search':'Cerca lounge, città o regione…','lounge.picker.current':'Sei qui','lounge.picker.coming':'In arrivo','lounge.picker.none':'Nessuna lounge corrisponde alla ricerca.',
+    'lounge.picker.button':'Gates A, B & D','lounge.picker.eyebrow':'— Rete globale Aspire','lounge.picker.title':'Scegli la tua lounge','lounge.picker.search':'Cerca lounge, città o regione…','lounge.picker.current':'Sei qui','lounge.picker.coming':'In arrivo','lounge.picker.none':'Nessuna lounge corrisponde alla ricerca.',
     'help.title':'Serve aiuto?','help.body':'Chiama un host — siamo vicini.',
     'help.callstaff':'Chiama un host','help.called':'Un host è stato avvisato.','help.close':'Chiudi',
     'footer.note':'Un momento calmo e raffinato prima del volo.',
     'footer.crafted':'Realizzato a Zurigo','footer.copy':'© Aspire Lounge Svizzera',
-    'addr.zurich':'Aeroporto di Zurigo · Terminal A','addr.geneva':'Aeroporto di Ginevra · Terminal 1','addr.basel':'EuroAirport Basilea · Partenze',
+    'addr.zurich':'Aspire Lounge Zurigo','addr.geneva':'Gates A, B & D · Terminal A','addr.basel':'Lato pista · Pre-imbarco',
     'eyebrow.aspire':'— Aspire','eyebrow.important':'— importante','eyebrow.swiss':'— Origine svizzera',
     'home.scroll':'Scorri','home.tap':'Tocca un punto luminoso per scoprire il buffet',
     'hero.head1':'Oltre','hero.head.italic':'il','hero.head.tail':'buffet.',
     'hero.body':'Una quieta pausa tra i gate. Cucina di radici svizzere, luce alpina e il calore lento di una sera prima del decollo — per chi preferisce arrivare senza fretta.',
     'hero.cta.secondary':'Esplora la lounge','hero.serving':'Aperto ogni giorno','hero.est':'Fondato nel 2010 — Terminal A',
-    'home.cities':'Zurigo · Ginevra · Basilea',
+    'home.cities':'Zurigo · Gates A, B & D',
     'home.quiet.eyebrow':'— La nostra quieta promessa',
     'home.story.body':'Dal primo sorso di caffè alpino all’ultimo morso di Zuger Kirschtorte, ogni dettaglio è composto per essere una pausa silenziosa tra una città e l’altra.',
     'home.farms.title':'Dalle valli, dai laghi e dalle fattorie svizzere.','home.farms.cta':'Scopri i produttori',
@@ -886,18 +886,18 @@ const I18N = {
     'feedback.submit':'إرسال','feedback.thanks':'شكراً — رحلة آمنة.',
     'feedback.dishrating':'قيّم طبقاً محدداً','feedback.choose':'اختر طبقاً',
     'lang.title':'اللغة',
-    'lounge.picker.button':'زيورخ','lounge.picker.eyebrow':'— شبكة أسباير العالمية','lounge.picker.title':'اختر صالتك','lounge.picker.search':'ابحث عن صالة أو مدينة أو منطقة…','lounge.picker.current':'أنت هنا','lounge.picker.coming':'قريباً','lounge.picker.none':'لا توجد صالات مطابقة لبحثك.',
+    'lounge.picker.button':'بوابات A, B & D','lounge.picker.eyebrow':'— شبكة أسباير العالمية','lounge.picker.title':'اختر صالتك','lounge.picker.search':'ابحث عن صالة أو مدينة أو منطقة…','lounge.picker.current':'أنت هنا','lounge.picker.coming':'قريباً','lounge.picker.none':'لا توجد صالات مطابقة لبحثك.',
     'help.title':'هل تحتاج مساعدة؟','help.body':'استدع مضيفاً — نحن قريبون.',
     'help.callstaff':'استدعاء مضيف','help.called':'تم إخطار المضيف.','help.close':'إغلاق',
     'footer.note':'لحظة هادئة وراقية قبل رحلتك.',
     'footer.crafted':'صُمِّم في زيورخ','footer.copy':'© صالة أسباير سويسرا',
-    'addr.zurich':'مطار زيورخ · المبنى A','addr.geneva':'مطار جنيف · المبنى 1','addr.basel':'مطار بازل · بوابات المغادرة',
+    'addr.zurich':'صالة أسباير زيورخ','addr.geneva':'بوابات A · B · D — المبنى A','addr.basel':'منطقة ما بعد التفتيش · قبل الإقلاع',
     'eyebrow.aspire':'— أسباير','eyebrow.important':'— تنبيه','eyebrow.swiss':'— مصدر سويسري',
     'home.scroll':'مرّر للأسفل','home.tap':'المس أي نقطة مضيئة لاكتشاف البوفيه',
     'hero.head1':'أبعد من','hero.head.italic':'','hero.head.tail':'البوفيه.',
     'hero.body':'استراحة هادئة بين البوابات. مطبخ بجذور سويسرية، ضوء الجبال، ودفء بطيء لمساء يسبق الإقلاع — لمسافرين يفضّلون الوصول دون عجلة.',
     'hero.cta.secondary':'اكتشف الصالة','hero.serving':'خدمة يومية','hero.est':'تأسست 2010 — المبنى A',
-    'home.cities':'زيورخ · جنيف · بازل',
+    'home.cities':'زيورخ · بوابات A, B & D',
     'home.quiet.eyebrow':'— وعدنا الهادئ',
     'home.story.body':'من أول رشفة قهوة ألبية إلى آخر قضمة من كعكة زوغ، كل تفصيلة مُعدّة لتمنحك استراحة هادئة بين المدن.',
     'home.farms.title':'من وديان سويسرا وبحيراتها ومزارعها.','home.farms.cta':'اكتشف مصادرنا',
@@ -964,9 +964,9 @@ function setLocale(code) {
 
 const LOUNGES = [
   { region: 'Europe', items: [
-    { name: 'Zurich Aspire Lounge — Gates A, B & D', active: true },
-    { name: 'Zurich Aspire Lounge — Midfield', active: true },
-    { name: 'Zurich Swiss Airlines Lounge', active: true },
+    { name: 'Zürich Aspire Lounge — Gates A, B & D', active: true },
+    { name: 'Zürich Aspire Lounge — Midfield' },
+    { name: 'Zürich Swiss Airlines Lounge' },
     { name: 'Amsterdam Schiphol Aspire Lounge 26' },
     { name: 'Amsterdam Schiphol Aspire Lounge 41' },
     { name: 'Amsterdam Schiphol Star Alliance Lounge' },
@@ -2276,9 +2276,7 @@ function renderLoungeList(query) {
           <li>
             <button ${it.active ? 'data-lounge-go="zurich"' : 'disabled'} class="w-full text-left py-3.5 flex items-center justify-between gap-4 group ${it.active ? 'hover:pl-2 cursor-pointer' : 'opacity-45 cursor-not-allowed'} transition-[padding] duration-300">
               <span class="text-[0.95rem] ${it.active ? 'text-navy-900' : 'text-navy-700'}">${esc(it.name)}</span>
-              <span class="text-[0.55rem] uppercase tracking-[0.32em] whitespace-nowrap ${it.active ? 'text-gold-600' : 'text-navy-500/70'}">
-                ${it.active ? esc(t('lounge.picker.current')) : esc(t('lounge.picker.coming'))}
-              </span>
+              ${it.active ? `<span class="text-[0.55rem] uppercase tracking-[0.32em] whitespace-nowrap text-gold-600">${esc(t('lounge.picker.current'))}</span>` : ''}
             </button>
           </li>
         `).join('')}
