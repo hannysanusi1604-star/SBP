@@ -354,6 +354,182 @@
     background: linear-gradient(140deg, #FBF9F5 0%, #F2ECDE 100%);
     border: 1px solid rgba(184,152,85,.3);
   }
+
+  /* Tier picker */
+  .pa-tier-card {
+    border: 1px solid rgba(20,38,63,.12);
+    background: #fff;
+    padding: 22px 22px 24px;
+    cursor: pointer;
+    transition: border-color .3s, transform .3s, box-shadow .3s;
+    position: relative;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .pa-tier-card:hover { border-color: rgba(184,152,85,.55); transform: translateY(-2px); box-shadow: 0 18px 30px -22px rgba(20,38,63,.25); }
+  .pa-tier-card.active { border-color: #B89855; box-shadow: 0 0 0 2px rgba(184,152,85,.22), 0 22px 36px -24px rgba(20,38,63,.3); background: linear-gradient(180deg, #fff 0%, #F2ECDE 220%); }
+  .pa-tier-card .pa-tier-crown {
+    width: 44px; height: 44px; border-radius: 50%;
+    display:flex; align-items:center; justify-content:center;
+    background: rgba(184,152,85,.12); color: #B89855; margin-bottom: 16px;
+  }
+  .pa-tier-card.active .pa-tier-crown { background: #B89855; color: #FBF9F5; }
+  .pa-perk-list { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
+  .pa-perk-list li {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: .82rem; color: #15263F; line-height: 1.5;
+  }
+  .pa-perk-list li::before {
+    content: ''; flex: none; width: 5px; height: 5px; border-radius: 50%;
+    background: #B89855; margin-top: 8px;
+  }
+
+  /* Suite & Privé feature panels */
+  .pa-feature-panel {
+    border: 1px solid rgba(184,152,85,.25);
+    background: linear-gradient(180deg, rgba(255,255,255,.7) 0%, rgba(242,236,222,.5) 100%);
+    padding: 22px 24px 24px;
+  }
+  .pa-option-chip {
+    padding: 11px 14px;
+    border: 1px solid rgba(20,38,63,.15);
+    background: #fff;
+    cursor: pointer;
+    transition: all .25s;
+    display: flex; flex-direction: column; gap: 4px;
+    text-align: left;
+  }
+  .pa-option-chip:hover { border-color: #B89855; }
+  .pa-option-chip.active {
+    border-color: #B89855;
+    background: linear-gradient(180deg, #fff 0%, #F2ECDE 200%);
+    box-shadow: 0 0 0 2px rgba(184,152,85,.18);
+  }
+  .pa-option-chip .pa-opt-label {
+    font-size: .82rem; color: #0A1729; font-weight: 500; letter-spacing: .01em;
+  }
+  .pa-option-chip .pa-opt-hint {
+    font-size: .7rem; color: #8A8475; line-height: 1.4;
+  }
+
+  /* Logistics pipeline */
+  .pa-pipeline {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    position: relative;
+  }
+  .pa-pipeline::before {
+    content: ''; position: absolute; left: 10%; right: 10%;
+    top: 16px; height: 1px;
+    background: linear-gradient(90deg, rgba(20,38,63,.18), rgba(20,38,63,.18));
+    z-index: 0;
+  }
+  .pa-pipeline-step {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    text-align: center;
+  }
+  .pa-pipeline-step .pa-step-dot {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #fff; border: 1px solid rgba(20,38,63,.18);
+    display: flex; align-items: center; justify-content: center;
+    color: #8A8475;
+    transition: all .35s;
+  }
+  .pa-pipeline-step.done .pa-step-dot {
+    background: #15263F; color: #FBF9F5; border-color: #15263F;
+  }
+  .pa-pipeline-step.active .pa-step-dot {
+    background: #B89855; color: #FBF9F5; border-color: #B89855;
+    box-shadow: 0 0 0 6px rgba(184,152,85,.18);
+    animation: paPulse 2.4s infinite;
+  }
+  .pa-pipeline-step .pa-step-label {
+    font-size: .58rem; letter-spacing: .22em; text-transform: uppercase;
+    color: #8A8475; max-width: 100px;
+  }
+  .pa-pipeline-step.done .pa-step-label,
+  .pa-pipeline-step.active .pa-step-label { color: #0A1729; }
+
+  /* Prep timeline */
+  .pa-prep-row {
+    display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center;
+    padding: 12px 0; border-bottom: 1px solid rgba(20,38,63,.08);
+    font-size: .88rem;
+  }
+  .pa-prep-row:last-child { border-bottom: 0; }
+  .pa-prep-num {
+    font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300;
+    color: rgba(20,38,63,.4); font-size: 1rem;
+  }
+  .pa-prep-bar {
+    height: 3px; background: rgba(20,38,63,.08); border-radius: 2px; overflow: hidden;
+    grid-column: 1 / -1; margin-top: 4px;
+  }
+  .pa-prep-bar > span { display: block; height: 100%; background: linear-gradient(90deg, #B89855, #E6CD8A); }
+
+  /* Push notification preview */
+  .pa-push {
+    background: rgba(20,38,63,.95);
+    color: #FBF9F5;
+    padding: 14px 16px;
+    border-radius: 16px;
+    box-shadow: 0 18px 30px -20px rgba(20,38,63,.5);
+    max-width: 360px;
+    backdrop-filter: blur(8px);
+  }
+  .pa-push .pa-push-head {
+    display: flex; align-items: center; gap: 8px;
+    font-size: .58rem; letter-spacing: .26em; text-transform: uppercase;
+    color: rgba(246,242,234,.7);
+    margin-bottom: 6px;
+  }
+  .pa-push .pa-push-body { font-size: .9rem; line-height: 1.5; }
+  .pa-push .pa-push-time { font-size: .58rem; color: rgba(246,242,234,.5); margin-top: 4px; letter-spacing: .12em; }
+
+  /* Biteable detail modal */
+  .pa-detail-section { padding-top: 28px; margin-top: 28px; border-top: 1px solid rgba(20,38,63,.08); }
+  .pa-detail-section:first-of-type { padding-top: 0; margin-top: 24px; border-top: 0; }
+  .pa-ingredient-list { display: flex; flex-direction: column; gap: 8px; }
+  .pa-ingredient-list li {
+    display: flex; align-items: flex-start; gap: 12px;
+    font-size: .94rem; color: #15263F; line-height: 1.55;
+  }
+  .pa-ingredient-list li::before {
+    content: ''; flex: none; width: 12px; height: 1px;
+    background: #B89855; margin-top: 12px;
+  }
+
+  /* QR + reference card */
+  .pa-ref-card {
+    border: 1px solid rgba(20,38,63,.12);
+    background: #fff;
+    padding: 18px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .pa-ref-card .pa-qr-host { flex: none; width: 88px; height: 88px; background: #FBF9F5; padding: 6px; }
+
+  /* Slot details button */
+  .pa-detail-btn {
+    background: rgba(20,38,63,.05);
+    color: #15263F;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .25s, color .25s;
+    border-radius: 4px;
+    flex: none;
+  }
+  .pa-detail-btn:hover { background: #15263F; color: #FBF9F5; }
+
+  @media (max-width: 640px) {
+    .pa-pipeline { grid-template-columns: repeat(5, 1fr); }
+    .pa-pipeline-step .pa-step-label { font-size: .52rem; letter-spacing: .18em; }
+    .pa-pipeline::before { top: 14px; }
+    .pa-pipeline-step .pa-step-dot { width: 28px; height: 28px; }
+  }
 </style>
 </head>
 <body class="min-h-screen">
@@ -387,6 +563,10 @@
     <symbol id="i-shuffle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h3l4 5 4 5h4M3 17h3l4-5M14 7h4M18 5l2 2-2 2M18 15l2 2-2 2"/></symbol>
     <symbol id="i-tray" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15h18l-2 4H5l-2-4z"/><path d="M5 15V8a2 2 0 012-2h10a2 2 0 012 2v7"/><path d="M9 6V4h6v2"/></symbol>
     <symbol id="i-crown" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l4 5 5-8 5 8 4-5-2 11H5L3 8z"/><path d="M5 19h14"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></symbol>
+    <symbol id="i-wine" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10l-1 6a4 4 0 11-8 0L7 3z"/><path d="M12 13v6M9 21h6"/></symbol>
+    <symbol id="i-leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 6-14 14-14 0 8-6 14-14 14z"/><path d="M5 19l7-7"/></symbol>
+    <symbol id="i-spark2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v4M12 16v4M4 12h4M16 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6"/></symbol>
 
     <!-- Dietary -->
     <symbol id="d-vegetarian" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 14c2-6 8-9 14-9-1 8-6 13-12 13-2 0-3-1-3-2 0-1 0-1 1-2z"/></symbol>
@@ -605,6 +785,106 @@ const I18N = {
     'pa.home.body':'A new ritual for Luxe, Suite and Privé travellers — curated tiered trays of luxury biteables, plated and timed to the minute you sit down.',
     'pa.home.cta':'Compose your tray',
     'pa.now':'now',
+
+    'pa.step.tier':'00 · Choose your tier',
+    'pa.step.tier.body':'Your boarding pass profile determines the welcome — Luxe, Suite or Privé. Switch to preview what each tier unlocks for your tray.',
+
+    'pa.tier.luxe.label':'Luxe',
+    'pa.tier.luxe.tagline':'The curated essential',
+    'pa.tier.luxe.perk1':'Pre-ordered tiered tray',
+    'pa.tier.luxe.perk2':'Counter pickup at lounge entry',
+    'pa.tier.luxe.perk3':'Standard 18-minute preparation',
+    'pa.tier.luxe.perk4':'Dietary swaps & allergen filters',
+    'pa.tier.luxe.handoff':'Counter A · Lounge entry',
+
+    'pa.tier.suite.label':'Suite',
+    'pa.tier.suite.tagline':'A quieter table service',
+    'pa.tier.suite.perk1':'All Luxe inclusions',
+    'pa.tier.suite.perk2':'Sommelier-paired beverage, complimentary',
+    'pa.tier.suite.perk3':'Plated to your seat in the Suite zone',
+    'pa.tier.suite.perk4':'Priority preparation — three minutes saved',
+    'pa.tier.suite.handoff':'Your table · Suite zone',
+
+    'pa.tier.prive.label':'Privé',
+    'pa.tier.prive.tagline':'Private dining ritual',
+    'pa.tier.prive.perk1':'All Suite inclusions',
+    'pa.tier.prive.perk2':'Reserved private dining nook',
+    'pa.tier.prive.perk3':'Dedicated host & hot-towel ritual',
+    'pa.tier.prive.perk4':'Fine porcelain · crystal · bespoke chef note',
+    'pa.tier.prive.handoff':'Privé Nook · seated greeting',
+
+    'pa.suite.title':'Suite enhancements',
+    'pa.suite.body':'Composed for travellers who like the world to come to them. Pour and plating are timed to your seat — no need to leave the lounge banquette.',
+    'pa.suite.pairing.title':'Sommelier pairing',
+    'pa.suite.pairing.subtitle':'Choose one — complimentary with your tray.',
+    'pa.suite.pairing.pinot':'Pinot Noir · Graubünden',
+    'pa.suite.pairing.pinot.hint':'Light Alpine fruit, bright finish — pairs with cured meats.',
+    'pa.suite.pairing.champagne':'Champagne Brut · Henriot',
+    'pa.suite.pairing.champagne.hint':'Crisp, fine bubble — the all-day companion.',
+    'pa.suite.pairing.riesling':'Alpine Riesling · Wallis',
+    'pa.suite.pairing.riesling.hint':'Mineral, off-dry — pairs with smoked fish and Asian notes.',
+    'pa.suite.delivery.title':'Plated where you sit',
+    'pa.suite.delivery.body':'A host walks the tray to your seat the moment you arrive. Toggle off to pick up at the entry counter instead.',
+    'pa.suite.delivery.on':'Table delivery',
+    'pa.suite.delivery.off':'Counter pickup',
+    'pa.suite.priority':'Priority prep · −3 min',
+
+    'pa.prive.title':'Privé ritual',
+    'pa.prive.body':'A reserved nook, a host you’ll know by name, and a finishing ritual borrowed from our finest signature suites.',
+    'pa.prive.nook.title':'Private dining nook',
+    'pa.prive.nook.subtitle':'Three reserved nooks — each seats up to four guests.',
+    'pa.prive.nook.alps':'Alps Nook · Mountain view',
+    'pa.prive.nook.lake':'Lake Nook · Quiet corner',
+    'pa.prive.nook.belvedere':'Belvedere · Skyline outlook',
+    'pa.prive.host.title':'Dedicated host',
+    'pa.prive.host.intro':'Assigned to your tray',
+    'pa.prive.host.body':'will greet you at the nook, plate the tiers, and remain available throughout your stay.',
+    'pa.prive.ritual':'Includes hot-towel ritual & fine porcelain service.',
+    'pa.prive.chefNote.title':'Bespoke chef consultation',
+    'pa.prive.chefNote.body':'Whisper anything — celebration, dietary nuance, a craved Swiss memory. The chef adjusts the tray accordingly.',
+    'pa.prive.chefNote.ph':'e.g. anniversary dinner, lighter portions, extra Gruyère…',
+
+    'pa.summary.tier':'Tier',
+    'pa.summary.pairing':'Pairing',
+    'pa.summary.delivery':'Delivery',
+    'pa.summary.nook':'Nook',
+    'pa.summary.host':'Host',
+    'pa.summary.handoff':'Handoff',
+    'pa.summary.none':'—',
+
+    'pa.detail.inside':'Inside this biteable',
+    'pa.detail.portion':'Portion',
+    'pa.detail.provenance':'Provenance',
+    'pa.detail.dietary':'Dietary',
+    'pa.detail.allergens':'Contains',
+    'pa.detail.chefnote':'Chef’s note',
+    'pa.detail.cta':'Keep on tray',
+    'pa.detail.swap':'Swap this dish',
+    'pa.detail.btn':'View ingredients',
+
+    'pa.track.eyebrow':'Live order',
+    'pa.track.title':'Your tray is in motion.',
+    'pa.track.body':'Pre-arrival orders are tracked from the moment we receive them. Modify or cancel up to 20 minutes before arrival.',
+    'pa.track.step.received':'Received',
+    'pa.track.step.confirmed':'Confirmed',
+    'pa.track.step.preparing':'Preparing',
+    'pa.track.step.plated':'Plated',
+    'pa.track.step.ready':'Ready at lounge',
+    'pa.track.stage.mise':'Mise en place',
+    'pa.track.stage.cook':'Cooking & plating',
+    'pa.track.stage.qa':'Garnish & quality check',
+    'pa.track.stage.delivery':'Delivery to handoff',
+    'pa.track.handoff.title':'Where to find your tray',
+    'pa.track.reference':'Order reference',
+    'pa.track.qr.hint':'Scan at the lounge desk to retrieve your order.',
+    'pa.track.push.head':'Aspire · Pre-Arrival',
+    'pa.track.push.body':'Your tray is being plated. We’ll meet you in about',
+    'pa.track.push.bodySuffix':'minutes.',
+    'pa.track.push.now':'Now',
+    'pa.track.editWindow':'Editable up to 20 minutes before arrival.',
+    'pa.track.modify':'Modify or cancel',
+    'pa.track.timeline.title':'Preparation timeline',
+    'pa.track.timeline.body':'Total prep time scales with your tray size. Suite and Privé travellers gain a three-minute priority allocation.',
     'home.eyebrow':'Zürich · Geneva · Basel',
     'home.welcome':'Welcome to a quiet moment before your flight.',
     'home.subtitle':'Browse today’s buffet, discover Swiss ingredients, and travel with comfort.',
@@ -1110,13 +1390,45 @@ const STATE = {
   filtersOpen: false,
   preArrival: {
     size: 'medium',
+    tier: 'luxe',
     selections: { starters: [], mains: [], desserts: [] },
     schedule: '',
     note: '',
     confirmed: null,
     swapTarget: null,
+    suite: { pairing: null, delivery: 'table' },
+    prive: { nook: null, host: 'Élodie Roulet', hotTowel: true, chefNote: '' },
   },
 };
+
+const PA_TIERS = ['luxe','suite','prive'];
+
+const PA_PAIRINGS = [
+  { id:'pinot',     labelKey:'pa.suite.pairing.pinot',     hintKey:'pa.suite.pairing.pinot.hint' },
+  { id:'champagne', labelKey:'pa.suite.pairing.champagne', hintKey:'pa.suite.pairing.champagne.hint' },
+  { id:'riesling',  labelKey:'pa.suite.pairing.riesling',  hintKey:'pa.suite.pairing.riesling.hint' },
+];
+
+const PA_NOOKS = [
+  { id:'alps',      labelKey:'pa.prive.nook.alps' },
+  { id:'lake',      labelKey:'pa.prive.nook.lake' },
+  { id:'belvedere', labelKey:'pa.prive.nook.belvedere' },
+];
+
+const PA_PREP_STAGES = [
+  { id:'mise',     labelKey:'pa.track.stage.mise',     ratio:.25 },
+  { id:'cook',     labelKey:'pa.track.stage.cook',     ratio:.45 },
+  { id:'qa',       labelKey:'pa.track.stage.qa',       ratio:.15 },
+  { id:'delivery', labelKey:'pa.track.stage.delivery', ratio:.15 },
+];
+
+const PA_PIPELINE_STEPS = [
+  { id:'received',  labelKey:'pa.track.step.received'  },
+  { id:'confirmed', labelKey:'pa.track.step.confirmed' },
+  { id:'preparing', labelKey:'pa.track.step.preparing' },
+  { id:'plated',    labelKey:'pa.track.step.plated'    },
+  { id:'ready',     labelKey:'pa.track.step.ready'     },
+];
 
 const PA_TRAY_SIZES = {
   small:  { starters: 2, mains: 2, desserts: 2, guests: 'pa.size.small.guests', detail: 'pa.size.small.detail', prep: 14 },
@@ -1129,6 +1441,115 @@ const PA_RECOMMENDED = {
   starters: ['cheese-charcuterie','smoked-trout-salad','french-pastry','greek-yogurt-parfait'],
   mains:    ['zurcher-geschnetzeltes','herb-lake-fish','rosti-alpine-cheese','shakshuka'],
   desserts: ['zuger-kirschtorte','chocolate-mousse','panna-cotta'],
+};
+
+// Detailed biteable specs — ingredients, portion, provenance — surfaced in detail modal
+const BITEABLE_DETAIL = {
+  'cheese-charcuterie': {
+    ingredients: ['Gruyère AOP (18-month)','Tête de Moine rosettes','Bündnerfleisch','Valais dried beef','Black-mission fig compote','Toasted walnut crispbread'],
+    portion: '2 pieces · ~45 g',
+    provenance: 'Affineurs Rolf Beeler & Maître Jumi · canton Bern',
+  },
+  'bircher-muesli': {
+    ingredients: ['Overnight rolled oats','Grated Gala apple','Swiss Stalden yoghurt','Acacia honey','Toasted Piedmont hazelnuts','Lemon zest'],
+    portion: '1 cup · 90 g',
+    provenance: 'Morning preparation · house pastry kitchen',
+  },
+  'smoked-trout-salad': {
+    ingredients: ['Cold-smoked alpine trout','Ratte fingerling potatoes','Dill crème fraîche','Pickled shallot','Lemon zest','Garden chives'],
+    portion: '1 verrine · ~55 g',
+    provenance: 'Lake Lucerne fisheries · day-boat catch',
+  },
+  'cucumber-radish-salad': {
+    ingredients: ['Crisp cucumber ribbons','French breakfast radishes','Garden herbs','Cold-pressed olive oil','Aged white-balsamic vinaigrette','Sea-salt flakes'],
+    portion: '1 cup · 60 g',
+    provenance: 'Bühl farm · canton Aargau, harvested at dawn',
+  },
+  'pretzel-butter': {
+    ingredients: ['Warm Swiss pretzel rolls','Cultured Alpine butter','Herb butter (chives, parsley)','Alpine sea salt'],
+    portion: '2 rolls · 70 g',
+    provenance: 'Baked on premises every 90 minutes',
+  },
+  'fruit-compote': {
+    ingredients: ['Slow-cooked seasonal stone fruit','Bourbon vanilla bean','Alpine honey syrup','Fresh mint'],
+    portion: '1 jar · 80 g',
+    provenance: 'Seasonal — sourced from Wallis orchards',
+  },
+  'greek-yogurt-parfait': {
+    ingredients: ['Thick Greek yoghurt','Acacia honey','House granola','Mixed berries','Pomegranate seeds'],
+    portion: '1 verrine · 90 g',
+    provenance: 'Yoghurt cultured in-house · 24 h hang',
+  },
+  'french-pastry': {
+    ingredients: ['Mini pain au chocolat','Mini all-butter croissant','Brioche bouchon','Palmier biscuit'],
+    portion: '4 pieces · ~70 g',
+    provenance: 'Hand-laminated daily · 72 h cold ferment',
+  },
+  'chickpea-salad': {
+    ingredients: ['Slow-cooked chickpeas','Vine tomato','Cucumber','Flat-leaf parsley','Cumin','Lemon','Cold-pressed olive oil'],
+    portion: '1 cup · 80 g',
+    provenance: 'Mediterranean station · prepared à la minute',
+  },
+  'avocado-wraps': {
+    ingredients: ['Smashed Hass avocado','Sun-ripened tomato','Baby spinach','Lemon zest','Soft wheat wrap'],
+    portion: '2 mini-wraps · 70 g',
+    provenance: 'Cold pantry · plant-forward selection',
+  },
+  'zurcher-geschnetzeltes': {
+    ingredients: ['Sliced milk-fed veal','White wine reduction','Cream','Crémini & porcini mushrooms','Shallot','Parsley'],
+    portion: '1 small bowl · 90 g',
+    provenance: 'Zurich heritage recipe · since 1947',
+  },
+  'rosti-alpine-cheese': {
+    ingredients: ['Grated Bintje potato','Berner Hobelkäse AOP','Cultured butter','Chives'],
+    portion: '1 wedge · 80 g',
+    provenance: 'Sourced from Berner Oberland alpages',
+  },
+  'veal-bratwurst': {
+    ingredients: ['Swiss veal bratwurst','Slow-cooked onion gravy','Buttered rösti potatoes','Apple-mustard glaze'],
+    portion: '1 portion · 95 g',
+    provenance: 'Metzgerei Keller · canton St. Gallen',
+  },
+  'herb-lake-fish': {
+    ingredients: ['Filet of lake perch','Herb butter','Citrus beurre blanc','Charred lemon','Garden vegetables'],
+    portion: '1 filet · 70 g',
+    provenance: 'Sustainable line-catch · Lake Zürich',
+  },
+  'shakshuka': {
+    ingredients: ['Slow-simmered tomato','Red & yellow peppers','Smoked paprika','Cumin','Baked free-range egg','Crusty sourdough'],
+    portion: '1 small cocotte · 100 g',
+    provenance: 'Mediterranean station · daily refresh',
+  },
+  'chicken-skillet': {
+    ingredients: ['Halal chicken sausage','Bell peppers','Sweet onion','Golden potatoes','Baked free-range egg','Smoked paprika'],
+    portion: '1 small skillet · 100 g',
+    provenance: 'Halal-certified supply chain',
+  },
+  'asian-fried-rice': {
+    ingredients: ['Jasmine rice','Ginger','Garlic','Light soy','Carrot','Spring onion','Toasted sesame'],
+    portion: '1 bowl · 85 g',
+    provenance: 'Wok station · finished à la minute',
+  },
+  'zuger-kirschtorte': {
+    ingredients: ['Hazelnut meringue','Genoise sponge','Kirsch syrup','Buttercream','Toasted almond flakes','Icing sugar'],
+    portion: '1 mini-torte · 55 g',
+    provenance: 'Protected specialty of canton Zug',
+  },
+  'chocolate-mousse': {
+    ingredients: ['Lindt grand cru 70 %','Whipped cream','Cocoa nibs','24-carat gold leaf'],
+    portion: '1 verrine · 65 g',
+    provenance: 'Lindt Maîtres Chocolatiers · Kilchberg',
+  },
+  'panna-cotta': {
+    ingredients: ['Bourbon vanilla panna cotta','Passion-fruit coulis','Diced mango','Micro basil'],
+    portion: '1 verrine · 70 g',
+    provenance: 'Pastry station · 6 h set',
+  },
+  'frozen-yoghurt': {
+    ingredients: ['House-cultured frozen yoghurt','Berry coulis','Madagascar vanilla sauce','Dark chocolate sauce'],
+    portion: '1 cup · 75 g',
+    provenance: 'Churned every morning on premises',
+  },
 };
 
 function t(key) { return (I18N[STATE.locale] && I18N[STATE.locale][key]) || I18N.en[key] || key; }
@@ -2393,6 +2814,23 @@ function paTimeSlots() {
   return slots;
 }
 
+function biteableDetail(id) {
+  const d = DISHES.find(x => x.id === id);
+  if (!d) return null;
+  const overlay = BITEABLE_DETAIL[id] || {};
+  return {
+    ingredients: overlay.ingredients || [],
+    portion: overlay.portion || '',
+    provenance: overlay.provenance || '',
+  };
+}
+
+function paIngredientTeaser(id) {
+  const det = biteableDetail(id);
+  if (!det || !det.ingredients.length) return '';
+  return det.ingredients.slice(0, 3).join(' — ');
+}
+
 function paSlotMarkup(cat, idx, dishId) {
   const d = dishId ? DISHES.find(x => x.id === dishId) : null;
   const ld = d ? localizedDish(d) : null;
@@ -2408,28 +2846,35 @@ function paSlotMarkup(cat, idx, dishId) {
       </button>
     </div>`;
   }
+  const teaser = paIngredientTeaser(d.id);
   return `
-  <div class="pa-dish-slot filled ${recommended ? 'recommend' : ''}">
-    <span class="pa-tier-num">${num}</span>
+  <div class="pa-dish-slot filled ${recommended ? 'recommend' : ''}" style="align-items: flex-start;">
+    <span class="pa-tier-num" style="margin-top: 4px;">${num}</span>
     <img src="${esc(d.image)}" alt="${esc(ld.name)}" loading="lazy" class="pa-thumb" onerror="this.style.background='#EDE6D6'; this.style.opacity='0.5'" />
     <div class="flex-1 min-w-0">
       <div class="flex items-center gap-2 flex-wrap">
         <h4 class="text-[0.95rem] text-navy-900 truncate" title="${esc(ld.name)}">${esc(ld.name)}</h4>
         ${recommended ? `<span class="pa-pill"><span>${icon('i-sparkle','w-2.5 h-2.5')}</span>${esc(t('pa.recommended'))}</span>` : ''}
       </div>
-      <div class="mt-1.5 flex items-center gap-2 flex-wrap">
+      ${teaser ? `<p class="mt-1 text-[0.78rem] text-navy-500 leading-snug line-clamp-2">${esc(teaser)}</p>` : ''}
+      <div class="mt-2 flex items-center gap-2 flex-wrap">
         <span class="inline-flex items-center gap-1 text-[0.6rem] uppercase tracking-[0.22em] ${d.temperature==='hot'?'text-[#C0481E]':'text-[#2E7BB8]'}">
           ${icon(d.temperature==='hot'?'i-flame':'i-snow','w-3 h-3')} ${esc(t('menu.'+d.temperature))}
         </span>
         ${d.dietary.slice(0,3).map(f => `<span class="text-gold-500" title="${esc(t('diet.'+f))}">${icon('d-'+f,'w-3.5 h-3.5')}</span>`).join('')}
-        ${d.allergens.length ? `<span class="inline-flex items-center gap-1 text-[0.58rem] uppercase tracking-[0.18em] text-navy-500/70">
+        ${d.allergens.length ? `<span class="inline-flex items-center gap-1 text-[0.58rem] uppercase tracking-[0.18em] text-navy-500/70" title="${esc(t('pa.detail.allergens'))}">
           ${d.allergens.slice(0,3).map(a => icon('a-'+a,'w-3 h-3')).join('')}
         </span>` : ''}
       </div>
     </div>
-    <button data-pa-swap="${cat}:${idx}" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-[0.6rem] uppercase tracking-[0.22em] text-navy-700 border border-navy-900/15 hover:border-navy-900 transition-colors" aria-label="${esc(t('pa.swap'))}">
-      ${icon('i-shuffle','w-3 h-3')} ${esc(t('pa.swap'))}
-    </button>
+    <div class="flex flex-col gap-1.5 items-end">
+      <button data-pa-detail="${d.id}" class="pa-detail-btn" aria-label="${esc(t('pa.detail.btn'))}" title="${esc(t('pa.detail.btn'))}">
+        ${icon('i-info','w-4 h-4')}
+      </button>
+      <button data-pa-swap="${cat}:${idx}" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-[0.6rem] uppercase tracking-[0.22em] text-navy-700 border border-navy-900/15 hover:border-navy-900 transition-colors" aria-label="${esc(t('pa.swap'))}">
+        ${icon('i-shuffle','w-3 h-3')} ${esc(t('pa.swap'))}
+      </button>
+    </div>
   </div>`;
 }
 
@@ -2447,18 +2892,56 @@ function paTierMarkup(cat, labelKey) {
   </div>`;
 }
 
+function paEffectivePrep() {
+  const cfg = PA_TRAY_SIZES[STATE.preArrival.size];
+  const tier = STATE.preArrival.tier;
+  return tier === 'luxe' ? cfg.prep : Math.max(8, cfg.prep - 3);
+}
+
+function paPairingLabel() {
+  if (STATE.preArrival.tier === 'luxe') return null;
+  const p = PA_PAIRINGS.find(x => x.id === STATE.preArrival.suite.pairing);
+  return p ? t(p.labelKey) : t('pa.summary.none');
+}
+
+function paNookLabel() {
+  if (STATE.preArrival.tier !== 'prive') return null;
+  const n = PA_NOOKS.find(x => x.id === STATE.preArrival.prive.nook);
+  return n ? t(n.labelKey) : t('pa.summary.none');
+}
+
+function paHandoffCopy() {
+  const tier = STATE.preArrival.tier;
+  if (tier === 'prive') {
+    const n = PA_NOOKS.find(x => x.id === STATE.preArrival.prive.nook);
+    return n ? `${t(n.labelKey)} — ${STATE.preArrival.prive.host}` : t('pa.tier.prive.handoff');
+  }
+  if (tier === 'suite') {
+    return STATE.preArrival.suite.delivery === 'table'
+      ? t('pa.tier.suite.handoff')
+      : t('pa.tier.luxe.handoff');
+  }
+  return t('pa.tier.luxe.handoff');
+}
+
 function paSummaryMarkup() {
   const size = STATE.preArrival.size;
   const cfg = PA_TRAY_SIZES[size];
   const sel = STATE.preArrival.selections;
-  const total = sel.starters.length + sel.mains.length + sel.desserts.length;
   const expected = cfg.starters + cfg.mains + cfg.desserts;
   const filled = sel.starters.filter(Boolean).length + sel.mains.filter(Boolean).length + sel.desserts.filter(Boolean).length;
   const complete = filled === expected;
   const time = STATE.preArrival.schedule || t('pa.now');
+  const tier = STATE.preArrival.tier;
+  const prep = paEffectivePrep();
+  const pairing = paPairingLabel();
+  const nook = paNookLabel();
   return `
   <div class="border border-navy-900/12 bg-ivory-50 p-6 sm:p-7 sticky top-[80px]">
-    <div class="swiss-eyebrow mb-4">— ${esc(t('pa.summary'))}</div>
+    <div class="flex items-center justify-between mb-4">
+      <div class="swiss-eyebrow">— ${esc(t('pa.summary'))}</div>
+      <span class="pa-pill"><span>${icon('i-crown','w-2.5 h-2.5')}</span>${esc(t('pa.tier.'+tier+'.label'))}</span>
+    </div>
     <dl class="space-y-3 text-[0.9rem]">
       <div class="flex items-center justify-between gap-3">
         <dt class="text-navy-500">${esc(t('pa.summary.size'))}</dt>
@@ -2472,11 +2955,34 @@ function paSummaryMarkup() {
         <dt class="text-navy-500">${esc(t('pa.summary.dishes'))}</dt>
         <dd class="text-navy-900">${filled} / ${expected}</dd>
       </div>
+      ${pairing ? `<div class="flex items-center justify-between gap-3">
+        <dt class="text-navy-500">${esc(t('pa.summary.pairing'))}</dt>
+        <dd class="text-navy-900 text-right truncate max-w-[60%]" title="${esc(pairing)}">${esc(pairing)}</dd>
+      </div>` : ''}
+      ${tier === 'suite' ? `<div class="flex items-center justify-between gap-3">
+        <dt class="text-navy-500">${esc(t('pa.summary.delivery'))}</dt>
+        <dd class="text-navy-900">${esc(STATE.preArrival.suite.delivery === 'table' ? t('pa.suite.delivery.on') : t('pa.suite.delivery.off'))}</dd>
+      </div>` : ''}
+      ${nook ? `<div class="flex items-center justify-between gap-3">
+        <dt class="text-navy-500">${esc(t('pa.summary.nook'))}</dt>
+        <dd class="text-navy-900 text-right truncate max-w-[60%]" title="${esc(nook)}">${esc(nook)}</dd>
+      </div>` : ''}
+      ${tier === 'prive' ? `<div class="flex items-center justify-between gap-3">
+        <dt class="text-navy-500">${esc(t('pa.summary.host'))}</dt>
+        <dd class="text-navy-900">${esc(STATE.preArrival.prive.host)}</dd>
+      </div>` : ''}
       <div class="flex items-center justify-between gap-3">
         <dt class="text-navy-500">${esc(t('pa.summary.prep'))}</dt>
-        <dd class="text-navy-900 inline-flex items-center gap-1.5">${icon('i-clock','w-3.5 h-3.5')} ${cfg.prep} ${esc(t('pa.summary.min'))}</dd>
+        <dd class="text-navy-900 inline-flex items-center gap-1.5">
+          ${icon('i-clock','w-3.5 h-3.5')} ${prep} ${esc(t('pa.summary.min'))}
+          ${tier !== 'luxe' ? `<span class="pa-pill" style="font-size:.5rem;padding:2px 6px;">−3</span>` : ''}
+        </dd>
       </div>
       <div class="flex items-center justify-between gap-3 pt-3 border-t border-navy-900/10">
+        <dt class="text-navy-500">${esc(t('pa.summary.handoff'))}</dt>
+        <dd class="text-navy-900 text-right text-[0.82rem] leading-snug max-w-[60%]">${esc(paHandoffCopy())}</dd>
+      </div>
+      <div class="flex items-center justify-between gap-3">
         <dt class="text-navy-500">${esc(t('pa.summary.eta'))}</dt>
         <dd class="text-navy-900 font-medium">${esc(time)}</dd>
       </div>
@@ -2488,40 +2994,260 @@ function paSummaryMarkup() {
   </div>`;
 }
 
+function paPipelineMarkup(activeIdx) {
+  return `
+  <div class="pa-pipeline">
+    ${PA_PIPELINE_STEPS.map((step, i) => {
+      const cls = i < activeIdx ? 'done' : (i === activeIdx ? 'active' : 'pending');
+      const glyph = i < activeIdx ? icon('i-check','w-3.5 h-3.5') : `<span class="text-[0.62rem]">${i+1}</span>`;
+      return `
+      <div class="pa-pipeline-step ${cls}">
+        <span class="pa-step-dot">${glyph}</span>
+        <span class="pa-step-label">${esc(t(step.labelKey))}</span>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function paPrepStagesMarkup(totalMin) {
+  let cumulative = 0;
+  const rows = PA_PREP_STAGES.map((stage, i) => {
+    const mins = Math.max(2, Math.round(totalMin * stage.ratio));
+    cumulative += mins;
+    return `
+    <div>
+      <div class="pa-prep-row">
+        <span class="pa-prep-num">${String(i+1).padStart(2,'0')}</span>
+        <span class="text-navy-900">${esc(t(stage.labelKey))}</span>
+        <span class="text-navy-500 inline-flex items-center gap-1.5">${icon('i-clock','w-3 h-3')} ${mins} ${esc(t('pa.summary.min'))}</span>
+      </div>
+      <div class="pa-prep-bar"><span style="width: ${Math.min(100, Math.round(cumulative/totalMin*100))}%"></span></div>
+    </div>`;
+  }).join('');
+  return rows;
+}
+
+function paRefQrMarkup(ref) {
+  if (typeof qrcode === 'undefined') return '<div class="pa-qr-host"></div>';
+  try {
+    const qr = qrcode(0, 'M');
+    qr.addData(`ASPIRE://pa/${ref}`);
+    qr.make();
+    const count = qr.getModuleCount();
+    const size = 88;
+    const cell = size / count;
+    let rects = '';
+    for (let r = 0; r < count; r++) {
+      for (let c = 0; c < count; c++) {
+        if (qr.isDark(r, c)) {
+          rects += `<rect x="${(c*cell).toFixed(2)}" y="${(r*cell).toFixed(2)}" width="${cell.toFixed(2)}" height="${cell.toFixed(2)}" fill="#0A1729"/>`;
+        }
+      }
+    }
+    return `<div class="pa-qr-host"><svg viewBox="0 0 ${size} ${size}" width="100%" height="100%" shape-rendering="crispEdges">${rects}</svg></div>`;
+  } catch (e) {
+    return '<div class="pa-qr-host"></div>';
+  }
+}
+
 function paConfirmedMarkup() {
   const c = STATE.preArrival.confirmed;
   if (!c) return '';
+  const tier = STATE.preArrival.tier;
+  // Luxe starts at Received (0); Suite/Privé skip straight to Confirmed (1); demo always shows Preparing (2) for impact
+  const activeIdx = 2;
+  const pushMins = Math.max(2, Math.round(c.prep * 0.55));
   return `
-  <div class="pa-confirm-overlay mx-auto max-w-3xl px-6 sm:px-10 py-12 sm:py-14 mb-16 anim-up">
-    <div class="flex items-center gap-3 text-gold-600">
-      <span class="pa-status-dot"></span>
-      <span class="text-[0.65rem] uppercase tracking-[0.32em]">${esc(t('pa.confirm.eyebrow'))}</span>
+  <div class="pa-confirm-overlay mx-auto max-w-5xl px-6 sm:px-10 py-12 sm:py-14 mb-16 anim-up">
+    <div class="grid lg:grid-cols-12 gap-10 items-start">
+      <div class="lg:col-span-7">
+        <div class="flex items-center gap-3 text-gold-600">
+          <span class="pa-status-dot"></span>
+          <span class="text-[0.6rem] uppercase tracking-[0.32em]">${esc(t('pa.track.eyebrow'))}</span>
+          <span class="text-navy-900/20">·</span>
+          <span class="text-[0.6rem] uppercase tracking-[0.32em] text-navy-700">${esc(t('pa.tier.'+tier+'.label'))}</span>
+        </div>
+        <h2 class="serif-heading text-3xl sm:text-5xl mt-4 text-navy-900">${esc(t('pa.track.title'))}</h2>
+        <p class="mt-4 text-navy-500 leading-[1.7] max-w-xl">${esc(t('pa.track.body'))}</p>
+
+        <div class="mt-10">${paPipelineMarkup(activeIdx)}</div>
+
+        <div class="mt-12 grid sm:grid-cols-3 gap-6 pt-8 border-t border-navy-900/10">
+          <div>
+            <div class="swiss-eyebrow">${esc(t('pa.summary.eta'))}</div>
+            <div class="mt-2 serif-heading text-2xl text-navy-900">${esc(c.time)}</div>
+          </div>
+          <div>
+            <div class="swiss-eyebrow">${esc(t('pa.summary.prep'))}</div>
+            <div class="mt-2 serif-heading text-2xl text-navy-900">${c.prep} ${esc(t('pa.summary.min'))}</div>
+          </div>
+          <div>
+            <div class="swiss-eyebrow">${esc(t('pa.track.handoff.title'))}</div>
+            <div class="mt-2 text-[0.92rem] text-navy-900 leading-snug inline-flex items-start gap-1.5">${icon('i-pin','w-4 h-4 mt-0.5 text-gold-500')} <span>${esc(c.handoff)}</span></div>
+          </div>
+        </div>
+
+        <div class="mt-10 pt-8 border-t border-navy-900/10">
+          <div class="flex items-baseline justify-between gap-4 flex-wrap">
+            <div>
+              <div class="swiss-eyebrow">— ${esc(t('pa.track.timeline.title'))}</div>
+              <p class="mt-2 text-[0.88rem] text-navy-500 max-w-md leading-relaxed">${esc(t('pa.track.timeline.body'))}</p>
+            </div>
+            <span class="pa-pill"><span>${icon('i-clock','w-2.5 h-2.5')}</span>${c.prep} ${esc(t('pa.summary.min'))}</span>
+          </div>
+          <div class="mt-5">${paPrepStagesMarkup(c.prep)}</div>
+        </div>
+      </div>
+
+      <aside class="lg:col-span-5 flex flex-col gap-6">
+        <div class="pa-ref-card">
+          ${paRefQrMarkup(c.ref)}
+          <div class="flex-1 min-w-0">
+            <div class="swiss-eyebrow">${esc(t('pa.track.reference'))}</div>
+            <div class="mt-1 serif-heading text-2xl text-navy-900 tracking-wide">${esc(c.ref)}</div>
+            <p class="mt-2 text-[0.76rem] text-navy-500 leading-snug">${esc(t('pa.track.qr.hint'))}</p>
+          </div>
+        </div>
+
+        <div class="pa-push">
+          <div class="pa-push-head">
+            ${icon('i-bell','w-3 h-3')} ${esc(t('pa.track.push.head'))}
+          </div>
+          <div class="pa-push-body">${esc(t('pa.track.push.body'))} ${pushMins} ${esc(t('pa.track.push.bodySuffix'))}</div>
+          <div class="pa-push-time">${esc(t('pa.track.push.now'))}</div>
+        </div>
+
+        <div class="border border-navy-900/10 bg-ivory-50 p-5">
+          <div class="swiss-eyebrow">${esc(t('pa.track.modify'))}</div>
+          <p class="mt-2 text-[0.85rem] text-navy-500 leading-relaxed">${esc(t('pa.track.editWindow'))}</p>
+          <button id="paReset" class="mt-4 inline-flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.22em] text-navy-900 border-b border-navy-900/40 pb-1 hover:border-navy-900">
+            ${esc(t('pa.confirm.again'))} ${icon('i-arrow','w-3 h-3')}
+          </button>
+        </div>
+      </aside>
     </div>
-    <h2 class="serif-heading text-3xl sm:text-5xl mt-4 text-navy-900">${esc(t('pa.confirm.title'))}</h2>
-    <p class="mt-5 text-navy-500 leading-[1.7] max-w-xl">${esc(t('pa.confirm.body'))}</p>
-    <div class="mt-9 grid sm:grid-cols-3 gap-6 pt-7 border-t border-navy-900/10">
-      <div>
-        <div class="swiss-eyebrow">${esc(t('pa.summary.eta'))}</div>
-        <div class="mt-2 serif-heading text-2xl text-navy-900">${esc(c.time)}</div>
-      </div>
-      <div>
-        <div class="swiss-eyebrow">${esc(t('pa.summary.prep'))}</div>
-        <div class="mt-2 serif-heading text-2xl text-navy-900">${c.prep} ${esc(t('pa.summary.min'))}</div>
-      </div>
-      <div>
-        <div class="swiss-eyebrow">${esc(t('pa.confirm.ref'))}</div>
-        <div class="mt-2 serif-heading text-2xl text-navy-900">${esc(c.ref)}</div>
-      </div>
-    </div>
-    <button id="paReset" class="mt-9 inline-flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.22em] text-navy-900 border-b border-navy-900/40 pb-1 hover:border-navy-900">
-      ${esc(t('pa.confirm.again'))} ${icon('i-arrow','w-3 h-3')}
-    </button>
   </div>`;
+}
+
+function paTierCards() {
+  const activeTier = STATE.preArrival.tier;
+  return PA_TIERS.map(tier => {
+    const active = tier === activeTier;
+    const perks = [1,2,3,4].map(n => `<li>${esc(t('pa.tier.'+tier+'.perk'+n))}</li>`).join('');
+    return `
+    <button data-pa-tier="${tier}" class="pa-tier-card ${active ? 'active' : ''}">
+      <div class="pa-tier-crown">${icon('i-crown','w-5 h-5')}</div>
+      <div class="flex items-baseline justify-between gap-3">
+        <h3 class="serif-heading text-2xl text-navy-900">${esc(t('pa.tier.'+tier+'.label'))}</h3>
+        ${active ? `<span class="text-gold-600">${icon('i-check','w-4 h-4')}</span>` : ''}
+      </div>
+      <p class="text-[0.78rem] text-navy-500 italic mt-1">${esc(t('pa.tier.'+tier+'.tagline'))}</p>
+      <ul class="pa-perk-list">${perks}</ul>
+    </button>`;
+  }).join('');
+}
+
+function paSuitePanel() {
+  const tier = STATE.preArrival.tier;
+  if (tier !== 'suite' && tier !== 'prive') return '';
+  const sel = STATE.preArrival.suite.pairing;
+  const delivery = STATE.preArrival.suite.delivery;
+  const pairings = PA_PAIRINGS.map(p => {
+    const active = p.id === sel;
+    return `
+    <button data-pa-pairing="${p.id}" class="pa-option-chip ${active ? 'active' : ''}">
+      <span class="pa-opt-label">${icon('i-wine','w-3.5 h-3.5 inline -mt-0.5 text-gold-500')} ${esc(t(p.labelKey))}</span>
+      <span class="pa-opt-hint">${esc(t(p.hintKey))}</span>
+    </button>`;
+  }).join('');
+  return `
+  <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-16">
+    <div class="pa-feature-panel">
+      <div class="grid md:grid-cols-12 gap-8">
+        <div class="md:col-span-4">
+          <div class="inline-flex items-center gap-2 text-gold-600 text-[0.6rem] uppercase tracking-[0.32em]">
+            ${icon('i-crown','w-3.5 h-3.5')} ${esc(t('pa.tier.suite.label'))}
+          </div>
+          <h3 class="serif-heading text-2xl sm:text-3xl mt-3 text-navy-900">${esc(t('pa.suite.title'))}</h3>
+          <p class="mt-3 text-[0.9rem] text-navy-500 leading-relaxed">${esc(t('pa.suite.body'))}</p>
+          <div class="mt-5 pa-pill"><span>${icon('i-spark2','w-2.5 h-2.5')}</span>${esc(t('pa.suite.priority'))}</div>
+        </div>
+        <div class="md:col-span-8 grid gap-6">
+          <div>
+            <div class="text-[0.7rem] uppercase tracking-[0.22em] text-navy-700">${esc(t('pa.suite.pairing.title'))}</div>
+            <p class="mt-1 text-[0.78rem] text-navy-500">${esc(t('pa.suite.pairing.subtitle'))}</p>
+            <div class="mt-3 grid sm:grid-cols-3 gap-2.5">${pairings}</div>
+          </div>
+          <div>
+            <div class="text-[0.7rem] uppercase tracking-[0.22em] text-navy-700">${esc(t('pa.suite.delivery.title'))}</div>
+            <p class="mt-1 text-[0.78rem] text-navy-500 max-w-md">${esc(t('pa.suite.delivery.body'))}</p>
+            <div class="mt-3 grid grid-cols-2 gap-2.5 max-w-sm">
+              <button data-pa-delivery="table" class="pa-option-chip ${delivery==='table' ? 'active' : ''}">
+                <span class="pa-opt-label">${icon('i-pin','w-3.5 h-3.5 inline -mt-0.5 text-gold-500')} ${esc(t('pa.suite.delivery.on'))}</span>
+              </button>
+              <button data-pa-delivery="counter" class="pa-option-chip ${delivery==='counter' ? 'active' : ''}">
+                <span class="pa-opt-label">${icon('i-tray','w-3.5 h-3.5 inline -mt-0.5')} ${esc(t('pa.suite.delivery.off'))}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function paPrivePanel() {
+  if (STATE.preArrival.tier !== 'prive') return '';
+  const sel = STATE.preArrival.prive.nook;
+  const nooks = PA_NOOKS.map(n => {
+    const active = n.id === sel;
+    return `
+    <button data-pa-nook="${n.id}" class="pa-option-chip ${active ? 'active' : ''}">
+      <span class="pa-opt-label">${icon('i-pin','w-3.5 h-3.5 inline -mt-0.5 text-gold-500')} ${esc(t(n.labelKey))}</span>
+    </button>`;
+  }).join('');
+  return `
+  <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-6">
+    <div class="pa-feature-panel">
+      <div class="grid md:grid-cols-12 gap-8">
+        <div class="md:col-span-4">
+          <div class="inline-flex items-center gap-2 text-gold-600 text-[0.6rem] uppercase tracking-[0.32em]">
+            ${icon('i-crown','w-3.5 h-3.5')} ${esc(t('pa.tier.prive.label'))}
+          </div>
+          <h3 class="serif-heading text-2xl sm:text-3xl mt-3 text-navy-900">${esc(t('pa.prive.title'))}</h3>
+          <p class="mt-3 text-[0.9rem] text-navy-500 leading-relaxed">${esc(t('pa.prive.body'))}</p>
+        </div>
+        <div class="md:col-span-8 grid gap-6">
+          <div>
+            <div class="text-[0.7rem] uppercase tracking-[0.22em] text-navy-700">${esc(t('pa.prive.nook.title'))}</div>
+            <p class="mt-1 text-[0.78rem] text-navy-500">${esc(t('pa.prive.nook.subtitle'))}</p>
+            <div class="mt-3 grid sm:grid-cols-3 gap-2.5">${nooks}</div>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-6">
+            <div class="border-l-2 border-gold-500/60 pl-4 py-1">
+              <div class="text-[0.7rem] uppercase tracking-[0.22em] text-navy-700">${esc(t('pa.prive.host.title'))}</div>
+              <div class="mt-1 text-[0.6rem] uppercase tracking-[0.28em] text-gold-600">${esc(t('pa.prive.host.intro'))}</div>
+              <div class="mt-2 serif-heading italic text-xl text-navy-900">${esc(STATE.preArrival.prive.host)}</div>
+              <p class="mt-2 text-[0.82rem] text-navy-500 leading-relaxed">${esc(t('pa.prive.host.body'))}</p>
+              <p class="mt-3 text-[0.72rem] uppercase tracking-[0.22em] text-gold-600">${icon('i-spark2','w-3 h-3 inline -mt-0.5')} ${esc(t('pa.prive.ritual'))}</p>
+            </div>
+            <div>
+              <div class="text-[0.7rem] uppercase tracking-[0.22em] text-navy-700">${esc(t('pa.prive.chefNote.title'))}</div>
+              <p class="mt-1 text-[0.78rem] text-navy-500 leading-relaxed">${esc(t('pa.prive.chefNote.body'))}</p>
+              <textarea id="paPriveNote" rows="3" placeholder="${esc(t('pa.prive.chefNote.ph'))}"
+                class="lounge-input mt-3 w-full bg-transparent border border-navy-900/15 p-3 text-[0.9rem] focus:ring-0 focus:border-navy-900">${esc(STATE.preArrival.prive.chefNote)}</textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>`;
 }
 
 function pagePreArrival() {
   paApplySizeDefaults(false);
   const size = STATE.preArrival.size;
+  const tier = STATE.preArrival.tier;
   const sizes = ['small','medium','large'];
 
   const sizeCards = sizes.map(s => {
@@ -2573,10 +3299,8 @@ function pagePreArrival() {
       <div class="lg:col-span-5 reveal" style="transition-delay:.1s">
         <div class="border-l-2 border-gold-500/60 pl-5 py-2">
           <div class="swiss-eyebrow">${esc(t('pa.tierBadge'))}</div>
-          <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-[0.78rem] uppercase tracking-[0.28em] text-navy-700">
-            <span>Luxe</span><span class="text-navy-900/20">·</span>
-            <span>Suite</span><span class="text-navy-900/20">·</span>
-            <span>Privé</span>
+          <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-[0.78rem] uppercase tracking-[0.28em]">
+            ${PA_TIERS.map(x => `<span class="${x===tier?'text-gold-600':'text-navy-700/60'}">${esc(t('pa.tier.'+x+'.label'))}</span>${x!=='prive'?'<span class="text-navy-900/20">·</span>':''}`).join('')}
           </div>
         </div>
       </div>
@@ -2586,8 +3310,17 @@ function pagePreArrival() {
 
   ${paConfirmedMarkup()}
 
-  <!-- Step 1: Choose size -->
+  <!-- Step 00: Choose your tier -->
   <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-16">
+    <div class="max-w-xl reveal">
+      <div class="swiss-eyebrow">— ${esc(t('pa.step.tier'))}</div>
+      <p class="mt-4 text-navy-500 leading-[1.7]">${esc(t('pa.step.tier.body'))}</p>
+    </div>
+    <div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">${paTierCards()}</div>
+  </section>
+
+  <!-- Step 01: Choose size -->
+  <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-20">
     <div class="max-w-xl reveal">
       <div class="swiss-eyebrow">— ${esc(t('pa.step.size'))}</div>
       <p class="mt-4 text-navy-500 leading-[1.7]">${esc(t('pa.step.size.body'))}</p>
@@ -2595,7 +3328,11 @@ function pagePreArrival() {
     <div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">${sizeCards}</div>
   </section>
 
-  <!-- Step 2: Compose tray + summary -->
+  <!-- Suite & Privé feature panels (tier-specific) -->
+  ${paSuitePanel()}
+  ${paPrivePanel()}
+
+  <!-- Step 02: Compose tray + summary -->
   <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-20">
     <div class="max-w-xl reveal">
       <div class="swiss-eyebrow">— ${esc(t('pa.step.customize'))}</div>
@@ -2613,7 +3350,7 @@ function pagePreArrival() {
     </div>
   </section>
 
-  <!-- Step 3: Schedule -->
+  <!-- Step 03: Schedule -->
   <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-20">
     <div class="max-w-xl reveal">
       <div class="swiss-eyebrow">— ${esc(t('pa.step.schedule'))}</div>
@@ -2637,6 +3374,71 @@ function pagePreArrival() {
     <div class="hairline mb-14"></div>
     <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">${benefits}</div>
   </section>`;
+}
+
+function showBiteableModal(id) {
+  const d = DISHES.find(x => x.id === id);
+  if (!d) return;
+  const ld = localizedDish(d);
+  const det = biteableDetail(id);
+  document.body.style.overflow = 'hidden';
+  document.getElementById('modalHost').innerHTML = `
+  <div class="fixed inset-0 z-50 modal-bg flex items-end sm:items-center justify-center anim-fade" data-close>
+    <div class="w-full max-w-2xl bg-ivory-50 sm:m-5 max-h-[92vh] flex flex-col anim-up" onclick="event.stopPropagation()">
+      <div class="relative aspect-[5/4] flex-shrink-0">
+        ${image(d.image, ld.name,'h-full w-full')}
+        <button data-close class="absolute top-4 right-4 h-10 w-10 bg-ivory-50 flex items-center justify-center" aria-label="${esc(t('menu.close'))}">${icon('i-x','w-4 h-4')}</button>
+        <div class="absolute bottom-4 left-4 flex flex-wrap items-center gap-2">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[0.62rem] uppercase tracking-[0.22em] bg-ivory-50 ${d.temperature==='hot'?'text-[#C0481E]':'text-[#2E7BB8]'}">
+            ${icon(d.temperature==='hot'?'i-flame':'i-snow','w-3 h-3')} ${esc(t('menu.'+d.temperature))}
+          </span>
+          ${d.source === 'local'
+            ? `<span class="inline-flex items-center gap-1.5 bg-ivory-50 px-2.5 py-1 text-[0.62rem] uppercase tracking-[0.22em] text-navy-900">${icon('i-swiss','w-3 h-3')} ${esc(t('menu.local'))}</span>`
+            : `<span class="inline-flex items-center gap-1.5 bg-ivory-50 px-2.5 py-1 text-[0.62rem] uppercase tracking-[0.22em] text-navy-500">${icon('i-globe','w-3 h-3')} ${esc(t('menu.international'))}</span>`}
+          ${det.portion ? `<span class="inline-flex items-center gap-1.5 bg-ivory-50 px-2.5 py-1 text-[0.62rem] uppercase tracking-[0.22em] text-gold-600">${icon('i-tray','w-3 h-3')} ${esc(det.portion)}</span>` : ''}
+        </div>
+      </div>
+      <div class="p-8 overflow-y-auto">
+        <h2 class="serif-heading text-3xl sm:text-4xl text-navy-900">${esc(ld.name)}</h2>
+        <p class="mt-4 text-[0.98rem] text-navy-500 leading-[1.7]">${esc(ld.description)}</p>
+
+        ${det.ingredients.length ? `<div class="pa-detail-section">
+          <div class="swiss-eyebrow mb-4">— ${esc(t('pa.detail.inside'))}</div>
+          <ul class="pa-ingredient-list">
+            ${det.ingredients.map(x => `<li>${esc(x)}</li>`).join('')}
+          </ul>
+        </div>` : ''}
+
+        ${ld.chefNote ? `<div class="pa-detail-section">
+          <div class="swiss-eyebrow mb-2">${esc(t('pa.detail.chefnote'))}</div>
+          <p class="text-[1.05rem] serif-heading italic text-navy-900 leading-snug">${esc(ld.chefNote)}</p>
+        </div>` : ''}
+
+        ${det.provenance ? `<div class="pa-detail-section">
+          <div class="swiss-eyebrow mb-2">${esc(t('pa.detail.provenance'))}</div>
+          <p class="text-[0.96rem] text-navy-700 leading-relaxed">${esc(det.provenance)}</p>
+        </div>` : ''}
+
+        ${d.dietary.length ? `<div class="pa-detail-section">
+          <div class="swiss-eyebrow mb-3">${esc(t('pa.detail.dietary'))}</div>
+          <div class="flex flex-wrap gap-x-5 gap-y-2 text-navy-700">
+            ${d.dietary.map(x=>`<span class="inline-flex items-center gap-1.5 text-[0.88rem]">${icon('d-'+x,'w-4 h-4 text-gold-500')} ${esc(t('diet.'+x))}</span>`).join('')}
+          </div>
+        </div>` : ''}
+
+        ${d.allergens.length ? `<div class="pa-detail-section">
+          <div class="swiss-eyebrow mb-3">${esc(t('pa.detail.allergens'))}</div>
+          <div class="flex flex-wrap gap-x-5 gap-y-2 text-navy-700">
+            ${d.allergens.map(a=>`<span class="inline-flex items-center gap-1.5 text-[0.88rem]">${icon('a-'+a,'w-4 h-4 text-[#B05A47]')} ${esc(t('allergen.'+a))}</span>`).join('')}
+          </div>
+        </div>` : ''}
+
+        <div class="mt-8 pt-6 border-t border-navy-900/10 flex flex-wrap items-center gap-3 justify-end">
+          <button data-close class="px-5 py-2.5 border border-navy-900/15 text-navy-700 uppercase tracking-[0.22em] text-[0.7rem] hover:border-navy-900 transition-colors">${esc(t('pa.detail.cta'))}</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
 }
 
 function showPaSwapModal(cat, idx) {
@@ -2705,8 +3507,10 @@ function paConfirmOrder() {
   if (filled !== expected) return;
   STATE.preArrival.confirmed = {
     time: STATE.preArrival.schedule || t('pa.now'),
-    prep: cfg.prep,
+    prep: paEffectivePrep(),
     ref: paGenerateRef(),
+    tier: STATE.preArrival.tier,
+    handoff: paHandoffCopy(),
   };
   renderMain();
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -3353,6 +4157,17 @@ function attachPageEvents() {
     buttons.forEach((btn,i) => btn.addEventListener('click', () => { value = i + 1; paint(value); }));
   });
   // Pre-Arrival
+  document.querySelectorAll('[data-pa-tier]').forEach(b => b.addEventListener('click', () => {
+    const tier = b.getAttribute('data-pa-tier');
+    if (STATE.preArrival.tier === tier) return;
+    STATE.preArrival.tier = tier;
+    // Reset tier-specific selections when changing tiers
+    if (tier === 'luxe') {
+      STATE.preArrival.suite.pairing = null;
+      STATE.preArrival.prive.nook = null;
+    }
+    renderMain();
+  }));
   document.querySelectorAll('[data-pa-size]').forEach(b => b.addEventListener('click', () => {
     const s = b.getAttribute('data-pa-size');
     if (STATE.preArrival.size === s) return;
@@ -3364,6 +4179,23 @@ function attachPageEvents() {
     const [cat, idxStr] = b.getAttribute('data-pa-swap').split(':');
     showPaSwapModal(cat, parseInt(idxStr, 10));
   }));
+  document.querySelectorAll('[data-pa-detail]').forEach(b => b.addEventListener('click', () => {
+    showBiteableModal(b.getAttribute('data-pa-detail'));
+  }));
+  document.querySelectorAll('[data-pa-pairing]').forEach(b => b.addEventListener('click', () => {
+    const id = b.getAttribute('data-pa-pairing');
+    STATE.preArrival.suite.pairing = STATE.preArrival.suite.pairing === id ? null : id;
+    renderMain();
+  }));
+  document.querySelectorAll('[data-pa-delivery]').forEach(b => b.addEventListener('click', () => {
+    STATE.preArrival.suite.delivery = b.getAttribute('data-pa-delivery');
+    renderMain();
+  }));
+  document.querySelectorAll('[data-pa-nook]').forEach(b => b.addEventListener('click', () => {
+    const id = b.getAttribute('data-pa-nook');
+    STATE.preArrival.prive.nook = STATE.preArrival.prive.nook === id ? null : id;
+    renderMain();
+  }));
   document.querySelectorAll('[data-pa-time]').forEach(b => b.addEventListener('click', () => {
     const time = b.getAttribute('data-pa-time');
     STATE.preArrival.schedule = STATE.preArrival.schedule === time ? '' : time;
@@ -3371,6 +4203,8 @@ function attachPageEvents() {
   }));
   const paNote = document.getElementById('paNote');
   if (paNote) paNote.addEventListener('input', e => { STATE.preArrival.note = e.target.value; });
+  const paPriveNote = document.getElementById('paPriveNote');
+  if (paPriveNote) paPriveNote.addEventListener('input', e => { STATE.preArrival.prive.chefNote = e.target.value; });
   const paConfirmBtn = document.getElementById('paConfirmBtn');
   if (paConfirmBtn) paConfirmBtn.addEventListener('click', paConfirmOrder);
   const paReset = document.getElementById('paReset');
@@ -3378,6 +4212,9 @@ function attachPageEvents() {
     STATE.preArrival.confirmed = null;
     STATE.preArrival.schedule = '';
     STATE.preArrival.note = '';
+    STATE.preArrival.suite.pairing = null;
+    STATE.preArrival.prive.nook = null;
+    STATE.preArrival.prive.chefNote = '';
     paApplySizeDefaults(true);
     renderMain();
     window.scrollTo({ top: 0, behavior: 'smooth' });
