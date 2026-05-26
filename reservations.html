@@ -911,7 +911,7 @@ const LOUNGES = [
   { id:'zrh-abd', name:'Aspire Lounge Gates A, B & D', airport:'Zurich Airport', airportCode:'ZRH', terminal:'Airside · Schengen · Gates A, B & D', city:'Zurich', country:'Switzerland', region:'Europe',
     image:'https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1600&q=80',
     amenities: ['Free WiFi','Charging points','Complimentary food & drinks','Major card schemes accepted','Guaranteed flight delay cover','Free cancellations & amends'],
-    capacity:240, rating:4.8, reviews:1842, priceFrom:65, currency:'CHF', occupancyPct:64, hours:'05:15 — 21:00 · daily' },
+    capacity:240, rating:4.8, reviews:1842, priceFrom:35, currency:'CHF', occupancyPct:86, peakThroughput:80, hours:'05:15 — 21:00 · daily' },
 ];
 
 const LOUNGE_NETWORK = [
@@ -1025,6 +1025,30 @@ function seedHash(s) {
   for (let i = 0; i < s.length; i++) h = ((h << 5) - h) + s.charCodeAt(i);
   return Math.abs(h);
 }
+
+/* ----------------------- PRIORITY ENTRY HELPERS ----------------------- */
+function getPriorityEntryCap(peakThroughput) {
+  // Cap defaults to 20% of peak hourly throughput
+  return Math.max(1, Math.floor(peakThroughput * 0.20));
+}
+function calculatePriorityEntryFee(basePrice, occupancyRate) {
+  // 80–90%: 0.28× base, >90%: 0.43× base, capped at 0.45× base
+  const multiplier = occupancyRate > 90 ? 0.43 : 0.28;
+  const cap = basePrice * 0.45;
+  return Math.round(Math.min(basePrice * multiplier, cap));
+}
+function canOfferPriorityEntry(occupancyRate, estimatedWaitMinutes, prioritySoldThisHour, peakThroughput) {
+  const cap = getPriorityEntryCap(peakThroughput);
+  const remaining = Math.max(0, cap - prioritySoldThisHour);
+  if (prioritySoldThisHour >= cap) {
+    return { offered: false, reason: 'sold-out', cap, remaining: 0 };
+  }
+  if (occupancyRate > 90)  return { offered: true, tier: 'super',     cap, remaining };
+  if (occupancyRate >= 80) return { offered: true, tier: 'standard',  cap, remaining };
+  if (estimatedWaitMinutes >= 25) return { offered: true, tier: 'long-wait', cap, remaining };
+  return { offered: false, reason: 'low-demand', cap, remaining };
+}
+
 function loungeProfileFromNetwork(net, region) {
   const code = net.code || '—';
   const id = net.id || (code.toLowerCase() + '-' + net.city.toLowerCase().replace(/[^a-z0-9]/g,''));
@@ -1054,6 +1078,7 @@ function loungeProfileFromNetwork(net, region) {
     priceFrom,
     currency,
     occupancyPct,
+    peakThroughput: Math.max(20, Math.round((140 + (seed % 100)) / 3)),
     hours: '05:15 — 21:00 · daily',
   };
 }
@@ -1130,6 +1155,10 @@ const state = {
     preferredZone: null,    // customer's preferred zone (assigned by hosts, not picked)
     assignedTable: null,    // table assigned on arrival
     slot: null,
+    priorityEntry: false,   // upgraded to Priority Entry (bypass queue)
+  },
+  priorityEntry: {
+    soldThisHour: 6,        // simulated rolling counter (per-lounge in a real system)
   },
   step: 1,
   payMethod: 'pass',
@@ -1342,6 +1371,8 @@ function pickLounge(net, region) {
   let entry = LOUNGES.find(x => x.id === profile.id);
   if (!entry) { LOUNGES.push(profile); entry = profile; }
   state.booking.loungeId = entry.id;
+  // PE is anchored to a specific lounge's occupancy + price — reset on change
+  state.booking.priorityEntry = false;
   updateLoungePickerLabel();
   closeLoungePicker();
   // Re-render any open view that depends on the selected lounge
@@ -1580,50 +1611,86 @@ function validateStep3() {
   const v = state.booking.guestName.trim().length > 1 && /@/.test(state.booking.email);
   $('#step3-next').classList.toggle('disabled', !v);
 }
-function bookingSummaryHTML(showPrice = true) {
+function bookingSummaryHTML() {
   const l = lounge();
   const guestsTotal = state.booking.guests.adults + state.booking.guests.children;
   const memberLabel = (MEMBERSHIPS.find(m => m.id === state.booking.membership) || {}).label || '—';
   const tone = l.occupancyPct > 75 ? 'red' : l.occupancyPct > 50 ? 'amber' : '';
+  const isPass = state.booking.membership !== 'pay';
+  const hasPE = !!state.booking.priorityEntry;
+  const peFee = hasPE ? calculatePriorityEntryFee(l.priceFrom, l.occupancyPct) : 0;
   let seating = 'No preference';
   if (state.booking.preferredZone) {
     seating = `${ZONE_META[state.booking.preferredZone].label} preferred · table assigned on arrival`;
   }
+  const accessTypeLabel = hasPE
+    ? `<span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-aspire-navy"></span>Priority Entry</span>`
+    : 'Standard queue';
+  const queueStatus = hasPE
+    ? `<span class="text-emerald-700">Bypassed</span>`
+    : (state.confirmed ? 'Confirmed' : 'Waiting');
   const fields = [
     ['Airport', l.airport],
     ['Lounge', l.name],
     ['Date', formatDate(state.booking.date)],
     ['Arrival', state.booking.arrivalTime],
-    ['Access', `<span class="text-aspire-navy">3 hours</span> · until ${endTime(state.booking.arrivalTime)}`],
+    ['Lounge access', `<span class="text-aspire-navy">3 hours</span> from check-in · until ${endTime(state.booking.arrivalTime)}`],
     ['Name', state.booking.guestName || '—'],
     ['Guests', `Adult (${state.booking.guests.adults})${state.booking.guests.children ? ` · Child (${state.booking.guests.children})` : ''}`],
-    ['Access type', memberLabel],
+    ['Entry method', memberLabel],
+    ['Access type', accessTypeLabel],
+    ['Queue status', queueStatus],
     ['Seating', seating],
-    ['Estimated Occupancy', `<span class="inline-flex items-center gap-2"><span class="live-dot ${tone}"></span>${l.occupancyPct}% full</span>`],
+    ['Estimated occupancy', `<span class="inline-flex items-center gap-2"><span class="live-dot ${tone}"></span>${l.occupancyPct}% full</span>`],
     ['Terminal', l.terminal],
   ];
-  const priceBlock = showPrice
-    ? `<div class="hairline my-7"></div>
-       <div class="flex items-end justify-between">
-         <div>
-           <div class="swiss-eyebrow">Total</div>
-           <div class="mt-1 text-3xl sm:text-4xl serif-heading">${l.currency} ${(l.priceFrom * Math.max(1, guestsTotal)).toFixed(2)}</div>
-           <div class="text-[0.78rem] text-navy-500 mt-1">Includes all amenities · taxes included</div>
-         </div>
-         <div class="text-right">
-           <div class="swiss-eyebrow">Per guest</div>
-           <div class="mt-1 text-aspire-navy">${l.currency} ${l.priceFrom.toFixed(2)}</div>
-         </div>
-       </div>`
-    : `<div class="hairline my-7"></div>
+  // Price block depends on (pass vs direct payment) × (with vs without Priority Entry)
+  let priceBlock = '<div class="hairline my-7"></div>';
+  if (isPass && !hasPE) {
+    // Pass holder, no PE — entry is fully covered, nothing to pay
+    priceBlock += `
        <div class="flex items-center gap-3 p-4 rounded-2xl bg-aspire-soft border border-aspire-border">
          <span class="h-8 w-8 rounded-full bg-aspire-navy text-white flex items-center justify-center flex-shrink-0">
            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m4 12 5 5L20 6"/></svg>
          </span>
          <div class="text-[0.92rem] text-aspire-navy">
-           <strong class="font-medium">No charge</strong> — entry is included with your ${(MEMBERSHIPS.find(m => m.id === state.booking.membership) || {}).label || 'pass'}.
+           <strong class="font-medium">Lounge entry included</strong> with your ${memberLabel}.
          </div>
        </div>`;
+  } else if (isPass && hasPE) {
+    // Pass holder with PE — only the upgrade fee is payable
+    priceBlock += `
+       <div class="space-y-2 text-[0.95rem]">
+         <div class="flex items-center justify-between"><span class="text-navy-500">Lounge entry</span><span class="text-aspire-navy inline-flex items-center gap-1.5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 12 5 5L20 6"/></svg>Included</span></div>
+         <div class="flex items-center justify-between"><span class="text-navy-500">Priority Entry upgrade</span><span class="text-aspire-navy tabular-nums">${l.currency} ${peFee}</span></div>
+         <div class="flex items-center justify-between pt-2 mt-2 border-t border-aspire-border"><span class="serif-heading text-lg text-aspire-navy">Total to pay</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums">${l.currency} ${peFee}</span></div>
+       </div>`;
+  } else if (!isPass && !hasPE) {
+    // Direct payment, no PE — standard total
+    const total = l.priceFrom * Math.max(1, guestsTotal);
+    priceBlock += `
+       <div class="flex items-end justify-between">
+         <div>
+           <div class="swiss-eyebrow">Total</div>
+           <div class="mt-1 text-3xl sm:text-4xl serif-heading tabular-nums">${l.currency} ${total.toFixed(2)}</div>
+           <div class="text-[0.78rem] text-navy-500 mt-1">Includes all amenities · taxes included</div>
+         </div>
+         <div class="text-right">
+           <div class="swiss-eyebrow">Per guest</div>
+           <div class="mt-1 text-aspire-navy tabular-nums">${l.currency} ${l.priceFrom.toFixed(2)}</div>
+         </div>
+       </div>`;
+  } else {
+    // Direct payment with PE — entry + upgrade breakdown
+    const entry = l.priceFrom * Math.max(1, guestsTotal);
+    const total = entry + peFee;
+    priceBlock += `
+       <div class="space-y-2 text-[0.95rem]">
+         <div class="flex items-center justify-between"><span class="text-navy-500">Lounge entry${guestsTotal > 1 ? ' × ' + guestsTotal : ''}</span><span class="text-aspire-navy tabular-nums">${l.currency} ${entry.toFixed(2)}</span></div>
+         <div class="flex items-center justify-between"><span class="text-navy-500">Priority Entry upgrade</span><span class="text-aspire-navy tabular-nums">${l.currency} ${peFee}</span></div>
+         <div class="flex items-center justify-between pt-2 mt-2 border-t border-aspire-border"><span class="serif-heading text-lg text-aspire-navy">Total</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums">${l.currency} ${total.toFixed(2)}</span></div>
+       </div>`;
+  }
   return `
     <section class="card-cream p-6 sm:p-8 shadow-card">
       <h3 class="serif-heading text-2xl sm:text-3xl mb-6">Booking Summary</h3>
@@ -1648,28 +1715,38 @@ const PASS_FIELD_PLACEHOLDER = {
 
 function renderStep4() {
   const isPass = state.booking.membership !== 'pay';
-  $('#booking-summary-card').innerHTML = bookingSummaryHTML(/* showPrice */ !isPass);
+  const hasPE = !!state.booking.priorityEntry;
+  const needsCardPayment = !isPass || hasPE; // card needed for direct or for pass + PE upgrade
+  const l = lounge();
+  const peFee = hasPE ? calculatePriorityEntryFee(l.priceFrom, l.occupancyPct) : 0;
+
+  $('#booking-summary-card').innerHTML = bookingSummaryHTML();
   $('#pay-name').value = state.booking.guestName;
 
   // Section heading + side metadata
-  $('#pay-section-title').textContent = isPass ? 'Confirm your access' : 'Payment method';
-  $('#pay-section-badge').textContent = isPass ? 'No charge · pass verified with provider' : 'Secure · 3DS';
+  if (isPass && !hasPE) {
+    $('#pay-section-title').textContent = 'Confirm your access';
+    $('#pay-section-badge').textContent = 'No charge · pass verified with provider';
+  } else if (isPass && hasPE) {
+    $('#pay-section-title').textContent = 'Confirm access & pay upgrade';
+    $('#pay-section-badge').textContent = `Priority Entry only · ${l.currency} ${peFee}`;
+  } else {
+    $('#pay-section-title').textContent = 'Payment method';
+    $('#pay-section-badge').textContent = hasPE ? `Entry + Priority Entry upgrade` : 'Secure · 3DS';
+  }
 
-  // Show / hide the payment-method tile row (only for direct payment)
-  $('#pay-pill-row').classList.toggle('hidden', isPass);
-
-  // Hide every panel, then show the one this membership needs
+  // Hide every panel, then show whatever this combination needs
   $$('.pay-panel').forEach(p => p.classList.add('hidden'));
 
+  // Pass details form — shown for any pass-based membership
+  let lnInput, passInput;
   if (isPass) {
-    state.payMethod = 'pass';
     $('#pay-pass').classList.remove('hidden');
     const passLabel = (MEMBERSHIPS.find(m => m.id === state.booking.membership) || {}).label || 'pass';
     $('#pass-type-name').textContent = passLabel;
     $('#pass-num-label').textContent = PASS_FIELD_LABEL[state.booking.membership] || 'Pass number';
-    // Pre-fill from any earlier verification (tables / queue)
-    const passInput = $('#pass-number');
-    const lnInput = $('#pass-lastname');
+    passInput = $('#pass-number');
+    lnInput = $('#pass-lastname');
     passInput.placeholder = PASS_FIELD_PLACEHOLDER[state.booking.membership] || 'XXXXXX';
     if (!passInput.value && state.verification.type === state.booking.membership) {
       passInput.value = state.verification.number || '';
@@ -1677,97 +1754,143 @@ function renderStep4() {
     if (!lnInput.value) {
       lnInput.value = state.verification.lastName || (state.booking.guestName ? state.booking.guestName.split(' ').slice(-1)[0] : '');
     }
-    // Live validation: enable confirm only when both fields + accept are filled
-    const check = () => {
-      const ok = lnInput.value.trim().length > 1 && passInput.value.trim().length >= 3 && $('#pay-accept').checked;
-      $('#confirm-btn').classList.toggle('disabled', !ok);
-    };
-    lnInput.oninput = check;
-    passInput.oninput = check;
-    $('#pay-accept').onchange = check;
-    $('#pay-accept').checked = false;
-    check();
-  } else {
-    // Direct payment — show Card / Apple Pay / TWINT
-    if (state.payMethod === 'pass' || !state.payMethod) state.payMethod = 'card';
-    function selectPayPill(method) {
-      state.payMethod = method;
-      $$('.pay-pill').forEach(x => {
-        x.classList.remove('bg-aspire-navy','text-white','border-aspire-navy');
-        x.classList.add('bg-white','text-aspire-navy','border-aspire-border','hover:border-aspire-taupe');
-      });
-      const active = $$('.pay-pill').find(b => b.dataset.pay === method);
-      if (active) {
-        active.classList.add('bg-aspire-navy','text-white','border-aspire-navy');
-        active.classList.remove('bg-white','text-aspire-navy','border-aspire-border','hover:border-aspire-taupe');
-      }
-      $$('.pay-panel').forEach(p => p.classList.add('hidden'));
-      $('#pay-' + method).classList.remove('hidden');
-    }
-    $$('.pay-pill').forEach(b => { b.onclick = () => selectPayPill(b.dataset.pay); });
-    selectPayPill(state.payMethod);
-    $('#pay-accept').onchange = (e) => $('#confirm-btn').classList.toggle('disabled', !e.target.checked);
-    $('#pay-accept').checked = false;
-    $('#confirm-btn').classList.add('disabled');
   }
 
-  // Confirm button copy adapts to mode
-  $('#confirm-btn').innerHTML = (isPass
-    ? 'Confirm booking'
-    : 'Confirm and pay') +
-    ' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m9 6 6 6-6 6"/></svg>';
+  // Card payment tile row — visible when something needs charging
+  $('#pay-pill-row').classList.toggle('hidden', !needsCardPayment);
+
+  function selectPayPill(method) {
+    state.payMethod = method;
+    $$('.pay-pill').forEach(x => {
+      x.classList.remove('bg-aspire-navy','text-white','border-aspire-navy');
+      x.classList.add('bg-white','text-aspire-navy','border-aspire-border','hover:border-aspire-taupe');
+    });
+    const active = $$('.pay-pill').find(b => b.dataset.pay === method);
+    if (active) {
+      active.classList.add('bg-aspire-navy','text-white','border-aspire-navy');
+      active.classList.remove('bg-white','text-aspire-navy','border-aspire-border','hover:border-aspire-taupe');
+    }
+    ['card','apple','twint'].forEach(m => $('#pay-' + m).classList.add('hidden'));
+    $('#pay-' + method).classList.remove('hidden');
+  }
+  if (needsCardPayment) {
+    if (!['card','apple','twint'].includes(state.payMethod)) state.payMethod = 'card';
+    $$('.pay-pill').forEach(b => { b.onclick = () => { selectPayPill(b.dataset.pay); validateStep4(); }; });
+    selectPayPill(state.payMethod);
+  } else {
+    state.payMethod = 'pass';
+  }
+
+  // Validation — confirm gated on accept checkbox + pass fields filled when pass mode
+  function validateStep4() {
+    let ok = $('#pay-accept').checked;
+    if (isPass) {
+      ok = ok && lnInput.value.trim().length > 1 && passInput.value.trim().length >= 3;
+    }
+    $('#confirm-btn').classList.toggle('disabled', !ok);
+  }
+  if (isPass) {
+    lnInput.oninput = validateStep4;
+    passInput.oninput = validateStep4;
+  }
+  $('#pay-accept').onchange = validateStep4;
+  $('#pay-accept').checked = false;
+  validateStep4();
+
+  // Confirm CTA copy
+  let cta;
+  if (isPass && !hasPE)      cta = 'Confirm booking';
+  else if (isPass && hasPE)  cta = `Confirm & pay ${l.currency} ${peFee}`;
+  else                        cta = 'Confirm and pay';
+  $('#confirm-btn').innerHTML = cta + ' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m9 6 6 6-6 6"/></svg>';
 }
+function upgradeToPriorityEntry() {
+  state.booking.priorityEntry = true;
+  // Carry over verified pass type when available so step 4 lands in the right mode
+  if (state.verified && state.verification.type) {
+    state.booking.membership = state.verification.type;
+  }
+  state.step = 4;
+  go('reserve');
+}
+
 function confirmBooking() {
   const l = lounge();
   const guestsTotal = state.booking.guests.adults + state.booking.guests.children;
   const usingPass = state.booking.membership !== 'pay';
+  const hasPE = !!state.booking.priorityEntry;
   const passLabel = (MEMBERSHIPS.find(m => m.id === state.booking.membership) || {}).label || 'Pass';
   const passNum = ($('#pass-number')?.value || state.verification.number || '').trim();
-  const methodLabel = usingPass
-    ? `${passLabel}${passNum ? ' •• ' + passNum.slice(-4) : ''}`
-    : state.payMethod === 'card' ? 'Visa •• 4242'
+  const cardLabel = state.payMethod === 'card' ? 'Visa •• 4242'
     : state.payMethod === 'apple' ? 'Apple Pay'
-    : 'TWINT';
+    : state.payMethod === 'twint' ? 'TWINT'
+    : 'Card';
   const refDate = formatDate(state.booking.date);
   const accessUntil = endTime(state.booking.arrivalTime);
+  const peFee = hasPE ? calculatePriorityEntryFee(l.priceFrom, l.occupancyPct) : 0;
+  const entryAmount = usingPass ? 0 : l.priceFrom * Math.max(1, guestsTotal);
+  const totalAmount = entryAmount + peFee;
 
   const m = $('#pay-modal');
   m.classList.remove('hidden'); m.classList.add('flex');
   $('#pay-stage-processing').classList.remove('hidden');
   $('#pay-stage-success').classList.add('hidden');
 
-  // Processing copy adapts to method
+  // Processing copy adapts to method + PE
   const proc = $('#pay-stage-processing');
   const procHeading = proc.querySelector('.serif-heading');
-  if (procHeading) procHeading.textContent = usingPass ? `Verifying your ${passLabel.toLowerCase()}…` : 'Processing your payment…';
+  if (procHeading) {
+    procHeading.textContent = hasPE
+      ? 'Confirming Priority Entry…'
+      : usingPass ? `Verifying your ${passLabel.toLowerCase()}…` : 'Processing your payment…';
+  }
   const procBlurb = proc.querySelector('p');
-  if (procBlurb) procBlurb.textContent = usingPass
+  if (procBlurb) procBlurb.textContent = hasPE
+    ? "Please don't refresh the page. We're securing your Priority Entry slot and verifying your details."
+    : usingPass
     ? "Please don't refresh the page. We're confirming your pass with the provider — this normally takes a few seconds."
     : "Please don't refresh the page. We're confirming with your bank — this normally takes a few seconds.";
 
   setTimeout(() => {
     $('#pay-stage-processing').classList.add('hidden');
     $('#pay-stage-success').classList.remove('hidden');
-    $('#pay-amount').textContent = usingPass
-      ? 'Booking confirmed'
-      : `${l.currency} ${(l.priceFrom * Math.max(1, guestsTotal)).toFixed(2)} charged`;
 
+    // Headline on the success screen
+    let headline;
+    if (hasPE && usingPass)       headline = `Priority Entry confirmed · ${l.currency} ${peFee} charged`;
+    else if (hasPE && !usingPass) headline = `Priority Entry confirmed · ${l.currency} ${totalAmount.toFixed(2)} charged`;
+    else if (usingPass)           headline = 'Booking confirmed';
+    else                          headline = `${l.currency} ${totalAmount.toFixed(2)} charged`;
+    $('#pay-amount').textContent = headline;
+
+    // Receipt
     const rows = [
       ['Reference', `<span class="tabular-nums">${state.bookingRef}</span>`],
       ['Lounge',    l.name],
       ['Date',      refDate],
       ['Arrival',   state.booking.arrivalTime],
-      ['Access',    `3 hours · until ${accessUntil}`],
+      ['Lounge access', `3 hours · until ${accessUntil}`],
       ['Guests',    String(guestsTotal)],
-      [usingPass ? 'Entry via' : 'Method', methodLabel],
+      ['Access type', hasPE ? '<span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-aspire-navy"></span>Priority Entry · bypassed</span>' : 'Standard queue'],
+      [usingPass ? 'Pass on file' : 'Method', usingPass ? `${passLabel}${passNum ? ' •• ' + passNum.slice(-4) : ''}` : cardLabel],
     ];
-    if (!usingPass) {
-      rows.push(['Amount', `${l.currency} ${(l.priceFrom * Math.max(1, guestsTotal)).toFixed(2)}`]);
+    if (hasPE && usingPass) {
+      rows.push(['Lounge entry', '<span class="inline-flex items-center gap-1.5"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 12 5 5L20 6"/></svg>Included</span>']);
+      rows.push(['Priority Entry upgrade', `${l.currency} ${peFee}`]);
+    } else if (hasPE && !usingPass) {
+      rows.push(['Lounge entry', `${l.currency} ${entryAmount.toFixed(2)}`]);
+      rows.push(['Priority Entry upgrade', `${l.currency} ${peFee}`]);
+      rows.push(['Total', `${l.currency} ${totalAmount.toFixed(2)}`]);
+    } else if (!usingPass) {
+      rows.push(['Amount', `${l.currency} ${entryAmount.toFixed(2)}`]);
     }
     $('#pay-receipt').innerHTML = rows.map(([k,v]) =>
       `<div class="flex justify-between gap-3"><span class="text-navy-500">${k}</span><span class="text-aspire-navy text-right">${v}</span></div>`
     ).join('');
+
     state.confirmed = true;
+    // Increment the simulated PE sold counter when an upgrade is taken
+    if (hasPE) state.priorityEntry.soldThisHour += 1;
   }, 2200);
 }
 function finishPayment() {
@@ -2043,16 +2166,70 @@ function renderQueue() {
   const list = $('#queue-list'); list.innerHTML = '';
   const myIdx = state.joined ? state.queue.findIndex(e => e.id === state.joined.id) : -1;
   const ahead = myIdx >= 0 ? myIdx : state.queue.length;
+  const l = lounge();
+  const pe = canOfferPriorityEntry(l.occupancyPct, maxWait, state.priorityEntry.soldThisHour, l.peakThroughput || 60);
+  const peFee = calculatePriorityEntryFee(l.priceFrom, l.occupancyPct);
+  const hasPE = state.confirmed && state.booking.priorityEntry;
 
-  list.append(el('div', { class:'card-aspire p-6 sm:p-8 text-center' },
-    el('div', { class:'swiss-eyebrow text-aspire-navy/70' }, state.joined ? 'Guests ahead of you' : 'People currently waiting'),
-    el('div', { class:'serif-heading text-6xl sm:text-7xl text-aspire-navy mt-2 tabular-nums' }, String(ahead)),
-    el('div', { class:'text-aspire-navy/80 mt-2' }, ahead === 1 ? 'guest' : 'guests'),
-    el('div', { class:'mt-5 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-aspire-border text-[0.72rem] uppercase tracking-widest text-aspire-navy' },
-      el('span', { class:'live-dot amber' }),
-      `~${maxWait || 0} min longest wait`
-    )
-  ));
+  // Bypassed state — supersedes the queue counter once the customer confirms Priority Entry
+  if (hasPE) {
+    list.append(el('div', { class:'card-aspire p-6 sm:p-8 flex items-start gap-4' },
+      el('span', { class:'h-11 w-11 rounded-full bg-aspire-navy text-white flex items-center justify-center flex-shrink-0', html:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m4 12 5 5L20 6"/></svg>' }),
+      el('div', {},
+        el('div', { class:'swiss-eyebrow text-aspire-navy/70' }, 'Priority Entry · bypassed'),
+        el('div', { class:'serif-heading text-2xl sm:text-3xl text-aspire-navy mt-1' }, 'You may proceed directly to lounge reception.'),
+        el('div', { class:'text-[0.92rem] text-aspire-navy/80 mt-2' }, `Your 3-hour access window will start when you check in at ${l.name}.`)
+      )
+    ));
+  } else {
+    // Pair the queue counter with a Priority Entry card so the value is created by contrast
+    const showsPE = pe.offered || pe.reason === 'sold-out';
+    const grid = el('div', { class: showsPE ? 'grid grid-cols-1 sm:grid-cols-2 gap-3' : '' });
+    grid.append(el('div', { class:'card-aspire p-6 sm:p-8 text-center' },
+      el('div', { class:'swiss-eyebrow text-aspire-navy/70' }, state.joined ? 'Guests ahead of you' : 'People currently waiting'),
+      el('div', { class:'serif-heading text-6xl sm:text-7xl text-aspire-navy mt-2 tabular-nums' }, String(ahead)),
+      el('div', { class:'text-aspire-navy/80 mt-2' }, ahead === 1 ? 'guest' : 'guests'),
+      el('div', { class:'mt-5 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-aspire-border text-[0.72rem] uppercase tracking-widest text-aspire-navy' },
+        el('span', { class:'live-dot amber' }),
+        `~${maxWait || 0} min longest wait`
+      )
+    ));
+
+    if (pe.offered) {
+      // Available — Standard peak, Super peak, or long-wait tier
+      const tierLabel = pe.tier === 'super' ? 'Peak demand · immediate access'
+                       : pe.tier === 'standard' ? 'Busy period · immediate access'
+                       : 'Long wait expected · immediate access';
+      grid.append(el('div', { class:'card-cream p-6 sm:p-8 border-aspire-navy/40 flex flex-col' },
+        el('div', { class:'flex items-start justify-between' },
+          el('div', {},
+            el('div', { class:'swiss-eyebrow text-aspire-navy' }, 'Priority Entry available'),
+            el('div', { class:'serif-heading text-2xl text-aspire-navy mt-1' }, 'Enter sooner during peak periods'),
+            el('p', { class:'text-[0.88rem] text-navy-500 mt-2 leading-relaxed' }, tierLabel + '. Proceed directly to reception — no waiting in line.')
+          ),
+          el('span', { class:'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-aspire-navy text-white text-[0.7rem] uppercase tracking-widest flex-shrink-0', html:`<span class="h-1.5 w-1.5 rounded-full bg-white"></span>${pe.remaining} left this hour` })
+        ),
+        el('div', { class:'hairline my-5' }),
+        el('div', { class:'flex items-end justify-between' },
+          el('div', {},
+            el('div', { class:'text-[0.7rem] uppercase tracking-widest text-navy-500' }, 'Upgrade fee'),
+            el('div', { class:'serif-heading text-3xl text-aspire-navy mt-1 tabular-nums' }, `${l.currency} ${peFee}`),
+            el('div', { class:'text-[0.72rem] text-navy-500' }, 'Limited availability this hour')
+          ),
+          el('button', { class:'btn-primary', onclick: () => upgradeToPriorityEntry(), html:'Upgrade to Priority Entry <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>' })
+        )
+      ));
+    } else if (pe.reason === 'sold-out') {
+      grid.append(el('div', { class:'card-cream p-6 sm:p-8 flex flex-col justify-center text-center' },
+        el('div', { class:'mx-auto h-12 w-12 rounded-full bg-aspire-soft border border-aspire-border flex items-center justify-center text-aspire-navy/70', html:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>' }),
+        el('div', { class:'swiss-eyebrow mt-4' }, 'Priority Entry'),
+        el('div', { class:'serif-heading text-2xl text-aspire-navy mt-1' }, 'Sold out for this hour'),
+        el('p', { class:'text-[0.88rem] text-navy-500 mt-2 leading-relaxed' }, "You can still join the standard queue. New Priority Entry slots release each hour.")
+      ));
+    }
+
+    list.append(grid);
+  }
 
   // Position row: shows current guest's position (if joined) — anonymized timeline
   list.append(el('div', { class:'card-cream p-5 sm:p-6' },
@@ -2160,9 +2337,15 @@ function renderDashboard() {
 
   $('#confirmed-banner').classList.remove('hidden');
   const accessUntil = endTime(state.booking.arrivalTime);
-  $('#confirmed-sub').innerHTML = `<strong class="text-aspire-navy font-medium">3-hour access</strong> from ${state.booking.arrivalTime} until ${accessUntil}. Confirmation sent to ${state.booking.email || 'your inbox'}. Reference ${state.bookingRef}.`;
+  const hasPE = !!state.booking.priorityEntry;
+  // Headline + subline adapt for Priority Entry
+  const bannerHeading = $('#confirmed-banner').querySelector('.serif-heading');
+  if (bannerHeading) bannerHeading.textContent = hasPE ? 'Priority Entry confirmed' : 'Reservation confirmed';
+  $('#confirmed-sub').innerHTML = hasPE
+    ? `Proceed directly to lounge reception. Your <strong class="text-aspire-navy font-medium">3-hour access</strong> window starts when you check in. Reference ${state.bookingRef}.`
+    : `<strong class="text-aspire-navy font-medium">3-hour access</strong> from ${state.booking.arrivalTime} until ${accessUntil}. Confirmation sent to ${state.booking.email || 'your inbox'}. Reference ${state.bookingRef}.`;
 
-  $('#dash-summary').innerHTML = bookingSummaryHTML(state.booking.membership === 'pay');
+  $('#dash-summary').innerHTML = bookingSummaryHTML();
 
   $('#dash-access-card').innerHTML = `
     <div class="swiss-eyebrow text-aspire-navy/70">Lounge access</div>
