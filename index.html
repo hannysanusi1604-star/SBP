@@ -3685,6 +3685,9 @@ function renderMain() {
   if (STATE.route === '' || STATE.route === 'home') {
     renderHomeQR();
     setupHomeImmersive();
+  } else {
+    // Reveal observer needs to run on every page or `.reveal` elements stay hidden
+    setupRevealObserver();
   }
 }
 
