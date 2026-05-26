@@ -260,6 +260,100 @@
     .reveal, .reveal-img, .tilt-card, .parallax-soft { transition: none !important; transform: none !important; clip-path: none !important; opacity: 1 !important; }
     .scroll-cue { animation: none !important; }
   }
+
+  /* ====== Pre-Arrival Dining experience ====== */
+  .pa-tray-stack { perspective: 1400px; }
+  .pa-tray-tier {
+    position: relative;
+    background: linear-gradient(180deg, #FBF9F5 0%, #F2ECDE 100%);
+    border: 1px solid rgba(184,152,85,.28);
+    border-radius: 14px;
+    padding: 22px 26px 26px;
+    box-shadow: 0 18px 40px -28px rgba(20,38,63,.35), inset 0 1px 0 rgba(255,255,255,.7);
+    transition: transform .6s cubic-bezier(.2,.8,.2,1), box-shadow .6s;
+  }
+  .pa-tray-tier::before {
+    content: '';
+    position: absolute; left: 18px; right: 18px; top: -8px; height: 8px;
+    background: linear-gradient(180deg, rgba(184,152,85,.55), rgba(184,152,85,.05));
+    border-radius: 8px 8px 0 0; opacity: .7;
+  }
+  .pa-tray-tier::after {
+    content: '';
+    position: absolute; left: -8px; right: -8px; bottom: -10px; height: 10px;
+    background: radial-gradient(60% 100% at 50% 0%, rgba(20,38,63,.18), transparent 70%);
+    pointer-events: none;
+  }
+  .pa-tray-tier + .pa-tray-tier { margin-top: 22px; }
+  .pa-tray-tier:hover { box-shadow: 0 22px 50px -22px rgba(20,38,63,.4), inset 0 1px 0 rgba(255,255,255,.8); }
+  .pa-tier-label {
+    position: absolute; top: 14px; right: 18px;
+    font-family: 'Inter', sans-serif; font-size: .55rem; font-weight: 500;
+    letter-spacing: .36em; text-transform: uppercase; color: #B89855;
+  }
+  .pa-tier-num {
+    font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300;
+    color: rgba(20,38,63,.35); font-size: 1.1rem; line-height: 1;
+  }
+  .pa-dish-slot {
+    border: 1px dashed rgba(20,38,63,.18);
+    background: rgba(255,255,255,.55);
+    border-radius: 8px;
+    padding: 12px 14px;
+    display: flex; align-items: center; gap: 12px;
+    transition: border-color .25s, background .25s, transform .25s;
+  }
+  .pa-dish-slot.filled { border-style: solid; border-color: rgba(184,152,85,.35); background: rgba(255,255,255,.85); }
+  .pa-dish-slot.recommend { box-shadow: 0 0 0 2px rgba(184,152,85,.18); }
+  .pa-dish-slot:hover { transform: translateY(-1px); border-color: rgba(184,152,85,.6); }
+  .pa-thumb {
+    width: 48px; height: 48px; border-radius: 6px; object-fit: cover; flex: none;
+    background: #EDE6D6;
+  }
+  .pa-size-card {
+    border: 1px solid rgba(20,38,63,.12);
+    background: #fff;
+    padding: 22px 22px 24px;
+    cursor: pointer;
+    transition: border-color .3s, transform .3s, box-shadow .3s;
+    position: relative;
+  }
+  .pa-size-card:hover { border-color: rgba(184,152,85,.55); transform: translateY(-2px); box-shadow: 0 18px 30px -22px rgba(20,38,63,.25); }
+  .pa-size-card.active { border-color: #B89855; box-shadow: 0 0 0 2px rgba(184,152,85,.22), 0 22px 36px -24px rgba(20,38,63,.3); }
+  .pa-size-card .pa-size-glyph {
+    width: 56px; height: 56px; border-radius: 50%;
+    display:flex; align-items:center; justify-content:center;
+    background: rgba(184,152,85,.1); color: #B89855; margin-bottom: 14px;
+  }
+  .pa-pill {
+    display:inline-flex; align-items:center; gap:6px;
+    padding: 4px 9px; border-radius: 999px;
+    font-size: .58rem; letter-spacing: .18em; text-transform: uppercase;
+    background: rgba(184,152,85,.1); color: #9A7E3F;
+  }
+  .pa-pill.muted { background: rgba(20,38,63,.06); color: #15263F; }
+  .pa-pill.allergen { background: rgba(217,52,43,.07); color: #B05A47; }
+  .pa-swap-modal-card {
+    background: #fff; max-height: 78vh; overflow-y: auto;
+    border-radius: 14px; padding: 28px;
+  }
+  .pa-time-chip {
+    padding: 10px 14px; border: 1px solid rgba(20,38,63,.15);
+    font-size: .8rem; cursor: pointer; transition: all .25s;
+    text-align: center; background: #fff;
+  }
+  .pa-time-chip.active { background: #15263F; color: #FBF9F5; border-color: #15263F; }
+  .pa-time-chip:hover { border-color: #B89855; }
+  .pa-status-dot {
+    display:inline-block; width: 8px; height: 8px; border-radius: 50%;
+    background: #7A8C73; box-shadow: 0 0 0 4px rgba(122,140,115,.18);
+    animation: paPulse 2.2s infinite;
+  }
+  @keyframes paPulse { 0%,100%{box-shadow:0 0 0 4px rgba(122,140,115,.18);} 50%{box-shadow:0 0 0 8px rgba(122,140,115,.08);} }
+  .pa-confirm-overlay {
+    background: linear-gradient(140deg, #FBF9F5 0%, #F2ECDE 100%);
+    border: 1px solid rgba(184,152,85,.3);
+  }
 </style>
 </head>
 <body class="min-h-screen">
@@ -289,6 +383,10 @@
     <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0112 0c0 7 3 7 3 9H3c0-2 3-2 3-9z"/><path d="M10 21a2 2 0 004 0"/></symbol>
     <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 017 7c0 5-7 13-7 13S5 14 5 9a7 7 0 017-7z"/><circle cx="12" cy="9" r="2.4"/></symbol>
     <symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.7 5.7 6.3.9-4.6 4.4 1.1 6.3L12 17.8 6.5 20.3l1.1-6.3L3 9.6l6.3-.9L12 3z"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-shuffle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h3l4 5 4 5h4M3 17h3l4-5M14 7h4M18 5l2 2-2 2M18 15l2 2-2 2"/></symbol>
+    <symbol id="i-tray" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15h18l-2 4H5l-2-4z"/><path d="M5 15V8a2 2 0 012-2h10a2 2 0 012 2v7"/><path d="M9 6V4h6v2"/></symbol>
+    <symbol id="i-crown" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l4 5 5-8 5 8 4-5-2 11H5L3 8z"/><path d="M5 19h14"/></symbol>
 
     <!-- Dietary -->
     <symbol id="d-vegetarian" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 14c2-6 8-9 14-9-1 8-6 13-12 13-2 0-3-1-3-2 0-1 0-1 1-2z"/></symbol>
@@ -447,7 +545,66 @@ const LOCALES = [
 const I18N = {
   en: {
     'brand.line1':'Aspire Lounge','brand.line2':'Switzerland','brand.sub':'PRE-FLIGHT HOSPITALITY · ZURICH, SWITZERLAND',
-    'nav.home':'Home','nav.menu':'Menu','nav.drinks':'Drinks','nav.dietary':'Dietary','nav.partner':'Partnerships','nav.feedback':'Feedback','nav.about':'Local Sourcing',
+    'nav.home':'Home','nav.menu':'Menu','nav.drinks':'Drinks','nav.dietary':'Dietary','nav.partner':'Partnerships','nav.feedback':'Feedback','nav.about':'Local Sourcing','nav.preArrival':'Pre-Arrival',
+    'pa.eyebrow':'Luxe · Suite · Privé tiers',
+    'pa.title':'Curated Pre-Arrival Dining Experience',
+    'pa.lede':'Pre-order a tiered tray of luxury biteables before you reach the lounge. Skip the wait — your selection is plated and timed to your arrival.',
+    'pa.tierBadge':'Reserved for Luxe, Suite & Privé travellers',
+    'pa.step.size':'01 · Choose your tray',
+    'pa.step.size.body':'Three sizes, each composed of starters, mains and desserts. Perfect for solo travellers or shared moments.',
+    'pa.step.customize':'02 · Compose your tray',
+    'pa.step.customize.body':'Swap any course, view dietary tags, and explore premium recommendations from our executive chef.',
+    'pa.step.schedule':'03 · Pre-order before arrival',
+    'pa.step.schedule.body':'Tell us when you’ll be at the lounge. Your tray is finished moments before you sit down.',
+    'pa.size.small':'Small','pa.size.medium':'Medium','pa.size.large':'Large',
+    'pa.size.small.guests':'For 1 traveller',
+    'pa.size.medium.guests':'For 2–3 guests',
+    'pa.size.large.guests':'For 3–4 guests',
+    'pa.size.includes':'Includes',
+    'pa.size.small.detail':'2 starters · 2 mains · 2 desserts',
+    'pa.size.medium.detail':'3 starters · 3 mains · 2 desserts',
+    'pa.size.large.detail':'4 starters · 4 mains · 3 desserts',
+    'pa.tray.top':'Top tier · Starters',
+    'pa.tray.middle':'Middle tier · Mains',
+    'pa.tray.bottom':'Bottom tier · Desserts',
+    'pa.tray.empty':'Select a dish',
+    'pa.swap':'Swap',
+    'pa.add':'Choose dish',
+    'pa.remove':'Remove',
+    'pa.recommended':'Chef’s pick',
+    'pa.swap.title':'Choose a dish',
+    'pa.swap.subtitle':'Tap any dish to slot it into your tray.',
+    'pa.swap.allergens':'Contains',
+    'pa.schedule.title':'When will you arrive at the lounge?',
+    'pa.schedule.body':'Select your arrival window. Each tray takes roughly 18 minutes to plate, so we finish moments before you sit down.',
+    'pa.schedule.notePh':'Add a note — celebration, allergy, seating preference…',
+    'pa.schedule.cta':'Confirm pre-order',
+    'pa.summary':'Your tray',
+    'pa.summary.size':'Tray size',
+    'pa.summary.guests':'Guests',
+    'pa.summary.dishes':'Dishes selected',
+    'pa.summary.eta':'Ready by',
+    'pa.summary.prep':'Estimated preparation',
+    'pa.summary.min':'min',
+    'pa.summary.warn':'Please fill all slots before pre-ordering.',
+    'pa.confirm.eyebrow':'Pre-order confirmed',
+    'pa.confirm.title':'Your tray will be waiting.',
+    'pa.confirm.body':'A member of our team will plate your selection moments before your arrival. A digital receipt has been sent to your boarding pass profile.',
+    'pa.confirm.ref':'Reference',
+    'pa.confirm.again':'Compose another tray',
+    'pa.benefit.1.title':'Reduced waiting time',
+    'pa.benefit.1.body':'Your tray is ready the moment you sit down — ideal for short layovers.',
+    'pa.benefit.2.title':'Personalised dining',
+    'pa.benefit.2.body':'Compose each tier to match your palate, mood and dietary needs.',
+    'pa.benefit.3.title':'Flexible ordering',
+    'pa.benefit.3.body':'Edit, swap or reschedule up to 20 minutes before arrival.',
+    'pa.benefit.4.title':'Premium curated experience',
+    'pa.benefit.4.body':'Chef-selected pairings, gold-tier ingredients, plated with intention.',
+    'pa.home.eyebrow':'New · Luxe, Suite & Privé tiers',
+    'pa.home.title':'Pre-order before you arrive',
+    'pa.home.body':'A new ritual for Luxe, Suite and Privé travellers — curated tiered trays of luxury biteables, plated and timed to the minute you sit down.',
+    'pa.home.cta':'Compose your tray',
+    'pa.now':'now',
     'home.eyebrow':'Zürich · Geneva · Basel',
     'home.welcome':'Welcome to a quiet moment before your flight.',
     'home.subtitle':'Browse today’s buffet, discover Swiss ingredients, and travel with comfort.',
@@ -549,7 +706,7 @@ const I18N = {
   },
   fr: {
     'brand.line1':'Aspire Lounge','brand.line2':'Suisse','brand.sub':'HOSPITALITÉ AVANT VOL · ZURICH, SUISSE',
-    'nav.home':'Accueil','nav.menu':'Menu','nav.drinks':'Boissons','nav.dietary':'Régimes','nav.partner':'Partenariats','nav.feedback':'Avis','nav.about':'Producteurs',
+    'nav.home':'Accueil','nav.menu':'Menu','nav.drinks':'Boissons','nav.dietary':'Régimes','nav.partner':'Partenariats','nav.feedback':'Avis','nav.about':'Producteurs','nav.preArrival':'Pré-arrivée',
     'home.eyebrow':'Zurich · Genève · Bâle','home.welcome':'Bienvenue dans un moment de calme avant votre vol.',
     'home.subtitle':'Découvrez le buffet du jour, les ingrédients suisses, et voyagez sereinement.',
     'home.cta.menu':'Voir le buffet','home.cta.premium':'Service Suite',
@@ -647,7 +804,7 @@ const I18N = {
   },
   de: {
     'brand.line1':'Aspire Lounge','brand.line2':'Schweiz','brand.sub':'PRE-FLIGHT HOSPITALITY · ZÜRICH, SCHWEIZ',
-    'nav.home':'Start','nav.menu':'Menü','nav.drinks':'Getränke','nav.dietary':'Ernährung','nav.partner':'Partner','nav.feedback':'Feedback','nav.about':'Herkunft',
+    'nav.home':'Start','nav.menu':'Menü','nav.drinks':'Getränke','nav.dietary':'Ernährung','nav.partner':'Partner','nav.feedback':'Feedback','nav.about':'Herkunft','nav.preArrival':'Voranreise',
     'home.eyebrow':'Zürich · Genf · Basel','home.welcome':'Willkommen zu einem ruhigen Moment vor Ihrem Flug.',
     'home.subtitle':'Entdecken Sie das heutige Buffet, Schweizer Zutaten — und reisen Sie entspannt.',
     'home.cta.menu':'Zum Buffet','home.cta.premium':'Suite-Service',
@@ -745,7 +902,7 @@ const I18N = {
   },
   it: {
     'brand.line1':'Aspire Lounge','brand.line2':'Svizzera','brand.sub':'OSPITALITÀ PRE-VOLO · ZURIGO, SVIZZERA',
-    'nav.home':'Home','nav.menu':'Menu','nav.drinks':'Bevande','nav.dietary':'Dieta','nav.partner':'Partner','nav.feedback':'Feedback','nav.about':'Produttori',
+    'nav.home':'Home','nav.menu':'Menu','nav.drinks':'Bevande','nav.dietary':'Dieta','nav.partner':'Partner','nav.feedback':'Feedback','nav.about':'Produttori','nav.preArrival':'Pre-arrivo',
     'home.eyebrow':'Zurigo · Ginevra · Basilea','home.welcome':'Benvenuto in un momento di calma prima del volo.',
     'home.subtitle':'Scopri il buffet di oggi e gli ingredienti svizzeri, viaggia sereno.',
     'home.cta.menu':'Scopri il buffet','home.cta.premium':'Servizio Suite',
@@ -843,7 +1000,7 @@ const I18N = {
   },
   ar: {
     'brand.line1':'صالة أسباير','brand.line2':'سويسرا','brand.sub':'ضيافة ما قبل الرحلة · زيورخ، سويسرا',
-    'nav.home':'الرئيسية','nav.menu':'القائمة','nav.drinks':'المشروبات','nav.dietary':'النظام الغذائي','nav.partner':'الشراكات','nav.feedback':'الملاحظات','nav.about':'مصادرنا',
+    'nav.home':'الرئيسية','nav.menu':'القائمة','nav.drinks':'المشروبات','nav.dietary':'النظام الغذائي','nav.partner':'الشراكات','nav.feedback':'الملاحظات','nav.about':'مصادرنا','nav.preArrival':'قبل الوصول',
     'home.eyebrow':'زيورخ · جنيف · بازل','home.welcome':'أهلاً بك في لحظة هدوء قبل رحلتك.',
     'home.subtitle':'تصفّح قائمة اليوم، اكتشف المكونات السويسرية، وسافر بكل راحة.',
     'home.cta.menu':'تصفح البوفيه','home.cta.premium':'خدمة السويت',
@@ -951,6 +1108,27 @@ const STATE = {
   filters: new Set(),
   temperature: null,
   filtersOpen: false,
+  preArrival: {
+    size: 'medium',
+    selections: { starters: [], mains: [], desserts: [] },
+    schedule: '',
+    note: '',
+    confirmed: null,
+    swapTarget: null,
+  },
+};
+
+const PA_TRAY_SIZES = {
+  small:  { starters: 2, mains: 2, desserts: 2, guests: 'pa.size.small.guests', detail: 'pa.size.small.detail', prep: 14 },
+  medium: { starters: 3, mains: 3, desserts: 2, guests: 'pa.size.medium.guests', detail: 'pa.size.medium.detail', prep: 18 },
+  large:  { starters: 4, mains: 4, desserts: 3, guests: 'pa.size.large.guests', detail: 'pa.size.large.detail', prep: 24 },
+};
+
+// Curated chef's recommendations (used to pre-fill the tray on size change)
+const PA_RECOMMENDED = {
+  starters: ['cheese-charcuterie','smoked-trout-salad','french-pastry','greek-yogurt-parfait'],
+  mains:    ['zurcher-geschnetzeltes','herb-lake-fish','rosti-alpine-cheese','shakshuka'],
+  desserts: ['zuger-kirschtorte','chocolate-mousse','panna-cotta'],
 };
 
 function t(key) { return (I18N[STATE.locale] && I18N[STATE.locale][key]) || I18N.en[key] || key; }
@@ -1040,6 +1218,7 @@ const LOUNGES = [
 const NAV_ITEMS = [
   { href:'home', key:'nav.home' },
   { href:'menu', key:'nav.menu' },
+  { href:'pre-arrival', key:'nav.preArrival' },
   { href:'dietary', key:'nav.dietary' },
   { href:'partners', key:'nav.partner' },
   { href:'about', key:'nav.about' },
@@ -1312,6 +1491,31 @@ function pageHome() {
       <div class="grid md:grid-cols-2 gap-12 sm:gap-20" style="perspective: 1400px">
         ${editorialCard('menu','01',t('home.food'),t('home.food.body'),'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=80')}
         ${editorialCard('drinks','02',t('nav.drinks'),t('home.drinks.body'),'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1400&q=80')}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Pre-Arrival Dining (Luxe / Suite / Privé tiers) ===== -->
+  <section id="pre-arrival-promo" class="bg-ivory-100/60 border-y border-navy-900/10">
+    <div class="mx-auto max-w-6xl px-5 sm:px-8 py-24 sm:py-32">
+      <div class="grid md:grid-cols-12 gap-10 md:gap-16 items-center">
+        <div class="md:col-span-7 reveal">
+          <div class="inline-flex items-center gap-2 text-gold-600 text-[0.6rem] uppercase tracking-[0.36em]">
+            ${icon('i-crown','w-3.5 h-3.5')} ${esc(t('pa.home.eyebrow'))}
+          </div>
+          <h2 class="serif-heading text-3xl sm:text-5xl mt-5 text-navy-900 leading-[1.05]">${esc(t('pa.home.title'))}</h2>
+          <p class="mt-6 text-navy-500 leading-[1.75] max-w-xl">${esc(t('pa.home.body'))}</p>
+          <a href="#pre-arrival" data-route="pre-arrival" class="mt-8 inline-flex items-center gap-3 px-7 py-3.5 bg-navy-900 text-ivory-50 uppercase tracking-[0.28em] text-[0.66rem] hover:bg-navy-700 transition-colors">
+            ${esc(t('pa.home.cta'))} ${icon('i-arrow','w-3.5 h-3.5')}
+          </a>
+        </div>
+        <div class="md:col-span-5 reveal" style="transition-delay:.1s">
+          <div class="pa-tray-stack">
+            <div class="pa-tray-tier"><span class="pa-tier-label">${esc(t('pa.tray.top'))}</span><div class="mt-5 h-6 rounded bg-navy-900/5"></div></div>
+            <div class="pa-tray-tier"><span class="pa-tier-label">${esc(t('pa.tray.middle'))}</span><div class="mt-5 h-6 rounded bg-navy-900/5"></div></div>
+            <div class="pa-tray-tier"><span class="pa-tier-label">${esc(t('pa.tray.bottom'))}</span><div class="mt-5 h-6 rounded bg-navy-900/5"></div></div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -2152,6 +2356,362 @@ function stars(name) {
   </div>`;
 }
 
+/* ===========================================================
+   Pre-Arrival Dining experience
+   =========================================================== */
+function paApplySizeDefaults(force) {
+  const size = STATE.preArrival.size;
+  const cfg = PA_TRAY_SIZES[size];
+  const sel = STATE.preArrival.selections;
+  ['starters','mains','desserts'].forEach(cat => {
+    const count = cfg[cat];
+    const current = sel[cat];
+    if (force || current.length === 0) {
+      sel[cat] = PA_RECOMMENDED[cat].slice(0, count);
+    } else if (current.length > count) {
+      sel[cat] = current.slice(0, count);
+    } else if (current.length < count) {
+      const fillers = PA_RECOMMENDED[cat].filter(id => !current.includes(id));
+      while (current.length < count && fillers.length) current.push(fillers.shift());
+    }
+  });
+}
+
+function paTimeSlots() {
+  const slots = [];
+  const now = new Date();
+  // Round up to next 15-minute boundary, then 6 slots at 30-min intervals
+  const startMin = Math.ceil((now.getMinutes() + 1) / 15) * 15;
+  const base = new Date(now);
+  base.setMinutes(startMin, 0, 0);
+  for (let i = 0; i < 6; i++) {
+    const d = new Date(base.getTime() + i * 30 * 60 * 1000);
+    const hh = String(d.getHours()).padStart(2,'0');
+    const mm = String(d.getMinutes()).padStart(2,'0');
+    slots.push(`${hh}:${mm}`);
+  }
+  return slots;
+}
+
+function paSlotMarkup(cat, idx, dishId) {
+  const d = dishId ? DISHES.find(x => x.id === dishId) : null;
+  const ld = d ? localizedDish(d) : null;
+  const recommended = d && PA_RECOMMENDED[cat][0] === dishId;
+  const num = String(idx + 1).padStart(2,'0');
+  if (!d) {
+    return `
+    <div class="pa-dish-slot">
+      <span class="pa-tier-num">${num}</span>
+      <div class="flex-1 text-[0.85rem] text-navy-500 italic">${esc(t('pa.tray.empty'))}</div>
+      <button data-pa-swap="${cat}:${idx}" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-[0.62rem] uppercase tracking-[0.22em] bg-navy-900 text-ivory-50 hover:bg-navy-700 transition-colors">
+        ${icon('i-plus','w-3 h-3')} ${esc(t('pa.add'))}
+      </button>
+    </div>`;
+  }
+  return `
+  <div class="pa-dish-slot filled ${recommended ? 'recommend' : ''}">
+    <span class="pa-tier-num">${num}</span>
+    <img src="${esc(d.image)}" alt="${esc(ld.name)}" loading="lazy" class="pa-thumb" onerror="this.style.background='#EDE6D6'; this.style.opacity='0.5'" />
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center gap-2 flex-wrap">
+        <h4 class="text-[0.95rem] text-navy-900 truncate" title="${esc(ld.name)}">${esc(ld.name)}</h4>
+        ${recommended ? `<span class="pa-pill"><span>${icon('i-sparkle','w-2.5 h-2.5')}</span>${esc(t('pa.recommended'))}</span>` : ''}
+      </div>
+      <div class="mt-1.5 flex items-center gap-2 flex-wrap">
+        <span class="inline-flex items-center gap-1 text-[0.6rem] uppercase tracking-[0.22em] ${d.temperature==='hot'?'text-[#C0481E]':'text-[#2E7BB8]'}">
+          ${icon(d.temperature==='hot'?'i-flame':'i-snow','w-3 h-3')} ${esc(t('menu.'+d.temperature))}
+        </span>
+        ${d.dietary.slice(0,3).map(f => `<span class="text-gold-500" title="${esc(t('diet.'+f))}">${icon('d-'+f,'w-3.5 h-3.5')}</span>`).join('')}
+        ${d.allergens.length ? `<span class="inline-flex items-center gap-1 text-[0.58rem] uppercase tracking-[0.18em] text-navy-500/70">
+          ${d.allergens.slice(0,3).map(a => icon('a-'+a,'w-3 h-3')).join('')}
+        </span>` : ''}
+      </div>
+    </div>
+    <button data-pa-swap="${cat}:${idx}" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-[0.6rem] uppercase tracking-[0.22em] text-navy-700 border border-navy-900/15 hover:border-navy-900 transition-colors" aria-label="${esc(t('pa.swap'))}">
+      ${icon('i-shuffle','w-3 h-3')} ${esc(t('pa.swap'))}
+    </button>
+  </div>`;
+}
+
+function paTierMarkup(cat, labelKey) {
+  const size = STATE.preArrival.size;
+  const cfg = PA_TRAY_SIZES[size];
+  const slots = STATE.preArrival.selections[cat];
+  const need = cfg[cat];
+  const items = [];
+  for (let i = 0; i < need; i++) items.push(paSlotMarkup(cat, i, slots[i]));
+  return `
+  <div class="pa-tray-tier reveal">
+    <span class="pa-tier-label">${esc(t(labelKey))}</span>
+    <div class="mt-6 flex flex-col gap-2.5">${items.join('')}</div>
+  </div>`;
+}
+
+function paSummaryMarkup() {
+  const size = STATE.preArrival.size;
+  const cfg = PA_TRAY_SIZES[size];
+  const sel = STATE.preArrival.selections;
+  const total = sel.starters.length + sel.mains.length + sel.desserts.length;
+  const expected = cfg.starters + cfg.mains + cfg.desserts;
+  const filled = sel.starters.filter(Boolean).length + sel.mains.filter(Boolean).length + sel.desserts.filter(Boolean).length;
+  const complete = filled === expected;
+  const time = STATE.preArrival.schedule || t('pa.now');
+  return `
+  <div class="border border-navy-900/12 bg-ivory-50 p-6 sm:p-7 sticky top-[80px]">
+    <div class="swiss-eyebrow mb-4">— ${esc(t('pa.summary'))}</div>
+    <dl class="space-y-3 text-[0.9rem]">
+      <div class="flex items-center justify-between gap-3">
+        <dt class="text-navy-500">${esc(t('pa.summary.size'))}</dt>
+        <dd class="text-navy-900">${esc(t('pa.size.'+size))}</dd>
+      </div>
+      <div class="flex items-center justify-between gap-3">
+        <dt class="text-navy-500">${esc(t('pa.summary.guests'))}</dt>
+        <dd class="text-navy-900">${esc(t(cfg.guests))}</dd>
+      </div>
+      <div class="flex items-center justify-between gap-3">
+        <dt class="text-navy-500">${esc(t('pa.summary.dishes'))}</dt>
+        <dd class="text-navy-900">${filled} / ${expected}</dd>
+      </div>
+      <div class="flex items-center justify-between gap-3">
+        <dt class="text-navy-500">${esc(t('pa.summary.prep'))}</dt>
+        <dd class="text-navy-900 inline-flex items-center gap-1.5">${icon('i-clock','w-3.5 h-3.5')} ${cfg.prep} ${esc(t('pa.summary.min'))}</dd>
+      </div>
+      <div class="flex items-center justify-between gap-3 pt-3 border-t border-navy-900/10">
+        <dt class="text-navy-500">${esc(t('pa.summary.eta'))}</dt>
+        <dd class="text-navy-900 font-medium">${esc(time)}</dd>
+      </div>
+    </dl>
+    ${!complete ? `<p class="mt-5 text-[0.72rem] uppercase tracking-[0.22em] text-[#B05A47]">${esc(t('pa.summary.warn'))}</p>` : ''}
+    <button id="paConfirmBtn" ${!complete ? 'disabled' : ''} class="mt-6 w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 uppercase tracking-[0.22em] text-[0.7rem] transition-colors ${complete ? 'bg-gold-500 text-ivory-50 hover:bg-gold-400' : 'bg-navy-900/10 text-navy-500 cursor-not-allowed'}">
+      ${esc(t('pa.schedule.cta'))} ${icon('i-arrow','w-3 h-3')}
+    </button>
+  </div>`;
+}
+
+function paConfirmedMarkup() {
+  const c = STATE.preArrival.confirmed;
+  if (!c) return '';
+  return `
+  <div class="pa-confirm-overlay mx-auto max-w-3xl px-6 sm:px-10 py-12 sm:py-14 mb-16 anim-up">
+    <div class="flex items-center gap-3 text-gold-600">
+      <span class="pa-status-dot"></span>
+      <span class="text-[0.65rem] uppercase tracking-[0.32em]">${esc(t('pa.confirm.eyebrow'))}</span>
+    </div>
+    <h2 class="serif-heading text-3xl sm:text-5xl mt-4 text-navy-900">${esc(t('pa.confirm.title'))}</h2>
+    <p class="mt-5 text-navy-500 leading-[1.7] max-w-xl">${esc(t('pa.confirm.body'))}</p>
+    <div class="mt-9 grid sm:grid-cols-3 gap-6 pt-7 border-t border-navy-900/10">
+      <div>
+        <div class="swiss-eyebrow">${esc(t('pa.summary.eta'))}</div>
+        <div class="mt-2 serif-heading text-2xl text-navy-900">${esc(c.time)}</div>
+      </div>
+      <div>
+        <div class="swiss-eyebrow">${esc(t('pa.summary.prep'))}</div>
+        <div class="mt-2 serif-heading text-2xl text-navy-900">${c.prep} ${esc(t('pa.summary.min'))}</div>
+      </div>
+      <div>
+        <div class="swiss-eyebrow">${esc(t('pa.confirm.ref'))}</div>
+        <div class="mt-2 serif-heading text-2xl text-navy-900">${esc(c.ref)}</div>
+      </div>
+    </div>
+    <button id="paReset" class="mt-9 inline-flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.22em] text-navy-900 border-b border-navy-900/40 pb-1 hover:border-navy-900">
+      ${esc(t('pa.confirm.again'))} ${icon('i-arrow','w-3 h-3')}
+    </button>
+  </div>`;
+}
+
+function pagePreArrival() {
+  paApplySizeDefaults(false);
+  const size = STATE.preArrival.size;
+  const sizes = ['small','medium','large'];
+
+  const sizeCards = sizes.map(s => {
+    const active = s === size;
+    const cfg = PA_TRAY_SIZES[s];
+    return `
+    <button data-pa-size="${s}" class="pa-size-card text-left ${active ? 'active' : ''}">
+      <div class="pa-size-glyph">${icon('i-tray','w-6 h-6')}</div>
+      <div class="flex items-baseline justify-between">
+        <h3 class="serif-heading text-2xl text-navy-900">${esc(t('pa.size.'+s))}</h3>
+        <span class="text-[0.6rem] uppercase tracking-[0.28em] text-navy-500">${esc(t(cfg.guests))}</span>
+      </div>
+      <div class="mt-4 text-[0.7rem] uppercase tracking-[0.22em] text-navy-500">${esc(t('pa.size.includes'))}</div>
+      <div class="mt-2 text-[0.92rem] text-navy-700 leading-relaxed">${esc(t(cfg.detail))}</div>
+      <div class="mt-5 inline-flex items-center gap-1.5 text-[0.62rem] uppercase tracking-[0.22em] ${active ? 'text-gold-600' : 'text-navy-500'}">
+        ${icon('i-clock','w-3 h-3')} ${cfg.prep} ${esc(t('pa.summary.min'))}
+      </div>
+    </button>`;
+  }).join('');
+
+  const timeChips = paTimeSlots().map(time => {
+    const active = STATE.preArrival.schedule === time;
+    return `<button data-pa-time="${time}" class="pa-time-chip ${active ? 'active' : ''}">${time}</button>`;
+  }).join('');
+
+  const benefits = [
+    { i:'i-clock',   k1:'pa.benefit.1.title', k2:'pa.benefit.1.body' },
+    { i:'i-sparkle', k1:'pa.benefit.2.title', k2:'pa.benefit.2.body' },
+    { i:'i-shuffle', k1:'pa.benefit.3.title', k2:'pa.benefit.3.body' },
+    { i:'i-crown',   k1:'pa.benefit.4.title', k2:'pa.benefit.4.body' },
+  ].map(b => `
+    <div class="reveal">
+      <div class="text-gold-500">${icon(b.i,'w-5 h-5')}</div>
+      <h4 class="serif-heading text-xl mt-3 text-navy-900">${esc(t(b.k1))}</h4>
+      <p class="mt-2 text-[0.88rem] text-navy-500 leading-relaxed">${esc(t(b.k2))}</p>
+    </div>`).join('');
+
+  return `
+  <!-- Hero -->
+  <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-14 sm:pt-20">
+    <div class="grid lg:grid-cols-12 gap-10 items-end">
+      <div class="lg:col-span-7 reveal">
+        <div class="inline-flex items-center gap-2 text-gold-600 text-[0.6rem] uppercase tracking-[0.36em]">
+          ${icon('i-crown','w-3.5 h-3.5')} ${esc(t('pa.eyebrow'))}
+        </div>
+        <h1 class="serif-heading text-[2.4rem] sm:text-[4rem] mt-4 text-navy-900 leading-[1.02]">${esc(t('pa.title'))}</h1>
+        <p class="mt-6 text-navy-500 leading-[1.75] max-w-xl">${esc(t('pa.lede'))}</p>
+      </div>
+      <div class="lg:col-span-5 reveal" style="transition-delay:.1s">
+        <div class="border-l-2 border-gold-500/60 pl-5 py-2">
+          <div class="swiss-eyebrow">${esc(t('pa.tierBadge'))}</div>
+          <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-[0.78rem] uppercase tracking-[0.28em] text-navy-700">
+            <span>Luxe</span><span class="text-navy-900/20">·</span>
+            <span>Suite</span><span class="text-navy-900/20">·</span>
+            <span>Privé</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hairline mt-14"></div>
+  </section>
+
+  ${paConfirmedMarkup()}
+
+  <!-- Step 1: Choose size -->
+  <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-16">
+    <div class="max-w-xl reveal">
+      <div class="swiss-eyebrow">— ${esc(t('pa.step.size'))}</div>
+      <p class="mt-4 text-navy-500 leading-[1.7]">${esc(t('pa.step.size.body'))}</p>
+    </div>
+    <div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">${sizeCards}</div>
+  </section>
+
+  <!-- Step 2: Compose tray + summary -->
+  <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-20">
+    <div class="max-w-xl reveal">
+      <div class="swiss-eyebrow">— ${esc(t('pa.step.customize'))}</div>
+      <p class="mt-4 text-navy-500 leading-[1.7]">${esc(t('pa.step.customize.body'))}</p>
+    </div>
+    <div class="mt-10 grid lg:grid-cols-12 gap-10">
+      <div class="lg:col-span-8">
+        <div class="pa-tray-stack">
+          ${paTierMarkup('starters','pa.tray.top')}
+          ${paTierMarkup('mains','pa.tray.middle')}
+          ${paTierMarkup('desserts','pa.tray.bottom')}
+        </div>
+      </div>
+      <aside class="lg:col-span-4">${paSummaryMarkup()}</aside>
+    </div>
+  </section>
+
+  <!-- Step 3: Schedule -->
+  <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-20">
+    <div class="max-w-xl reveal">
+      <div class="swiss-eyebrow">— ${esc(t('pa.step.schedule'))}</div>
+      <p class="mt-4 text-navy-500 leading-[1.7]">${esc(t('pa.step.schedule.body'))}</p>
+    </div>
+    <div class="mt-8 grid lg:grid-cols-12 gap-10">
+      <div class="lg:col-span-7 reveal">
+        <div class="text-[0.7rem] uppercase tracking-[0.22em] text-navy-500">${esc(t('pa.schedule.title'))}</div>
+        <div class="mt-4 grid grid-cols-3 sm:grid-cols-6 gap-2">${timeChips}</div>
+        <textarea id="paNote" rows="3" placeholder="${esc(t('pa.schedule.notePh'))}"
+          class="lounge-input mt-6 w-full bg-transparent border-b border-navy-900/15 px-1 py-3 text-[0.95rem] focus:ring-0 focus:border-navy-900">${esc(STATE.preArrival.note)}</textarea>
+      </div>
+      <div class="lg:col-span-5 reveal" style="transition-delay:.1s">
+        <p class="text-navy-500 leading-[1.7]">${esc(t('pa.schedule.body'))}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benefits -->
+  <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-24 pb-24">
+    <div class="hairline mb-14"></div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">${benefits}</div>
+  </section>`;
+}
+
+function showPaSwapModal(cat, idx) {
+  const options = DISHES.filter(d => d.category === cat);
+  document.body.style.overflow = 'hidden';
+  document.getElementById('modalHost').innerHTML = `
+  <div class="fixed inset-0 z-50 modal-bg flex items-center justify-center p-4 anim-fade" data-close>
+    <div class="pa-swap-modal-card w-full max-w-2xl anim-up" onclick="event.stopPropagation()">
+      <div class="flex items-start justify-between gap-6 mb-6">
+        <div>
+          <div class="swiss-eyebrow">${esc(t('cat.'+cat))}</div>
+          <h3 class="serif-heading text-2xl sm:text-3xl mt-2 text-navy-900">${esc(t('pa.swap.title'))}</h3>
+          <p class="mt-2 text-navy-500 text-[0.92rem]">${esc(t('pa.swap.subtitle'))}</p>
+        </div>
+        <button data-close class="h-9 w-9 flex items-center justify-center text-navy-700 hover:text-navy-900" aria-label="${esc(t('menu.close'))}">${icon('i-x','w-4 h-4')}</button>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-3">
+        ${options.map(d => {
+          const ld = localizedDish(d);
+          const recommended = PA_RECOMMENDED[cat][0] === d.id;
+          return `
+          <button data-pa-pick="${d.id}" class="flex items-start gap-3 p-3 text-left border border-navy-900/10 hover:border-gold-500 hover:bg-ivory-100 transition-colors">
+            <img src="${esc(d.image)}" alt="${esc(ld.name)}" loading="lazy" class="pa-thumb" />
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <h4 class="text-[0.95rem] text-navy-900 leading-tight">${esc(ld.name)}</h4>
+                ${recommended ? `<span class="pa-pill">${esc(t('pa.recommended'))}</span>` : ''}
+              </div>
+              <p class="mt-1 text-[0.78rem] text-navy-500 line-clamp-2">${esc(ld.description)}</p>
+              <div class="mt-2 flex items-center gap-2 flex-wrap">
+                ${d.dietary.slice(0,3).map(f => `<span class="text-gold-500" title="${esc(t('diet.'+f))}">${icon('d-'+f,'w-3.5 h-3.5')}</span>`).join('')}
+                ${d.allergens.length ? `<span class="pa-pill allergen">${esc(t('pa.swap.allergens'))} · ${d.allergens.slice(0,3).map(a => esc(t('allergen.'+a))).join(', ')}</span>` : ''}
+              </div>
+            </div>
+          </button>`;
+        }).join('')}
+      </div>
+    </div>
+  </div>`;
+  document.getElementById('modalHost').querySelectorAll('[data-pa-pick]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-pa-pick');
+      const sel = STATE.preArrival.selections[cat];
+      // Remove duplicates first
+      const dupIdx = sel.indexOf(id);
+      if (dupIdx !== -1 && dupIdx !== idx) sel[dupIdx] = null;
+      sel[idx] = id;
+      // Clean any remaining nulls by leaving the slot as empty (handled by paSlotMarkup)
+      STATE.preArrival.swapTarget = null;
+      closeModals();
+      renderMain();
+    });
+  });
+}
+
+function paGenerateRef() {
+  const n = Math.floor(Math.random() * 9000) + 1000;
+  return `APR-${n}`;
+}
+
+function paConfirmOrder() {
+  const sel = STATE.preArrival.selections;
+  const cfg = PA_TRAY_SIZES[STATE.preArrival.size];
+  const expected = cfg.starters + cfg.mains + cfg.desserts;
+  const filled = sel.starters.filter(Boolean).length + sel.mains.filter(Boolean).length + sel.desserts.filter(Boolean).length;
+  if (filled !== expected) return;
+  STATE.preArrival.confirmed = {
+    time: STATE.preArrival.schedule || t('pa.now'),
+    prep: cfg.prep,
+    ref: paGenerateRef(),
+  };
+  renderMain();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 /* Dish detail modal */
 function showDishModal(id) {
   const d = DISHES.find(x => x.id === id);
@@ -2307,13 +2867,14 @@ function renderMain() {
   const m = document.getElementById('main');
   let html = '';
   switch (STATE.route) {
-    case 'menu':     html = pageMenu(); break;
-    case 'drinks':   html = pageDrinks(); break;
-    case 'dietary':  html = pageDietary(); break;
-    case 'partners': html = pagePartners(); break;
-    case 'about':    html = pageAbout(); break;
-    case 'feedback': html = pageFeedback(); break;
-    default:         html = pageHome();
+    case 'menu':        html = pageMenu(); break;
+    case 'drinks':      html = pageDrinks(); break;
+    case 'dietary':     html = pageDietary(); break;
+    case 'partners':    html = pagePartners(); break;
+    case 'about':       html = pageAbout(); break;
+    case 'feedback':    html = pageFeedback(); break;
+    case 'pre-arrival': html = pagePreArrival(); break;
+    default:            html = pageHome();
   }
   m.innerHTML = `<div class="page">${html}</div>`;
   attachPageEvents();
@@ -2791,6 +3352,37 @@ function attachPageEvents() {
     });
     buttons.forEach((btn,i) => btn.addEventListener('click', () => { value = i + 1; paint(value); }));
   });
+  // Pre-Arrival
+  document.querySelectorAll('[data-pa-size]').forEach(b => b.addEventListener('click', () => {
+    const s = b.getAttribute('data-pa-size');
+    if (STATE.preArrival.size === s) return;
+    STATE.preArrival.size = s;
+    paApplySizeDefaults(false);
+    renderMain();
+  }));
+  document.querySelectorAll('[data-pa-swap]').forEach(b => b.addEventListener('click', () => {
+    const [cat, idxStr] = b.getAttribute('data-pa-swap').split(':');
+    showPaSwapModal(cat, parseInt(idxStr, 10));
+  }));
+  document.querySelectorAll('[data-pa-time]').forEach(b => b.addEventListener('click', () => {
+    const time = b.getAttribute('data-pa-time');
+    STATE.preArrival.schedule = STATE.preArrival.schedule === time ? '' : time;
+    renderMain();
+  }));
+  const paNote = document.getElementById('paNote');
+  if (paNote) paNote.addEventListener('input', e => { STATE.preArrival.note = e.target.value; });
+  const paConfirmBtn = document.getElementById('paConfirmBtn');
+  if (paConfirmBtn) paConfirmBtn.addEventListener('click', paConfirmOrder);
+  const paReset = document.getElementById('paReset');
+  if (paReset) paReset.addEventListener('click', () => {
+    STATE.preArrival.confirmed = null;
+    STATE.preArrival.schedule = '';
+    STATE.preArrival.note = '';
+    paApplySizeDefaults(true);
+    renderMain();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
   const ff = document.getElementById('feedbackForm');
   if (ff) ff.addEventListener('submit', (e) => {
     e.preventDefault();
