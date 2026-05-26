@@ -530,6 +530,96 @@
     .pa-pipeline::before { top: 14px; }
     .pa-pipeline-step .pa-step-dot { width: 28px; height: 28px; }
   }
+
+  /* Luxe curated combination cards */
+  .pa-combo-card {
+    border: 1px solid rgba(20,38,63,.12);
+    background: #fff;
+    cursor: pointer;
+    transition: border-color .3s, transform .3s, box-shadow .3s;
+    position: relative;
+    overflow: hidden;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+  }
+  .pa-combo-card:hover { border-color: rgba(184,152,85,.55); transform: translateY(-2px); box-shadow: 0 18px 30px -22px rgba(20,38,63,.25); }
+  .pa-combo-card.active { border-color: #B89855; box-shadow: 0 0 0 2px rgba(184,152,85,.22), 0 22px 36px -24px rgba(20,38,63,.3); }
+  .pa-combo-card .pa-combo-img { aspect-ratio: 5/4; overflow: hidden; background: #EDE6D6; }
+  .pa-combo-card .pa-combo-img img { width:100%; height:100%; object-fit: cover; transition: transform .8s cubic-bezier(.2,.8,.2,1); }
+  .pa-combo-card:hover .pa-combo-img img { transform: scale(1.04); }
+  .pa-combo-card .pa-combo-body { padding: 18px 20px 22px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  .pa-combo-card.active .pa-combo-img { position: relative; }
+  .pa-combo-card.active .pa-combo-img::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(184,152,85,0) 60%, rgba(184,152,85,.18));
+    pointer-events: none;
+  }
+
+  /* Locked slot styling (Luxe) */
+  .pa-dish-slot.locked { background: rgba(255,255,255,.85); }
+  .pa-locked-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: .54rem; letter-spacing: .26em; text-transform: uppercase;
+    color: #8A8475; padding: 3px 7px; border: 1px solid rgba(20,38,63,.12);
+    background: rgba(255,255,255,.6);
+  }
+
+  /* Ingredient toggle (Suite / Privé) */
+  .pa-ing-toggle {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px;
+    border: 1px solid rgba(20,38,63,.12);
+    background: #fff;
+    width: 100%;
+    cursor: pointer;
+    transition: all .2s;
+    text-align: left;
+  }
+  .pa-ing-toggle:hover { border-color: #B89855; }
+  .pa-ing-toggle.removed {
+    background: rgba(20,38,63,.04);
+    color: rgba(20,38,63,.4);
+    text-decoration: line-through;
+  }
+  .pa-ing-toggle.allergen { border-left: 3px solid #B05A47; }
+  .pa-ing-toggle .pa-ing-x {
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; flex: none;
+    background: rgba(20,38,63,.06);
+    transition: background .2s, color .2s;
+  }
+  .pa-ing-toggle:hover .pa-ing-x { background: #B05A47; color: #fff; }
+  .pa-ing-toggle.removed .pa-ing-x { background: #B05A47; color: #fff; }
+  .pa-ing-tag {
+    flex: none;
+    font-size: .52rem; letter-spacing: .22em; text-transform: uppercase;
+    color: #B05A47;
+    padding: 2px 6px;
+    background: rgba(176,90,71,.08);
+    border-radius: 2px;
+  }
+
+  /* Dietary preference chip (Privé) */
+  .pa-pref-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px;
+    border: 1px solid rgba(20,38,63,.15);
+    background: #fff;
+    cursor: pointer;
+    transition: all .25s;
+    font-size: .82rem;
+    color: #15263F;
+  }
+  .pa-pref-chip:hover { border-color: #B89855; }
+  .pa-pref-chip.active {
+    border-color: #B89855;
+    background: #B89855;
+    color: #FBF9F5;
+    box-shadow: 0 0 0 2px rgba(184,152,85,.18);
+  }
+  .pa-pref-chip.active svg { color: #FBF9F5; }
 </style>
 </head>
 <body class="min-h-screen">
@@ -790,27 +880,27 @@ const I18N = {
     'pa.step.tier.body':'Your boarding pass profile determines the welcome — Luxe, Suite or Privé. Switch to preview what each tier unlocks for your tray.',
 
     'pa.tier.luxe.label':'Luxe',
-    'pa.tier.luxe.tagline':'The curated essential',
-    'pa.tier.luxe.perk1':'Pre-ordered tiered tray',
+    'pa.tier.luxe.tagline':'Curated, ready to enjoy',
+    'pa.tier.luxe.perk1':'Three chef-curated tray combinations',
     'pa.tier.luxe.perk2':'Counter pickup at lounge entry',
     'pa.tier.luxe.perk3':'Standard 18-minute preparation',
-    'pa.tier.luxe.perk4':'Dietary swaps & allergen filters',
+    'pa.tier.luxe.perk4':'Fixed composition — no editing required',
     'pa.tier.luxe.handoff':'Counter A · Lounge entry',
 
     'pa.tier.suite.label':'Suite',
-    'pa.tier.suite.tagline':'A quieter table service',
-    'pa.tier.suite.perk1':'All Luxe inclusions',
+    'pa.tier.suite.tagline':'Composed to your taste',
+    'pa.tier.suite.perk1':'Swap any dish · remove ingredients',
     'pa.tier.suite.perk2':'Sommelier-paired beverage, complimentary',
     'pa.tier.suite.perk3':'Plated to your seat in the Suite zone',
     'pa.tier.suite.perk4':'Priority preparation — three minutes saved',
     'pa.tier.suite.handoff':'Your table · Suite zone',
 
     'pa.tier.prive.label':'Privé',
-    'pa.tier.prive.tagline':'Private dining ritual',
-    'pa.tier.prive.perk1':'All Suite inclusions',
-    'pa.tier.prive.perk2':'Reserved private dining nook',
-    'pa.tier.prive.perk3':'Dedicated host & hot-towel ritual',
-    'pa.tier.prive.perk4':'Fine porcelain · crystal · bespoke chef note',
+    'pa.tier.prive.tagline':'Tailored to the smallest detail',
+    'pa.tier.prive.perk1':'All Suite inclusions · private dining nook',
+    'pa.tier.prive.perk2':'Set dietary preferences — applied tray-wide',
+    'pa.tier.prive.perk3':'Dedicated host · hot-towel ritual · porcelain',
+    'pa.tier.prive.perk4':'Bespoke chef consultation per order',
     'pa.tier.prive.handoff':'Privé Nook · seated greeting',
 
     'pa.suite.title':'Suite enhancements',
@@ -885,6 +975,38 @@ const I18N = {
     'pa.track.modify':'Modify or cancel',
     'pa.track.timeline.title':'Preparation timeline',
     'pa.track.timeline.body':'Total prep time scales with your tray size. Suite and Privé travellers gain a three-minute priority allocation.',
+
+    'pa.combo.title':'Curated combinations',
+    'pa.combo.subtitle':'Three signature trays composed by our executive chef. Pick a story — your tray fills automatically to the size you chose.',
+    'pa.combo.locked':'Curated · locked composition',
+    'pa.combo.alpine.name':'The Alpine',
+    'pa.combo.alpine.tag':'Heritage Switzerland — cheese, charcuterie, lake fish, kirsch.',
+    'pa.combo.garden.name':'The Garden',
+    'pa.combo.garden.tag':'Plant-forward — light, fresh, vegetable-led plates.',
+    'pa.combo.voyager.name':'The Voyager',
+    'pa.combo.voyager.tag':'International — Mediterranean, Asian and pastry highlights.',
+
+    'pa.luxe.title':'Luxe — curated, ready in minutes',
+    'pa.luxe.body':'Browse signature trays composed by our team. Beautifully fixed compositions — no editing needed, just choose and arrive.',
+    'pa.luxe.note':'Want to swap an item or remove an allergen? Upgrade to Suite or Privé to unlock composition.',
+
+    'pa.compose.title':'Compose your tray',
+    'pa.compose.body':'Swap any course, view dietary tags, and explore premium recommendations. Suite and Privé travellers can also remove individual ingredients and tailor allergens.',
+
+    'pa.custom.title':'Customize this dish',
+    'pa.custom.subtitle':'Remove anything you don’t want — our kitchen rebuilds the plate without it. Allergens are highlighted in copper.',
+    'pa.custom.removed':'Removed',
+    'pa.custom.empty':'No customizations yet — every ingredient is included.',
+    'pa.custom.reset':'Restore all',
+    'pa.custom.locked':'Luxe trays are fixed by the chef. Switch to Suite or Privé to remove ingredients.',
+    'pa.custom.badge':'Personalized',
+    'pa.custom.allergen':'Allergen',
+
+    'pa.prefs.title':'Privé personalization',
+    'pa.prefs.subtitle':'Tell us how you eat. Every slot, every swap and every recommendation will filter to match.',
+    'pa.prefs.hint':'Select one or more — applied across all tiers and every swap.',
+    'pa.prefs.cleared':'No preferences set — your tray reflects the full menu.',
+    'pa.prefs.matchwarn':'No dish in this slot matches all preferences — the closest substitute will be used.',
     'home.eyebrow':'Zürich · Geneva · Basel',
     'home.welcome':'Welcome to a quiet moment before your flight.',
     'home.subtitle':'Browse today’s buffet, discover Swiss ingredients, and travel with comfort.',
@@ -1391,7 +1513,10 @@ const STATE = {
   preArrival: {
     size: 'medium',
     tier: 'luxe',
+    luxeCombo: 'alpine',
     selections: { starters: [], mains: [], desserts: [] },
+    customizations: {},
+    dietaryPrefs: new Set(),
     schedule: '',
     note: '',
     confirmed: null,
@@ -1442,6 +1567,34 @@ const PA_RECOMMENDED = {
   mains:    ['zurcher-geschnetzeltes','herb-lake-fish','rosti-alpine-cheese','shakshuka'],
   desserts: ['zuger-kirschtorte','chocolate-mousse','panna-cotta'],
 };
+
+// Luxe tier: fixed curated combinations — no per-slot customization
+const PA_LUXE_COMBOS = [
+  {
+    id:'alpine',
+    nameKey:'pa.combo.alpine.name', tagKey:'pa.combo.alpine.tag',
+    image:'https://i.postimg.cc/4xhgTmSN/Chat-GPT-Image-May-26-2026-12-12-21-PM.png',
+    starters:['cheese-charcuterie','smoked-trout-salad','pretzel-butter','fruit-compote'],
+    mains:   ['zurcher-geschnetzeltes','rosti-alpine-cheese','veal-bratwurst','herb-lake-fish'],
+    desserts:['zuger-kirschtorte','chocolate-mousse','frozen-yoghurt'],
+  },
+  {
+    id:'garden',
+    nameKey:'pa.combo.garden.name', tagKey:'pa.combo.garden.tag',
+    image:'https://images.unsplash.com/photo-1505253213348-cd54c92b37e6?auto=format&fit=crop&w=1200&q=80',
+    starters:['cucumber-radish-salad','fruit-compote','chickpea-salad','avocado-wraps'],
+    mains:   ['shakshuka','asian-fried-rice','rosti-alpine-cheese','herb-lake-fish'],
+    desserts:['panna-cotta','frozen-yoghurt','chocolate-mousse'],
+  },
+  {
+    id:'voyager',
+    nameKey:'pa.combo.voyager.name', tagKey:'pa.combo.voyager.tag',
+    image:'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=1200&q=80',
+    starters:['french-pastry','greek-yogurt-parfait','bircher-muesli','smoked-trout-salad'],
+    mains:   ['shakshuka','chicken-skillet','herb-lake-fish','asian-fried-rice'],
+    desserts:['panna-cotta','chocolate-mousse','frozen-yoghurt'],
+  },
+];
 
 // Detailed biteable specs — ingredients, portion, provenance — surfaced in detail modal
 const BITEABLE_DETAIL = {
@@ -2780,7 +2933,37 @@ function stars(name) {
 /* ===========================================================
    Pre-Arrival Dining experience
    =========================================================== */
+function paLuxeIsActive() {
+  return STATE.preArrival.tier === 'luxe';
+}
+
+function paCanCustomize() {
+  return STATE.preArrival.tier !== 'luxe';
+}
+
+function paIsPersonalized(dishId) {
+  const c = STATE.preArrival.customizations[dishId];
+  return c && c.removed && c.removed.length > 0;
+}
+
+function paApplyLuxeCombo() {
+  const combo = PA_LUXE_COMBOS.find(c => c.id === STATE.preArrival.luxeCombo) || PA_LUXE_COMBOS[0];
+  const cfg = PA_TRAY_SIZES[STATE.preArrival.size];
+  STATE.preArrival.selections = {
+    starters: combo.starters.slice(0, cfg.starters),
+    mains:    combo.mains.slice(0, cfg.mains),
+    desserts: combo.desserts.slice(0, cfg.desserts),
+  };
+  // Clear ingredient customizations — Luxe is locked
+  STATE.preArrival.customizations = {};
+}
+
 function paApplySizeDefaults(force) {
+  // Luxe always slots in whatever combo is active, scaled to the chosen size
+  if (paLuxeIsActive()) {
+    paApplyLuxeCombo();
+    return;
+  }
   const size = STATE.preArrival.size;
   const cfg = PA_TRAY_SIZES[size];
   const sel = STATE.preArrival.selections;
@@ -2836,25 +3019,28 @@ function paSlotMarkup(cat, idx, dishId) {
   const ld = d ? localizedDish(d) : null;
   const recommended = d && PA_RECOMMENDED[cat][0] === dishId;
   const num = String(idx + 1).padStart(2,'0');
+  const canEdit = paCanCustomize();
+  const personalized = d && paIsPersonalized(d.id);
   if (!d) {
     return `
     <div class="pa-dish-slot">
       <span class="pa-tier-num">${num}</span>
       <div class="flex-1 text-[0.85rem] text-navy-500 italic">${esc(t('pa.tray.empty'))}</div>
-      <button data-pa-swap="${cat}:${idx}" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-[0.62rem] uppercase tracking-[0.22em] bg-navy-900 text-ivory-50 hover:bg-navy-700 transition-colors">
+      ${canEdit ? `<button data-pa-swap="${cat}:${idx}" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-[0.62rem] uppercase tracking-[0.22em] bg-navy-900 text-ivory-50 hover:bg-navy-700 transition-colors">
         ${icon('i-plus','w-3 h-3')} ${esc(t('pa.add'))}
-      </button>
+      </button>` : `<span class="pa-locked-badge">${icon('i-check','w-2.5 h-2.5')} ${esc(t('pa.combo.locked'))}</span>`}
     </div>`;
   }
   const teaser = paIngredientTeaser(d.id);
   return `
-  <div class="pa-dish-slot filled ${recommended ? 'recommend' : ''}" style="align-items: flex-start;">
+  <div class="pa-dish-slot filled ${recommended ? 'recommend' : ''} ${canEdit ? '' : 'locked'}" style="align-items: flex-start;">
     <span class="pa-tier-num" style="margin-top: 4px;">${num}</span>
     <img src="${esc(d.image)}" alt="${esc(ld.name)}" loading="lazy" class="pa-thumb" onerror="this.style.background='#EDE6D6'; this.style.opacity='0.5'" />
     <div class="flex-1 min-w-0">
       <div class="flex items-center gap-2 flex-wrap">
         <h4 class="text-[0.95rem] text-navy-900 truncate" title="${esc(ld.name)}">${esc(ld.name)}</h4>
-        ${recommended ? `<span class="pa-pill"><span>${icon('i-sparkle','w-2.5 h-2.5')}</span>${esc(t('pa.recommended'))}</span>` : ''}
+        ${personalized ? `<span class="pa-pill" style="background:rgba(20,38,63,.06);color:#15263F;"><span>${icon('i-spark2','w-2.5 h-2.5')}</span>${esc(t('pa.custom.badge'))}</span>` : ''}
+        ${recommended && canEdit ? `<span class="pa-pill"><span>${icon('i-sparkle','w-2.5 h-2.5')}</span>${esc(t('pa.recommended'))}</span>` : ''}
       </div>
       ${teaser ? `<p class="mt-1 text-[0.78rem] text-navy-500 leading-snug line-clamp-2">${esc(teaser)}</p>` : ''}
       <div class="mt-2 flex items-center gap-2 flex-wrap">
@@ -2871,9 +3057,11 @@ function paSlotMarkup(cat, idx, dishId) {
       <button data-pa-detail="${d.id}" class="pa-detail-btn" aria-label="${esc(t('pa.detail.btn'))}" title="${esc(t('pa.detail.btn'))}">
         ${icon('i-info','w-4 h-4')}
       </button>
-      <button data-pa-swap="${cat}:${idx}" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-[0.6rem] uppercase tracking-[0.22em] text-navy-700 border border-navy-900/15 hover:border-navy-900 transition-colors" aria-label="${esc(t('pa.swap'))}">
-        ${icon('i-shuffle','w-3 h-3')} ${esc(t('pa.swap'))}
-      </button>
+      ${canEdit
+        ? `<button data-pa-swap="${cat}:${idx}" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-[0.6rem] uppercase tracking-[0.22em] text-navy-700 border border-navy-900/15 hover:border-navy-900 transition-colors" aria-label="${esc(t('pa.swap'))}">
+          ${icon('i-shuffle','w-3 h-3')} ${esc(t('pa.swap'))}
+        </button>`
+        : `<span class="pa-locked-badge" title="${esc(t('pa.combo.locked'))}">${icon('i-check','w-2.5 h-2.5')} ${esc(t('pa.combo.locked').split(' ')[0])}</span>`}
     </div>
   </div>`;
 }
@@ -3244,6 +3432,67 @@ function paPrivePanel() {
   </section>`;
 }
 
+function paLuxeComboPicker() {
+  if (!paLuxeIsActive()) return '';
+  const active = STATE.preArrival.luxeCombo;
+  const cards = PA_LUXE_COMBOS.map(c => {
+    const on = c.id === active;
+    return `
+    <button data-pa-combo="${c.id}" class="pa-combo-card ${on ? 'active' : ''}">
+      <div class="pa-combo-img">
+        <img src="${esc(c.image)}" alt="${esc(t(c.nameKey))}" loading="lazy" />
+      </div>
+      <div class="pa-combo-body">
+        <div class="flex items-baseline justify-between">
+          <h4 class="serif-heading text-xl text-navy-900">${esc(t(c.nameKey))}</h4>
+          ${on ? `<span class="text-gold-600">${icon('i-check','w-4 h-4')}</span>` : ''}
+        </div>
+        <p class="text-[0.82rem] text-navy-500 leading-snug">${esc(t(c.tagKey))}</p>
+      </div>
+    </button>`;
+  }).join('');
+  return `
+  <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-16">
+    <div class="max-w-xl reveal">
+      <div class="swiss-eyebrow">— ${esc(t('pa.combo.title'))}</div>
+      <p class="mt-4 text-navy-500 leading-[1.7]">${esc(t('pa.combo.subtitle'))}</p>
+    </div>
+    <div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">${cards}</div>
+    <p class="mt-6 text-[0.78rem] text-navy-500 italic max-w-2xl">${esc(t('pa.luxe.note'))}</p>
+  </section>`;
+}
+
+function paPrivePrefsPanel() {
+  if (STATE.preArrival.tier !== 'prive') return '';
+  const active = STATE.preArrival.dietaryPrefs;
+  const chips = DIETARY.map(d => {
+    const on = active.has(d);
+    return `
+    <button data-pa-pref="${d}" class="pa-pref-chip ${on ? 'active' : ''}">
+      ${icon('d-'+d,'w-3.5 h-3.5')} <span>${esc(t('diet.'+d))}</span>
+    </button>`;
+  }).join('');
+  return `
+  <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-6">
+    <div class="pa-feature-panel">
+      <div class="grid md:grid-cols-12 gap-8 items-start">
+        <div class="md:col-span-4">
+          <div class="inline-flex items-center gap-2 text-gold-600 text-[0.6rem] uppercase tracking-[0.32em]">
+            ${icon('i-leaf','w-3.5 h-3.5')} ${esc(t('pa.tier.prive.label'))}
+          </div>
+          <h3 class="serif-heading text-2xl sm:text-3xl mt-3 text-navy-900">${esc(t('pa.prefs.title'))}</h3>
+          <p class="mt-3 text-[0.9rem] text-navy-500 leading-relaxed">${esc(t('pa.prefs.subtitle'))}</p>
+        </div>
+        <div class="md:col-span-8">
+          <div class="text-[0.7rem] uppercase tracking-[0.22em] text-navy-700">${esc(t('pa.prefs.hint'))}</div>
+          <div class="mt-4 flex flex-wrap gap-2.5">${chips}</div>
+          ${active.size === 0 ? `<p class="mt-4 text-[0.78rem] text-navy-500 italic">${esc(t('pa.prefs.cleared'))}</p>` : ''}
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
 function pagePreArrival() {
   paApplySizeDefaults(false);
   const size = STATE.preArrival.size;
@@ -3328,15 +3577,21 @@ function pagePreArrival() {
     <div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">${sizeCards}</div>
   </section>
 
+  <!-- Luxe: curated combinations picker -->
+  ${paLuxeComboPicker()}
+
   <!-- Suite & Privé feature panels (tier-specific) -->
   ${paSuitePanel()}
   ${paPrivePanel()}
 
-  <!-- Step 02: Compose tray + summary -->
+  <!-- Privé: dietary preference personalization -->
+  ${paPrivePrefsPanel()}
+
+  <!-- Step 02: Tray preview / composer + summary -->
   <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-20">
     <div class="max-w-xl reveal">
-      <div class="swiss-eyebrow">— ${esc(t('pa.step.customize'))}</div>
-      <p class="mt-4 text-navy-500 leading-[1.7]">${esc(t('pa.step.customize.body'))}</p>
+      <div class="swiss-eyebrow">— ${tier==='luxe' ? '02 · '+esc(t('pa.luxe.title')) : '02 · '+esc(t('pa.compose.title'))}</div>
+      <p class="mt-4 text-navy-500 leading-[1.7]">${tier==='luxe' ? esc(t('pa.luxe.body')) : esc(t('pa.compose.body'))}</p>
     </div>
     <div class="mt-10 grid lg:grid-cols-12 gap-10">
       <div class="lg:col-span-8">
@@ -3376,11 +3631,34 @@ function pagePreArrival() {
   </section>`;
 }
 
+// Heuristic — flag an ingredient as containing an allergen if its name mentions a keyword.
+const PA_ALLERGEN_KEYWORDS = {
+  gluten:    ['bread','pretzel','rolls','crispbread','sourdough','pastry','biscuit','sponge','wrap','wheat','granola','oat','genoise','meringue'],
+  dairy:     ['butter','cream','crème','crema','yoghurt','yogurt','cheese','gruyère','tête de moine','hobelkäse','panna cotta','buttercream','milk'],
+  nuts:      ['hazelnut','walnut','almond','pistachio','praline','nut'],
+  shellfish: ['shrimp','prawn','crab','lobster','shellfish'],
+  eggs:      ['egg','meringue','buttercream','sponge','genoise'],
+  soy:       ['soy','soya','tofu','tamari'],
+  sesame:    ['sesame','tahini'],
+};
+
+function paIngredientAllergens(ingredient, dishAllergens) {
+  const lc = ingredient.toLowerCase();
+  return dishAllergens.filter(a => {
+    const kws = PA_ALLERGEN_KEYWORDS[a] || [];
+    return kws.some(k => lc.includes(k));
+  });
+}
+
 function showBiteableModal(id) {
   const d = DISHES.find(x => x.id === id);
   if (!d) return;
   const ld = localizedDish(d);
   const det = biteableDetail(id);
+  const canEdit = paCanCustomize();
+  const custom = STATE.preArrival.customizations[d.id] || { removed: [] };
+  const removed = new Set(custom.removed);
+
   document.body.style.overflow = 'hidden';
   document.getElementById('modalHost').innerHTML = `
   <div class="fixed inset-0 z-50 modal-bg flex items-end sm:items-center justify-center anim-fade" data-close>
@@ -3396,6 +3674,7 @@ function showBiteableModal(id) {
             ? `<span class="inline-flex items-center gap-1.5 bg-ivory-50 px-2.5 py-1 text-[0.62rem] uppercase tracking-[0.22em] text-navy-900">${icon('i-swiss','w-3 h-3')} ${esc(t('menu.local'))}</span>`
             : `<span class="inline-flex items-center gap-1.5 bg-ivory-50 px-2.5 py-1 text-[0.62rem] uppercase tracking-[0.22em] text-navy-500">${icon('i-globe','w-3 h-3')} ${esc(t('menu.international'))}</span>`}
           ${det.portion ? `<span class="inline-flex items-center gap-1.5 bg-ivory-50 px-2.5 py-1 text-[0.62rem] uppercase tracking-[0.22em] text-gold-600">${icon('i-tray','w-3 h-3')} ${esc(det.portion)}</span>` : ''}
+          ${removed.size ? `<span class="inline-flex items-center gap-1.5 bg-navy-900 text-ivory-50 px-2.5 py-1 text-[0.62rem] uppercase tracking-[0.22em]">${icon('i-spark2','w-3 h-3')} ${esc(t('pa.custom.badge'))}</span>` : ''}
         </div>
       </div>
       <div class="p-8 overflow-y-auto">
@@ -3403,10 +3682,29 @@ function showBiteableModal(id) {
         <p class="mt-4 text-[0.98rem] text-navy-500 leading-[1.7]">${esc(ld.description)}</p>
 
         ${det.ingredients.length ? `<div class="pa-detail-section">
-          <div class="swiss-eyebrow mb-4">— ${esc(t('pa.detail.inside'))}</div>
-          <ul class="pa-ingredient-list">
-            ${det.ingredients.map(x => `<li>${esc(x)}</li>`).join('')}
-          </ul>
+          <div class="flex items-baseline justify-between gap-3 mb-4">
+            <div class="swiss-eyebrow">— ${esc(canEdit ? t('pa.custom.title') : t('pa.detail.inside'))}</div>
+            ${canEdit && removed.size ? `<button data-pa-custom-reset="${d.id}" class="text-[0.62rem] uppercase tracking-[0.22em] text-navy-500 hover:text-navy-900 border-b border-navy-500/40 hover:border-navy-900 pb-0.5">${esc(t('pa.custom.reset'))}</button>` : ''}
+          </div>
+          ${canEdit ? `<p class="text-[0.85rem] text-navy-500 leading-relaxed mb-4">${esc(t('pa.custom.subtitle'))}</p>` : ''}
+          ${canEdit
+            ? `<div class="flex flex-col gap-2">
+                ${det.ingredients.map(ing => {
+                  const ingAllergens = paIngredientAllergens(ing, d.allergens);
+                  const isRemoved = removed.has(ing);
+                  return `
+                  <button data-pa-toggle="${esc(d.id)}::${esc(ing)}" class="pa-ing-toggle ${isRemoved ? 'removed' : ''} ${ingAllergens.length ? 'allergen' : ''}">
+                    <span class="pa-ing-x">${icon(isRemoved ? 'i-plus' : 'i-x','w-3 h-3')}</span>
+                    <span class="flex-1 text-[0.92rem]">${esc(ing)}</span>
+                    ${ingAllergens.length ? `<span class="pa-ing-tag">${ingAllergens.map(a=>esc(t('allergen.'+a))).join(' · ')}</span>` : ''}
+                  </button>`;
+                }).join('')}
+              </div>
+              ${!removed.size ? `<p class="mt-3 text-[0.78rem] text-navy-500 italic">${esc(t('pa.custom.empty'))}</p>` : ''}`
+            : `<ul class="pa-ingredient-list">
+                ${det.ingredients.map(x => `<li>${esc(x)}</li>`).join('')}
+              </ul>
+              <p class="mt-4 text-[0.78rem] text-navy-500 italic">${esc(t('pa.custom.locked'))}</p>`}
         </div>` : ''}
 
         ${ld.chefNote ? `<div class="pa-detail-section">
@@ -3439,10 +3737,37 @@ function showBiteableModal(id) {
       </div>
     </div>
   </div>`;
+
+  // Wire ingredient toggles (Suite / Privé)
+  document.getElementById('modalHost').querySelectorAll('[data-pa-toggle]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const [dishId, ing] = btn.getAttribute('data-pa-toggle').split('::');
+      const c = STATE.preArrival.customizations[dishId] || { removed: [] };
+      const i = c.removed.indexOf(ing);
+      if (i === -1) c.removed.push(ing); else c.removed.splice(i, 1);
+      STATE.preArrival.customizations[dishId] = c;
+      renderMain();         // refresh underlying slot card (personalized badge)
+      showBiteableModal(dishId);  // re-paint modal with new toggled state
+    });
+  });
+  document.getElementById('modalHost').querySelectorAll('[data-pa-custom-reset]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const dishId = btn.getAttribute('data-pa-custom-reset');
+      delete STATE.preArrival.customizations[dishId];
+      renderMain();
+      showBiteableModal(dishId);
+    });
+  });
 }
 
 function showPaSwapModal(cat, idx) {
-  const options = DISHES.filter(d => d.category === cat);
+  // Privé tier filters the swap pool by active dietary preferences (Set may be empty)
+  const prefs = STATE.preArrival.dietaryPrefs;
+  let options = DISHES.filter(d => d.category === cat);
+  if (prefs && prefs.size) {
+    const matching = options.filter(d => [...prefs].every(p => d.dietary.includes(p)));
+    if (matching.length) options = matching;
+  }
   document.body.style.overflow = 'hidden';
   document.getElementById('modalHost').innerHTML = `
   <div class="fixed inset-0 z-50 modal-bg flex items-center justify-center p-4 anim-fade" data-close>
@@ -4168,7 +4493,25 @@ function attachPageEvents() {
     if (tier === 'luxe') {
       STATE.preArrival.suite.pairing = null;
       STATE.preArrival.prive.nook = null;
+      STATE.preArrival.customizations = {};   // Luxe cannot customize
+      STATE.preArrival.dietaryPrefs = new Set();
+      paApplyLuxeCombo();
+    } else if (tier === 'suite') {
+      STATE.preArrival.dietaryPrefs = new Set();  // Privé-only feature
     }
+    renderMain();
+  }));
+  document.querySelectorAll('[data-pa-combo]').forEach(b => b.addEventListener('click', () => {
+    const id = b.getAttribute('data-pa-combo');
+    if (STATE.preArrival.luxeCombo === id) return;
+    STATE.preArrival.luxeCombo = id;
+    paApplyLuxeCombo();
+    renderMain();
+  }));
+  document.querySelectorAll('[data-pa-pref]').forEach(b => b.addEventListener('click', () => {
+    const f = b.getAttribute('data-pa-pref');
+    if (STATE.preArrival.dietaryPrefs.has(f)) STATE.preArrival.dietaryPrefs.delete(f);
+    else STATE.preArrival.dietaryPrefs.add(f);
     renderMain();
   }));
   document.querySelectorAll('[data-pa-size]').forEach(b => b.addEventListener('click', () => {
@@ -4179,6 +4522,7 @@ function attachPageEvents() {
     renderMain();
   }));
   document.querySelectorAll('[data-pa-swap]').forEach(b => b.addEventListener('click', () => {
+    if (!paCanCustomize()) return;  // safety — Luxe slots shouldn't render swap button
     const [cat, idxStr] = b.getAttribute('data-pa-swap').split(':');
     showPaSwapModal(cat, parseInt(idxStr, 10));
   }));
@@ -4218,6 +4562,8 @@ function attachPageEvents() {
     STATE.preArrival.suite.pairing = null;
     STATE.preArrival.prive.nook = null;
     STATE.preArrival.prive.chefNote = '';
+    STATE.preArrival.customizations = {};
+    STATE.preArrival.dietaryPrefs = new Set();
     paApplySizeDefaults(true);
     renderMain();
     window.scrollTo({ top: 0, behavior: 'smooth' });
