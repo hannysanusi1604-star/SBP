@@ -382,6 +382,12 @@
             <select id="step-children" class="mt-2 w-full bg-transparent text-aspire-navy text-xl outline-none"></select>
           </div>
         </div>
+        <div id="step2-deposit-note" class="hidden mb-4 p-4 rounded-2xl bg-aspire-soft border border-aspire-border flex items-start gap-3 text-[0.88rem] text-aspire-navy/85">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="mt-0.5 flex-shrink-0"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l4 2"/></svg>
+          <div>
+            <strong class="text-aspire-navy">Advance booking</strong> — a refundable deposit equal to the lounge entry price will be held to secure your seat. It refunds automatically when you check in within 15 minutes of your reservation.
+          </div>
+        </div>
         <div class="card-cream p-6 sm:p-8">
           <div class="flex items-center justify-between mb-5">
             <div>
@@ -632,8 +638,9 @@
             </div>
             <div id="seating-map" class="relative aspect-[4/3] sm:aspect-[16/9] w-full rounded-2xl overflow-hidden border border-aspire-border bg-gradient-to-br from-aspire-soft to-white"></div>
             <div class="text-[0.78rem] text-navy-500 flex flex-wrap items-center gap-4 mt-3">
-              <span class="inline-flex items-center gap-2"><span class="h-3 w-3 rounded-full" style="background:#DCC9B9"></span>Currently free</span>
-              <span class="inline-flex items-center gap-2"><span class="h-3 w-3 rounded-full bg-aspire-border"></span>Currently occupied</span>
+              <span class="inline-flex items-center gap-2"><span class="h-3 w-3 rounded-full" style="background:#B59D88"></span>Dining</span>
+              <span class="inline-flex items-center gap-2"><span class="h-3 w-3 rounded-full" style="background:#C8A98F"></span>Communal</span>
+              <span class="inline-flex items-center gap-2"><span class="h-3 w-3 rounded-full" style="background:#9FB4A8"></span>Quiet</span>
               <span class="inline-flex items-center gap-2 italic text-navy-500/80">Layout shown for orientation. Hosts assign your specific table on arrival.</span>
             </div>
           </div>
@@ -1048,6 +1055,27 @@ function calculateLuxeUpgradeFee(basePrice) {
 function getLuxeSeatsRemaining() {
   return Math.max(0, state.luxe.totalCapacity - state.luxe.seatsTaken);
 }
+/* ----------------------- ADVANCE-BOOKING DEPOSIT HELPERS ----------------------- */
+function requiresDeposit(dateStr) {
+  // Triggered when the booking date is later than today — same-day bookings don't take a deposit
+  if (!dateStr) return false;
+  const booking = new Date(dateStr); booking.setHours(0,0,0,0);
+  const today = new Date(); today.setHours(0,0,0,0);
+  return booking.getTime() > today.getTime();
+}
+function calculateDeposit(lounge) {
+  // Deposit equals the standard Lifestyle entry price
+  return lounge.priceFrom;
+}
+function depositGraceTime(arrivalStr) {
+  // 15-minute grace window — refunded on check-in by this time, forfeited otherwise
+  const [h, m] = arrivalStr.split(':').map(Number);
+  const total = h * 60 + m + 15;
+  const eh = Math.floor(total / 60) % 24;
+  const em = total % 60;
+  return `${String(eh).padStart(2,'0')}:${String(em).padStart(2,'0')}`;
+}
+
 function canOfferLuxeUpgrade() {
   // Only offered when the Lifestyle lounge tables are full — derived from queue depth
   const tablesFull = state.queue.length > 0;
@@ -1098,17 +1126,17 @@ const ZONE_META = {
 
 const TABLES = [
   // Dining zone — 4 small tables across the top of the floor
-  { id:'D1', zone:'dining',   seats:2, available:true,  x:14, y:20 },
-  { id:'D2', zone:'dining',   seats:4, available:false, x:34, y:20 },
-  { id:'D3', zone:'dining',   seats:2, available:true,  x:64, y:20 },
-  { id:'D4', zone:'dining',   seats:4, available:true,  x:84, y:20 },
+  { id:'D1', zone:'dining',   seats:2, x:14, y:20 },
+  { id:'D2', zone:'dining',   seats:4, x:34, y:20 },
+  { id:'D3', zone:'dining',   seats:2, x:64, y:20 },
+  { id:'D4', zone:'dining',   seats:4, x:84, y:20 },
   // Communal — one long shared table in the middle of the room
-  { id:'C1', zone:'communal', seats:6, available:true,  x:50, y:50, shape:'pill' },
+  { id:'C1', zone:'communal', seats:6, x:50, y:50, shape:'pill' },
   // Quiet zone — 4 small tables along the lower band
-  { id:'Q1', zone:'quiet',    seats:2, available:true,  x:14, y:80 },
-  { id:'Q2', zone:'quiet',    seats:1, available:true,  x:34, y:80 },
-  { id:'Q3', zone:'quiet',    seats:2, available:false, x:64, y:80 },
-  { id:'Q4', zone:'quiet',    seats:1, available:true,  x:84, y:80 },
+  { id:'Q1', zone:'quiet',    seats:2, x:14, y:80 },
+  { id:'Q2', zone:'quiet',    seats:1, x:34, y:80 },
+  { id:'Q3', zone:'quiet',    seats:2, x:64, y:80 },
+  { id:'Q4', zone:'quiet',    seats:1, x:84, y:80 },
 ];
 
 const QUEUE_INITIAL = [
@@ -1579,13 +1607,14 @@ function renderStep2() {
   $('#schedule-sub').textContent = `${l.name} · ${l.terminal}`;
   $('#schedule-hours').textContent = `Hours · ${l.hours}`;
   $('#step-date').value = state.booking.date;
+  $('#step2-deposit-note').classList.toggle('hidden', !requiresDeposit(state.booking.date));
   const sa = $('#step-adults'); sa.innerHTML = '';
   [1,2,3,4,5,6].forEach(n => sa.append(new Option(n, n, false, n === state.booking.guests.adults)));
   const sc = $('#step-children'); sc.innerHTML = '';
   [0,1,2,3,4].forEach(n => sc.append(new Option(n, n, false, n === state.booking.guests.children)));
   sa.onchange = () => state.booking.guests.adults = Number(sa.value);
   sc.onchange = () => state.booking.guests.children = Number(sc.value);
-  $('#step-date').onchange = (e) => state.booking.date = e.target.value;
+  $('#step-date').onchange = (e) => { state.booking.date = e.target.value; renderStep2(); };
   const slots = $('#step-slots'); slots.innerHTML = '';
   TIME_SLOTS.forEach(t => {
     const active = state.booking.arrivalTime === t;
@@ -1622,6 +1651,9 @@ function bookingSummaryHTML() {
   const isPass = state.booking.membership !== 'pay';
   const hasLuxe = !!state.booking.luxeUpgrade;
   const luxeFee = hasLuxe ? calculateLuxeUpgradeFee(l.priceFrom) : 0;
+  const isAdvance = requiresDeposit(state.booking.date);
+  const deposit = isAdvance ? calculateDeposit(l) : 0;
+  const graceTime = depositGraceTime(state.booking.arrivalTime);
   let seating = 'No preference';
   if (state.booking.preferredZone) {
     seating = `${ZONE_META[state.booking.preferredZone].label} preferred · table assigned on arrival`;
@@ -1647,10 +1679,16 @@ function bookingSummaryHTML() {
     ['Estimated occupancy', `<span class="inline-flex items-center gap-2"><span class="live-dot ${tone}"></span>${l.occupancyPct}% full</span>`],
     ['Terminal', l.terminal],
   ];
-  // Price block depends on (pass vs direct payment) × (with vs without Luxe upgrade)
+  // Helper row builder used by the price-block branches
+  const row = (k, v) => `<div class="flex items-center justify-between"><span class="text-navy-500">${k}</span><span class="text-aspire-navy tabular-nums">${v}</span></div>`;
+  const depositRow = isAdvance
+    ? `<div class="flex items-start justify-between gap-3"><span class="text-navy-500">Refundable deposit <span class="block text-[0.72rem] text-navy-500/70">held now · refunded at check-in</span></span><span class="text-aspire-navy tabular-nums whitespace-nowrap">${l.currency} ${deposit}</span></div>`
+    : '';
+
+  // Price block depends on (pass vs direct payment) × (with vs without Luxe upgrade) × (same-day vs advance)
   let priceBlock = '<div class="hairline my-7"></div>';
-  if (isPass && !hasLuxe) {
-    // Pass holder, no Luxe — Lifestyle entry is fully covered
+  if (isPass && !hasLuxe && !isAdvance) {
+    // Pass holder, same day — no charge at all
     priceBlock += `
        <div class="flex items-center gap-3 p-4 rounded-2xl bg-aspire-soft border border-aspire-border">
          <span class="h-8 w-8 rounded-full bg-aspire-navy text-white flex items-center justify-center flex-shrink-0">
@@ -1660,16 +1698,26 @@ function bookingSummaryHTML() {
            <strong class="font-medium">Lounge entry included</strong> with your ${memberLabel}.
          </div>
        </div>`;
+  } else if (isPass && !hasLuxe && isAdvance) {
+    // Pass holder, advance booking — entry is free but a deposit is held on card
+    priceBlock += `
+       <div class="space-y-2 text-[0.95rem]">
+         <div class="flex items-center justify-between"><span class="text-navy-500">Lounge entry</span><span class="text-aspire-navy inline-flex items-center gap-1.5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 12 5 5L20 6"/></svg>Included</span></div>
+         ${depositRow}
+         <div class="flex items-center justify-between pt-2 mt-2 border-t border-aspire-border"><span class="serif-heading text-lg text-aspire-navy">Total held now</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums">${l.currency} ${deposit}</span></div>
+       </div>`;
   } else if (isPass && hasLuxe) {
-    // Pass holder upgrading to Luxe — only the tier differential is payable
+    // Pass holder upgrading to Luxe — only the tier differential is payable (+ deposit if advance)
+    const totalDue = luxeFee + deposit;
     priceBlock += `
        <div class="space-y-2 text-[0.95rem]">
          <div class="flex items-center justify-between"><span class="text-navy-500">Lifestyle entry</span><span class="text-aspire-navy inline-flex items-center gap-1.5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 12 5 5L20 6"/></svg>Included</span></div>
-         <div class="flex items-center justify-between"><span class="text-navy-500">Aspire Luxe upgrade</span><span class="text-aspire-navy tabular-nums">${l.currency} ${luxeFee}</span></div>
-         <div class="flex items-center justify-between pt-2 mt-2 border-t border-aspire-border"><span class="serif-heading text-lg text-aspire-navy">Total to pay</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums">${l.currency} ${luxeFee}</span></div>
+         ${row('Aspire Luxe upgrade', l.currency + ' ' + luxeFee)}
+         ${depositRow}
+         <div class="flex items-center justify-between pt-2 mt-2 border-t border-aspire-border"><span class="serif-heading text-lg text-aspire-navy">Total to pay</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums">${l.currency} ${totalDue}</span></div>
        </div>`;
-  } else if (!isPass && !hasLuxe) {
-    // Direct payment, no Luxe — Lifestyle total
+  } else if (!isPass && !hasLuxe && !isAdvance) {
+    // Direct payment, same day — standard total
     const total = l.priceFrom * Math.max(1, guestsTotal);
     priceBlock += `
        <div class="flex items-end justify-between">
@@ -1683,15 +1731,34 @@ function bookingSummaryHTML() {
            <div class="mt-1 text-aspire-navy tabular-nums">${l.currency} ${l.priceFrom.toFixed(2)}</div>
          </div>
        </div>`;
+  } else if (!isPass && !hasLuxe && isAdvance) {
+    // Direct payment, advance booking — payment doubles as the deposit
+    const entry = l.priceFrom * Math.max(1, guestsTotal);
+    priceBlock += `
+       <div class="space-y-2 text-[0.95rem]">
+         ${row('Lifestyle entry' + (guestsTotal > 1 ? ' × ' + guestsTotal : ''), l.currency + ' ' + entry.toFixed(2))}
+         <div class="flex items-center justify-between"><span class="text-navy-500">Acts as refundable deposit<span class="block text-[0.72rem] text-navy-500/70">refunded if you check in by ${graceTime}</span></span><span class="text-aspire-navy tabular-nums">—</span></div>
+         <div class="flex items-center justify-between pt-2 mt-2 border-t border-aspire-border"><span class="serif-heading text-lg text-aspire-navy">Total</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums">${l.currency} ${entry.toFixed(2)}</span></div>
+       </div>`;
   } else {
-    // Direct payment with Luxe — Lifestyle entry + Luxe upgrade breakdown
+    // Direct payment with Luxe — Lifestyle entry + Luxe upgrade breakdown (+ deposit signalling if advance)
     const entry = l.priceFrom * Math.max(1, guestsTotal);
     const total = entry + luxeFee;
     priceBlock += `
        <div class="space-y-2 text-[0.95rem]">
-         <div class="flex items-center justify-between"><span class="text-navy-500">Lifestyle entry${guestsTotal > 1 ? ' × ' + guestsTotal : ''}</span><span class="text-aspire-navy tabular-nums">${l.currency} ${entry.toFixed(2)}</span></div>
-         <div class="flex items-center justify-between"><span class="text-navy-500">Aspire Luxe upgrade</span><span class="text-aspire-navy tabular-nums">${l.currency} ${luxeFee}</span></div>
+         ${row('Lifestyle entry' + (guestsTotal > 1 ? ' × ' + guestsTotal : ''), l.currency + ' ' + entry.toFixed(2))}
+         ${row('Aspire Luxe upgrade', l.currency + ' ' + luxeFee)}
+         ${isAdvance ? `<div class="text-[0.78rem] text-navy-500 italic">Lifestyle entry acts as a refundable deposit · refunded if you check in by ${graceTime}.</div>` : ''}
          <div class="flex items-center justify-between pt-2 mt-2 border-t border-aspire-border"><span class="serif-heading text-lg text-aspire-navy">Total</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums">${l.currency} ${total.toFixed(2)}</span></div>
+       </div>`;
+  }
+
+  // Deposit policy footnote (only when advance booking applies)
+  if (isAdvance) {
+    priceBlock += `
+       <div class="mt-4 flex items-start gap-2 text-[0.78rem] text-navy-500 leading-relaxed">
+         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="mt-0.5 flex-shrink-0"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+         <span>Advance booking · the deposit is refunded automatically if you check in within <strong class="text-aspire-navy">15 minutes</strong> of your reservation (by ${graceTime}). If you arrive later or don't show, the deposit is forfeited and the table is released.</span>
        </div>`;
   }
   return `
@@ -1719,23 +1786,33 @@ const PASS_FIELD_PLACEHOLDER = {
 function renderStep4() {
   const isPass = state.booking.membership !== 'pay';
   const hasLuxe = !!state.booking.luxeUpgrade;
-  const needsCardPayment = !isPass || hasLuxe; // card needed for direct or for pass + Luxe upgrade
+  const isAdvance = requiresDeposit(state.booking.date);
   const l = lounge();
   const luxeFee = hasLuxe ? calculateLuxeUpgradeFee(l.priceFrom) : 0;
+  const deposit = isAdvance ? calculateDeposit(l) : 0;
+  // Pass holders need a card whenever there is anything to charge (Luxe upgrade and/or deposit)
+  const needsCardPayment = !isPass || hasLuxe || (isPass && isAdvance);
 
   $('#booking-summary-card').innerHTML = bookingSummaryHTML();
   $('#pay-name').value = state.booking.guestName;
 
   // Section heading + side metadata
-  if (isPass && !hasLuxe) {
+  if (isPass && !hasLuxe && !isAdvance) {
     $('#pay-section-title').textContent = 'Confirm your access';
     $('#pay-section-badge').textContent = 'No charge · pass verified with provider';
+  } else if (isPass && !hasLuxe && isAdvance) {
+    $('#pay-section-title').textContent = 'Confirm access & hold deposit';
+    $('#pay-section-badge').textContent = `Refundable deposit · ${l.currency} ${deposit}`;
   } else if (isPass && hasLuxe) {
     $('#pay-section-title').textContent = 'Confirm access & pay Luxe upgrade';
-    $('#pay-section-badge').textContent = `Luxe upgrade only · ${l.currency} ${luxeFee}`;
+    $('#pay-section-badge').textContent = isAdvance
+      ? `Luxe upgrade + deposit · ${l.currency} ${luxeFee + deposit}`
+      : `Luxe upgrade only · ${l.currency} ${luxeFee}`;
   } else {
     $('#pay-section-title').textContent = 'Payment method';
-    $('#pay-section-badge').textContent = hasLuxe ? 'Lifestyle entry + Luxe upgrade' : 'Secure · 3DS';
+    $('#pay-section-badge').textContent = hasLuxe
+      ? (isAdvance ? 'Lifestyle entry (refundable) + Luxe upgrade' : 'Lifestyle entry + Luxe upgrade')
+      : (isAdvance ? 'Lifestyle entry · refundable on check-in' : 'Secure · 3DS');
   }
 
   // Hide every panel, then show whatever this combination needs
@@ -1800,11 +1877,12 @@ function renderStep4() {
   $('#pay-accept').checked = false;
   validateStep4();
 
-  // Confirm CTA copy
+  // Confirm CTA copy — reflects what is actually charged or held
   let cta;
-  if (isPass && !hasLuxe)      cta = 'Confirm booking';
-  else if (isPass && hasLuxe)  cta = `Confirm & pay ${l.currency} ${luxeFee}`;
-  else                          cta = 'Confirm and pay';
+  if (isPass && !hasLuxe && !isAdvance)      cta = 'Confirm booking';
+  else if (isPass && !hasLuxe && isAdvance)  cta = `Confirm & hold ${l.currency} ${deposit}`;
+  else if (isPass && hasLuxe)                cta = `Confirm & pay ${l.currency} ${luxeFee + deposit}`;
+  else                                       cta = 'Confirm and pay';
   $('#confirm-btn').innerHTML = cta + ' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m9 6 6 6-6 6"/></svg>';
 }
 function upgradeToLuxe() {
@@ -1822,6 +1900,9 @@ function confirmBooking() {
   const guestsTotal = state.booking.guests.adults + state.booking.guests.children;
   const usingPass = state.booking.membership !== 'pay';
   const hasLuxe = !!state.booking.luxeUpgrade;
+  const isAdvance = requiresDeposit(state.booking.date);
+  const deposit = isAdvance ? calculateDeposit(l) : 0;
+  const graceTime = depositGraceTime(state.booking.arrivalTime);
   const passLabel = (MEMBERSHIPS.find(m => m.id === state.booking.membership) || {}).label || 'Pass';
   const passNum = ($('#pass-number')?.value || state.verification.number || '').trim();
   const cardLabel = state.payMethod === 'card' ? 'Visa •• 4242'
@@ -1832,7 +1913,8 @@ function confirmBooking() {
   const accessUntil = endTime(state.booking.arrivalTime);
   const luxeFee = hasLuxe ? calculateLuxeUpgradeFee(l.priceFrom) : 0;
   const entryAmount = usingPass ? 0 : l.priceFrom * Math.max(1, guestsTotal);
-  const totalAmount = entryAmount + luxeFee;
+  const passDepositAmount = usingPass && isAdvance ? deposit : 0;
+  const totalAmount = entryAmount + luxeFee + passDepositAmount;
 
   const m = $('#pay-modal');
   m.classList.remove('hidden'); m.classList.add('flex');
@@ -1860,10 +1942,11 @@ function confirmBooking() {
 
     // Headline on the success screen
     let headline;
-    if (hasLuxe && usingPass)       headline = `Luxe upgrade confirmed · ${l.currency} ${luxeFee} charged`;
-    else if (hasLuxe && !usingPass) headline = `Luxe upgrade confirmed · ${l.currency} ${totalAmount.toFixed(2)} charged`;
-    else if (usingPass)             headline = 'Booking confirmed';
-    else                            headline = `${l.currency} ${totalAmount.toFixed(2)} charged`;
+    if (hasLuxe && usingPass)            headline = `Luxe upgrade confirmed · ${l.currency} ${(luxeFee + passDepositAmount)} charged`;
+    else if (hasLuxe && !usingPass)      headline = `Luxe upgrade confirmed · ${l.currency} ${totalAmount.toFixed(2)} charged`;
+    else if (usingPass && isAdvance)     headline = `Reservation confirmed · ${l.currency} ${deposit} held`;
+    else if (usingPass)                  headline = 'Booking confirmed';
+    else                                 headline = `${l.currency} ${totalAmount.toFixed(2)} charged`;
     $('#pay-amount').textContent = headline;
 
     // Receipt
@@ -1883,9 +1966,17 @@ function confirmBooking() {
     } else if (hasLuxe && !usingPass) {
       rows.push(['Lifestyle entry', `${l.currency} ${entryAmount.toFixed(2)}`]);
       rows.push(['Aspire Luxe upgrade', `${l.currency} ${luxeFee}`]);
-      rows.push(['Total', `${l.currency} ${totalAmount.toFixed(2)}`]);
     } else if (!usingPass) {
       rows.push(['Amount', `${l.currency} ${entryAmount.toFixed(2)}`]);
+    }
+    if (isAdvance) {
+      rows.push([
+        usingPass ? 'Refundable deposit held' : 'Refundable on check-in',
+        usingPass ? `${l.currency} ${deposit}` : `${l.currency} ${entryAmount.toFixed(2)} · by ${graceTime}`
+      ]);
+    }
+    if (!usingPass) {
+      rows.push(['Total', `${l.currency} ${totalAmount.toFixed(2)}`]);
     }
     $('#pay-receipt').innerHTML = rows.map(([k,v]) =>
       `<div class="flex justify-between gap-3"><span class="text-navy-500">${k}</span><span class="text-aspire-navy text-right">${v}</span></div>`
@@ -1976,9 +2067,9 @@ function renderQueueVerifyCard() {
 
 /* ----------------------- TABLES (seating preference) ----------------------- */
 function renderTables() {
-  const avail = TABLES.filter(t => t.available).length;
-  const tone = avail / TABLES.length < 0.3 ? 'red' : avail / TABLES.length < 0.6 ? 'amber' : '';
-  $('#tables-availability').innerHTML = `<span class="live-dot ${tone}"></span>${avail}/${TABLES.length} tables free now`;
+  const lng = lounge();
+  const tone = lng.occupancyPct > 75 ? 'red' : lng.occupancyPct > 50 ? 'amber' : '';
+  $('#tables-availability').innerHTML = `<span class="live-dot ${tone}"></span>${lng.occupancyPct}% occupancy now`;
 
   $('#tables-verify').classList.toggle('hidden', state.verified);
   $('#tables-after').classList.toggle('hidden', !state.verified);
@@ -2008,13 +2099,13 @@ function renderTables() {
     const width = isPill ? Math.min(180, 60 + t.seats * 14) : (28 + t.seats * 4);
     const height = isPill ? 32 : (28 + t.seats * 4);
     const inPref = state.preferredZone && t.zone === state.preferredZone;
-    const opacity = !t.available ? 0.3 : (state.preferredZone && !inPref ? 0.4 : 1);
+    const opacity = state.preferredZone && !inPref ? 0.4 : 1;
     map.append(el('div', {
       class:'absolute -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-[0.62rem] font-medium pointer-events-none',
       style:{
         left:`${t.x}%`, top:`${t.y}%`,
         width:`${width}px`, height:`${height}px`,
-        background: t.available ? ZONE_META[t.zone].color : '#DADADA',
+        background: ZONE_META[t.zone].color,
         color: '#1F2A44',
         opacity: String(opacity),
         borderRadius: isPill ? '999px' : '50%',
@@ -2059,10 +2150,16 @@ function submitPreference() {
   if (!state.preferredZone) return;
   state.booking.preferredZone = state.preferredZone;
   state.booking.slot = state.tableSlot;
-  // The "assignment" happens server-side on arrival. For the demo, we
-  // show a placeholder assigned table that matches the chosen zone.
-  state.confirmed = true;
-  go('dashboard');
+  // Saving a preference does NOT confirm a booking — it just records the
+  // seating wish. If the customer already has a confirmed reservation we
+  // route them to the dashboard so they can see the updated preference;
+  // otherwise we send them into the reservation flow to actually book.
+  if (state.confirmed) {
+    go('dashboard');
+  } else {
+    state.step = 2;
+    go('reserve');
+  }
 }
 
 /* ----------------------- QUEUE ----------------------- */
@@ -2367,6 +2464,9 @@ function renderDashboard() {
 
   $('#dash-summary').innerHTML = bookingSummaryHTML();
 
+  const dashAdvance = requiresDeposit(state.booking.date);
+  const dashGrace = depositGraceTime(state.booking.arrivalTime);
+  const dashDeposit = dashAdvance ? calculateDeposit(l) : 0;
   $('#dash-access-card').innerHTML = `
     <div class="swiss-eyebrow text-aspire-navy/70">Lounge access</div>
     <div class="serif-heading text-3xl text-aspire-navy mt-1 tabular-nums">3 hours</div>
@@ -2377,7 +2477,16 @@ function renderDashboard() {
     <div class="mt-2 flex items-center justify-between text-[0.72rem] text-aspire-navy/70">
       <span>Check in to start the clock</span>
       <span class="tabular-nums">${state.booking.arrivalTime}</span>
-    </div>`;
+    </div>
+    ${dashAdvance ? `
+      <div class="hairline my-5"></div>
+      <div class="flex items-start gap-2.5 text-[0.85rem] text-aspire-navy/85 leading-relaxed">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="mt-0.5 flex-shrink-0"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l4 2"/></svg>
+        <div>
+          <div><strong class="text-aspire-navy">${l.currency} ${dashDeposit}</strong> deposit held · refunds on check-in.</div>
+          <div class="text-[0.78rem] text-aspire-navy/65 mt-0.5">Grace period until <strong class="text-aspire-navy">${dashGrace}</strong>. After that, the deposit is forfeited and the table is released.</div>
+        </div>
+      </div>` : ''}`;
 
   const fl = $('#flight-list'); fl.innerHTML = '';
   FLIGHTS.forEach(f => {
