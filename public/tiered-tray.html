@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>3-Tier Appetizer Tray — 3D Model</title>
+    <script
+      type="module"
+      src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"
+    ></script>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #f6f5f1;
+        --fg: #1a1a1a;
+        --muted: #6b6b6b;
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        height: 100%;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+        background: var(--bg);
+        color: var(--fg);
+      }
+      header {
+        padding: 1.25rem 1.5rem 0.5rem;
+      }
+      h1 {
+        margin: 0 0 0.25rem;
+        font-size: 1.25rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+      p.sub {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      main {
+        height: calc(100vh - 110px);
+        padding: 0 1rem 1rem;
+      }
+      model-viewer {
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(ellipse at center, #fbfbfa 0%, #e6e4dc 100%);
+        border-radius: 14px;
+        --poster-color: transparent;
+      }
+      footer {
+        position: fixed;
+        bottom: 0.5rem;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+      kbd {
+        background: rgba(0,0,0,0.06);
+        border-radius: 4px;
+        padding: 1px 5px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.7rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>3-Tier Appetizer Tray</h1>
+      <p class="sub">Procedurally modeled in Blender (bpy) and exported as glTF 2.0. Drag to orbit, scroll to zoom.</p>
+    </header>
+    <main>
+      <model-viewer
+        src="./tiered-tray.glb"
+        alt="A three-tier appetizer tray with bowls of food on each level and a diamond ornament on top"
+        camera-controls
+        touch-action="pan-y"
+        auto-rotate
+        auto-rotate-delay="2000"
+        rotation-per-second="20deg"
+        shadow-intensity="1.1"
+        shadow-softness="0.8"
+        exposure="1.0"
+        environment-image="neutral"
+        camera-orbit="35deg 70deg 4m"
+        min-camera-orbit="auto 0deg auto"
+        max-camera-orbit="auto 90deg auto"
+        field-of-view="28deg"
+      ></model-viewer>
+    </main>
+    <footer>
+      <kbd>drag</kbd> rotate · <kbd>scroll</kbd> zoom · <kbd>right-drag</kbd> pan
+    </footer>
+  </body>
+</html>
