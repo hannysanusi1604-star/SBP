@@ -916,7 +916,7 @@
 /* ----------------------- DATA ----------------------- */
 const LOUNGES = [
   { id:'zrh-abd', name:'Aspire Lounge Gates A, B & D', airport:'Zurich Airport', airportCode:'ZRH', terminal:'Airside · Schengen · Gates A, B & D', city:'Zurich', country:'Switzerland', region:'Europe',
-    image:'https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1600&q=80',
+    image:'https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1600&q=80',
     amenities: ['Free WiFi','Charging points','Complimentary food & drinks','Major card schemes accepted','Guaranteed flight delay cover','Free cancellations & amends'],
     capacity:240, rating:4.8, reviews:1842, priceFrom:35, currency:'CHF', occupancyPct:86, hours:'05:15 — 21:00 · daily' },
 ];
@@ -1295,14 +1295,12 @@ function renderHomeFeatured() {
   const grid = $('#featured-lounges'); if (!grid) return;
   grid.innerHTML = '';
   const sel = lounge();
-  const tone = sel.occupancyPct > 75 ? 'red' : sel.occupancyPct > 50 ? 'amber' : '';
   // Selected lounge — prominent card spanning the full width
   grid.append(el('div', { class:'lg:col-span-2 rounded-3xl overflow-hidden bg-white border border-aspire-navy/40 flex flex-col sm:flex-row shadow-card' },
     el('div', { class:'relative sm:w-1/2 aspect-[4/3] sm:aspect-auto overflow-hidden' },
       el('img', { src:sel.image, alt:sel.name, class:'h-full w-full object-cover' }),
       el('div', { class:'absolute top-3 left-3 flex flex-col gap-2' },
-        el('span', { class:'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-aspire-navy text-white text-[0.7rem] uppercase tracking-widest', html:'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5L20 6"/></svg>Your selection' }),
-        el('span', { class:'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-aspire-border text-[0.7rem] uppercase tracking-widest text-aspire-navy', html:`<span class="live-dot ${tone}"></span>${sel.occupancyPct}% full · live` })
+        el('span', { class:'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-aspire-navy text-white text-[0.7rem] uppercase tracking-widest', html:'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5L20 6"/></svg>Your selection' })
       )
     ),
     el('div', { class:'p-6 sm:p-8 flex-1 flex flex-col' },
@@ -1420,14 +1418,12 @@ function renderSearch() {
 
   // Selected lounge — always featured at the top of /search
   const sel = lounge();
-  const tone = sel.occupancyPct > 75 ? 'red' : sel.occupancyPct > 50 ? 'amber' : '';
   if (!q || `${sel.airport} ${sel.airportCode} ${sel.city} ${sel.name}`.toLowerCase().includes(q)) {
     out.append(el('div', { class:'lg:col-span-2 rounded-3xl overflow-hidden bg-white border border-aspire-navy flex flex-col sm:flex-row shadow-card' },
       el('div', { class:'relative sm:w-2/5 aspect-[4/3] sm:aspect-auto overflow-hidden' },
         el('img', { src:sel.image, alt:sel.name, class:'h-full w-full object-cover' }),
         el('div', { class:'absolute top-3 left-3 flex flex-col gap-2' },
-          el('span', { class:'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-aspire-navy text-white text-[0.7rem] uppercase tracking-widest', html:'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5L20 6"/></svg>Your selection' }),
-          el('span', { class:'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-aspire-border text-[0.7rem] uppercase tracking-widest text-aspire-navy', html:`<span class="live-dot ${tone}"></span>${sel.occupancyPct}% full` })
+          el('span', { class:'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-aspire-navy text-white text-[0.7rem] uppercase tracking-widest', html:'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5L20 6"/></svg>Your selection' })
         )
       ),
       el('div', { class:'p-6 flex-1 flex flex-col' },
@@ -1647,13 +1643,14 @@ function bookingSummaryHTML() {
   const l = lounge();
   const guestsTotal = state.booking.guests.adults + state.booking.guests.children;
   const memberLabel = (MEMBERSHIPS.find(m => m.id === state.booking.membership) || {}).label || '—';
-  const tone = l.occupancyPct > 75 ? 'red' : l.occupancyPct > 50 ? 'amber' : '';
   const isPass = state.booking.membership !== 'pay';
   const hasLuxe = !!state.booking.luxeUpgrade;
   const luxeFee = hasLuxe ? calculateLuxeUpgradeFee(l.priceFrom) : 0;
   const isAdvance = requiresDeposit(state.booking.date);
   const deposit = isAdvance ? calculateDeposit(l) : 0;
   const graceTime = depositGraceTime(state.booking.arrivalTime);
+  // Live occupancy is intentionally not shown during purchase — it isn't actionable
+  // at booking time and was creating noise on the summary.
   let seating = 'No preference';
   if (state.booking.preferredZone) {
     seating = `${ZONE_META[state.booking.preferredZone].label} preferred · table assigned on arrival`;
@@ -1676,7 +1673,6 @@ function bookingSummaryHTML() {
     ['Access type', accessTypeLabel],
     ['Queue status', queueStatus],
     ['Seating', seating],
-    ['Estimated occupancy', `<span class="inline-flex items-center gap-2"><span class="live-dot ${tone}"></span>${l.occupancyPct}% full</span>`],
     ['Terminal', l.terminal],
   ];
   // Helper row builder used by the price-block branches
@@ -2067,9 +2063,8 @@ function renderQueueVerifyCard() {
 
 /* ----------------------- TABLES (seating preference) ----------------------- */
 function renderTables() {
-  const lng = lounge();
-  const tone = lng.occupancyPct > 75 ? 'red' : lng.occupancyPct > 50 ? 'amber' : '';
-  $('#tables-availability').innerHTML = `<span class="live-dot ${tone}"></span>${lng.occupancyPct}% occupancy now`;
+  // Live occupancy intentionally hidden during purchase — show a calm seating-mix label instead
+  $('#tables-availability').innerHTML = `Communal · Dining · Quiet`;
 
   $('#tables-verify').classList.toggle('hidden', state.verified);
   $('#tables-after').classList.toggle('hidden', !state.verified);
