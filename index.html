@@ -890,7 +890,7 @@ const I18N = {
     'pa.tier.suite.label':'Suite',
     'pa.tier.suite.tagline':'Build your own tray',
     'pa.tier.suite.perk1':'Build every tier — starters, mains, desserts',
-    'pa.tier.suite.perk2':'Swap dishes · remove ingredients · sommelier pairing',
+    'pa.tier.suite.perk2':'Start from scratch — or from a chef-curated combination',
     'pa.tier.suite.perk3':'Plated to your seat in the Suite zone',
     'pa.tier.suite.perk4':'Priority preparation — three minutes saved',
     'pa.tier.suite.handoff':'Your table · Suite zone',
@@ -992,6 +992,30 @@ const I18N = {
 
     'pa.compose.title':'Build your own tray',
     'pa.compose.body':'Pick every course, swap dishes freely, tap any plate to view ingredients and remove what you don’t want. The kitchen builds exactly what you compose.',
+
+    'pa.suite.mode.title':'00 · Choose your starting point',
+    'pa.suite.mode.subtitle':'Suite gives you full control. Start with an empty tray and pick everything yourself, or anchor to one of our three signature combinations.',
+    'pa.suite.mode.custom':'Build from scratch',
+    'pa.suite.mode.custom.hint':'Empty tray. You decide how many starters, mains and desserts — and which dish goes in each slot.',
+    'pa.suite.mode.curated':'Curated combinations',
+    'pa.suite.mode.curated.hint':'Three signature trays from our chef — the same curated story as our Luxe lounges. Pick one, pick a size.',
+
+    'pa.suite.counts.title':'01 · How many plates?',
+    'pa.suite.counts.subtitle':'Set the count for each tier — from zero to six. The tray composer adjusts in real time.',
+    'pa.suite.counts.starters':'Starters',
+    'pa.suite.counts.mains':'Mains',
+    'pa.suite.counts.desserts':'Desserts',
+
+    'pa.suite.combo.title':'Choose a curated combination',
+    'pa.suite.combo.subtitle':'Three signature trays composed by our executive chef. Pick one — every slot is filled, and you can still swap any individual dish.',
+
+    'pa.suite.compose.custom.title':'Fill every slot',
+    'pa.suite.compose.custom.body':'Empty slots are waiting. Tap a slot to pick a dish; tap the info icon to view ingredients or remove what you don’t want.',
+
+    'pa.suite.empty.notice':'Add at least one plate to start composing — use the + buttons above.',
+
+    'pa.summary.size.custom':'Custom',
+    'pa.summary.size.plates':'plates',
 
     'pa.bespoke.title':'Five ingredients. One surprise plate.',
     'pa.bespoke.body':'Privé skips the menu entirely. Pick any of our five seasonal ingredients — the chef composes a single dish around what you choose, paired with a wine the sommelier selects or a non-alcoholic creation. Order now, or set an arrival time and we’ll have it waiting.',
@@ -1604,7 +1628,7 @@ const STATE = {
     note: '',
     confirmed: null,
     swapTarget: null,
-    suite: { pairing: null, delivery: 'table' },
+    suite: { pairing: null, delivery: 'table', mode: 'custom', counts: { starters: 2, mains: 2, desserts: 1 }, combo: 'voyager' },
     prive: { nook: null, host: 'Élodie Roulet', hotTowel: true, chefNote: '', ingredients: new Set(), pairing: null, mode: 'preorder', premiumWine: null, addons: new Set() },
   },
 };
@@ -1868,7 +1892,7 @@ function setActiveLounge(id) {
     STATE.preArrival.note = '';
     STATE.preArrival.customizations = {};
     STATE.preArrival.dietaryPrefs = new Set();
-    STATE.preArrival.suite = { pairing: null, delivery: 'table' };
+    STATE.preArrival.suite = { pairing: null, delivery: 'table', mode: 'custom', counts: { starters: 2, mains: 2, desserts: 1 }, combo: 'voyager' };
     STATE.preArrival.prive = { nook: null, host: 'Élodie Roulet', hotTowel: true, chefNote: '', ingredients: new Set(), pairing: null, mode: 'preorder', premiumWine: null, addons: new Set() };
     if (typeof paApplySizeDefaults === 'function') paApplySizeDefaults(true);
   }
@@ -3132,12 +3156,48 @@ function paApplyLuxeCombo() {
   STATE.preArrival.customizations = {};
 }
 
+// Suite curated mode — same shape as Luxe combo, keyed off suite.combo
+function paApplySuiteCurated() {
+  const id = STATE.preArrival.suite.combo;
+  const combo = PA_LUXE_COMBOS.find(c => c.id === id) || PA_LUXE_COMBOS[0];
+  const cfg = PA_TRAY_SIZES[STATE.preArrival.size];
+  STATE.preArrival.selections = {
+    starters: combo.starters.slice(0, cfg.starters),
+    mains:    combo.mains.slice(0, cfg.mains),
+    desserts: combo.desserts.slice(0, cfg.desserts),
+  };
+}
+
+// Single source of truth for how many slots each category renders.
+function paSuiteCounts() {
+  const s = STATE.preArrival.suite;
+  if (activeTier() === 'suite' && s.mode === 'custom') return s.counts;
+  return PA_TRAY_SIZES[STATE.preArrival.size];
+}
+
 function paApplySizeDefaults(force) {
   // Luxe always slots in whatever combo is active, scaled to the chosen size
   if (paLuxeIsActive()) {
     paApplyLuxeCombo();
     return;
   }
+  // Suite curated — slot in the chosen combo at the chosen size
+  if (activeTier() === 'suite' && STATE.preArrival.suite.mode === 'curated') {
+    paApplySuiteCurated();
+    return;
+  }
+  // Suite custom — respect counts; do NOT pre-fill from PA_RECOMMENDED.
+  // Just truncate overflowing selections; preserve user picks across stepper edits.
+  if (activeTier() === 'suite') {
+    const counts = STATE.preArrival.suite.counts;
+    const sel = STATE.preArrival.selections;
+    ['starters','mains','desserts'].forEach(cat => {
+      if (force) { sel[cat] = []; return; }
+      if (sel[cat].length > counts[cat]) sel[cat] = sel[cat].slice(0, counts[cat]);
+    });
+    return;
+  }
+  // Fallback (shouldn't be hit — Privé/Lifestyle never reach this path)
   const size = STATE.preArrival.size;
   const cfg = PA_TRAY_SIZES[size];
   const sel = STATE.preArrival.selections;
@@ -3241,10 +3301,9 @@ function paSlotMarkup(cat, idx, dishId) {
 }
 
 function paTierMarkup(cat, labelKey) {
-  const size = STATE.preArrival.size;
-  const cfg = PA_TRAY_SIZES[size];
   const slots = STATE.preArrival.selections[cat];
-  const need = cfg[cat];
+  const need = paSuiteCounts()[cat];
+  if (need === 0) return '';   // Suite custom mode allows collapsing a whole tier
   const items = [];
   for (let i = 0; i < need; i++) items.push(paSlotMarkup(cat, i, slots[i]));
   return `
@@ -3288,16 +3347,20 @@ function paHandoffCopy() {
 
 function paSummaryMarkup() {
   const size = STATE.preArrival.size;
-  const cfg = PA_TRAY_SIZES[size];
+  const counts = paSuiteCounts();
   const sel = STATE.preArrival.selections;
-  const expected = cfg.starters + cfg.mains + cfg.desserts;
+  const expected = counts.starters + counts.mains + counts.desserts;
   const filled = sel.starters.filter(Boolean).length + sel.mains.filter(Boolean).length + sel.desserts.filter(Boolean).length;
-  const complete = filled === expected;
+  const complete = expected > 0 && filled === expected;
   const time = STATE.preArrival.schedule || t('pa.now');
   const tier = activeTier();
   const prep = paEffectivePrep();
   const pairing = paPairingLabel();
   const nook = paNookLabel();
+  const suiteCustom = tier === 'suite' && STATE.preArrival.suite.mode === 'custom';
+  const sizeLabel = suiteCustom
+    ? `${t('pa.summary.size.custom')} · ${expected} ${t('pa.summary.size.plates')}`
+    : t('pa.size.'+size);
   return `
   <div class="border border-navy-900/12 bg-ivory-50 p-6 sm:p-7 sticky top-[80px]">
     <div class="flex items-center justify-between mb-4">
@@ -3307,12 +3370,12 @@ function paSummaryMarkup() {
     <dl class="space-y-3 text-[0.9rem]">
       <div class="flex items-center justify-between gap-3">
         <dt class="text-navy-500">${esc(t('pa.summary.size'))}</dt>
-        <dd class="text-navy-900">${esc(t('pa.size.'+size))}</dd>
+        <dd class="text-navy-900">${esc(sizeLabel)}</dd>
       </div>
-      <div class="flex items-center justify-between gap-3">
+      ${!suiteCustom ? `<div class="flex items-center justify-between gap-3">
         <dt class="text-navy-500">${esc(t('pa.summary.guests'))}</dt>
-        <dd class="text-navy-900">${esc(t(cfg.guests))}</dd>
-      </div>
+        <dd class="text-navy-900">${esc(t(PA_TRAY_SIZES[size].guests))}</dd>
+      </div>` : ''}
       <div class="flex items-center justify-between gap-3">
         <dt class="text-navy-500">${esc(t('pa.summary.dishes'))}</dt>
         <dd class="text-navy-900">${filled} / ${expected}</dd>
@@ -3571,13 +3634,12 @@ function paSuitePanel() {
   </section>`;
 }
 
-function paLuxeComboPicker() {
-  if (!paLuxeIsActive()) return '';
-  const active = STATE.preArrival.luxeCombo;
-  const cards = PA_LUXE_COMBOS.map(c => {
-    const on = c.id === active;
+// Shared combo card grid — used by Luxe and by Suite's curated mode
+function paComboPickerMarkup(activeId, dataAttr) {
+  return PA_LUXE_COMBOS.map(c => {
+    const on = c.id === activeId;
     return `
-    <button data-pa-combo="${c.id}" class="pa-combo-card ${on ? 'active' : ''}">
+    <button ${dataAttr}="${c.id}" class="pa-combo-card ${on ? 'active' : ''}">
       <div class="pa-combo-img">
         <img src="${esc(c.image)}" alt="${esc(t(c.nameKey))}" loading="lazy" />
       </div>
@@ -3590,6 +3652,11 @@ function paLuxeComboPicker() {
       </div>
     </button>`;
   }).join('');
+}
+
+function paLuxeComboPicker() {
+  if (!paLuxeIsActive()) return '';
+  const cards = paComboPickerMarkup(STATE.preArrival.luxeCombo, 'data-pa-combo');
   return `
   <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-16">
     <div class="max-w-xl reveal">
@@ -3985,6 +4052,89 @@ function pagePreArrivalPrive() {
   </section>`;
 }
 
+function paStep02Heading(tier) {
+  if (tier === 'luxe') return '02 · ' + esc(t('pa.luxe.title'));
+  if (tier === 'suite' && STATE.preArrival.suite.mode === 'custom') return '02 · ' + esc(t('pa.suite.compose.custom.title'));
+  return '02 · ' + esc(t('pa.compose.title'));
+}
+function paStep02Body(tier) {
+  if (tier === 'luxe') return esc(t('pa.luxe.body'));
+  if (tier === 'suite' && STATE.preArrival.suite.mode === 'custom') return esc(t('pa.suite.compose.custom.body'));
+  return esc(t('pa.compose.body'));
+}
+
+function paSuiteModeToggle() {
+  const mode = STATE.preArrival.suite.mode;
+  const opts = [
+    { id:'custom',  iconId:'i-sparkle', labelKey:'pa.suite.mode.custom',  hintKey:'pa.suite.mode.custom.hint' },
+    { id:'curated', iconId:'i-crown',   labelKey:'pa.suite.mode.curated', hintKey:'pa.suite.mode.curated.hint' },
+  ];
+  return `
+  <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-16">
+    <div class="max-w-xl reveal">
+      <div class="swiss-eyebrow">— ${esc(t('pa.suite.mode.title'))}</div>
+      <p class="mt-4 text-navy-500 leading-[1.7]">${esc(t('pa.suite.mode.subtitle'))}</p>
+    </div>
+    <div class="mt-8 grid sm:grid-cols-2 gap-3">
+      ${opts.map(o => {
+        const on = mode === o.id;
+        return `<button data-pa-suite-mode="${o.id}" class="pa-option-chip ${on?'active':''}" style="padding:18px 20px;gap:8px;">
+          <span class="pa-opt-label">${icon(o.iconId,'w-4 h-4 inline -mt-0.5 text-gold-500')} ${esc(t(o.labelKey))}</span>
+          <span class="pa-opt-hint">${esc(t(o.hintKey))}</span>
+        </button>`;
+      }).join('')}
+    </div>
+  </section>`;
+}
+
+function paSuiteStepperSection() {
+  const counts = STATE.preArrival.suite.counts;
+  const total = counts.starters + counts.mains + counts.desserts;
+  const rows = [
+    { cat:'starters', labelKey:'pa.suite.counts.starters' },
+    { cat:'mains',    labelKey:'pa.suite.counts.mains' },
+    { cat:'desserts', labelKey:'pa.suite.counts.desserts' },
+  ].map(r => {
+    const n = counts[r.cat];
+    return `
+    <div class="flex items-center justify-between gap-4 py-4 border-b border-navy-900/10">
+      <div class="text-[0.95rem] text-navy-900">${esc(t(r.labelKey))}</div>
+      <div class="flex items-center gap-3">
+        <button data-pa-count-dec="${r.cat}" ${n<=0?'disabled':''} class="w-9 h-9 inline-flex items-center justify-center border border-navy-900/15 ${n<=0?'text-navy-500/40 cursor-not-allowed':'text-navy-900 hover:border-navy-900'}" aria-label="Decrease">${icon('i-minus','w-3.5 h-3.5')}</button>
+        <span class="serif-heading text-2xl text-navy-900 w-8 text-center" aria-live="polite">${n}</span>
+        <button data-pa-count-inc="${r.cat}" ${n>=6?'disabled':''} class="w-9 h-9 inline-flex items-center justify-center border border-navy-900/15 ${n>=6?'text-navy-500/40 cursor-not-allowed':'text-navy-900 hover:border-navy-900'}" aria-label="Increase">${icon('i-plus','w-3.5 h-3.5')}</button>
+      </div>
+    </div>`;
+  }).join('');
+  return `
+  <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-20">
+    <div class="max-w-xl reveal">
+      <div class="swiss-eyebrow">— ${esc(t('pa.suite.counts.title'))}</div>
+      <p class="mt-4 text-navy-500 leading-[1.7]">${esc(t('pa.suite.counts.subtitle'))}</p>
+    </div>
+    <div class="mt-8 max-w-xl">
+      <div class="border-t border-navy-900/10">${rows}</div>
+      <div class="mt-5 flex items-center justify-between gap-3 text-[0.78rem] text-navy-500">
+        <span class="uppercase tracking-[0.22em] text-[0.62rem]">${esc(t('pa.summary.size.custom'))}</span>
+        <span class="serif-heading text-navy-900 text-lg">${total} ${esc(t('pa.summary.size.plates'))}</span>
+      </div>
+      ${total === 0 ? `<p class="mt-4 text-[0.78rem] text-navy-500 italic">${esc(t('pa.suite.empty.notice'))}</p>` : ''}
+    </div>
+  </section>`;
+}
+
+function paSuiteComboPickerSection() {
+  const cards = paComboPickerMarkup(STATE.preArrival.suite.combo, 'data-pa-suite-combo');
+  return `
+  <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-12">
+    <div class="max-w-xl reveal">
+      <div class="swiss-eyebrow">— ${esc(t('pa.suite.combo.title'))}</div>
+      <p class="mt-4 text-navy-500 leading-[1.7]">${esc(t('pa.suite.combo.subtitle'))}</p>
+    </div>
+    <div class="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">${cards}</div>
+  </section>`;
+}
+
 function pagePreArrival() {
   const tier = activeTier();
   // Privé skips the tray entirely — drive a bespoke chef-request flow instead
@@ -4056,17 +4206,24 @@ function pagePreArrival() {
   <!-- Active-lounge banner (replaces the in-page tier picker) -->
   ${paLoungeBanner()}
 
-  <!-- Step 01: Choose size -->
+  <!-- Suite: mode toggle (Build from scratch vs Curated combinations) -->
+  ${tier === 'suite' ? paSuiteModeToggle() : ''}
+
+  <!-- Step 01: Pick size (Luxe + Suite curated) OR quantity steppers (Suite custom) -->
+  ${(tier === 'suite' && STATE.preArrival.suite.mode === 'custom') ? paSuiteStepperSection() : `
   <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-20">
     <div class="max-w-xl reveal">
       <div class="swiss-eyebrow">— ${esc(t('pa.step.size'))}</div>
       <p class="mt-4 text-navy-500 leading-[1.7]">${esc(t('pa.step.size.body'))}</p>
     </div>
     <div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">${sizeCards}</div>
-  </section>
+  </section>`}
 
   <!-- Luxe: curated combinations picker -->
   ${paLuxeComboPicker()}
+
+  <!-- Suite curated: combo picker -->
+  ${(tier === 'suite' && STATE.preArrival.suite.mode === 'curated') ? paSuiteComboPickerSection() : ''}
 
   <!-- Suite: sommelier pairing + delivery toggle -->
   ${paSuitePanel()}
@@ -4074,8 +4231,8 @@ function pagePreArrival() {
   <!-- Step 02: Tray preview / composer + summary -->
   <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-20">
     <div class="max-w-xl reveal">
-      <div class="swiss-eyebrow">— ${tier==='luxe' ? '02 · '+esc(t('pa.luxe.title')) : '02 · '+esc(t('pa.compose.title'))}</div>
-      <p class="mt-4 text-navy-500 leading-[1.7]">${tier==='luxe' ? esc(t('pa.luxe.body')) : esc(t('pa.compose.body'))}</p>
+      <div class="swiss-eyebrow">— ${paStep02Heading(tier)}</div>
+      <p class="mt-4 text-navy-500 leading-[1.7]">${paStep02Body(tier)}</p>
     </div>
     <div class="mt-10 grid lg:grid-cols-12 gap-10">
       <div class="lg:col-span-8">
@@ -4395,10 +4552,10 @@ function paGenerateRef() {
 
 function paConfirmOrder() {
   const sel = STATE.preArrival.selections;
-  const cfg = PA_TRAY_SIZES[STATE.preArrival.size];
-  const expected = cfg.starters + cfg.mains + cfg.desserts;
+  const counts = paSuiteCounts();
+  const expected = counts.starters + counts.mains + counts.desserts;
   const filled = sel.starters.filter(Boolean).length + sel.mains.filter(Boolean).length + sel.desserts.filter(Boolean).length;
-  if (filled !== expected) return;
+  if (expected === 0 || filled !== expected) return;
   STATE.preArrival.confirmed = {
     kind: 'tray',
     time: STATE.preArrival.schedule || t('pa.now'),
@@ -5139,6 +5296,36 @@ function attachPageEvents() {
     STATE.preArrival.suite.delivery = b.getAttribute('data-pa-delivery');
     renderMain();
   }));
+  // Suite mode toggle (custom vs curated)
+  document.querySelectorAll('[data-pa-suite-mode]').forEach(b => b.addEventListener('click', () => {
+    const m = b.getAttribute('data-pa-suite-mode');
+    if (STATE.preArrival.suite.mode === m) return;
+    STATE.preArrival.suite.mode = m;
+    // When entering curated, fill the tray from the active combo.
+    // When leaving curated → custom, keep current picks but truncate to counts.
+    paApplySizeDefaults(false);
+    renderMain();
+  }));
+  document.querySelectorAll('[data-pa-suite-combo]').forEach(b => b.addEventListener('click', () => {
+    const id = b.getAttribute('data-pa-suite-combo');
+    if (STATE.preArrival.suite.combo === id) return;
+    STATE.preArrival.suite.combo = id;
+    paApplySuiteCurated();
+    renderMain();
+  }));
+  document.querySelectorAll('[data-pa-count-inc]').forEach(b => b.addEventListener('click', () => {
+    const cat = b.getAttribute('data-pa-count-inc');
+    const c = STATE.preArrival.suite.counts;
+    c[cat] = Math.min(6, c[cat] + 1);
+    renderMain();
+  }));
+  document.querySelectorAll('[data-pa-count-dec]').forEach(b => b.addEventListener('click', () => {
+    const cat = b.getAttribute('data-pa-count-dec');
+    const c = STATE.preArrival.suite.counts;
+    c[cat] = Math.max(0, c[cat] - 1);
+    paApplySizeDefaults(false);  // truncate selections that overflow new count
+    renderMain();
+  }));
   document.querySelectorAll('[data-pa-nook]').forEach(b => b.addEventListener('click', () => {
     const id = b.getAttribute('data-pa-nook');
     STATE.preArrival.prive.nook = STATE.preArrival.prive.nook === id ? null : id;
@@ -5193,6 +5380,9 @@ function attachPageEvents() {
     STATE.preArrival.schedule = '';
     STATE.preArrival.note = '';
     STATE.preArrival.suite.pairing = null;
+    STATE.preArrival.suite.mode = 'custom';
+    STATE.preArrival.suite.counts = { starters: 2, mains: 2, desserts: 1 };
+    STATE.preArrival.suite.combo = 'voyager';
     STATE.preArrival.prive.nook = null;
     STATE.preArrival.prive.chefNote = '';
     STATE.preArrival.prive.ingredients = new Set();
