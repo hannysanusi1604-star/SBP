@@ -256,7 +256,7 @@
         <div class="bg-white/70 rounded-2xl p-6 border border-white/80">
           <div class="swiss-eyebrow">01 · Reserve</div>
           <div class="mt-2 serif-heading text-xl text-aspire-navy">A table that is genuinely yours</div>
-          <p class="mt-2 text-[0.92rem] text-navy-500 leading-relaxed">Pick a quiet zone, workstation, family seat or runway-facing view — visible to you, held for you.</p>
+          <p class="mt-2 text-[0.92rem] text-navy-500 leading-relaxed">Choose between our communal table, dining zone or quiet zone — your seat is matched to your party on arrival.</p>
         </div>
         <div class="bg-white/70 rounded-2xl p-6 border border-white/80">
           <div class="swiss-eyebrow">02 · Queue</div>
@@ -527,7 +527,7 @@
             <div class="card-aspire p-6">
               <div class="swiss-eyebrow text-aspire-navy/70">Add-on</div>
               <div class="mt-2 serif-heading text-xl text-aspire-navy">Share your seating preference</div>
-              <p class="mt-2 text-[0.92rem] text-aspire-navy/80">Tell us your preferred zone — quiet, workstation, family or runway view — and our hosts will assign a matching table when you arrive.</p>
+              <p class="mt-2 text-[0.92rem] text-aspire-navy/80">Tell us your preferred zone — communal table, dining zone or quiet zone — and our hosts will assign a matching seat when you arrive.</p>
               <a href="#tables" data-view="tables" class="mt-4 inline-flex items-center gap-2 text-aspire-navy underline underline-offset-4">
                 Share preference <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m9 6 6 6-6 6"/></svg>
               </a>
@@ -1091,37 +1091,32 @@ function loungeProfileFromNetwork(net, region) {
 }
 
 const ZONE_META = {
-  quiet:       { label:'Quiet Zone',  description:'Silent area for rest, reading and reflection.',     color:'#9FB4A8' },
-  workstation: { label:'Workstation', description:'Power outlets, large desk and noise-cancelling pods.', color:'#8A9BB8' },
-  family:      { label:'Family Area', description:'Soft seating, kids corner and high chairs.',          color:'#D4A88B' },
-  window:      { label:'Window View', description:'Runway-facing seats with panoramic glass.',          color:'#B59D88' },
+  communal: { label:'Communal table', description:'One long shared table — great for solo travellers, light conversation or a casual bite.', color:'#C8A98F' },
+  dining:   { label:'Dining zone',    description:'Smaller dining tables for a proper meal, with à la carte hot service.',                  color:'#B59D88' },
+  quiet:    { label:'Quiet zone',     description:'Soft seating for reading, rest and a slower pace before your flight.',                   color:'#9FB4A8' },
 };
 
 const TABLES = [
-  { id:'Q1', zone:'quiet',       seats:2, available:true,  x:12, y:18 },
-  { id:'Q2', zone:'quiet',       seats:2, available:false, x:24, y:18 },
-  { id:'Q3', zone:'quiet',       seats:4, available:true,  x:12, y:32 },
-  { id:'Q4', zone:'quiet',       seats:2, available:true,  x:24, y:32 },
-  { id:'W1', zone:'workstation', seats:1, available:true,  x:44, y:18 },
-  { id:'W2', zone:'workstation', seats:1, available:true,  x:54, y:18 },
-  { id:'W3', zone:'workstation', seats:1, available:false, x:64, y:18 },
-  { id:'W4', zone:'workstation', seats:2, available:true,  x:44, y:32 },
-  { id:'W5', zone:'workstation', seats:2, available:true,  x:60, y:32 },
-  { id:'F1', zone:'family',      seats:4, available:true,  x:14, y:60 },
-  { id:'F2', zone:'family',      seats:6, available:false, x:30, y:60 },
-  { id:'F3', zone:'family',      seats:4, available:true,  x:14, y:76 },
-  { id:'V1', zone:'window',      seats:2, available:true,  x:80, y:24 },
-  { id:'V2', zone:'window',      seats:2, available:true,  x:80, y:38 },
-  { id:'V3', zone:'window',      seats:4, available:false, x:80, y:56 },
-  { id:'V4', zone:'window',      seats:2, available:true,  x:80, y:72 },
+  // Dining zone — 4 small tables across the top of the floor
+  { id:'D1', zone:'dining',   seats:2, available:true,  x:14, y:20 },
+  { id:'D2', zone:'dining',   seats:4, available:false, x:34, y:20 },
+  { id:'D3', zone:'dining',   seats:2, available:true,  x:64, y:20 },
+  { id:'D4', zone:'dining',   seats:4, available:true,  x:84, y:20 },
+  // Communal — one long shared table in the middle of the room
+  { id:'C1', zone:'communal', seats:6, available:true,  x:50, y:50, shape:'pill' },
+  // Quiet zone — 4 small tables along the lower band
+  { id:'Q1', zone:'quiet',    seats:2, available:true,  x:14, y:80 },
+  { id:'Q2', zone:'quiet',    seats:1, available:true,  x:34, y:80 },
+  { id:'Q3', zone:'quiet',    seats:2, available:false, x:64, y:80 },
+  { id:'Q4', zone:'quiet',    seats:1, available:true,  x:84, y:80 },
 ];
 
 const QUEUE_INITIAL = [
-  { id:'q-001', name:'M. Brunner', initials:'MB', party:2, preference:'window',      joinedAt:'13:42', estimatedWait:14, status:'notified' },
-  { id:'q-002', name:'A. Laurent', initials:'AL', party:1, preference:'workstation', joinedAt:'13:48', estimatedWait:18, status:'waiting' },
-  { id:'q-003', name:'S. Patel',   initials:'SP', party:4, preference:'family',      joinedAt:'13:51', estimatedWait:25, status:'waiting' },
-  { id:'q-004', name:'N. Keller',  initials:'NK', party:2, preference:'quiet',       joinedAt:'13:55', estimatedWait:28, status:'waiting' },
-  { id:'q-005', name:'R. Moreau',  initials:'RM', party:3, preference:'window',      joinedAt:'13:58', estimatedWait:32, status:'waiting' },
+  { id:'q-001', name:'M. Brunner', initials:'MB', party:2, preference:'dining',   joinedAt:'13:42', estimatedWait:14, status:'notified' },
+  { id:'q-002', name:'A. Laurent', initials:'AL', party:1, preference:'communal', joinedAt:'13:48', estimatedWait:18, status:'waiting' },
+  { id:'q-003', name:'S. Patel',   initials:'SP', party:4, preference:'dining',   joinedAt:'13:51', estimatedWait:25, status:'waiting' },
+  { id:'q-004', name:'N. Keller',  initials:'NK', party:2, preference:'quiet',    joinedAt:'13:55', estimatedWait:28, status:'waiting' },
+  { id:'q-005', name:'R. Moreau',  initials:'RM', party:1, preference:'communal', joinedAt:'13:58', estimatedWait:32, status:'waiting' },
 ];
 
 const TIME_SLOTS = ['06:00','06:30','07:00','07:30','08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30'];
@@ -1997,23 +1992,35 @@ function renderTables() {
   // read-only floor plan
   const map = $('#seating-map'); map.innerHTML = '';
   map.append(el('div', { class:'absolute inset-0 opacity-40', html:`<svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none"><defs><pattern id="grid" width="5" height="5" patternUnits="userSpaceOnUse"><path d="M5 0 L0 0 L0 5" stroke="#DADADA" stroke-width="0.1" fill="none"/></pattern></defs><rect width="100" height="100" fill="url(#grid)"/></svg>` }));
-  map.append(el('div', { class:'absolute top-0 right-0 h-full w-[18%] bg-gradient-to-l from-aspire-card/60 to-transparent', html:`<div class="absolute right-3 top-3 swiss-eyebrow text-aspire-navy/70">Runway view</div>` }));
   map.append(el('div', { class:'absolute bottom-2 left-2 swiss-eyebrow text-aspire-navy/60' }, 'Entry'));
+  map.append(el('div', { class:'absolute top-2 right-2 swiss-eyebrow text-aspire-navy/60' }, 'Bar · à la carte'));
   const labels = [
-    { x:18, y:6, label:'Quiet Zone',  color: ZONE_META.quiet.color },
-    { x:54, y:6, label:'Workstation', color: ZONE_META.workstation.color },
-    { x:22, y:48, label:'Family Area', color: ZONE_META.family.color },
-    { x:80, y:6, label:'Window',      color: ZONE_META.window.color },
+    { x:14, y:8,  label:'Dining',          color: ZONE_META.dining.color },
+    { x:42, y:38, label:'Communal table',  color: ZONE_META.communal.color },
+    { x:14, y:68, label:'Quiet',           color: ZONE_META.quiet.color },
   ];
   labels.forEach(L => {
     map.append(el('div', { class:'absolute text-[0.65rem] uppercase tracking-widest text-aspire-navy/70', style:{ left:`${L.x}%`, top:`${L.y}%` }, html:`<span class="inline-block w-2 h-2 rounded-full mr-1.5 align-middle" style="background:${L.color}"></span>${L.label}` }));
   });
   // non-interactive table shapes — dimmed if not in preferred zone
   TABLES.forEach(t => {
-    const size = 28 + t.seats * 4;
+    const isPill = t.shape === 'pill';
+    const width = isPill ? Math.min(180, 60 + t.seats * 14) : (28 + t.seats * 4);
+    const height = isPill ? 32 : (28 + t.seats * 4);
     const inPref = state.preferredZone && t.zone === state.preferredZone;
     const opacity = !t.available ? 0.3 : (state.preferredZone && !inPref ? 0.4 : 1);
-    map.append(el('div', { class:'absolute -translate-x-1/2 -translate-y-1/2 rounded-full flex items-center justify-center text-[0.6rem] font-medium pointer-events-none', style:{ left:`${t.x}%`, top:`${t.y}%`, width:`${size}px`, height:`${size}px`, background: t.available ? ZONE_META[t.zone].color : '#DADADA', color: '#1F2A44', opacity: String(opacity), boxShadow: inPref ? '0 0 0 2px rgba(31,42,68,0.5)' : '0 4px 10px -4px rgba(31,42,68,0.2)' } }, t.id));
+    map.append(el('div', {
+      class:'absolute -translate-x-1/2 -translate-y-1/2 flex items-center justify-center text-[0.62rem] font-medium pointer-events-none',
+      style:{
+        left:`${t.x}%`, top:`${t.y}%`,
+        width:`${width}px`, height:`${height}px`,
+        background: t.available ? ZONE_META[t.zone].color : '#DADADA',
+        color: '#1F2A44',
+        opacity: String(opacity),
+        borderRadius: isPill ? '999px' : '50%',
+        boxShadow: inPref ? '0 0 0 2px rgba(31,42,68,0.5)' : '0 4px 10px -4px rgba(31,42,68,0.2)'
+      }
+    }, isPill ? `${t.id} · ${t.seats} seats` : t.id));
   });
 
   // forecast bars
@@ -2279,7 +2286,7 @@ function renderQueue() {
 function triggerToast() {
   if (!state.joined) return;
   const z = state.joined.preference;
-  const tableId = z === 'window' ? 'V2' : z === 'workstation' ? 'W4' : z === 'family' ? 'F3' : 'Q1';
+  const tableId = z === 'communal' ? 'C1' : z === 'dining' ? 'D1' : 'Q1';
   const c = $('#toast-container');
   c.classList.remove('hidden');
   c.innerHTML = `
