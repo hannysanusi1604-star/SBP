@@ -1032,6 +1032,45 @@ const I18N = {
     'pa.bespoke.confirm.body':'A host will greet you at the Privé nook with the plated dish and your chosen pairing. The sommelier finalises the wine the moment the plate leaves the pass.',
     'pa.bespoke.confirm.body.now':'The kitchen has started — about 14 minutes from now. Make your way to the Privé nook; your host will meet you with the dish and pairing in hand.',
     'pa.bespoke.confirm.note':'You can amend the request up to 10 minutes before arrival — just call the lounge or message us.',
+    'pa.bespoke.confirm.receipt.title':'Receipt for upgrades',
+    'pa.bespoke.confirm.receipt.body':'Charged to your card on file. A digital invoice is in your boarding-pass profile.',
+
+    'pa.prive.addon.title':'Elevate the plate',
+    'pa.prive.addon.subtitle':'Two optional add-ons. Your base experience stays complimentary — these are billed separately.',
+    'pa.prive.addon.caviar.label':'10 g Oscietra caviar',
+    'pa.prive.addon.caviar.hint':'Crowned over the dish with crème fraîche & shallot.',
+    'pa.prive.addon.truffle.label':'White-truffle shavings',
+    'pa.prive.addon.truffle.hint':'Shaved table-side from a 12 g Alba truffle.',
+
+    'pa.prive.wine.upgrade.title':'Upgrade your pairing',
+    'pa.prive.wine.upgrade.subtitle':'The sommelier glass is complimentary. Trade up to a by-the-glass pour from our reserve list — billed per glass.',
+    'pa.prive.wine.upgrade.disabled':'Premium wines pair with the wine option. Switch your base pairing to wine to enable.',
+    'pa.prive.wine.pinot.label':'Bündner Pinot Noir Réserve',
+    'pa.prive.wine.pinot.hint':'Tom Litwan · Maienfeld. Light alpine fruit, bright finish.',
+    'pa.prive.wine.krug.label':'Krug Grande Cuvée NV',
+    'pa.prive.wine.krug.hint':'Edition 171. Toasted brioche, citrus, fine bubble.',
+    'pa.prive.wine.drc.label':'DRC Échezeaux Grand Cru 2019',
+    'pa.prive.wine.drc.hint':'Domaine de la Romanée-Conti. The reserve cellar.',
+
+    'pa.bespoke.summary.upgrades':'Upgrades',
+    'pa.bespoke.summary.total':'Total to pay',
+    'pa.bespoke.summary.cta.pay':'Send & pay',
+
+    'pa.pay.title':'Confirm your upgrades',
+    'pa.pay.subtitle':'Your Privé experience is included — these are the additions you chose. Card on file is pre-selected.',
+    'pa.pay.lineitems':'Line items',
+    'pa.pay.total':'Total',
+    'pa.pay.method':'Payment method',
+    'pa.pay.method.card':'Card on file',
+    'pa.pay.method.apple':'Apple Pay',
+    'pa.pay.method.google':'Google Pay',
+    'pa.pay.method.tier':'Boarding-pass tier credit',
+    'pa.pay.cta':'Pay & send to the chef',
+    'pa.pay.cta.short':'Pay',
+    'pa.pay.processing':'Processing…',
+    'pa.pay.note':'Secure payment · 3-D Secure on cards · invoiced to your profile.',
+    'pa.pay.included':'Complimentary base experience',
+    'pa.pay.cancel':'Back to request',
 
     'pa.custom.title':'Customize this dish',
     'pa.custom.subtitle':'Remove anything you don’t want — our kitchen rebuilds the plate without it. Allergens are highlighted in copper.',
@@ -1566,7 +1605,7 @@ const STATE = {
     confirmed: null,
     swapTarget: null,
     suite: { pairing: null, delivery: 'table' },
-    prive: { nook: null, host: 'Élodie Roulet', hotTowel: true, chefNote: '', ingredients: new Set(), pairing: null, mode: 'preorder' },
+    prive: { nook: null, host: 'Élodie Roulet', hotTowel: true, chefNote: '', ingredients: new Set(), pairing: null, mode: 'preorder', premiumWine: null, addons: new Set() },
   },
 };
 
@@ -1602,6 +1641,17 @@ const PA_PRIVE_INGREDIENTS = [
 const PA_PRIVE_BEV = [
   { id:'wine',     labelKey:'pa.prive.bev.wine.label',     hintKey:'pa.prive.bev.wine.hint',     iconId:'i-wine' },
   { id:'mocktail', labelKey:'pa.prive.bev.mocktail.label', hintKey:'pa.prive.bev.mocktail.hint', iconId:'i-leaf' },
+];
+
+// Privé: paid upsells layered on top of the all-inclusive base experience.
+const PA_PRIVE_PREMIUM_WINES = [
+  { id:'pinot', labelKey:'pa.prive.wine.pinot.label', hintKey:'pa.prive.wine.pinot.hint', priceChf: 24 },
+  { id:'krug',  labelKey:'pa.prive.wine.krug.label',  hintKey:'pa.prive.wine.krug.hint',  priceChf: 48 },
+  { id:'drc',   labelKey:'pa.prive.wine.drc.label',   hintKey:'pa.prive.wine.drc.hint',   priceChf: 180 },
+];
+const PA_PRIVE_ADDONS = [
+  { id:'caviar',  labelKey:'pa.prive.addon.caviar.label',  hintKey:'pa.prive.addon.caviar.hint',  priceChf: 38, iconId:'i-sparkle' },
+  { id:'truffle', labelKey:'pa.prive.addon.truffle.label', hintKey:'pa.prive.addon.truffle.hint', priceChf: 32, iconId:'i-leaf' },
 ];
 
 const PA_PREP_STAGES = [
@@ -1819,7 +1869,7 @@ function setActiveLounge(id) {
     STATE.preArrival.customizations = {};
     STATE.preArrival.dietaryPrefs = new Set();
     STATE.preArrival.suite = { pairing: null, delivery: 'table' };
-    STATE.preArrival.prive = { nook: null, host: 'Élodie Roulet', hotTowel: true, chefNote: '', ingredients: new Set(), pairing: null, mode: 'preorder' };
+    STATE.preArrival.prive = { nook: null, host: 'Élodie Roulet', hotTowel: true, chefNote: '', ingredients: new Set(), pairing: null, mode: 'preorder', premiumWine: null, addons: new Set() };
     if (typeof paApplySizeDefaults === 'function') paApplySizeDefaults(true);
   }
   // Drop off Pre-Arrival if the new lounge has no tier
@@ -3559,6 +3609,24 @@ function paBespokeIsComplete() {
   return true;
 }
 
+// Sums every paid upsell on the Privé order. Returns 0 when only complimentary items are picked.
+function paBespokePaidItems() {
+  const p = STATE.preArrival.prive;
+  const items = [];
+  if (p.pairing === 'wine' && p.premiumWine) {
+    const w = PA_PRIVE_PREMIUM_WINES.find(x => x.id === p.premiumWine);
+    if (w) items.push({ id:'wine:'+w.id, labelKey:w.labelKey, hintKey:w.hintKey, priceChf:w.priceChf });
+  }
+  p.addons.forEach(id => {
+    const a = PA_PRIVE_ADDONS.find(x => x.id === id);
+    if (a) items.push({ id:'addon:'+a.id, labelKey:a.labelKey, hintKey:a.hintKey, priceChf:a.priceChf });
+  });
+  return items;
+}
+function paBespokePaidTotal() {
+  return paBespokePaidItems().reduce((sum, it) => sum + it.priceChf, 0);
+}
+
 function paBespokeSummaryMarkup() {
   const p = STATE.preArrival.prive;
   const bev = PA_PRIVE_BEV.find(b => b.id === p.pairing);
@@ -3573,6 +3641,11 @@ function paBespokeSummaryMarkup() {
   const ingredientNeeded = p.ingredients.size === 0;
   const pairingNeeded = !p.pairing;
   const timeNeeded = p.mode === 'preorder' && !STATE.preArrival.schedule;
+  const paidItems = paBespokePaidItems();
+  const total = paBespokePaidTotal();
+  const ctaLabel = total > 0
+    ? `${t('pa.bespoke.summary.cta.pay')} CHF ${total}`
+    : (isNow ? t('pa.bespoke.summary.cta.now') : t('pa.bespoke.summary.cta'));
   return `
   <div class="border border-navy-900/12 bg-ivory-50 p-6 sm:p-7 sticky top-[80px]">
     <div class="flex items-center justify-between mb-4">
@@ -3600,11 +3673,24 @@ function paBespokeSummaryMarkup() {
         <dt class="text-navy-500">${esc(t('pa.bespoke.summary.mode'))}</dt>
         <dd class="text-navy-900">${esc(time)}</dd>
       </div>
+      ${paidItems.length ? `
+      <div class="pt-3 border-t border-gold-500/40">
+        <div class="swiss-eyebrow text-gold-600 mb-2">${esc(t('pa.bespoke.summary.upgrades'))}</div>
+        ${paidItems.map(it => `
+          <div class="flex items-baseline justify-between gap-3">
+            <span class="text-navy-700 text-[0.85rem] truncate" title="${esc(t(it.labelKey))}">${esc(t(it.labelKey))}</span>
+            <span class="text-navy-900 text-[0.85rem] whitespace-nowrap">CHF ${it.priceChf}</span>
+          </div>`).join('')}
+        <div class="mt-3 pt-3 border-t border-navy-900/10 flex items-baseline justify-between gap-3">
+          <span class="text-[0.62rem] uppercase tracking-[0.28em] text-navy-700">${esc(t('pa.bespoke.summary.total'))}</span>
+          <span class="serif-heading text-2xl text-gold-600">CHF ${total}</span>
+        </div>
+      </div>` : ''}
     </dl>
     ${(ingredientNeeded || pairingNeeded) ? `<p class="mt-5 text-[0.72rem] uppercase tracking-[0.22em] text-[#B05A47]">${esc(t('pa.bespoke.summary.warn'))}</p>` : ''}
     ${(!ingredientNeeded && !pairingNeeded && timeNeeded) ? `<p class="mt-5 text-[0.72rem] uppercase tracking-[0.22em] text-[#B05A47]">${esc(t('pa.bespoke.summary.warn.time'))}</p>` : ''}
     <button id="paBespokeSend" ${!complete ? 'disabled' : ''} class="mt-6 w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 uppercase tracking-[0.22em] text-[0.7rem] transition-colors ${complete ? 'bg-gold-500 text-ivory-50 hover:bg-gold-400' : 'bg-navy-900/10 text-navy-500 cursor-not-allowed'}">
-      ${esc(isNow ? t('pa.bespoke.summary.cta.now') : t('pa.bespoke.summary.cta'))} ${icon('i-arrow','w-3 h-3')}
+      ${esc(ctaLabel)} ${icon('i-arrow','w-3 h-3')}
     </button>
   </div>`;
 }
@@ -3654,6 +3740,26 @@ function paBespokeConfirmedMarkup() {
         <div class="mt-2 serif-heading text-2xl text-navy-900 tracking-wide">${esc(c.ref)}</div>
       </div>
     </div>
+    ${(c.paidItems && c.paidItems.length) ? `
+    <div class="mt-8 pt-7 border-t border-gold-500/30">
+      <div class="flex items-baseline justify-between gap-4 flex-wrap">
+        <div>
+          <div class="swiss-eyebrow text-gold-600">${icon('i-sparkle','w-3 h-3 inline -mt-0.5')} ${esc(t('pa.bespoke.confirm.receipt.title'))}</div>
+          <p class="mt-2 text-[0.82rem] text-navy-500 max-w-md leading-relaxed">${esc(t('pa.bespoke.confirm.receipt.body'))}</p>
+        </div>
+        <div class="text-right">
+          <div class="text-[0.55rem] uppercase tracking-[0.32em] text-navy-500">${esc(t('pa.pay.total'))}</div>
+          <div class="serif-heading text-3xl text-gold-600">CHF ${c.paidTotal || 0}</div>
+        </div>
+      </div>
+      <ul class="mt-5 grid sm:grid-cols-2 gap-x-8 gap-y-2 text-[0.88rem]">
+        ${c.paidItems.map(it => `
+          <li class="flex items-baseline justify-between gap-3 border-b border-navy-900/10 py-1.5">
+            <span class="text-navy-900 truncate" title="${esc(t(it.labelKey))}">${esc(t(it.labelKey))}</span>
+            <span class="text-navy-500 whitespace-nowrap">CHF ${it.priceChf}</span>
+          </li>`).join('')}
+      </ul>
+    </div>` : ''}
     <p class="mt-8 text-[0.82rem] text-navy-500 italic max-w-2xl">${esc(t('pa.bespoke.confirm.note'))}</p>
     <button id="paReset" class="mt-8 inline-flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.22em] text-navy-900 border-b border-navy-900/40 pb-1 hover:border-navy-900">
       ${esc(t('pa.confirm.again'))} ${icon('i-arrow','w-3 h-3')}
@@ -3683,6 +3789,30 @@ function paBespokeRequest() {
     <button data-pa-prive-pairing="${b.id}" class="pa-option-chip ${on ? 'active' : ''}" style="padding:18px 20px;gap:8px;">
       <span class="pa-opt-label">${icon(b.iconId,'w-4 h-4 inline -mt-0.5 text-gold-500')} ${esc(t(b.labelKey))}</span>
       <span class="pa-opt-hint">${esc(t(b.hintKey))}</span>
+    </button>`;
+  }).join('');
+  const addons = PA_PRIVE_ADDONS.map(a => {
+    const on = p.addons.has(a.id);
+    return `
+    <button data-pa-addon="${a.id}" class="pa-option-chip ${on ? 'active' : ''}" style="padding:16px 18px;gap:6px;">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;">
+        <span class="pa-opt-label">${icon(a.iconId,'w-4 h-4 inline -mt-0.5 text-gold-500')} ${esc(t(a.labelKey))}</span>
+        <span class="pa-pill" style="background:rgba(184,152,85,.12);color:#9A7E3F;">+ CHF ${a.priceChf}</span>
+      </div>
+      <span class="pa-opt-hint">${esc(t(a.hintKey))}</span>
+    </button>`;
+  }).join('');
+  const wineEnabled = p.pairing === 'wine';
+  const premiumWines = PA_PRIVE_PREMIUM_WINES.map(w => {
+    const on = wineEnabled && p.premiumWine === w.id;
+    const dim = !wineEnabled ? 'opacity:.45;pointer-events:none;' : '';
+    return `
+    <button data-pa-wine="${w.id}" ${!wineEnabled ? 'disabled aria-disabled="true"' : ''} class="pa-option-chip ${on ? 'active' : ''}" style="padding:16px 18px;gap:6px;${dim}">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;">
+        <span class="pa-opt-label">${icon('i-wine','w-4 h-4 inline -mt-0.5 text-gold-500')} ${esc(t(w.labelKey))}</span>
+        <span class="pa-pill" style="background:rgba(184,152,85,.12);color:#9A7E3F;">CHF ${w.priceChf} / glass</span>
+      </div>
+      <span class="pa-opt-hint">${esc(t(w.hintKey))}</span>
     </button>`;
   }).join('');
   const nooks = PA_NOOKS.map(n => {
@@ -3727,6 +3857,17 @@ function paBespokeRequest() {
           <p class="mt-3 text-navy-500 leading-[1.7] max-w-xl">${esc(t('pa.prive.step.ingredients.body'))}</p>
           <div class="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">${ingredients}</div>
           ${p.ingredients.size === 0 ? `<p class="mt-4 text-[0.78rem] text-navy-500 italic">${esc(t('pa.bespoke.summary.warn'))}</p>` : ''}
+
+          <!-- Paid add-ons (caviar / truffle) -->
+          <div class="mt-10 pt-8 border-t border-navy-900/10">
+            <div class="flex items-baseline justify-between gap-3 flex-wrap">
+              <div>
+                <div class="text-[0.7rem] uppercase tracking-[0.22em] text-gold-600">${icon('i-sparkle','w-3 h-3 inline -mt-0.5')} ${esc(t('pa.prive.addon.title'))}</div>
+                <p class="mt-2 text-[0.85rem] text-navy-500 leading-relaxed max-w-xl">${esc(t('pa.prive.addon.subtitle'))}</p>
+              </div>
+            </div>
+            <div class="mt-5 grid sm:grid-cols-2 gap-3">${addons}</div>
+          </div>
         </div>
 
         <!-- 02 Beverage pairing -->
@@ -3734,6 +3875,18 @@ function paBespokeRequest() {
           <div class="swiss-eyebrow">— ${esc(t('pa.prive.step.pairing'))}</div>
           <p class="mt-3 text-navy-500 leading-[1.7] max-w-xl">${esc(t('pa.prive.step.pairing.body'))}</p>
           <div class="mt-6 grid sm:grid-cols-2 gap-3">${pairings}</div>
+
+          <!-- Premium wine upgrade (paid · only when base pairing is wine) -->
+          <div class="mt-10 pt-8 border-t border-navy-900/10">
+            <div class="flex items-baseline justify-between gap-3 flex-wrap">
+              <div>
+                <div class="text-[0.7rem] uppercase tracking-[0.22em] text-gold-600">${icon('i-wine','w-3 h-3 inline -mt-0.5')} ${esc(t('pa.prive.wine.upgrade.title'))}</div>
+                <p class="mt-2 text-[0.85rem] text-navy-500 leading-relaxed max-w-xl">${esc(t('pa.prive.wine.upgrade.subtitle'))}</p>
+              </div>
+            </div>
+            ${!wineEnabled ? `<p class="mt-4 text-[0.78rem] text-navy-500 italic">${esc(t('pa.prive.wine.upgrade.disabled'))}</p>` : ''}
+            <div class="mt-5 grid sm:grid-cols-3 gap-3">${premiumWines}</div>
+          </div>
         </div>
 
         <!-- 03 Setting (mode + nook + time + chef note) -->
@@ -4091,6 +4244,91 @@ function showBiteableModal(id) {
   });
 }
 
+function showPaymentModal() {
+  const items = paBespokePaidItems();
+  const total = paBespokePaidTotal();
+  if (!items.length) return;
+  const methods = [
+    { id:'card',   labelKey:'pa.pay.method.card',   iconId:'i-sparkle' },
+    { id:'apple',  labelKey:'pa.pay.method.apple',  iconId:'i-check' },
+    { id:'google', labelKey:'pa.pay.method.google', iconId:'i-check' },
+    { id:'tier',   labelKey:'pa.pay.method.tier',   iconId:'i-crown' },
+  ];
+  let selectedMethod = 'card';
+
+  document.body.style.overflow = 'hidden';
+  const renderModal = () => {
+    document.getElementById('modalHost').innerHTML = `
+    <div class="fixed inset-0 z-50 modal-bg flex items-end sm:items-center justify-center p-4 anim-fade" data-close>
+      <div class="pa-swap-modal-card w-full max-w-xl anim-up" onclick="event.stopPropagation()">
+        <div class="flex items-start justify-between gap-6 mb-6">
+          <div>
+            <div class="swiss-eyebrow text-gold-600">${icon('i-sparkle','w-3 h-3 inline -mt-0.5')} ${esc(t('pa.tier.prive.label'))}</div>
+            <h3 class="serif-heading text-2xl sm:text-3xl mt-2 text-navy-900">${esc(t('pa.pay.title'))}</h3>
+            <p class="mt-2 text-navy-500 text-[0.92rem] max-w-md">${esc(t('pa.pay.subtitle'))}</p>
+          </div>
+          <button data-close class="h-9 w-9 flex items-center justify-center text-navy-700 hover:text-navy-900" aria-label="${esc(t('menu.close'))}">${icon('i-x','w-4 h-4')}</button>
+        </div>
+
+        <!-- Line items -->
+        <div class="border border-navy-900/10 bg-ivory-50 p-5">
+          <div class="swiss-eyebrow mb-3">${esc(t('pa.pay.lineitems'))}</div>
+          <ul class="divide-y divide-navy-900/10">
+            <li class="flex items-baseline justify-between gap-3 py-2 text-[0.88rem]">
+              <span class="text-navy-500 italic">${esc(t('pa.pay.included'))}</span>
+              <span class="text-navy-500">CHF 0</span>
+            </li>
+            ${items.map(it => `
+              <li class="flex items-baseline justify-between gap-3 py-2 text-[0.92rem]">
+                <span class="text-navy-900">${esc(t(it.labelKey))}</span>
+                <span class="text-navy-900 whitespace-nowrap">CHF ${it.priceChf}</span>
+              </li>`).join('')}
+          </ul>
+          <div class="mt-4 pt-3 border-t border-navy-900/15 flex items-baseline justify-between gap-3">
+            <span class="text-[0.62rem] uppercase tracking-[0.28em] text-navy-700">${esc(t('pa.pay.total'))}</span>
+            <span class="serif-heading text-2xl text-gold-600">CHF ${total}</span>
+          </div>
+        </div>
+
+        <!-- Payment method -->
+        <div class="mt-6">
+          <div class="swiss-eyebrow mb-3">${esc(t('pa.pay.method'))}</div>
+          <div class="grid grid-cols-2 gap-2.5">
+            ${methods.map(m => `
+              <button data-pa-pay-method="${m.id}" class="pa-option-chip ${selectedMethod===m.id?'active':''}" style="padding:12px 14px;gap:4px;">
+                <span class="pa-opt-label">${icon(m.iconId,'w-3.5 h-3.5 inline -mt-0.5 text-gold-500')} ${esc(t(m.labelKey))}</span>
+              </button>`).join('')}
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <button id="paPayConfirm" class="mt-7 w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gold-500 text-ivory-50 uppercase tracking-[0.22em] text-[0.7rem] hover:bg-gold-400 transition-colors">
+          ${esc(t('pa.pay.cta'))} · CHF ${total} ${icon('i-arrow','w-3 h-3')}
+        </button>
+        <button data-close class="mt-3 w-full inline-flex items-center justify-center gap-2 px-6 py-2 text-[0.65rem] uppercase tracking-[0.22em] text-navy-500 hover:text-navy-900">
+          ${esc(t('pa.pay.cancel'))}
+        </button>
+        <p class="mt-4 text-[0.7rem] text-navy-500 italic text-center max-w-md mx-auto">${esc(t('pa.pay.note'))}</p>
+      </div>
+    </div>`;
+
+    document.getElementById('modalHost').querySelectorAll('[data-pa-pay-method]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedMethod = btn.getAttribute('data-pa-pay-method');
+        renderModal();
+      });
+    });
+    const payBtn = document.getElementById('paPayConfirm');
+    if (payBtn) payBtn.addEventListener('click', () => {
+      // Simulate processing — disable, show processing label, then commit and close
+      payBtn.disabled = true;
+      payBtn.innerHTML = `${esc(t('pa.pay.processing'))}`;
+      setTimeout(() => paCompleteBespokeAfterPayment(selectedMethod), 700);
+    });
+  };
+  renderModal();
+}
+
 function showPaSwapModal(cat, idx) {
   // Privé tier filters the swap pool by active dietary preferences (Set may be empty)
   const prefs = STATE.preArrival.dietaryPrefs;
@@ -4173,11 +4411,12 @@ function paConfirmOrder() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function paSendBespoke() {
-  if (!paBespokeIsComplete()) return;
+function paBuildBespokeConfirmation() {
   const p = STATE.preArrival.prive;
   const isNow = p.mode === 'now';
-  STATE.preArrival.confirmed = {
+  const paidItems = paBespokePaidItems();
+  const paidTotal = paBespokePaidTotal();
+  return {
     kind: 'bespoke',
     mode: p.mode,
     time: isNow ? t('pa.prive.mode.now') : STATE.preArrival.schedule,
@@ -4186,7 +4425,26 @@ function paSendBespoke() {
     handoff: paHandoffCopy(),
     ingredients: [...p.ingredients],
     pairing: p.pairing,
+    paidItems,
+    paidTotal,
   };
+}
+
+function paSendBespoke() {
+  if (!paBespokeIsComplete()) return;
+  // If any paid upsell is in the cart, route through the payment modal first.
+  if (paBespokePaidTotal() > 0) {
+    showPaymentModal();
+    return;
+  }
+  STATE.preArrival.confirmed = paBuildBespokeConfirmation();
+  renderMain();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function paCompleteBespokeAfterPayment(method) {
+  STATE.preArrival.confirmed = Object.assign(paBuildBespokeConfirmation(), { paidMethod: method });
+  closeModals();
   renderMain();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -4900,11 +5158,25 @@ function attachPageEvents() {
   }));
   document.querySelectorAll('[data-pa-prive-pairing]').forEach(b => b.addEventListener('click', () => {
     STATE.preArrival.prive.pairing = b.getAttribute('data-pa-prive-pairing');
+    // Premium-wine upgrade is only valid on the wine base — clear it when guest switches to mocktail
+    if (STATE.preArrival.prive.pairing !== 'wine') STATE.preArrival.prive.premiumWine = null;
     renderMain();
   }));
   document.querySelectorAll('[data-pa-mode]').forEach(b => b.addEventListener('click', () => {
     STATE.preArrival.prive.mode = b.getAttribute('data-pa-mode');
     if (STATE.preArrival.prive.mode === 'now') STATE.preArrival.schedule = '';
+    renderMain();
+  }));
+  document.querySelectorAll('[data-pa-wine]').forEach(b => b.addEventListener('click', () => {
+    const id = b.getAttribute('data-pa-wine');
+    if (STATE.preArrival.prive.pairing !== 'wine') return;
+    STATE.preArrival.prive.premiumWine = STATE.preArrival.prive.premiumWine === id ? null : id;
+    renderMain();
+  }));
+  document.querySelectorAll('[data-pa-addon]').forEach(b => b.addEventListener('click', () => {
+    const id = b.getAttribute('data-pa-addon');
+    const set = STATE.preArrival.prive.addons;
+    if (set.has(id)) set.delete(id); else set.add(id);
     renderMain();
   }));
   const paNote = document.getElementById('paNote');
@@ -4926,6 +5198,8 @@ function attachPageEvents() {
     STATE.preArrival.prive.ingredients = new Set();
     STATE.preArrival.prive.pairing = null;
     STATE.preArrival.prive.mode = 'preorder';
+    STATE.preArrival.prive.premiumWine = null;
+    STATE.preArrival.prive.addons = new Set();
     STATE.preArrival.customizations = {};
     STATE.preArrival.dietaryPrefs = new Set();
     paApplySizeDefaults(true);
