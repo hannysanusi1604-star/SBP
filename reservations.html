@@ -24,7 +24,7 @@
             navy: '#1F2A44',
             navy2: '#28344C',
             ink: '#1F2A44',
-            border: '#DADADA',
+            border: '#ECECEC',
             white: '#FFFFFF',
             soft: '#EFEAE5',
             mist: '#ECE6E0',
@@ -60,17 +60,21 @@
 <style>
   html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
   body { background: #FFFFFF; color: #1F2A44; font-family: 'Inter','SF Pro Display','Helvetica Neue', system-ui, sans-serif; font-weight: 300; letter-spacing: 0.005em; }
-  /* Box aesthetic — sharp corners on every UI element */
-  *, *::before, *::after { border-radius: 0 !important; }
+  /* Minimal box aesthetic — refined 4px corners on every UI element */
+  *, *::before, *::after { border-radius: 4px !important; }
+  /* Very subtle elevation so white cards have presence on a white page */
+  .card-cream { box-shadow: 0 1px 2px rgba(31, 42, 68, 0.04), 0 0 0 1px rgba(31, 42, 68, 0.04); border-color: #ECECEC; }
+  .card-cream:hover { box-shadow: 0 2px 6px rgba(31, 42, 68, 0.05); }
+  .input-cream { border-color: #E5E5E5; box-shadow: none; }
   .serif-heading { font-family: 'Cormorant Garamond', serif; font-weight: 400; letter-spacing: -0.01em; line-height: 1.05; }
   .swiss-eyebrow { font-family: 'Inter', sans-serif; font-weight: 500; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.22em; color: #9B8470; }
   .hairline { background: linear-gradient(90deg, transparent, rgba(181,157,136,0.5), transparent); height: 1px; }
   .card-cream { background: #FFFFFF; border: 1px solid #DADADA; border-radius: 1.25rem; }
   .card-aspire { background: #D8CEC8; border-radius: 1.25rem; }
-  .btn-primary { background: #1F2A44; color: #fff; border-radius: 9999px; padding: 0.95rem 2rem; font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; transition: all 200ms ease; display: inline-flex; align-items: center; gap: 0.65rem; cursor: pointer; border: none; }
-  .btn-primary:hover { background: #28344C; transform: translateY(-1px); box-shadow: 0 12px 28px -12px rgba(31,42,68,0.4); }
-  .btn-primary.disabled { opacity: 0.4; pointer-events: none; }
-  .btn-outline { background: transparent; color: #1F2A44; border: 1px solid #1F2A44; border-radius: 9999px; padding: 0.85rem 1.85rem; font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; transition: all 200ms ease; display: inline-flex; align-items: center; gap: 0.65rem; cursor: pointer; }
+  .btn-primary { background: #1F2A44; color: #fff; padding: 0.75rem 1.5rem; font-size: 0.74rem; letter-spacing: 0.1em; text-transform: uppercase; transition: all 200ms ease; display: inline-flex; align-items: center; gap: 0.55rem; cursor: pointer; border: none; font-weight: 400; }
+  .btn-primary:hover { background: #28344C; box-shadow: 0 4px 12px -4px rgba(31,42,68,0.18); }
+  .btn-primary.disabled { opacity: 0.35; pointer-events: none; }
+  .btn-outline { background: transparent; color: #1F2A44; border: 1px solid #1F2A44; padding: 0.7rem 1.45rem; font-size: 0.74rem; letter-spacing: 0.1em; text-transform: uppercase; transition: all 200ms ease; display: inline-flex; align-items: center; gap: 0.55rem; cursor: pointer; font-weight: 400; }
   .btn-outline:hover { background: #1F2A44; color: #fff; }
   .step-pill { background: #D8CEC8; border-radius: 9999px; padding: 0.5rem 1.1rem; font-size: 0.85rem; color: #1F2A44; }
   .input-cream { background: #fff; border: 1px solid #DADADA; border-radius: 0.85rem; padding: 0.9rem 1.1rem; font-size: 0.95rem; color: #1F2A44; width: 100%; transition: all 180ms ease; outline: none; }
@@ -86,7 +90,7 @@
   ::-webkit-scrollbar-thumb:hover { background: rgba(31,42,68,0.3); }
   .scrollbar-hide::-webkit-scrollbar { display: none; }
   .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-  .hero-bg { background-image: linear-gradient(to bottom, rgba(255,255,255,0.3), rgba(255,255,255,0.55) 50%, #FFFFFF 100%), url('https://www.cph.dk/4961b3/globalassets/3.-praktisk/lounges-og-workspaces/aspire-lounge/aspire-lounge-bar-buffet-cph.jpg?format=webp'); background-size: cover; background-position: center; }
+  .hero-bg { background-image: linear-gradient(to bottom, rgba(255,255,255,0.55), rgba(255,255,255,0.75) 45%, #FFFFFF 100%), url('https://www.cph.dk/4961b3/globalassets/3.-praktisk/lounges-og-workspaces/aspire-lounge/aspire-lounge-bar-buffet-cph.jpg?format=webp'); background-size: cover; background-position: center; }
   .view { display: none; }
   .view.active { display: block; animation: fadeIn 0.4s ease-out; }
   .nav-link { position: relative; padding-bottom: 4px; transition: color 200ms; color: #3D4A66; }
