@@ -688,7 +688,7 @@
     <div class="flex items-center gap-3 sm:gap-4 shrink-0">
       <button id="loungeBtn" class="hidden md:inline-flex h-9 px-4 border border-navy-900/15 items-center gap-2.5 text-[0.6rem] uppercase tracking-[0.3em] hover:border-navy-900/40 transition-colors whitespace-nowrap" aria-label="Choose lounge">
         <svg class="w-3 h-3"><use href="#i-pin"/></svg>
-        <span data-i18n="lounge.picker.button">Gates A, B &amp; D</span>
+        <span id="loungeBtnLabel">Gates A, B &amp; D</span>
       </button>
       <div class="relative" id="langWrap">
         <button id="langBtn" class="h-9 px-3 border border-navy-900/15 flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.22em] hover:border-navy-900/40 transition-colors">
@@ -1054,6 +1054,10 @@ const I18N = {
     'feedback.dishrating':'Rate a specific dish','feedback.choose':'Choose a dish',
     'lang.title':'Language',
     'lounge.picker.button':'Gates A, B & D','lounge.picker.eyebrow':'— Aspire global network','lounge.picker.title':'Select your lounge','lounge.picker.search':'Search lounges, cities or regions…','lounge.picker.current':'You are here','lounge.picker.coming':'Coming soon','lounge.picker.none':'No lounges match your search.',
+    'lounge.tier.lifestyle':'Lifestyle','lounge.tier.luxe':'Luxe','lounge.tier.suite':'Suite','lounge.tier.prive':'Privé',
+    'pa.activeLounge.label':"You're pre-ordering at",
+    'pa.activeLounge.includes':'What this tier includes',
+    'pa.activeLounge.cta':'Change lounge',
     'help.title':'Need a hand?','help.body':'Press the call button or ask any host — we’re close by.',
     'help.callstaff':'Call a host','help.called':'A host has been notified.','help.close':'Close',
     'footer.note':'A calm, premium moment before your flight.',
@@ -1505,6 +1509,7 @@ const I18N = {
    =========================================================== */
 const STATE = {
   locale: localStorage.getItem('aspire-locale') || 'en',
+  activeLoungeId: localStorage.getItem('aspire-lounge') || 'zurich-abd',
   route: (location.hash || '#home').replace('#',''),
   search: '',
   filters: new Set(),
@@ -1512,7 +1517,6 @@ const STATE = {
   filtersOpen: false,
   preArrival: {
     size: 'medium',
-    tier: 'luxe',
     luxeCombo: 'alpine',
     selections: { starters: [], mains: [], desserts: [] },
     customizations: {},
@@ -1714,9 +1718,62 @@ function setLocale(code) {
   render();
 }
 
+function activeLounge() {
+  for (const region of LOUNGES) {
+    for (const it of region.items) {
+      if (it.id === STATE.activeLoungeId) return it;
+    }
+  }
+  // Fall back to the first tiered lounge if state references something unknown
+  for (const region of LOUNGES) {
+    for (const it of region.items) {
+      if (it.id && it.tier) return it;
+    }
+  }
+  return null;
+}
+function activeTier() {
+  const l = activeLounge();
+  return (l && l.tier) || 'lifestyle';
+}
+function activeLoungeShortName() {
+  const l = activeLounge();
+  if (!l) return '';
+  // Last segment after the last em-dash or middle dot, fallback to full name
+  const parts = l.name.split(/\s+[—·]\s+/);
+  return parts[parts.length - 1];
+}
+function setActiveLounge(id) {
+  if (STATE.activeLoungeId === id) return;
+  const prevTier = activeTier();
+  STATE.activeLoungeId = id;
+  localStorage.setItem('aspire-lounge', id);
+  const newTier = activeTier();
+  // Reset pre-arrival when the tier changes so we don't carry stale orders across experiences
+  if (prevTier !== newTier) {
+    STATE.preArrival.confirmed = null;
+    STATE.preArrival.schedule = '';
+    STATE.preArrival.note = '';
+    STATE.preArrival.customizations = {};
+    STATE.preArrival.dietaryPrefs = new Set();
+    STATE.preArrival.suite = { pairing: null, delivery: 'table' };
+    STATE.preArrival.prive = { nook: null, host: 'Élodie Roulet', hotTowel: true, chefNote: '' };
+    if (typeof paApplySizeDefaults === 'function') paApplySizeDefaults(true);
+  }
+  // Drop off Pre-Arrival if the new lounge has no tier
+  if (newTier === 'lifestyle' && STATE.route === 'pre-arrival') {
+    location.hash = '#home';
+    return; // hashchange will re-render
+  }
+  render();
+}
+
 const LOUNGES = [
   { region: 'Europe', items: [
-    { name: 'Zürich Aspire Lounge — Gates A, B & D', active: true },
+    { id:'zurich-abd',      name:'Zürich Aspire Lounge — Gates A, B & D',           tier:'lifestyle' },
+    { id:'zurich-suite-ns', name:'Suite by Aspire · Zürich Airport (Non-Schengen)', tier:'suite' },
+    { id:'zurich-prive-t2', name:'Privé by Aspire · Zürich Terminal 2',             tier:'prive' },
+    { id:'geneva',          name:'Geneva Lounge',                                    tier:'luxe' },
     { name: 'Zürich Aspire Lounge — Midfield' },
     { name: 'Zürich Swiss Airlines Lounge' },
     { name: 'Amsterdam Schiphol Aspire Lounge 26' },
@@ -1727,7 +1784,6 @@ const LOUNGES = [
     { name: 'Basel EuroAirport Skyview Lounge' },
     { name: 'Copenhagen Aspire Lounge' },
     { name: 'Cork Aspire Lounge' },
-    { name: 'Geneva Lounge' },
     { name: 'Helsinki Aspire Lounge' },
     { name: 'Milan ITA Lounge' },
     { name: 'Sofia Vitosha Aspire Lounge' },
@@ -1820,7 +1876,9 @@ function image(src, alt, cls='') {
 function renderHeader() {
   const desk = document.getElementById('desktopNav');
   const mob = document.getElementById('mobileNavList');
-  desk.innerHTML = NAV_ITEMS.map(n => {
+  // Pre-Arrival is only available at lounges with a non-Lifestyle tier
+  const navItems = NAV_ITEMS.filter(n => n.href !== 'pre-arrival' || activeTier() !== 'lifestyle');
+  desk.innerHTML = navItems.map(n => {
     const active = STATE.route === n.href && !n.scroll;
     const scrollAttr = n.scroll ? ` data-scroll="${n.scroll}"` : '';
     return `<a href="#${n.href}" data-route="${n.href}"${scrollAttr}
@@ -1829,7 +1887,7 @@ function renderHeader() {
       ${active ? '<span class="absolute left-0 right-0 -bottom-0.5 h-px bg-navy-900"></span>' : ''}
     </a>`;
   }).join('');
-  mob.innerHTML = NAV_ITEMS.map(n => {
+  mob.innerHTML = navItems.map(n => {
     const active = STATE.route === n.href && !n.scroll;
     const scrollAttr = n.scroll ? ` data-scroll="${n.scroll}"` : '';
     return `<a href="#${n.href}" data-route="${n.href}"${scrollAttr}
@@ -1854,6 +1912,9 @@ function renderHeader() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     el.textContent = t(el.getAttribute('data-i18n'));
   });
+
+  const lbl = document.getElementById('loungeBtnLabel');
+  if (lbl) lbl.textContent = activeLoungeShortName() || t('lounge.picker.button');
 }
 
 /* ===========================================================
@@ -2069,13 +2130,14 @@ function pageHome() {
     </div>
   </section>
 
-  <!-- ===== Pre-Arrival Dining (Luxe / Suite / Privé tiers) ===== -->
+  <!-- ===== Pre-Arrival Dining (only at Luxe / Suite / Privé lounges) ===== -->
+  ${activeTier() === 'lifestyle' ? '' : `
   <section id="pre-arrival-promo" class="bg-ivory-100/60 border-y border-navy-900/10">
     <div class="mx-auto max-w-6xl px-5 sm:px-8 py-24 sm:py-32">
       <div class="grid md:grid-cols-12 gap-10 md:gap-16 items-center">
         <div class="md:col-span-7 reveal">
           <div class="inline-flex items-center gap-2 text-gold-600 text-[0.6rem] uppercase tracking-[0.36em]">
-            ${icon('i-crown','w-3.5 h-3.5')} ${esc(t('pa.home.eyebrow'))}
+            ${icon('i-crown','w-3.5 h-3.5')} ${esc(t('pa.tier.'+activeTier()+'.label'))} · ${esc(activeLoungeShortName())}
           </div>
           <h2 class="serif-heading text-3xl sm:text-5xl mt-5 text-navy-900 leading-[1.05]">${esc(t('pa.home.title'))}</h2>
           <p class="mt-6 text-navy-500 leading-[1.75] max-w-xl">${esc(t('pa.home.body'))}</p>
@@ -2092,7 +2154,7 @@ function pageHome() {
         </div>
       </div>
     </div>
-  </section>
+  </section>`}
 
   <!-- ===== QR section ===== -->
   <section id="qr" class="mx-auto max-w-6xl px-5 sm:px-8 py-20 sm:py-32">
@@ -2934,11 +2996,11 @@ function stars(name) {
    Pre-Arrival Dining experience
    =========================================================== */
 function paLuxeIsActive() {
-  return STATE.preArrival.tier === 'luxe';
+  return activeTier() === 'luxe';
 }
 
 function paCanCustomize() {
-  return STATE.preArrival.tier !== 'luxe';
+  return activeTier() !== 'luxe';
 }
 
 function paIsPersonalized(dishId) {
@@ -3082,24 +3144,24 @@ function paTierMarkup(cat, labelKey) {
 
 function paEffectivePrep() {
   const cfg = PA_TRAY_SIZES[STATE.preArrival.size];
-  const tier = STATE.preArrival.tier;
+  const tier = activeTier();
   return tier === 'luxe' ? cfg.prep : Math.max(8, cfg.prep - 3);
 }
 
 function paPairingLabel() {
-  if (STATE.preArrival.tier === 'luxe') return null;
+  if (activeTier() === 'luxe') return null;
   const p = PA_PAIRINGS.find(x => x.id === STATE.preArrival.suite.pairing);
   return p ? t(p.labelKey) : t('pa.summary.none');
 }
 
 function paNookLabel() {
-  if (STATE.preArrival.tier !== 'prive') return null;
+  if (activeTier() !== 'prive') return null;
   const n = PA_NOOKS.find(x => x.id === STATE.preArrival.prive.nook);
   return n ? t(n.labelKey) : t('pa.summary.none');
 }
 
 function paHandoffCopy() {
-  const tier = STATE.preArrival.tier;
+  const tier = activeTier();
   if (tier === 'prive') {
     const n = PA_NOOKS.find(x => x.id === STATE.preArrival.prive.nook);
     return n ? `${t(n.labelKey)} — ${STATE.preArrival.prive.host}` : t('pa.tier.prive.handoff');
@@ -3120,7 +3182,7 @@ function paSummaryMarkup() {
   const filled = sel.starters.filter(Boolean).length + sel.mains.filter(Boolean).length + sel.desserts.filter(Boolean).length;
   const complete = filled === expected;
   const time = STATE.preArrival.schedule || t('pa.now');
-  const tier = STATE.preArrival.tier;
+  const tier = activeTier();
   const prep = paEffectivePrep();
   const pairing = paPairingLabel();
   const nook = paNookLabel();
@@ -3241,7 +3303,7 @@ function paRefQrMarkup(ref) {
 function paConfirmedMarkup() {
   const c = STATE.preArrival.confirmed;
   if (!c) return '';
-  const tier = STATE.preArrival.tier;
+  const tier = activeTier();
   // Luxe starts at Received (0); Suite/Privé skip straight to Confirmed (1); demo always shows Preparing (2) for impact
   const activeIdx = 2;
   const pushMins = Math.max(2, Math.round(c.prep * 0.55));
@@ -3317,26 +3379,39 @@ function paConfirmedMarkup() {
   </div>`;
 }
 
-function paTierCards() {
-  const activeTier = STATE.preArrival.tier;
-  return PA_TIERS.map(tier => {
-    const active = tier === activeTier;
-    const perks = [1,2,3,4].map(n => `<li>${esc(t('pa.tier.'+tier+'.perk'+n))}</li>`).join('');
-    return `
-    <button data-pa-tier="${tier}" class="pa-tier-card ${active ? 'active' : ''}">
-      <div class="pa-tier-crown">${icon('i-crown','w-5 h-5')}</div>
-      <div class="flex items-baseline justify-between gap-3">
-        <h3 class="serif-heading text-2xl text-navy-900">${esc(t('pa.tier.'+tier+'.label'))}</h3>
-        ${active ? `<span class="text-gold-600">${icon('i-check','w-4 h-4')}</span>` : ''}
+function paLoungeBanner() {
+  const tier = activeTier();
+  const lounge = activeLounge();
+  if (!lounge || tier === 'lifestyle') return '';
+  const perks = [1,2,3,4].map(n => `<li>${esc(t('pa.tier.'+tier+'.perk'+n))}</li>`).join('');
+  return `
+  <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-16">
+    <div class="pa-feature-panel">
+      <div class="grid md:grid-cols-12 gap-8 items-start">
+        <div class="md:col-span-5">
+          <div class="inline-flex items-center gap-2 text-gold-600 text-[0.6rem] uppercase tracking-[0.32em]">
+            ${icon('i-pin','w-3.5 h-3.5')} ${esc(t('pa.activeLounge.label'))}
+          </div>
+          <h3 class="serif-heading text-2xl sm:text-3xl mt-3 text-navy-900 leading-tight">${esc(lounge.name)}</h3>
+          <div class="mt-3 inline-flex items-center gap-2">
+            <span class="pa-pill"><span>${icon('i-crown','w-2.5 h-2.5')}</span>${esc(t('pa.tier.'+tier+'.label'))}</span>
+            <span class="text-[0.78rem] text-navy-500 italic">${esc(t('pa.tier.'+tier+'.tagline'))}</span>
+          </div>
+          <button id="paChangeLounge" class="mt-5 inline-flex items-center gap-2 text-[0.65rem] uppercase tracking-[0.28em] text-navy-900 border-b border-navy-900/40 pb-1 hover:border-navy-900">
+            ${esc(t('pa.activeLounge.cta'))} ${icon('i-arrow','w-3 h-3')}
+          </button>
+        </div>
+        <div class="md:col-span-7">
+          <div class="text-[0.7rem] uppercase tracking-[0.22em] text-navy-700">${esc(t('pa.activeLounge.includes'))}</div>
+          <ul class="pa-perk-list mt-3">${perks}</ul>
+        </div>
       </div>
-      <p class="text-[0.78rem] text-navy-500 italic mt-1">${esc(t('pa.tier.'+tier+'.tagline'))}</p>
-      <ul class="pa-perk-list">${perks}</ul>
-    </button>`;
-  }).join('');
+    </div>
+  </section>`;
 }
 
 function paSuitePanel() {
-  const tier = STATE.preArrival.tier;
+  const tier = activeTier();
   if (tier !== 'suite' && tier !== 'prive') return '';
   const sel = STATE.preArrival.suite.pairing;
   const delivery = STATE.preArrival.suite.delivery;
@@ -3385,7 +3460,7 @@ function paSuitePanel() {
 }
 
 function paPrivePanel() {
-  if (STATE.preArrival.tier !== 'prive') return '';
+  if (activeTier() !== 'prive') return '';
   const sel = STATE.preArrival.prive.nook;
   const nooks = PA_NOOKS.map(n => {
     const active = n.id === sel;
@@ -3463,7 +3538,7 @@ function paLuxeComboPicker() {
 }
 
 function paPrivePrefsPanel() {
-  if (STATE.preArrival.tier !== 'prive') return '';
+  if (activeTier() !== 'prive') return '';
   const active = STATE.preArrival.dietaryPrefs;
   const chips = DIETARY.map(d => {
     const on = active.has(d);
@@ -3496,7 +3571,7 @@ function paPrivePrefsPanel() {
 function pagePreArrival() {
   paApplySizeDefaults(false);
   const size = STATE.preArrival.size;
-  const tier = STATE.preArrival.tier;
+  const tier = activeTier();
   const sizes = ['small','medium','large'];
 
   const sizeCards = sizes.map(s => {
@@ -3559,14 +3634,8 @@ function pagePreArrival() {
 
   ${paConfirmedMarkup()}
 
-  <!-- Step 00: Choose your tier -->
-  <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-16">
-    <div class="max-w-xl reveal">
-      <div class="swiss-eyebrow">— ${esc(t('pa.step.tier'))}</div>
-      <p class="mt-4 text-navy-500 leading-[1.7]">${esc(t('pa.step.tier.body'))}</p>
-    </div>
-    <div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">${paTierCards()}</div>
-  </section>
+  <!-- Active-lounge banner (replaces the in-page tier picker) -->
+  ${paLoungeBanner()}
 
   <!-- Step 01: Choose size -->
   <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-20">
@@ -3834,7 +3903,7 @@ function paConfirmOrder() {
     time: STATE.preArrival.schedule || t('pa.now'),
     prep: paEffectivePrep(),
     ref: paGenerateRef(),
-    tier: STATE.preArrival.tier,
+    tier: activeTier(),
     handoff: paHandoffCopy(),
   };
   renderMain();
@@ -3961,14 +4030,20 @@ function renderLoungeList(query) {
     <section>
       <div class="swiss-eyebrow mb-3">— ${esc(r.region)}</div>
       <ul class="divide-y divide-navy-900/10">
-        ${items.map(it => `
+        ${items.map(it => {
+          const selectable = !!(it.id && it.tier);
+          const isActive = selectable && it.id === STATE.activeLoungeId;
+          return `
           <li>
-            <button ${it.active ? 'data-lounge-go="zurich"' : 'disabled'} class="w-full text-left py-3.5 flex items-center justify-between gap-4 group ${it.active ? 'hover:pl-2 cursor-pointer' : 'opacity-45 cursor-not-allowed'} transition-[padding] duration-300">
-              <span class="text-[0.95rem] ${it.active ? 'text-navy-900' : 'text-navy-700'}">${esc(it.name)}</span>
-              ${it.active ? `<span class="text-[0.55rem] uppercase tracking-[0.32em] whitespace-nowrap text-gold-600">${esc(t('lounge.picker.current'))}</span>` : ''}
+            <button ${selectable ? `data-lounge-go="${esc(it.id)}"` : 'disabled'} class="w-full text-left py-3.5 flex items-center justify-between gap-4 group ${selectable ? 'hover:pl-2 cursor-pointer' : 'opacity-45 cursor-not-allowed'} transition-[padding] duration-300">
+              <span class="flex items-center gap-3 min-w-0">
+                <span class="text-[0.95rem] ${selectable ? 'text-navy-900' : 'text-navy-700'} truncate">${esc(it.name)}</span>
+                ${it.tier ? `<span class="pa-pill" style="font-size:.5rem;letter-spacing:.22em;padding:2px 7px;${it.tier==='lifestyle'?'background:rgba(20,38,63,.06);color:#15263F;':''}">${esc(t('lounge.tier.'+it.tier))}</span>` : ''}
+              </span>
+              ${isActive ? `<span class="text-[0.55rem] uppercase tracking-[0.32em] whitespace-nowrap text-gold-600">${esc(t('lounge.picker.current'))}</span>` : ''}
             </button>
-          </li>
-        `).join('')}
+          </li>`;
+        }).join('')}
       </ul>
     </section>`;
   }).join('');
@@ -3977,8 +4052,9 @@ function renderLoungeList(query) {
   }
   list.querySelectorAll('[data-lounge-go]').forEach(b => {
     b.addEventListener('click', () => {
+      const id = b.getAttribute('data-lounge-go');
       closeModals();
-      if ((location.hash.replace('#','') || 'home') !== 'home') location.hash = '#home';
+      setActiveLounge(id);
     });
   });
 }
@@ -4002,7 +4078,7 @@ function renderMain() {
     case 'partners':    html = pagePartners(); break;
     case 'about':       html = pageAbout(); break;
     case 'feedback':    html = pageFeedback(); break;
-    case 'pre-arrival': html = pagePreArrival(); break;
+    case 'pre-arrival': html = activeTier() === 'lifestyle' ? pageHome() : pagePreArrival(); break;
     default:            html = pageHome();
   }
   m.innerHTML = `<div class="page">${html}</div>`;
@@ -4484,23 +4560,9 @@ function attachPageEvents() {
     });
     buttons.forEach((btn,i) => btn.addEventListener('click', () => { value = i + 1; paint(value); }));
   });
-  // Pre-Arrival
-  document.querySelectorAll('[data-pa-tier]').forEach(b => b.addEventListener('click', () => {
-    const tier = b.getAttribute('data-pa-tier');
-    if (STATE.preArrival.tier === tier) return;
-    STATE.preArrival.tier = tier;
-    // Reset tier-specific selections when changing tiers
-    if (tier === 'luxe') {
-      STATE.preArrival.suite.pairing = null;
-      STATE.preArrival.prive.nook = null;
-      STATE.preArrival.customizations = {};   // Luxe cannot customize
-      STATE.preArrival.dietaryPrefs = new Set();
-      paApplyLuxeCombo();
-    } else if (tier === 'suite') {
-      STATE.preArrival.dietaryPrefs = new Set();  // Privé-only feature
-    }
-    renderMain();
-  }));
+  // Pre-Arrival — tier is now derived from the active lounge; in-page tier picker removed
+  const paChange = document.getElementById('paChangeLounge');
+  if (paChange) paChange.addEventListener('click', showLoungePicker);
   document.querySelectorAll('[data-pa-combo]').forEach(b => b.addEventListener('click', () => {
     const id = b.getAttribute('data-pa-combo');
     if (STATE.preArrival.luxeCombo === id) return;
