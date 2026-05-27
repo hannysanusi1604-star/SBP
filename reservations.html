@@ -388,12 +388,6 @@
             <select id="step-children" class="mt-2 w-full bg-transparent text-aspire-navy text-xl outline-none"></select>
           </div>
         </div>
-        <div id="step2-deposit-note" class="hidden mb-4 p-4 rounded-2xl bg-aspire-soft border border-aspire-border flex items-start gap-3 text-[0.88rem] text-aspire-navy/85">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="mt-0.5 flex-shrink-0"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l4 2"/></svg>
-          <div>
-            <strong class="text-aspire-navy">Advance booking</strong> — a refundable deposit equal to the lounge entry price will be held to secure your seat. It refunds automatically when you check in within 15 minutes of your reservation.
-          </div>
-        </div>
         <div class="card-cream p-6 sm:p-8">
           <div class="flex items-center justify-between mb-5">
             <div>
@@ -403,6 +397,22 @@
             <div class="text-[0.78rem] text-navy-500" id="schedule-hours"></div>
           </div>
           <div id="step-slots" class="grid grid-cols-3 sm:grid-cols-6 gap-2.5"></div>
+        </div>
+        <div class="card-cream p-6 sm:p-8 mt-4">
+          <div class="flex items-start justify-between gap-3 mb-5">
+            <div>
+              <div class="swiss-eyebrow">Optional</div>
+              <div class="serif-heading text-2xl text-aspire-navy mt-1">Reserve a specific seat</div>
+              <p class="text-[0.88rem] text-navy-500 mt-1 leading-relaxed">Lock a Communal, Dining or Quiet seat — we'll hold it for you. Advance reservations require a refundable deposit equal to the entry price; same-day picks are free.</p>
+            </div>
+          </div>
+          <div id="step2-zone-picker" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
+        </div>
+        <div id="step2-deposit-note" class="hidden mt-4 p-4 bg-aspire-soft border border-aspire-border flex items-start gap-3 text-[0.88rem] text-aspire-navy/85">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="mt-0.5 flex-shrink-0"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l4 2"/></svg>
+          <div>
+            <strong class="text-aspire-navy">Specific seat reserved</strong> — <span id="step2-deposit-zone">a refundable deposit</span> equal to the lounge entry price will be held to secure your table. It refunds automatically when you check in within 15 minutes of your reservation.
+          </div>
         </div>
         <div class="mt-10 flex items-center justify-between gap-4">
           <button onclick="goStep(1)" class="btn-outline">
@@ -1062,12 +1072,14 @@ function getLuxeSeatsRemaining() {
   return Math.max(0, state.luxe.totalCapacity - state.luxe.seatsTaken);
 }
 /* ----------------------- ADVANCE-BOOKING DEPOSIT HELPERS ----------------------- */
-function requiresDeposit(dateStr) {
-  // Triggered when the booking date is later than today — same-day bookings don't take a deposit
-  if (!dateStr) return false;
-  const booking = new Date(dateStr); booking.setHours(0,0,0,0);
+function requiresDeposit(booking) {
+  // Deposit fires only when the customer has reserved a specific table at a
+  // specific time on a future date. Same-day, or future without a zone pick,
+  // both count as a flexible entry ticket and don't hold a seat.
+  if (!booking || !booking.date || !booking.preferredZone) return false;
+  const d = new Date(booking.date); d.setHours(0,0,0,0);
   const today = new Date(); today.setHours(0,0,0,0);
-  return booking.getTime() > today.getTime();
+  return d.getTime() > today.getTime();
 }
 function calculateDeposit(lounge) {
   // Deposit equals the standard Lifestyle entry price
@@ -1609,7 +1621,7 @@ function renderStep2() {
   $('#schedule-sub').textContent = `${l.name} · ${l.terminal}`;
   $('#schedule-hours').textContent = `Hours · ${l.hours}`;
   $('#step-date').value = state.booking.date;
-  $('#step2-deposit-note').classList.toggle('hidden', !requiresDeposit(state.booking.date));
+  $('#step2-deposit-note').classList.toggle('hidden', !requiresDeposit(state.booking));
   const sa = $('#step-adults'); sa.innerHTML = '';
   [1,2,3,4,5,6].forEach(n => sa.append(new Option(n, n, false, n === state.booking.guests.adults)));
   const sc = $('#step-children'); sc.innerHTML = '';
@@ -1622,6 +1634,31 @@ function renderStep2() {
     const active = state.booking.arrivalTime === t;
     slots.append(el('button', { class:`py-3 rounded-xl text-[0.92rem] border transition-all ${active ? 'bg-aspire-navy text-white border-aspire-navy' : 'bg-white text-aspire-navy border-aspire-border hover:border-aspire-taupe'}`, onclick:() => { state.booking.arrivalTime = t; renderStep2(); } }, t));
   });
+
+  // Zone picker — optional. Picking one + an advance date triggers the deposit.
+  const zonePicker = $('#step2-zone-picker'); zonePicker.innerHTML = '';
+  const zoneOptions = [
+    { id: null,         label: 'No preference' },
+    { id: 'communal',   label: ZONE_META.communal.label },
+    { id: 'dining',     label: ZONE_META.dining.label },
+    { id: 'quiet',      label: ZONE_META.quiet.label },
+  ];
+  zoneOptions.forEach(opt => {
+    const active = (state.booking.preferredZone || null) === opt.id;
+    const swatch = opt.id ? `<span class="inline-block h-2 w-2 mr-2 align-middle" style="background:${ZONE_META[opt.id].color}"></span>` : '';
+    zonePicker.append(el('button', {
+      class:`py-3 px-3 text-[0.85rem] border transition-all ${active ? 'bg-aspire-navy text-white border-aspire-navy' : 'bg-white text-aspire-navy border-aspire-border hover:border-aspire-taupe'}`,
+      onclick: () => { state.booking.preferredZone = opt.id; renderStep2(); },
+      html: swatch + opt.label,
+    }));
+  });
+
+  // Update the deposit notice copy to name the held zone
+  if (state.booking.preferredZone && ZONE_META[state.booking.preferredZone]) {
+    $('#step2-deposit-zone').textContent = `a refundable deposit for your ${ZONE_META[state.booking.preferredZone].label}`;
+  } else {
+    $('#step2-deposit-zone').textContent = 'a refundable deposit';
+  }
 }
 function renderStep3() {
   $('#step-name').value  = state.booking.guestName;
@@ -1652,14 +1689,16 @@ function bookingSummaryHTML() {
   const isPass = state.booking.membership !== 'pay';
   const hasLuxe = !!state.booking.luxeUpgrade;
   const luxeFee = hasLuxe ? calculateLuxeUpgradeFee(l.priceFrom) : 0;
-  const isAdvance = requiresDeposit(state.booking.date);
+  const isAdvance = requiresDeposit(state.booking);
   const deposit = isAdvance ? calculateDeposit(l) : 0;
   const graceTime = depositGraceTime(state.booking.arrivalTime);
   // Live occupancy is intentionally not shown during purchase — it isn't actionable
   // at booking time and was creating noise on the summary.
   let seating = 'No preference';
   if (state.booking.preferredZone) {
-    seating = `${ZONE_META[state.booking.preferredZone].label} preferred · table assigned on arrival`;
+    seating = requiresDeposit(state.booking)
+      ? `${ZONE_META[state.booking.preferredZone].label} reserved · table held`
+      : `${ZONE_META[state.booking.preferredZone].label} preferred · table assigned on arrival`;
   }
   const accessTypeLabel = hasLuxe
     ? `<span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-aspire-navy"></span>Luxe upgrade</span>`
@@ -1788,7 +1827,7 @@ const PASS_FIELD_PLACEHOLDER = {
 function renderStep4() {
   const isPass = state.booking.membership !== 'pay';
   const hasLuxe = !!state.booking.luxeUpgrade;
-  const isAdvance = requiresDeposit(state.booking.date);
+  const isAdvance = requiresDeposit(state.booking);
   const l = lounge();
   const luxeFee = hasLuxe ? calculateLuxeUpgradeFee(l.priceFrom) : 0;
   const deposit = isAdvance ? calculateDeposit(l) : 0;
@@ -1804,7 +1843,7 @@ function renderStep4() {
     $('#pay-section-badge').textContent = 'No charge · pass verified with provider';
   } else if (isPass && !hasLuxe && isAdvance) {
     $('#pay-section-title').textContent = 'Confirm access & hold deposit';
-    $('#pay-section-badge').textContent = `Refundable deposit · ${l.currency} ${deposit}`;
+    $('#pay-section-badge').textContent = `Table reserved · refundable deposit · ${l.currency} ${deposit}`;
   } else if (isPass && hasLuxe) {
     $('#pay-section-title').textContent = 'Confirm access & pay Luxe upgrade';
     $('#pay-section-badge').textContent = isAdvance
@@ -1902,7 +1941,7 @@ function confirmBooking() {
   const guestsTotal = state.booking.guests.adults + state.booking.guests.children;
   const usingPass = state.booking.membership !== 'pay';
   const hasLuxe = !!state.booking.luxeUpgrade;
-  const isAdvance = requiresDeposit(state.booking.date);
+  const isAdvance = requiresDeposit(state.booking);
   const deposit = isAdvance ? calculateDeposit(l) : 0;
   const graceTime = depositGraceTime(state.booking.arrivalTime);
   const passLabel = (MEMBERSHIPS.find(m => m.id === state.booking.membership) || {}).label || 'Pass';
@@ -1946,7 +1985,7 @@ function confirmBooking() {
     let headline;
     if (hasLuxe && usingPass)            headline = `Luxe upgrade confirmed · ${l.currency} ${(luxeFee + passDepositAmount)} charged`;
     else if (hasLuxe && !usingPass)      headline = `Luxe upgrade confirmed · ${l.currency} ${totalAmount.toFixed(2)} charged`;
-    else if (usingPass && isAdvance)     headline = `Reservation confirmed · ${l.currency} ${deposit} held`;
+    else if (usingPass && isAdvance)     headline = `Table reserved · ${l.currency} ${deposit} held`;
     else if (usingPass)                  headline = 'Booking confirmed';
     else                                 headline = `${l.currency} ${totalAmount.toFixed(2)} charged`;
     $('#pay-amount').textContent = headline;
@@ -2456,16 +2495,20 @@ function renderDashboard() {
   $('#confirmed-banner').classList.remove('hidden');
   const accessUntil = endTime(state.booking.arrivalTime);
   const hasLuxe = !!state.booking.luxeUpgrade;
-  // Headline + subline adapt for Luxe upgrades
+  const hasTableReservation = requiresDeposit(state.booking);
+  // Headline adapts for Luxe / Table reservation / standard
   const bannerHeading = $('#confirmed-banner').querySelector('.serif-heading');
-  if (bannerHeading) bannerHeading.textContent = hasLuxe ? 'Luxe upgrade confirmed' : 'Reservation confirmed';
+  if (bannerHeading) bannerHeading.textContent =
+    hasLuxe ? 'Luxe upgrade confirmed'
+    : hasTableReservation ? 'Table reserved'
+    : 'Reservation confirmed';
   $('#confirmed-sub').innerHTML = hasLuxe
     ? `Proceed directly to the <strong class="text-aspire-navy font-medium">${LUXE_PROFILE.name}</strong>. Your <strong class="text-aspire-navy font-medium">3-hour access</strong> window starts when you check in. Reference ${state.bookingRef}.`
     : `<strong class="text-aspire-navy font-medium">3-hour access</strong> from ${state.booking.arrivalTime} until ${accessUntil}. Confirmation sent to ${state.booking.email || 'your inbox'}. Reference ${state.bookingRef}.`;
 
   $('#dash-summary').innerHTML = bookingSummaryHTML();
 
-  const dashAdvance = requiresDeposit(state.booking.date);
+  const dashAdvance = requiresDeposit(state.booking);
   const dashGrace = depositGraceTime(state.booking.arrivalTime);
   const dashDeposit = dashAdvance ? calculateDeposit(l) : 0;
   $('#dash-access-card').innerHTML = `
