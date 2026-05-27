@@ -119,7 +119,6 @@
     <nav class="hidden md:flex items-center gap-7 text-[0.78rem] tracking-wide uppercase">
       <a href="#search" data-view="search" class="nav-link">Lounges</a>
       <a href="#reserve" data-view="reserve" class="nav-link">Reserve</a>
-      <a href="#tables" data-view="tables" class="nav-link">Tables</a>
       <a href="#queue" data-view="queue" class="nav-link">Queue</a>
       <a href="#dashboard" data-view="dashboard" class="nav-link">My Stay</a>
     </nav>
@@ -145,7 +144,6 @@
     <nav class="px-5 py-3 flex flex-col gap-1 text-[0.85rem] uppercase tracking-wide">
       <a href="#search" data-view="search" class="py-2 text-navy-500">Lounges</a>
       <a href="#reserve" data-view="reserve" class="py-2 text-navy-500">Reserve</a>
-      <a href="#tables" data-view="tables" class="py-2 text-navy-500">Tables</a>
       <a href="#queue" data-view="queue" class="py-2 text-navy-500">Queue</a>
       <a href="#dashboard" data-view="dashboard" class="py-2 text-navy-500">My Stay</a>
     </nav>
@@ -362,7 +360,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m15 18-6-6 6-6"/></svg>
             Back
           </a>
-          <button onclick="goStep(2)" class="btn-primary">Continue
+          <button onclick="goStep(2)" class="btn-primary">Continue to schedule
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </button>
         </div>
@@ -374,16 +372,16 @@
           <h1 class="serif-heading text-4xl sm:text-6xl text-aspire-navy">Schedule your visit</h1>
           <p class="mt-3 text-navy-500" id="schedule-sub"></p>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <div class="card-cream p-5">
+        <div class="card-cream p-6 sm:p-8 mb-4 grid grid-cols-1 sm:grid-cols-3 sm:divide-x divide-aspire-border gap-5 sm:gap-0">
+          <div class="sm:pr-5">
             <div class="swiss-eyebrow">Date</div>
             <input type="date" id="step-date" class="mt-2 w-full bg-transparent text-aspire-navy text-xl outline-none" />
           </div>
-          <div class="card-cream p-5">
+          <div class="sm:px-5">
             <div class="swiss-eyebrow">Adults</div>
             <select id="step-adults" class="mt-2 w-full bg-transparent text-aspire-navy text-xl outline-none"></select>
           </div>
-          <div class="card-cream p-5">
+          <div class="sm:pl-5">
             <div class="swiss-eyebrow">Children</div>
             <select id="step-children" class="mt-2 w-full bg-transparent text-aspire-navy text-xl outline-none"></select>
           </div>
@@ -419,7 +417,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m15 18-6-6 6-6"/></svg>
             Back
           </button>
-          <button onclick="goStep(3)" class="btn-primary">Continue
+          <button onclick="goStep(3)" class="btn-primary">Continue to guest details
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </button>
         </div>
@@ -455,7 +453,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m15 18-6-6 6-6"/></svg>
             Back
           </button>
-          <button id="step3-next" onclick="goStep(4)" class="btn-primary disabled">Continue
+          <button id="step3-next" onclick="goStep(4)" class="btn-primary disabled">Continue to payment
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </button>
         </div>
@@ -934,7 +932,7 @@ const LOUNGES = [
   { id:'zrh-abd', name:'Aspire Lounge Gates A, B & D', airport:'Zurich Airport', airportCode:'ZRH', terminal:'Airside · Schengen · Gates A, B & D', city:'Zurich', country:'Switzerland', region:'Europe',
     image:'https://i.postimg.cc/htWQStdZ/Chat-GPT-Image-May-27-2026-11-54-17-PM.png',
     amenities: ['Free WiFi','Charging points','Complimentary food & drinks','Major card schemes accepted','Guaranteed flight delay cover','Free cancellations & amends'],
-    capacity:240, rating:4.8, reviews:1842, priceFrom:35, currency:'CHF', occupancyPct:86, hours:'05:15 — 21:00 · daily' },
+    capacity:240, rating:4.8, reviews:1842, priceFrom:48, currency:'CHF', occupancyPct:86, hours:'05:15 — 21:00 · daily' },
 ];
 
 const LOUNGE_NETWORK = [
@@ -1517,8 +1515,14 @@ function renderProgress() {
   const out = $('#reserve-progress'); out.innerHTML = '';
   STEPS.forEach(s => {
     const active = s.n === state.step, done = s.n < state.step;
-    out.append(el('div', { class:`flex items-center gap-2 px-3 py-2 rounded-full border text-[0.7rem] uppercase tracking-wider transition-all ${active ? 'bg-aspire-navy text-white border-aspire-navy' : done ? 'bg-aspire-card text-aspire-navy border-aspire-card' : 'bg-white text-navy-500 border-aspire-border'}` },
-      el('span', { class:`h-5 w-5 rounded-full flex items-center justify-center text-[0.65rem] ${active ? 'bg-white text-aspire-navy' : done ? 'bg-aspire-taupe text-white' : 'bg-aspire-soft text-navy-500'}` }, String(s.n)),
+    // Completed steps are clickable back-navigation; current + future steps are not
+    const clickable = done;
+    out.append(el(clickable ? 'button' : 'div', {
+      class:`flex items-center gap-2 px-3 py-2 border text-[0.7rem] uppercase tracking-wider transition-all ${active ? 'bg-aspire-navy text-white border-aspire-navy' : done ? 'bg-aspire-card text-aspire-navy border-aspire-card cursor-pointer hover:bg-aspire-taupe/40' : 'bg-white text-navy-500 border-aspire-border'}`,
+      ...(clickable ? { onclick: () => goStep(s.n) } : {}),
+      ...(clickable ? { title: `Back to ${s.label.toLowerCase()}` } : {})
+    },
+      el('span', { class:`h-5 w-5 flex items-center justify-center text-[0.65rem] ${active ? 'bg-white text-aspire-navy' : done ? 'bg-aspire-taupe text-white' : 'bg-aspire-soft text-navy-500'}` }, String(s.n)),
       el('span', { class:'hidden sm:inline' }, s.label)
     ));
   });
