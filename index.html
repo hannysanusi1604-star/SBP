@@ -4541,7 +4541,7 @@ window.addEventListener('hashchange', () => {
   var PA_TIER_LABELS = { lifestyle:'Lifestyle', suite:'Suite', prive:'Privé', luxe:'Luxe' };
 
   function paLoungeTier() {
-    var id = (window.state && window.state.booking && window.state.booking.loungeId) || 'zrh-abd';
+    var id = (typeof state !== 'undefined' && state && state.booking && state.booking.loungeId) || 'zrh-abd';
     if (typeof LOUNGE_NETWORK === 'undefined') return { tier:'lifestyle', name:'Aspire Lounge' };
     for (var i = 0; i < LOUNGE_NETWORK.length; i++) {
       var g = LOUNGE_NETWORK[i];
@@ -5673,7 +5673,7 @@ window.addEventListener('hashchange', () => {
 
   /* ---------- Tier-aware Pre-Arrival visibility ---------- */
   function mb_loungeTier() {
-    var id = (window.state && state.booking && state.booking.loungeId) || 'zrh-abd';
+    var id = (typeof state !== 'undefined' && state && state.booking && state.booking.loungeId) || 'zrh-abd';
     for (var i = 0; i < LOUNGE_NETWORK.length; i++) {
       var g = LOUNGE_NETWORK[i];
       for (var j = 0; j < g.lounges.length; j++) {
