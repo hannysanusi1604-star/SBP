@@ -6624,6 +6624,7 @@ window.addEventListener('hashchange', () => {
                 0 0 30px 6px rgba(255,255,255,0.55) !important;
     border-radius: 4px;
     animation: demoPulse 1.6s ease-in-out infinite;
+    transition: box-shadow 280ms ease;
   }
   @keyframes demoPulse {
     0%,100% { box-shadow: 0 0 0 3px #B59D88, 0 0 0 10px rgba(181,157,136,0.35), 0 0 30px 6px rgba(255,255,255,0.55); }
@@ -6642,6 +6643,17 @@ window.addEventListener('hashchange', () => {
     font-family: 'Inter', sans-serif;
     font-weight: 300;
     line-height: 1.5;
+    opacity: 0;
+    pointer-events: none;
+    will-change: top, left, opacity;
+    transition:
+      opacity 280ms ease,
+      top 450ms cubic-bezier(0.4, 0, 0.2, 1),
+      left 450ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  #demo-coachmark.dm-visible {
+    opacity: 1;
+    pointer-events: auto;
   }
   #demo-coachmark .dm-eyebrow {
     font-family: 'Inter', sans-serif; font-weight: 500;
@@ -7294,7 +7306,21 @@ window.addEventListener('hashchange', () => {
     if (el.closest('#demo-coachmark'))   return true;
     if (el.closest('#demo-finale'))      return true;
     if (el.closest('#demo-tier-picker')) return true;
-    if (currentTarget && (el === currentTarget || currentTarget.contains(el))) return true;
+    if (currentTarget && document.body.contains(currentTarget) &&
+        (el === currentTarget || currentTarget.contains(el))) return true;
+    // currentTarget may be detached (paRender just replaced the highlighted
+    // element). If the click landed on something that matches the current
+    // step's selector, accept it — it IS the fresh copy of the target.
+    var step = STEPS[idx];
+    if (step && step.selector) {
+      try {
+        if (el.matches && el.matches(step.selector)) return true;
+        if (el.closest) {
+          var anc = el.closest(step.selector);
+          if (anc) return true;
+        }
+      } catch (_) {}
+    }
     return false;
   }
 
@@ -7338,8 +7364,8 @@ window.addEventListener('hashchange', () => {
   var bannerLabel = document.getElementById('dm-banner-label');
 
   function placeCoach(tgt) {
-    if (!tgt) { coach.style.display = 'none'; return; }
-    coach.style.display = 'block';
+    if (!tgt) { coach.classList.remove('dm-visible'); return; }
+    coach.classList.add('dm-visible');
     var r = tgt.getBoundingClientRect();
     var vw = window.innerWidth, vh = window.innerHeight;
     var cw = coach.offsetWidth, ch = coach.offsetHeight;
@@ -7396,18 +7422,23 @@ window.addEventListener('hashchange', () => {
       currentTarget.removeEventListener('click', onTargetClick, true);
     }
     currentTarget = null;
-    coach.style.display = 'none';
+    // Fade the coachmark out instead of snapping it away — the CSS transition
+    // on opacity handles the fade; the next placeCoach() brings it back.
+    coach.classList.remove('dm-visible');
   }
 
   // ----------------------------------------------------------------
   // Demo pacing — tuned to feel walked, not raced. Bump these to slow
   // everything down further if needed.
   // ----------------------------------------------------------------
+  // Tuned for a pitch demo: each tap is followed by a calm beat so the
+  // viewer reads the page reaction, then the spotlight glides to the next
+  // step. Tighten or loosen everything from this one place.
   var TIMING = {
-    afterClick: 700,      // pause after the user taps before the next coachmark appears
-    afterEnsureView: 250, // pause inside ensureView so view / sub-tab transitions settle
-    findTargetPoll: 150,  // how often findTarget re-checks for the next selector
-    initialBoot: 500      // pause after tier-picker before step 1 lights up
+    afterClick: 1100,     // pause after the user taps before the next coachmark appears
+    afterEnsureView: 350, // pause inside ensureView so view / sub-tab transitions settle
+    findTargetPoll: 180,  // how often findTarget re-checks for the next selector
+    initialBoot: 700      // pause after tier-picker before step 1 lights up
   };
 
   function onTargetClick() {
@@ -7597,28 +7628,71 @@ window.addEventListener('hashchange', () => {
   });
   modalWatcher.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['class'] });
 
-  // Watch for pre-arrival auth → composer transition so the composer's
-  // Confirm button picks up the highlight as soon as it renders.
-  var paWatcher = new MutationObserver(function () {
+  // Generic re-sync watcher — paRender, mb_show, renderTables, etc. all
+  // wipe and re-create the target element wholesale. This watcher keeps
+  // the spotlight glued to whatever element currently matches the active
+  // step's selector, so clicks always land on the fresh DOM node.
+  var resyncScheduled = false;
+  function scheduleResync() {
+    if (resyncScheduled) return;
+    resyncScheduled = true;
+    requestAnimationFrame(function () {
+      resyncScheduled = false;
+      resyncTarget();
+    });
+  }
+  function isSelfMutation(records) {
+    for (var i = 0; i < records.length; i++) {
+      var t = records[i].target;
+      if (!t) continue;
+      if (t.id === 'demo-coachmark' || t.id === 'demo-banner' ||
+          t.id === 'demo-veil' || t.id === 'demo-finale' ||
+          t.id === 'demo-tier-picker') return true;
+      if (t.closest && (t.closest('#demo-coachmark') || t.closest('#demo-banner') ||
+          t.closest('#demo-finale') || t.closest('#demo-tier-picker'))) return true;
+    }
+    return false;
+  }
+  function resyncTarget() {
     if (window.__aspireDemoExited) return;
     var step = STEPS[idx];
-    if (!step || !step.selector) return;
-    if (step.selector.indexOf('data-pa-confirm') === -1 &&
-        step.selector.indexOf('data-pa-bespoke-send') === -1) return;
-    var btn = document.querySelector(step.selector);
-    if (btn && btn !== currentTarget && btn.offsetParent !== null) {
-      clearTarget();
-      currentTarget = btn;
-      btn.classList.add('demo-target');
-      if (btn.hasAttribute('disabled')) btn.removeAttribute('disabled');
-      btn.addEventListener('click', onTargetClick, true);
-      eyebrow.textContent = step.eyebrow;
-      title.textContent   = step.title;
-      body.textContent    = step.body;
-      placeCoach(btn);
+    if (!step || !step.selector || step.final || step.view === 'pay-modal') return;
+    var el = document.querySelector(step.selector);
+    if (!el) return;
+    if (el.offsetParent === null) return;
+    if (el === currentTarget) return;
+    // Brief text-fade as the spotlight glides to the new element — keeps
+    // the swap from looking like a snap.
+    var prevOpacity = coach.style.opacity;
+    coach.style.opacity = '0.35';
+    if (currentTarget && currentTarget !== el) {
+      currentTarget.classList.remove('demo-target');
+      currentTarget.removeEventListener('click', onTargetClick, true);
     }
+    currentTarget = el;
+    el.classList.add('demo-target');
+    el.classList.remove('disabled');
+    if (el.hasAttribute && el.hasAttribute('disabled')) el.removeAttribute('disabled');
+    el.addEventListener('click', onTargetClick, true);
+    eyebrow.textContent = step.eyebrow || '';
+    title.textContent   = step.title || '';
+    body.textContent    = step.body || '';
+    placeCoach(el);
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        coach.style.opacity = prevOpacity || '';
+      });
+    });
+  }
+  var anyWatcher = new MutationObserver(function (records) {
+    // Ignore mutations the demo itself caused on its overlay elements —
+    // otherwise the watcher pings itself on every coachmark / target update.
+    if (isSelfMutation(records)) return;
+    scheduleResync();
   });
-  paWatcher.observe(document.body, { childList: true, subtree: true });
+  anyWatcher.observe(document.body, {
+    childList: true, subtree: true, attributes: true, attributeFilter: ['class','style']
+  });
 
   // ----------------------------------------------------------------
   // Tier picker — entry point.
