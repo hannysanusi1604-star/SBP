@@ -168,38 +168,21 @@
 
       <!-- Search card -->
       <div class="mt-12 sm:mt-16 max-w-5xl card-cream shadow-lift p-4 sm:p-6 animate-fade-up">
-        <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-4">
-          <button type="button" id="lounge-picker-btn" onclick="openLoungePicker()" class="relative block sm:col-span-4 text-left input-cream pt-6 hover:border-aspire-taupe">
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-4 items-stretch">
+          <button type="button" id="lounge-picker-btn" onclick="openLoungePicker()" class="relative block sm:col-span-7 text-left input-cream pt-6 hover:border-aspire-taupe">
             <span class="absolute top-2 left-4 text-[0.62rem] uppercase tracking-widest text-navy-500 z-10">Lounge</span>
             <span id="lounge-picker-label" class="block text-aspire-navy truncate pr-6">Zurich · Aspire Lounge Gates A, B & D</span>
             <svg class="absolute right-3 top-1/2 -translate-y-1/2 text-navy-500" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m6 9 6 6 6-6"/></svg>
           </button>
-          <label class="relative block sm:col-span-3">
-            <span class="absolute top-2 left-4 text-[0.62rem] uppercase tracking-widest text-navy-500 z-10">Date</span>
-            <input type="date" id="search-date" class="input-cream pt-6" />
-          </label>
-          <label class="relative block sm:col-span-2">
-            <span class="absolute top-2 left-4 text-[0.62rem] uppercase tracking-widest text-navy-500 z-10">Arrival</span>
-            <input type="time" id="search-time" value="14:00" class="input-cream pt-6" />
-          </label>
-          <label class="relative block sm:col-span-2">
-            <span class="absolute top-2 left-4 text-[0.62rem] uppercase tracking-widest text-navy-500 z-10">Guests</span>
-            <select id="search-guests" class="input-cream pt-6 appearance-none"></select>
-          </label>
-          <div class="sm:col-span-1 flex">
-            <button onclick="searchAndGo()" aria-label="Search" class="w-full h-full min-h-[52px] rounded-xl bg-aspire-navy text-white flex items-center justify-center hover:bg-navy-700 transition-colors">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-            </button>
-          </div>
+          <button onclick="searchAndGo()" class="btn-primary sm:col-span-5 justify-center">
+            Online check-in the lounge
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
         </div>
-        <div class="mt-5 flex flex-wrap items-center justify-between gap-3 px-1">
+        <div class="mt-5 px-1">
           <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-aspire-border text-[0.7rem] uppercase tracking-widest text-aspire-navy">
             <span class="live-dot"></span>Live occupancy · updates every 30s
           </span>
-          <button onclick="searchAndGo()" class="btn-primary">
-            Reserve Your Lounge Experience
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          </button>
         </div>
       </div>
 
@@ -1340,9 +1323,6 @@ document.addEventListener('click', (e) => {
 
 /* ----------------------- HOME ----------------------- */
 function initHome() {
-  const gs = $('#search-guests');
-  [1,2,3,4,5,6].forEach(n => gs.append(new Option(`${n} ${n===1?'guest':'guests'}`, n)));
-  $('#search-date').value = state.booking.date;
   updateLoungePickerLabel();
   renderHomeFeatured();
 }
@@ -1393,9 +1373,7 @@ function renderHomeFeatured() {
   ));
 }
 function searchAndGo() {
-  state.booking.date       = $('#search-date').value || state.booking.date;
-  state.booking.arrivalTime = $('#search-time').value || '14:00';
-  state.booking.guests.adults = Number($('#search-guests').value) || 1;
+  // Schedule (date/time/guests) is picked on step 2 — no need to capture it on home.
   state.step = 2;
   go('reserve');
 }
