@@ -95,7 +95,7 @@
   ::-webkit-scrollbar-thumb:hover { background: rgba(31,42,68,0.3); }
   .scrollbar-hide::-webkit-scrollbar { display: none; }
   .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-  .hero-bg { background-image: linear-gradient(to bottom, rgba(255,255,255,0.55), rgba(255,255,255,0.75) 45%, #FFFFFF 100%), url('https://img.sanishtech.com/u/8fe4d7497f710b8b730021265855b7ad.png'); background-size: cover; background-position: center; }
+  .hero-bg { background-image: linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(255,255,255,0.22) 55%, rgba(255,255,255,0.85) 85%, #FFFFFF 100%), url('https://img.sanishtech.com/u/8fe4d7497f710b8b730021265855b7ad.png'); background-size: cover; background-position: center; }
   .view { display: none; }
   .view.active { display: block; animation: fadeIn 0.4s ease-out; }
   .nav-link { position: relative; padding-bottom: 4px; transition: color 200ms; color: #3D4A66; }
@@ -6883,6 +6883,16 @@ window.addEventListener('hashchange', () => {
       state.booking.luxeUpgrade = false;
     } catch (_) {}
     try { sessionStorage.removeItem('paAuth'); } catch (_) {}
+    // Force the menu to open on the Editorial sub-tab every time the demo
+    // starts. The menu IIFE reads this on first activation; demoTrustedClick
+    // below also fires mb_show synchronously if the tab is in the DOM.
+    try { sessionStorage.setItem('mb_sub', 'editorial'); } catch (_) {}
+    try {
+      var editorialTab = document.querySelector('#view-menu #menu-subnav [data-mb-go="editorial"]');
+      if (editorialTab && !editorialTab.classList.contains('active') && typeof demoTrustedClick === 'function') {
+        demoTrustedClick(editorialTab);
+      }
+    } catch (_) {}
     try { if (typeof updateLoungePickerLabel === 'function') updateLoungePickerLabel(); } catch (_) {}
     try { if (typeof go === 'function') go('home'); } catch (_) {}
   }
@@ -6999,106 +7009,239 @@ window.addEventListener('hashchange', () => {
       }
     ];
 
+    // After step 8 the user returns to the dashboard automatically (submit
+    // preference navigates back). From here every tier walks the menu in
+    // detail — editorial → tab switching → for non-lifestyle a granular
+    // pre-arrival composer (size → combo → pairing → time → confirm, etc.).
+    var jumpToMenu = {
+      view: 'dashboard',
+      eyebrow: 'Step 9 · My Stay',
+      title: 'Open the menu',
+      body: 'Booking held, table preference shared. Now let\'s walk through the menu — editorial first, then the rest.',
+      selector: '#dm-jump-menu'
+    };
+
+    var editorialIntro = {
+      view: 'menu', menuSub: 'editorial',
+      eyebrow: 'Step 10 · Editorial',
+      title: isLifestyle ? 'Open the dishes menu' : 'Open Pre-Arrival Dining',
+      body: isLifestyle
+        ? 'Editorial hero, signature dishes, sourcing story. When you\'re ready, tap the highlighted Menu tab to browse today\'s dishes.'
+        : 'This is the editorial hero — buffet, sourcing, the story. ' + meta.label + ' unlocks Pre-Arrival Dining; tap the highlighted tab to open it.',
+      selector: isLifestyle
+        ? '#view-menu #menu-subnav [data-mb-go="dishes"]'
+        : '#view-menu #menu-subnav [data-mb-go="pre-arrival"]'
+    };
+
     var lifestyleTail = [
+      jumpToMenu,
+      editorialIntro,
+      {
+        view: 'menu', menuSub: 'dishes',
+        eyebrow: 'Step 11 · Dishes',
+        title: 'Open the drinks list',
+        body: "Filter by dietary, search by ingredient, browse by category. Now tap Drinks to see today's bar list.",
+        selector: '#view-menu #menu-subnav [data-mb-go="drinks"]'
+      },
+      {
+        view: 'menu', menuSub: 'drinks',
+        eyebrow: 'Step 12 · Drinks',
+        title: 'Open the dietary guide',
+        body: 'House cocktails, Swiss wines, alcohol-free. Next, the dietary guide — tap to continue.',
+        selector: '#view-menu #menu-subnav [data-mb-go="dietary"]'
+      },
+      {
+        view: 'menu', menuSub: 'dietary',
+        eyebrow: 'Step 13 · Dietary guide',
+        title: 'See the local sourcing story',
+        body: 'Every dietary preference mapped to dishes. Now meet the producers.',
+        selector: '#view-menu #menu-subnav [data-mb-go="about"]'
+      },
+      {
+        view: 'menu', menuSub: 'about',
+        eyebrow: 'Step 14 · Local sourcing',
+        title: 'Browse the virtual queue',
+        body: 'Where the ingredients come from. Tap Continue to see today\'s walk-in queue.',
+        selector: '#dm-jump-queue'
+      },
       {
         view: 'queue',
-        eyebrow: 'Step 9 · Walk-in queue',
-        title: 'Browse the buffet menu',
-        body: 'The live queue ticker shows current waits. Tap Continue to see today\'s editorial buffet.',
-        selector: '#dm-jump-menu',
+        eyebrow: 'Step 15 · Walk-in queue',
+        title: 'See your QR pass',
+        body: 'Live queue ticker, anonymised waits per zone. Tap Continue to see your QR check-in pass.',
+        selector: '#dm-jump-dashboard',
         onEnter: function () { try { if (typeof renderQueue === 'function') renderQueue(); } catch (_) {} }
       },
-      {
-        view: 'menu',
-        eyebrow: 'Step 10 · Buffet menu',
-        title: 'Return to your QR pass',
-        body: 'A look at today\'s editorial Lifestyle buffet. Tap Continue to see your QR check-in pass.',
-        selector: '#dm-jump-dashboard',
-        onEnter: function () { try { if (typeof mb_show === 'function') {} } catch (_) {} }
-      },
-      {
-        view: 'dashboard',
-        final: true
-      }
+      { view: 'dashboard', final: true }
     ];
 
-    var preArrivalTail = [
-      {
-        view: 'menu', menuSub: 'pre-arrival',
-        eyebrow: 'Step 9 · Pre-Arrival Dining',
-        title: 'Verify access for Pre-Arrival',
-        body: meta.label + ' unlocks pre-ordering before you arrive. The last name and pass number are pre-filled — tap Verify access.',
-        selector: '#view-menu [data-pa-auth-submit]',
-        onEnter: function () {
-          try {
-            sessionStorage.removeItem('paAuth');
-            if (typeof window.paBoot === 'function') window.paBoot();
-            // Pre-fill the composer state NOW so the moment auth verifies and
-            // the composer paints itself, the Confirm / Send CTA is enabled —
-            // no second render needed.
-            if (typeof paState !== 'undefined') {
-              paState.tier = tier;
-              paState.size = 'medium';
-              paState.schedule = '14:00';
-              if (tier === 'luxe') {
-                paState.luxeCombo = 'voyager';
-                if (typeof paApplyLuxeCombo === 'function') paApplyLuxeCombo();
-              } else if (tier === 'suite') {
-                paState.suite.mode = 'curated';
-                paState.suite.combo = 'voyager';
-                paState.suite.pairing = 'champagne';
-                if (typeof paApplySuiteCurated === 'function') paApplySuiteCurated();
-              } else if (tier === 'prive') {
-                paState.prive.mode = 'preorder';
-                paState.prive.pairing = 'wine';
-                paState.prive.ingredients = new Set(['mushroom','vegetable','potato']);
-                paState.prive.chefNote = '';
-              }
+    // ---------- Pre-Arrival composer steps, one button per step ----------
+    // Step 11 = Verify access (with auth inputs pre-filled). Subsequent
+    // steps highlight each composer control in turn — size, combo, pairing,
+    // ingredients, time, confirm — so the user clicks one option, the page
+    // re-renders, and the next option lights up.
+
+    var preArrivalAuth = {
+      view: 'menu', menuSub: 'pre-arrival',
+      eyebrow: 'Step 11 · Verify access',
+      title: 'Tap Verify access',
+      body: 'Pre-Arrival is gated by your boarding pass. Last name and pass number are pre-filled — tap Verify.',
+      selector: '#view-menu [data-pa-auth-submit]',
+      onEnter: function () {
+        try {
+          sessionStorage.removeItem('paAuth');
+          if (typeof window.paBoot === 'function') window.paBoot();
+          // Reset composer state. For Luxe / Suite we pre-fill the tray with
+          // the tier-correct combo so the moment auth verifies and the
+          // composer paints itself, the dishes shown match the right tier.
+          // The user still walks through every option one click at a time —
+          // Pairing (Suite), Time and Confirm — and the user's own size /
+          // combo / pairing taps re-apply the same data so nothing breaks.
+          // For Privé we leave ingredients empty: each click toggles one in.
+          if (typeof paState !== 'undefined') {
+            paState.tier = tier;
+            paState.size = 'medium';
+            paState.schedule = '';
+            paState.note = '';
+            paState.confirmed = null;
+            if (tier === 'luxe') {
+              paState.luxeCombo = 'voyager';
+              if (typeof paApplyLuxeCombo === 'function') paApplyLuxeCombo();
+            } else if (tier === 'suite') {
+              paState.suite.mode = 'curated';
+              paState.suite.combo = 'voyager';
+              paState.suite.pairing = null;
+              if (typeof paApplySuiteCurated === 'function') paApplySuiteCurated();
+            } else if (tier === 'prive') {
+              paState.prive.mode = 'preorder';
+              paState.prive.pairing = null;
+              paState.prive.ingredients = new Set();
+              paState.prive.chefNote = '';
             }
-            if (typeof window.paRerender === 'function') window.paRerender();
-          } catch (_) {}
-          // Fill the auth inputs directly — paRender wrote them synchronously
-          // above, so they exist now. No requestAnimationFrame needed.
-          var ln = document.querySelector('#view-menu [data-pa-auth-lastname]');
-          var pn = document.querySelector('#view-menu [data-pa-auth-pass]');
-          if (ln) ln.value = 'Zimmermann';
-          if (pn) pn.value = 'PP-2026-3458';
-        }
-      },
-      {
-        view: 'menu', menuSub: 'pre-arrival',
-        eyebrow: 'Step 10 · Pre-Arrival composer',
-        title: tier === 'prive' ? 'Send the bespoke request' : 'Confirm your pre-order',
-        body: tier === 'prive'
-          ? 'Five ingredients, a pairing and an arrival window are pre-set — tap to send the request to the chef.'
-          : 'A signature tray, pairing and arrival window are pre-set — tap to send your pre-order to the kitchen.',
-        selector: tier === 'prive'
-          ? '#view-menu [data-pa-bespoke-send]'
-          : '#view-menu [data-pa-confirm]'
-        // No onEnter — composer state is already pre-filled in step 9, and
-        // the auth submit handler re-renders the composer ~700ms after the
-        // user taps Verify. findTarget polls until the new button shows up.
-      },
-      {
-        view: 'queue',
-        eyebrow: 'Step 11 · Walk-in queue',
-        title: 'Browse the buffet menu',
-        body: 'For when you walk in without a pre-order. Tap Continue to see the editorial buffet.',
-        selector: '#dm-jump-menu',
-        onEnter: function () { try { if (typeof renderQueue === 'function') renderQueue(); } catch (_) {} }
-      },
-      {
-        view: 'menu', menuSub: 'editorial',
-        eyebrow: 'Step 12 · Editorial menu',
-        title: 'Return to your QR pass',
-        body: 'A look at today\'s editorial menu. Tap Continue to see your QR check-in pass.',
-        selector: '#dm-jump-dashboard'
-      },
-      {
-        view: 'dashboard',
-        final: true
+          }
+          if (typeof window.paRerender === 'function') window.paRerender();
+        } catch (_) {}
+        var ln = document.querySelector('#view-menu [data-pa-auth-lastname]');
+        var pn = document.querySelector('#view-menu [data-pa-auth-pass]');
+        if (ln) ln.value = 'Zimmermann';
+        if (pn) pn.value = 'PP-2026-3458';
       }
-    ];
+    };
+
+    var receiptStep = {
+      view: 'menu', menuSub: 'pre-arrival',
+      title: 'See the walk-in queue',
+      body: tier === 'prive'
+        ? "Your bespoke plate is in motion. The chef receives the request and our host meets you at the nook. Tap Continue."
+        : 'Your tray is in motion — live preparation status above. Tap Continue to see the walk-in queue.',
+      selector: '#dm-jump-queue'
+    };
+
+    var queueStep = {
+      view: 'queue',
+      title: 'See your QR pass',
+      body: 'Live queue ticker, anonymised waits per zone. Tap Continue to see your QR check-in pass.',
+      selector: '#dm-jump-dashboard',
+      onEnter: function () { try { if (typeof renderQueue === 'function') renderQueue(); } catch (_) {} }
+    };
+
+    var composerSteps;
+    if (tier === 'luxe') {
+      composerSteps = [
+        { view: 'menu', menuSub: 'pre-arrival',
+          eyebrow: 'Step 12 · Tray size',
+          title: 'Pick the Medium tray',
+          body: 'Three sizes — Small (solo), Medium (2–3 guests), Large (4 guests). Tap Medium for the demo.',
+          selector: '#view-menu [data-pa-size="medium"]' },
+        { view: 'menu', menuSub: 'pre-arrival',
+          eyebrow: 'Step 13 · Curated combination',
+          title: 'Pick The Voyager',
+          body: "Three signature trays from the chef — Voyager (Swiss-meets-world), Garden (plant-forward), Pure (gluten/lactose-free). Tap Voyager.",
+          selector: '#view-menu [data-pa-combo="voyager"]' },
+        { view: 'menu', menuSub: 'pre-arrival',
+          eyebrow: 'Step 14 · Arrival window',
+          title: 'Pick an arrival time',
+          body: 'The kitchen plates your tray moments before you sit down. Tap the highlighted time slot.',
+          selector: '#view-menu [data-pa-time]' },
+        { view: 'menu', menuSub: 'pre-arrival',
+          eyebrow: 'Step 15 · Confirm',
+          title: 'Confirm the pre-order',
+          body: 'Size, combo, arrival window — all set. Tap Confirm pre-order to send it to the kitchen.',
+          selector: '#view-menu [data-pa-confirm]' },
+        Object.assign({ eyebrow: 'Step 16 · Tray in motion' }, receiptStep),
+        Object.assign({ eyebrow: 'Step 17 · Walk-in queue' }, queueStep, { view: 'queue', menuSub: undefined })
+      ];
+    } else if (tier === 'suite') {
+      composerSteps = [
+        { view: 'menu', menuSub: 'pre-arrival',
+          eyebrow: 'Step 12 · Tray size',
+          title: 'Pick the Medium tray',
+          body: 'Small (solo), Medium (2–3 guests) or Large (4 guests). Tap Medium for the demo.',
+          selector: '#view-menu [data-pa-size="medium"]' },
+        { view: 'menu', menuSub: 'pre-arrival',
+          eyebrow: 'Step 13 · Curated combination',
+          title: 'Pick The Voyager',
+          body: 'Three signature Suite combos. Tap The Voyager.',
+          selector: '#view-menu [data-pa-suite-combo="voyager"]' },
+        { view: 'menu', menuSub: 'pre-arrival',
+          eyebrow: 'Step 14 · Pairing',
+          title: 'Pick Champagne Brut',
+          body: 'Sommelier-paired wines or signature champagne. Tap the Champagne pairing.',
+          selector: '#view-menu [data-pa-pairing="champagne"]' },
+        { view: 'menu', menuSub: 'pre-arrival',
+          eyebrow: 'Step 15 · Arrival window',
+          title: 'Pick an arrival time',
+          body: 'Suite plates land moments before you sit down. Tap the highlighted time chip.',
+          selector: '#view-menu [data-pa-time]' },
+        { view: 'menu', menuSub: 'pre-arrival',
+          eyebrow: 'Step 16 · Confirm',
+          title: 'Confirm the pre-order',
+          body: 'Size, combo, pairing, time — all set. Tap Confirm pre-order.',
+          selector: '#view-menu [data-pa-confirm]' },
+        Object.assign({ eyebrow: 'Step 17 · Tray in motion' }, receiptStep),
+        Object.assign({ eyebrow: 'Step 18 · Walk-in queue' }, queueStep, { view: 'queue', menuSub: undefined })
+      ];
+    } else {
+      // Privé
+      composerSteps = [
+        { view: 'menu', menuSub: 'pre-arrival',
+          eyebrow: 'Step 12 · Ingredient · 01',
+          title: 'Add Mushrooms',
+          body: "Privé skips the tray entirely — pick the ingredients you crave and the chef composes a single bespoke plate. Tap Mushrooms.",
+          selector: '#view-menu [data-pa-ingredient="mushroom"]' },
+        { view: 'menu', menuSub: 'pre-arrival',
+          eyebrow: 'Step 13 · Ingredient · 02',
+          title: 'Add Seasonal vegetables',
+          body: 'Tap Seasonal vegetables to add them to the request.',
+          selector: '#view-menu [data-pa-ingredient="vegetable"]' },
+        { view: 'menu', menuSub: 'pre-arrival',
+          eyebrow: 'Step 14 · Ingredient · 03',
+          title: 'Add Potato',
+          body: 'Tap Potato — Swiss Bintje, crisped or in fondant.',
+          selector: '#view-menu [data-pa-ingredient="potato"]' },
+        { view: 'menu', menuSub: 'pre-arrival',
+          eyebrow: 'Step 15 · Pairing',
+          title: 'Pick the sommelier-paired wine',
+          body: 'A glass of wine matched by the sommelier, or a botanical mocktail. Tap the wine pairing.',
+          selector: '#view-menu [data-pa-prive-pairing="wine"]' },
+        { view: 'menu', menuSub: 'pre-arrival',
+          eyebrow: 'Step 16 · Arrival window',
+          title: 'Pick an arrival time',
+          body: 'Plated moments before you arrive. Tap the highlighted time chip.',
+          selector: '#view-menu [data-pa-time]' },
+        { view: 'menu', menuSub: 'pre-arrival',
+          eyebrow: 'Step 17 · Send to the chef',
+          title: 'Send the bespoke request',
+          body: 'Ingredients, pairing, arrival window — all set. Tap Send pre-order to brief the chef.',
+          selector: '#view-menu [data-pa-bespoke-send]' },
+        Object.assign({ eyebrow: 'Step 18 · Plate in motion' }, receiptStep),
+        Object.assign({ eyebrow: 'Step 19 · Walk-in queue' }, queueStep, { view: 'queue', menuSub: undefined })
+      ];
+    }
+
+    var preArrivalTail = [jumpToMenu, editorialIntro, preArrivalAuth]
+      .concat(composerSteps)
+      .concat([{ view: 'dashboard', final: true }]);
 
     return common.concat(isLifestyle ? lifestyleTail : preArrivalTail);
   }
