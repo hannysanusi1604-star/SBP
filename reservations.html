@@ -544,11 +544,11 @@
 
           <aside class="lg:col-span-2 space-y-4">
             <div id="step4-zone-addon" class="card-aspire p-6">
-              <div class="swiss-eyebrow text-aspire-navy/70">Add-on</div>
-              <div class="mt-2 serif-heading text-xl text-aspire-navy">Reserve a specific seat</div>
-              <p class="mt-2 text-[0.92rem] text-aspire-navy/80">You picked <strong>No preference</strong>. Lock a Communal, Dining or Quiet seat with a refundable deposit if you'd rather guarantee a table.</p>
+              <div class="swiss-eyebrow text-aspire-navy/70">Seating</div>
+              <div class="mt-2 serif-heading text-xl text-aspire-navy">Change seat preference</div>
+              <p id="step4-zone-addon-body" class="mt-2 text-[0.92rem] text-aspire-navy/80"></p>
               <button onclick="openZoneModal()" class="mt-4 inline-flex items-center gap-2 text-aspire-navy underline underline-offset-4">
-                Choose a seat <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m9 6 6 6-6 6"/></svg>
+                Change seat <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m9 6 6 6-6 6"/></svg>
               </button>
             </div>
 
@@ -886,7 +886,7 @@
   <div class="relative w-full max-w-md card-cream shadow-float p-8">
     <div class="font-medium tracking-[0.42em] text-lg text-aspire-navy text-center">ASPIRE</div>
     <div class="swiss-eyebrow mt-6 text-center">Seating preference</div>
-    <div class="serif-heading text-2xl text-aspire-navy mt-2 text-center">Reserve a specific seat?</div>
+    <div class="serif-heading text-2xl text-aspire-navy mt-2 text-center">Change seat preference</div>
     <div id="zone-modal-picker" class="mt-6 grid grid-cols-2 gap-2"></div>
     <p class="mt-4 text-[0.78rem] text-navy-500 leading-relaxed italic text-center">Picking a zone holds the seat with a refundable deposit. <strong class="text-aspire-navy not-italic">No preference</strong> means you may need to queue if the lounge is full.</p>
     <div class="mt-6">
@@ -1899,9 +1899,12 @@ function renderStep4() {
   $('#booking-summary-card').innerHTML = bookingSummaryHTML();
   $('#pay-name').value = state.booking.guestName;
 
-  // Add-on only makes sense when no specific seat is held — once a zone is picked,
-  // the deposit is in play and the add-on becomes redundant.
-  $('#step4-zone-addon').classList.toggle('hidden', !!state.booking.preferredZone);
+  // Mirror the current seating choice into the side card — copy adapts so the
+  // user can either upgrade No-preference into a reserved seat, or swap/release
+  // the zone they already picked.
+  $('#step4-zone-addon-body').innerHTML = state.booking.preferredZone
+    ? `Currently: <strong>${ZONE_META[state.booking.preferredZone].label}</strong> reserved. Switch zones or release the seat to check in flexibly.`
+    : `Currently: <strong>No preference</strong>. Lock a Communal, Dining or Quiet seat with a refundable deposit if you'd rather guarantee a table.`;
 
   // Section heading + side metadata
   if (isPass && !hasLuxe && !isAdvance) {
