@@ -6612,10 +6612,16 @@ window.addEventListener('hashchange', () => {
   body.aspire-demo #lang-toggle { pointer-events: none; opacity: 0.45; }
   #demo-veil {
     position: fixed; inset: 0;
+    /* default veil for the premium tiers (Luxe / Suite / Privé) */
     background: rgba(31, 42, 68, 0.52);
     z-index: 9000;
     pointer-events: none;
-    transition: opacity .25s ease;
+    transition: background .35s ease, opacity .25s ease;
+  }
+  /* Lifestyle is the everyday tier — a brighter, more open veil so
+     the page feels accessible rather than premium. */
+  body.aspire-demo.tier-lifestyle #demo-veil {
+    background: rgba(31, 42, 68, 0.26);
   }
   /* demo-target just lifts the element above the dark veil so it stays
      visible. The visual ring is a separate fixed-position #demo-highlight
@@ -6963,6 +6969,32 @@ window.addEventListener('hashchange', () => {
     background: #B59D88; color: #fff;
     display: inline-flex; align-items: center; justify-content: center;
     flex-shrink: 0;
+    transition: width 280ms ease, height 280ms ease;
+  }
+  /* Milestone treatment — bigger, brighter, lingers — for the moments
+     that really matter (booking confirmed, Pre-Arrival unlocked,
+     Luxe upgrade purchased, pre-order sent). */
+  #demo-change-toast.dc-milestone {
+    background: linear-gradient(135deg, #1F2A44 0%, #28344C 100%);
+    padding: 0.85rem 1.6rem 0.95rem 0.85rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.26em;
+    box-shadow:
+      0 18px 44px -12px rgba(31,42,68,0.7),
+      0 0 0 4px rgba(181,157,136,0.22);
+    border: 1px solid rgba(181,157,136,0.45);
+    animation: dcMilestonePulse 1.8s ease-in-out infinite;
+  }
+  #demo-change-toast.dc-milestone .dc-check {
+    width: 28px; height: 28px;
+    background: #B59D88;
+    box-shadow: 0 0 0 5px rgba(181,157,136,0.22);
+  }
+  @keyframes dcMilestonePulse {
+    0%, 100% { box-shadow: 0 18px 44px -12px rgba(31,42,68,0.7),
+                           0 0 0 4px rgba(181,157,136,0.22); }
+    50%      { box-shadow: 0 20px 48px -10px rgba(31,42,68,0.6),
+                           0 0 0 10px rgba(181,157,136,0.12); }
   }
 </style>
 
@@ -7235,7 +7267,8 @@ window.addEventListener('hashchange', () => {
         title: 'Booking confirmed',
         body: 'Reservation held, no payment required for Priority Pass. Tap View my booking to open the dashboard.',
         selector: '#pay-modal #pay-stage-success button.btn-primary',
-        change: 'Reservation confirmed'
+        change: 'Reservation confirmed',
+        milestone: true
       },
       {
         view: 'dashboard',
@@ -7364,7 +7397,8 @@ window.addEventListener('hashchange', () => {
         title: 'Pay the upgrade fee',
         body: "Card and terms pre-filled. Tap Pay — the traveller moves to the Luxe Lounge and skips the queue entirely.",
         selector: '#up-pay-btn',
-        change: 'Luxe upgrade purchased',
+        change: '✨ Upgraded to Luxe — queue skipped',
+        milestone: true,
         onEnter: function () {
           setTimeout(function () {
             var cn = document.getElementById('up-card-num');
@@ -7408,6 +7442,7 @@ window.addEventListener('hashchange', () => {
       body: 'Pre-Arrival is gated by your boarding pass — same 700-ms check as the lounge door. Name and pass pre-filled. Tap Verify access.',
       selector: '#view-menu [data-pa-auth-submit]',
       change: 'Pre-Arrival unlocked',
+      milestone: true,
       onEnter: function () {
         try {
           sessionStorage.removeItem('paAuth');
@@ -7494,7 +7529,8 @@ window.addEventListener('hashchange', () => {
           title: 'Confirm the pre-order',
           body: 'Time locked. Size, combo and arrival all set. Tap Confirm pre-order — the kitchen receives it instantly.',
           selector: '#view-menu [data-pa-confirm]',
-          change: 'Pre-order sent to the kitchen' },
+          change: 'Pre-order sent to the kitchen',
+          milestone: true },
         Object.assign({ eyebrow: 'Tray in motion' }, receiptStep),
         Object.assign({ eyebrow: 'Walk-in queue' }, queueStep, { view: 'queue', menuSub: undefined })
       ];
@@ -7558,7 +7594,8 @@ window.addEventListener('hashchange', () => {
           title: 'Confirm the pre-order',
           body: "Time locked. Your bespoke Suite tray is composed end-to-end. Tap Confirm pre-order — the Suite kitchen receives it instantly.",
           selector: '#view-menu [data-pa-confirm]',
-          change: 'Pre-order sent to the Suite kitchen' },
+          change: 'Pre-order sent to the Suite kitchen',
+          milestone: true },
         Object.assign({ eyebrow: 'Tray in motion' }, receiptStep),
         Object.assign({ eyebrow: 'Walk-in queue' }, queueStep, { view: 'queue', menuSub: undefined })
       ];
@@ -7600,7 +7637,8 @@ window.addEventListener('hashchange', () => {
           title: 'Send the bespoke request',
           body: 'Arrival window locked. Three ingredients, a pairing, a time — the chef has everything. Tap Send pre-order.',
           selector: '#view-menu [data-pa-bespoke-send]',
-          change: 'Bespoke plate sent to the chef' },
+          change: 'Bespoke plate sent to the chef',
+          milestone: true },
         Object.assign({ eyebrow: 'Plate in motion' }, receiptStep),
         Object.assign({ eyebrow: 'Walk-in queue' }, queueStep, { view: 'queue', menuSub: undefined })
       ];
@@ -7883,22 +7921,26 @@ window.addEventListener('hashchange', () => {
   // "What just changed" toast — surfaces the cause/effect of every click
   // the moment the user taps a highlighted control. Reads the active
   // step's `change` field so the cue arrives BEFORE the next coachmark.
+  // When the step is flagged `milestone: true` (booking confirmed, the
+  // Luxe upgrade purchased, a pre-order sent…), the toast renders bigger,
+  // brighter and lingers longer so the moment lands.
   var changeToastTimer = null;
-  function showChangeToast(text) {
+  function showChangeToast(text, isMilestone) {
     if (!text) return;
     var t = document.getElementById('demo-change-toast');
     if (!t) return;
     var slot = t.querySelector('.dc-text');
     if (slot) slot.textContent = text;
+    t.classList.toggle('dc-milestone', !!isMilestone);
     t.classList.add('dc-visible');
     if (changeToastTimer) clearTimeout(changeToastTimer);
     changeToastTimer = setTimeout(function () {
       t.classList.remove('dc-visible');
-    }, 1700);
+    }, isMilestone ? 3600 : 1700);
   }
   function hideChangeToast() {
     var t = document.getElementById('demo-change-toast');
-    if (t) t.classList.remove('dc-visible');
+    if (t) { t.classList.remove('dc-visible'); t.classList.remove('dc-milestone'); }
     if (changeToastTimer) { clearTimeout(changeToastTimer); changeToastTimer = null; }
   }
 
@@ -7907,7 +7949,7 @@ window.addEventListener('hashchange', () => {
     // original click handler runs (paRender, mb_show, confirmBooking, …)
     // so the cause/effect of the tap is visible in the same beat.
     var step = STEPS[idx];
-    if (step && step.change) showChangeToast(step.change);
+    if (step && step.change) showChangeToast(step.change, !!step.milestone);
     // advance() itself is guarded by advanceLock; setTimeout gives the
     // original handler time to run and the user a beat to register.
     setTimeout(advance, TIMING.afterClick);
@@ -8001,7 +8043,7 @@ window.addEventListener('hashchange', () => {
 
   function exitDemo() {
     clearTarget();
-    document.body.classList.remove('aspire-demo');
+    document.body.classList.remove('aspire-demo','tier-lifestyle','tier-luxe','tier-suite','tier-prive');
     window.__aspireDemoExited = true;
     ['demo-veil','demo-banner','demo-coachmark','demo-finale','demo-tier-picker',
      'demo-intro','demo-chapter-pill','demo-change-toast','demo-highlight',
@@ -8186,6 +8228,10 @@ window.addEventListener('hashchange', () => {
     document.getElementById('demo-tier-picker').style.display = 'none';
     document.getElementById('demo-veil').style.display = 'block';
     document.getElementById('demo-banner').style.display = 'flex';
+    // Tag the body with the chosen tier so tier-specific CSS (e.g. the
+    // brighter veil for Lifestyle) takes effect.
+    document.body.classList.remove('tier-lifestyle','tier-luxe','tier-suite','tier-prive');
+    document.body.classList.add('tier-' + tier);
 
     configureLounge(tier);
     STEPS = buildSteps(tier);
