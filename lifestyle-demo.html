@@ -95,7 +95,7 @@
   ::-webkit-scrollbar-thumb:hover { background: rgba(31,42,68,0.3); }
   .scrollbar-hide::-webkit-scrollbar { display: none; }
   .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-  .hero-bg { background-image: linear-gradient(to bottom, rgba(255,255,255,0.55), rgba(255,255,255,0.75) 45%, #FFFFFF 100%), url('https://i.postimg.cc/pT8GJ0Jh/macbook-hd-wallpaper.png'); background-size: cover; background-position: center; }
+  .hero-bg { background-image: linear-gradient(to bottom, rgba(255,255,255,0.55), rgba(255,255,255,0.75) 45%, #FFFFFF 100%), url('https://img.sanishtech.com/u/8fe4d7497f710b8b730021265855b7ad.png'); background-size: cover; background-position: center; }
   .view { display: none; }
   .view.active { display: block; animation: fadeIn 0.4s ease-out; }
   .nav-link { position: relative; padding-bottom: 4px; transition: color 200ms; color: #3D4A66; }
@@ -3784,7 +3784,7 @@ function renderQueue() {
     const showsUpgrade = offer.offered || offer.reason === 'tier-full';
     const grid = el('div', { class: showsUpgrade ? 'grid grid-cols-1 lg:grid-cols-2 gap-3' : '' });
     grid.append(el('div', { class:'card-aspire p-6 sm:p-8 text-center flex flex-col' },
-      el('div', { class:'-mx-6 sm:-mx-8 -mt-6 sm:-mt-8 mb-5 overflow-hidden', html:`<img src="https://i.postimg.cc/pT8GJ0Jh/macbook-hd-wallpaper.png" alt="${l.name}" class="w-full h-40 object-cover" />` }),
+      el('div', { class:'-mx-6 sm:-mx-8 -mt-6 sm:-mt-8 mb-5 overflow-hidden', html:`<img src="https://img.sanishtech.com/u/8fe4d7497f710b8b730021265855b7ad.png" alt="${l.name}" class="w-full h-40 object-cover" />` }),
       el('div', { class:'swiss-eyebrow text-aspire-navy' }, `${l.name} · ${currentTierLabel} queue`),
       el('div', { class:'swiss-eyebrow text-aspire-navy/70 mt-4' }, state.joined ? 'Guests ahead of you' : 'People currently waiting'),
       el('div', { class:'serif-heading text-6xl sm:text-7xl text-aspire-navy mt-2 tabular-nums' }, String(ahead)),
@@ -6814,6 +6814,7 @@ window.addEventListener('hashchange', () => {
   <span class="dm-dot"></span>
   <span id="dm-banner-label">Aspire Demo</span>
   <span id="dm-step-count" style="opacity:.55;">1 / 1</span>
+  <button type="button" id="dm-skip" title="Skip ahead if something feels stuck">Skip →</button>
   <button type="button" id="dm-exit">Exit</button>
 </div>
 <div id="demo-coachmark" style="display:none;">
@@ -7030,33 +7031,11 @@ window.addEventListener('hashchange', () => {
         selector: '#view-menu [data-pa-auth-submit]',
         onEnter: function () {
           try {
-            if (typeof window.paBoot === 'function') window.paBoot();
             sessionStorage.removeItem('paAuth');
-            if (typeof window.paRerender === 'function') window.paRerender();
-          } catch (_) {}
-          requestAnimationFrame(function () {
-            var ln = document.querySelector('#view-menu [data-pa-auth-lastname]');
-            var pn = document.querySelector('#view-menu [data-pa-auth-pass]');
-            if (ln) ln.value = 'Zimmermann';
-            if (pn) pn.value = 'PP-2026-3458';
-          });
-        }
-      },
-      {
-        view: 'menu', menuSub: 'pre-arrival',
-        eyebrow: 'Step 10 · Pre-Arrival composer',
-        title: tier === 'prive' ? 'Send the bespoke request' : 'Confirm your pre-order',
-        body: tier === 'prive'
-          ? 'Five ingredients, a pairing and an arrival window are pre-set — tap to send the request to the chef.'
-          : 'A signature tray, pairing and arrival window are pre-set — tap to send your pre-order to the kitchen.',
-        selector: tier === 'prive'
-          ? '#view-menu [data-pa-bespoke-send]'
-          : '#view-menu [data-pa-confirm]',
-        // wait ~750ms for the auth simulation to flip into the composer
-        delayMs: 850,
-        onEnter: function () {
-          try {
-            // Prefill composer state per-tier so the Confirm CTA is enabled.
+            if (typeof window.paBoot === 'function') window.paBoot();
+            // Pre-fill the composer state NOW so the moment auth verifies and
+            // the composer paints itself, the Confirm / Send CTA is enabled —
+            // no second render needed.
             if (typeof paState !== 'undefined') {
               paState.tier = tier;
               paState.size = 'medium';
@@ -7073,11 +7052,32 @@ window.addEventListener('hashchange', () => {
                 paState.prive.mode = 'preorder';
                 paState.prive.pairing = 'wine';
                 paState.prive.ingredients = new Set(['mushroom','vegetable','potato']);
+                paState.prive.chefNote = '';
               }
-              if (typeof window.paRerender === 'function') window.paRerender();
             }
+            if (typeof window.paRerender === 'function') window.paRerender();
           } catch (_) {}
+          // Fill the auth inputs directly — paRender wrote them synchronously
+          // above, so they exist now. No requestAnimationFrame needed.
+          var ln = document.querySelector('#view-menu [data-pa-auth-lastname]');
+          var pn = document.querySelector('#view-menu [data-pa-auth-pass]');
+          if (ln) ln.value = 'Zimmermann';
+          if (pn) pn.value = 'PP-2026-3458';
         }
+      },
+      {
+        view: 'menu', menuSub: 'pre-arrival',
+        eyebrow: 'Step 10 · Pre-Arrival composer',
+        title: tier === 'prive' ? 'Send the bespoke request' : 'Confirm your pre-order',
+        body: tier === 'prive'
+          ? 'Five ingredients, a pairing and an arrival window are pre-set — tap to send the request to the chef.'
+          : 'A signature tray, pairing and arrival window are pre-set — tap to send your pre-order to the kitchen.',
+        selector: tier === 'prive'
+          ? '#view-menu [data-pa-bespoke-send]'
+          : '#view-menu [data-pa-confirm]'
+        // No onEnter — composer state is already pre-filled in step 9, and
+        // the auth submit handler re-renders the composer ~700ms after the
+        // user taps Verify. findTarget polls until the new button shows up.
       },
       {
         view: 'queue',
@@ -7257,7 +7257,10 @@ window.addEventListener('hashchange', () => {
   }
 
   function onTargetClick() {
-    setTimeout(advance, 60);
+    // advance() itself is guarded by advanceLock, so duplicate clicks are
+    // a no-op. setTimeout gives the original click handler (form submit,
+    // confirmBooking, finishPayment, …) a tick to run first.
+    setTimeout(advance, 80);
   }
 
   function ensureView(step) {
@@ -7295,8 +7298,11 @@ window.addEventListener('hashchange', () => {
   function findTarget(step, tries) {
     tries = tries || 0;
     var el = step.selector ? document.querySelector(step.selector) : null;
-    if (el && el.offsetParent !== null) return Promise.resolve(el);
-    if (tries > 40) return Promise.resolve(null);
+    // Accept a hidden-by-parent element after several tries — pa-confirm and
+    // pa-bespoke-send live behind the auth gate at first; the auth submit
+    // handler swaps them in after ~700ms.
+    if (el && (el.offsetParent !== null || tries > 6)) return Promise.resolve(el);
+    if (tries > 80) return Promise.resolve(null);   // ~10 s
     return new Promise(function (res) {
       setTimeout(function () { findTarget(step, tries + 1).then(res); }, 120);
     });
@@ -7345,15 +7351,24 @@ window.addEventListener('hashchange', () => {
     });
   }
   document.getElementById('dm-exit').addEventListener('click', exitDemo);
+  document.getElementById('dm-skip').addEventListener('click', function () {
+    // Manual skip — kicks any state that the auto-flow may be waiting on.
+    advanceLock = false;
+    advance();
+  });
 
+  var advanceLock = false;
   function advance() {
+    if (advanceLock) return;
+    advanceLock = true;
     idx += 1;
-    if (idx >= STEPS.length) return;
+    if (idx >= STEPS.length) { advanceLock = false; return; }
     runStep();
   }
 
   function runStep() {
     if (window.__aspireDemoExited) return;
+    advanceLock = false;
     var step = STEPS[idx];
     counter.textContent = (idx + 1) + ' / ' + STEPS.length;
 
