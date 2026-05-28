@@ -2442,6 +2442,9 @@ function pickLounge(net, region) {
   // Pre-Arrival auth is per-traveller. Switching lounge could mean a new boarding pass —
   // clear the sessionStorage flag so the composer re-verifies before showing the tier.
   try { sessionStorage.removeItem('paAuth'); } catch (e) {}
+  // A pending pre-arrival tray belongs to the prior lounge's tier. Drop it so the
+  // composer for the new lounge renders its own flow instead of the stale overlay.
+  if (typeof window.paResetForLoungeSwitch === 'function') window.paResetForLoungeSwitch();
   updateLoungePickerLabel();
   closeLoungePicker();
   // Re-render any open view that depends on the selected lounge
@@ -5431,6 +5434,14 @@ window.addEventListener('hashchange', () => {
   window.paRerender = function() {
     if (!host) return;
     paRender();
+  };
+  // Called from pickLounge() — clear any confirmed tray + open history panel so
+  // the new lounge's composer renders from a clean slate.
+  window.paResetForLoungeSwitch = function() {
+    paStopLive();
+    paState.confirmed = null;
+    paState.showHistory = false;
+    if (host) paRender();
   };
 
   /* ---------- Modal: swap & detail ---------- */
