@@ -3794,13 +3794,25 @@ window.addEventListener('hashchange', () => {
     { id:'riesling',  label:'Alpine Riesling · Wallis', hint:'Mineral, off-dry — pairs with smoked fish and Asian notes.' },
   ];
 
-  var PA_PRIVE_PREFS = [
-    { id:'vegetarian',    label:'Vegetarian' },
-    { id:'vegan',         label:'Vegan' },
-    { id:'gluten-free',   label:'Gluten-free' },
-    { id:'dairy-free',    label:'Dairy-free' },
-    { id:'halal-friendly',label:'Halal-friendly' },
-    { id:'nut-free',      label:'Nut-free' },
+  var PA_PRIVE_INGREDIENTS = [
+    { id:'chicken',   label:'Chicken',             hint:'Free-range, slow-cooked.',
+      image:'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=900&q=80' },
+    { id:'mushroom',  label:'Mushrooms',           hint:'Wild & cultivated, deeply umami.',
+      image:'https://images.unsplash.com/photo-1432139509613-5c4255815697?auto=format&fit=crop&w=900&q=80' },
+    { id:'vegetable', label:'Seasonal vegetables', hint:'Whatever the market delivered this morning.',
+      image:'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=900&q=80' },
+    { id:'potato',    label:'Potato',              hint:'Swiss Bintje — crisped, mashed, or in fondant.',
+      image:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=900&q=80' },
+    { id:'tomato',    label:'Tomato',              hint:'Sun-ripened vine tomato, slow-confited.',
+      image:'https://images.unsplash.com/photo-1590412200988-a436970781fa?auto=format&fit=crop&w=900&q=80' },
+  ];
+  var PA_PRIVE_PAIRINGS = [
+    { id:'wine',     label:'A glass of wine',    hint:'Sommelier-paired to your ingredients.', iconId:'wine' },
+    { id:'mocktail', label:'A house mocktail',   hint:'Botanical and bright — alcohol-free.',  iconId:'leaf' },
+  ];
+  var PA_PRIVE_MODES = [
+    { id:'preorder', label:'Pre-order',  hint:'Plated moments before you arrive.', iconId:'clock' },
+    { id:'now',      label:'On arrival', hint:'Walk in and let the chef compose.', iconId:'flame' },
   ];
 
   var PA_PREP_STAGES = [
@@ -3919,7 +3931,7 @@ window.addEventListener('hashchange', () => {
     luxeCombo: 'voyager',
     selections: { starters: [], mains: [], desserts: [] },
     suite: { mode: 'curated', combo: 'voyager', pairing: null, counts: { starters: 2, mains: 2, desserts: 1 }, customizations: {} },
-    prive: { ingredients: new Set(), occasion: '', courseCount: 3, allergies: '', prefs: new Set(), pairing: null, host: 'Élodie Roulet', chefNote: '' },
+    prive: { ingredients: new Set(), pairing: null, host: 'Élodie Roulet', chefNote: '', mode: 'preorder' },
     schedule: '',
     note: '',
     confirmed: null,
@@ -4271,6 +4283,7 @@ window.addEventListener('hashchange', () => {
   function paConfirmedBespokeMarkup() {
     var c = paState.confirmed;
     if (!c || c.kind !== 'bespoke') return '';
+    var titleNow = c.mode === 'now' ? 'Your surprise plate is being composed right now.' : 'The chef is composing your surprise plate.';
     return '<div class="pa-confirm-overlay px-6 sm:px-10 py-12 sm:py-14 mb-16">' +
       '<div class="flex items-center gap-3 text-aspire-taupeDark">' +
         '<span class="pa-status-dot"></span>' +
@@ -4278,18 +4291,18 @@ window.addEventListener('hashchange', () => {
         '<span class="text-aspire-navy/20">·</span>' +
         '<span class="text-[0.6rem] uppercase tracking-[0.32em] text-aspire-navy">Privé</span>' +
       '</div>' +
-      '<h2 class="serif-heading text-3xl sm:text-5xl mt-4 text-aspire-navy">The chef is composing your bespoke menu.</h2>' +
-      '<p class="mt-5 text-aspire-taupe leading-[1.7] max-w-xl">A host will greet you at the Privé nook with the plated dish and your chosen pairing. The sommelier finalises the wine the moment the plate leaves the pass.</p>' +
+      '<h2 class="serif-heading text-3xl sm:text-5xl mt-4 text-aspire-navy">'+esc(titleNow)+'</h2>' +
+      '<p class="mt-5 text-aspire-taupe leading-[1.7] max-w-xl">A host will greet you at the Privé nook with the plated dish and your chosen pairing. The sommelier finalises the pour the moment the plate leaves the pass.</p>' +
       '<div class="mt-9 grid sm:grid-cols-2 gap-8 pt-7 border-t border-aspire-navy/10">' +
-        '<div><div class="swiss-eyebrow">Occasion</div><div class="mt-2 text-[0.95rem] text-aspire-navy">'+esc(c.occasion || '—')+'</div></div>' +
-        '<div><div class="swiss-eyebrow">Course count</div><div class="mt-2 text-[0.95rem] text-aspire-navy">'+esc(String(c.courseCount))+' courses</div></div>' +
+        '<div><div class="swiss-eyebrow">Ingredients</div><div class="mt-2 text-[0.95rem] text-aspire-navy">'+esc((c.ingredients || []).join(', ') || '—')+'</div></div>' +
+        '<div><div class="swiss-eyebrow">Pairing</div><div class="mt-2 text-[0.95rem] text-aspire-navy">'+esc(c.pairing || '—')+'</div></div>' +
       '</div>' +
       '<div class="mt-8 grid sm:grid-cols-3 gap-6 pt-7 border-t border-aspire-navy/10">' +
         '<div><div class="swiss-eyebrow">Arrival</div><div class="mt-2 serif-heading text-2xl text-aspire-navy">'+esc(c.time)+'</div></div>' +
         '<div><div class="swiss-eyebrow">Handoff</div><div class="mt-2 text-[0.95rem] text-aspire-navy leading-snug inline-flex items-start gap-1.5">'+paIcon('pin','w-4 h-4 mt-0.5')+' <span>'+esc(c.handoff)+'</span></div></div>' +
         '<div><div class="swiss-eyebrow">Reference</div><div class="mt-2 serif-heading text-2xl text-aspire-navy tracking-wide">'+esc(c.ref)+'</div></div>' +
       '</div>' +
-      (c.prefs && c.prefs.length ? '<div class="mt-8 pt-7 border-t border-aspire-navy/10"><div class="swiss-eyebrow">Dietary preferences</div><div class="mt-3 flex flex-wrap gap-2">'+c.prefs.map(function(p){ return '<span class="pa-pill muted">'+esc(p)+'</span>'; }).join('')+'</div></div>' : '') +
+      (c.chefNote ? '<div class="mt-8 pt-7 border-t border-aspire-navy/10"><div class="swiss-eyebrow">Note to the chef</div><p class="mt-3 text-[0.95rem] text-aspire-navy leading-relaxed">'+esc(c.chefNote)+'</p></div>' : '') +
       '<div class="mt-8 pt-7 border-t border-aspire-navy/10 grid sm:grid-cols-2 gap-6">' +
         '<div class="pa-ref-card">'+paRefQrMarkup(c.ref)+
           '<div class="flex-1 min-w-0"><div class="swiss-eyebrow">Reference QR</div><p class="mt-2 text-[0.76rem] text-aspire-taupe leading-snug">Scan at the Privé desk.</p></div>' +
@@ -4459,52 +4472,80 @@ window.addEventListener('hashchange', () => {
 
   function paPriveSectionMarkup() {
     var p = paState.prive;
-    var prefChips = PA_PRIVE_PREFS.map(function(pr){
-      var on = p.prefs.has(pr.id);
-      return '<button data-pa-pref="'+pr.id+'" class="pa-pref-chip '+(on?'active':'')+'">'+(on?paIcon('check','w-3 h-3'):paIcon('plus','w-3 h-3'))+' '+esc(pr.label)+'</button>';
+    var isNow = p.mode === 'now';
+    var ingredientCards = PA_PRIVE_INGREDIENTS.map(function(it){
+      var on = p.ingredients.has(it.id);
+      return '<button data-pa-ingredient="'+it.id+'" class="pa-combo-card '+(on?'active':'')+'" style="text-align:left;">' +
+        '<div class="pa-combo-img"><img src="'+esc(it.image)+'" alt="'+esc(it.label)+'" loading="lazy" /></div>' +
+        '<div class="pa-combo-body">' +
+          '<div class="flex items-baseline justify-between gap-3">' +
+            '<h4 class="serif-heading text-xl text-aspire-navy">'+esc(it.label)+'</h4>' +
+            (on ? '<span class="text-aspire-taupeDark">'+paIcon('check','w-4 h-4')+'</span>' : '') +
+          '</div>' +
+          '<p class="mt-1 text-[0.82rem] text-aspire-taupe leading-snug">'+esc(it.hint)+'</p>' +
+        '</div>' +
+      '</button>';
+    }).join('');
+    var pairingChips = PA_PRIVE_PAIRINGS.map(function(b){
+      var on = p.pairing === b.id;
+      return '<button data-pa-prive-pairing="'+b.id+'" class="pa-option-chip '+(on?'active':'')+'" style="padding:18px 20px;gap:8px;">' +
+        '<span class="pa-opt-label">'+paIcon(b.iconId,'w-4 h-4')+' '+esc(b.label)+'</span>' +
+        '<span class="pa-opt-hint">'+esc(b.hint)+'</span>' +
+      '</button>';
+    }).join('');
+    var modeChips = PA_PRIVE_MODES.map(function(m){
+      var on = p.mode === m.id;
+      return '<button data-pa-mode="'+m.id+'" class="pa-option-chip '+(on?'active':'')+'" style="padding:16px 18px;gap:6px;">' +
+        '<span class="pa-opt-label">'+paIcon(m.iconId,'w-4 h-4')+' '+esc(m.label)+'</span>' +
+        '<span class="pa-opt-hint">'+esc(m.hint)+'</span>' +
+      '</button>';
     }).join('');
     var timeChips = paTimeSlots().map(function(time){
       var on = paState.schedule === time;
       return '<button data-pa-time="'+time+'" class="pa-time-chip '+(on?'active':'')+'">'+time+'</button>';
     }).join('');
-    var courseOpts = [2,3,4,5,6].map(function(n){
-      var on = p.courseCount === n;
-      return '<button data-pa-courses="'+n+'" class="pa-time-chip '+(on?'active':'')+'">'+n+'</button>';
-    }).join('');
-    var complete = p.prefs.size === 0 ? !!p.occasion : true; // lenient — at minimum needs an occasion when no prefs
-    complete = !!(p.occasion && paState.schedule);
+
+    var ingredientNeeded = p.ingredients.size === 0;
+    var pairingNeeded = !p.pairing;
+    var timeNeeded = p.mode === 'preorder' && !paState.schedule;
+    var complete = !ingredientNeeded && !pairingNeeded && !timeNeeded;
+
+    var pairingLabel = (PA_PRIVE_PAIRINGS.find(function(x){return x.id===p.pairing;}) || {}).label;
+    var ingredientLabels = Array.from(p.ingredients).map(function(id){
+      var it = PA_PRIVE_INGREDIENTS.find(function(x){return x.id===id;});
+      return it ? it.label : id;
+    });
+    var timeDisplay = isNow ? 'On arrival' : (paState.schedule || '—');
+
     return [
-      '<div class="mt-16">',
-        '<div class="max-w-2xl"><h2 class="serif-heading text-3xl sm:text-5xl text-aspire-navy leading-[1.05]">A bespoke menu, written for you.</h2>',
-        '<p class="mt-5 text-aspire-taupe leading-[1.75]">Privé skips the tray entirely. Tell our chef who you are, how you eat, and the occasion — the kitchen composes a private menu around it.</p></div>',
+      '<div class="mt-16 max-w-2xl">',
+        '<h2 class="serif-heading text-3xl sm:text-5xl text-aspire-navy leading-[1.05]">Five ingredients. One surprise plate.</h2>',
+        '<p class="mt-5 text-aspire-taupe leading-[1.75]">Privé skips the tray entirely. Pick the ingredients you crave — the chef composes a private plate around them.</p>',
       '</div>',
       '<div class="mt-12 grid lg:grid-cols-12 gap-10">',
-        '<div class="lg:col-span-8 flex flex-col gap-12">',
-          // Step 1: prefs
+        '<div class="lg:col-span-8 flex flex-col gap-14">',
+          // 01 ingredients
           '<div>',
-            '<div class="swiss-eyebrow">— 01 · Dietary preferences</div>',
-            '<p class="mt-3 text-aspire-taupe leading-[1.7] max-w-xl">Tell us how you eat. Every plate, every pairing will filter to match.</p>',
-            '<div class="mt-6 flex flex-wrap gap-2">'+prefChips+'</div>',
+            '<div class="swiss-eyebrow">— 01 · Ingredients</div>',
+            '<p class="mt-3 text-aspire-taupe leading-[1.7] max-w-xl">Tap any combination. The chef composes a single surprise plate from what you select — the more you pick, the richer the composition.</p>',
+            '<div class="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">'+ingredientCards+'</div>',
+            (ingredientNeeded ? '<p class="mt-4 text-[0.78rem] text-aspire-taupe italic">Pick at least one ingredient and choose a pairing to send the request.</p>' : ''),
           '</div>',
-          // Step 2: occasion + courses
+          // 02 pairing
           '<div>',
-            '<div class="swiss-eyebrow">— 02 · Your occasion</div>',
-            '<p class="mt-3 text-aspire-taupe leading-[1.7] max-w-xl">A single line — birthday, anniversary, business handover, decompression layover.</p>',
-            '<input data-pa-occasion type="text" maxlength="120" placeholder="e.g. anniversary dinner, lighter portions, extra Gruyère…" value="'+esc(p.occasion)+'" class="mt-5 w-full bg-transparent border-b border-aspire-navy/15 px-1 py-3 text-[0.95rem] focus:outline-none focus:border-aspire-navy">',
-            '<div class="mt-8 text-[0.7rem] uppercase tracking-[0.22em] text-aspire-taupe">Courses</div>',
-            '<div class="mt-3 flex gap-2 flex-wrap">'+courseOpts+'</div>',
+            '<div class="swiss-eyebrow">— 02 · Pairing</div>',
+            '<p class="mt-3 text-aspire-taupe leading-[1.7] max-w-xl">A glass of wine matched by the sommelier, or a botanical mocktail composed alongside your plate.</p>',
+            '<div class="mt-6 grid sm:grid-cols-2 gap-3">'+pairingChips+'</div>',
           '</div>',
-          // Step 3: allergies
+          // 03 setting (mode + schedule + chef note)
           '<div>',
-            '<div class="swiss-eyebrow">— 03 · Allergies & avoidances</div>',
-            '<p class="mt-3 text-aspire-taupe leading-[1.7] max-w-xl">Anything the chef must avoid. Be specific — they read every word.</p>',
-            '<textarea data-pa-allergies rows="3" placeholder="e.g. severe shellfish allergy, no raw fish, dairy-light…" class="mt-5 w-full bg-transparent border border-aspire-navy/15 p-4 text-[0.95rem] focus:outline-none focus:border-aspire-navy">'+esc(p.allergies)+'</textarea>',
-          '</div>',
-          // Step 4: schedule
-          '<div>',
-            '<div class="swiss-eyebrow">— 04 · Arrival</div>',
-            '<p class="mt-3 text-aspire-taupe leading-[1.7] max-w-xl">Pick your arrival window — your menu is plated moments before you sit down.</p>',
-            '<div class="mt-5 grid grid-cols-3 sm:grid-cols-6 gap-2">'+timeChips+'</div>',
+            '<div class="swiss-eyebrow">— 03 · Timing & note</div>',
+            '<p class="mt-3 text-aspire-taupe leading-[1.7] max-w-xl">Pre-order ahead or walk in and let the chef compose on the spot. Add a note for anything personal — occasion, allergy, preference.</p>',
+            '<div class="mt-6 grid sm:grid-cols-2 gap-3">'+modeChips+'</div>',
+            (p.mode === 'preorder'
+              ? '<div class="mt-6"><div class="text-[0.7rem] uppercase tracking-[0.22em] text-aspire-taupe">Arrival window</div><div class="mt-3 grid grid-cols-3 sm:grid-cols-6 gap-2">'+timeChips+'</div></div>'
+              : ''),
+            '<textarea data-pa-chef-note rows="3" placeholder="Anything personal for the chef — occasion, allergy, preference…" class="mt-6 w-full bg-transparent border border-aspire-navy/15 p-4 text-[0.95rem] focus:outline-none focus:border-aspire-navy">'+esc(p.chefNote)+'</textarea>',
           '</div>',
           // Host card
           '<div class="border-l-2 border-aspire-taupe pl-5 py-2">',
@@ -4515,7 +4556,7 @@ window.addEventListener('hashchange', () => {
             '<p class="mt-3 text-[0.72rem] uppercase tracking-[0.22em] text-aspire-taupeDark">'+paIcon('sparkle','w-3 h-3')+' Includes hot-towel ritual & fine porcelain service.</p>',
           '</div>',
         '</div>',
-        // Summary aside
+        // Right rail summary
         '<aside class="lg:col-span-4">',
           '<div class="border border-aspire-navy/12 bg-white p-6 sm:p-7 sticky top-[80px]">',
             '<div class="flex items-center justify-between mb-4">',
@@ -4523,14 +4564,14 @@ window.addEventListener('hashchange', () => {
               '<span class="pa-pill">'+paIcon('crown','w-2.5 h-2.5')+' Privé</span>',
             '</div>',
             '<dl class="space-y-3 text-[0.9rem]">',
-              '<div class="flex items-start justify-between gap-3"><dt class="text-aspire-taupe">Occasion</dt><dd class="text-aspire-navy text-right max-w-[60%]">'+esc(p.occasion || '—')+'</dd></div>',
-              '<div class="flex items-center justify-between gap-3"><dt class="text-aspire-taupe">Courses</dt><dd class="text-aspire-navy">'+p.courseCount+'</dd></div>',
-              '<div class="flex items-start justify-between gap-3"><dt class="text-aspire-taupe">Dietary</dt><dd class="text-aspire-navy text-right max-w-[60%]">'+(p.prefs.size ? esc([].slice.call(p.prefs).map(function(id){ var pr = PA_PRIVE_PREFS.find(function(x){return x.id===id;}); return pr?pr.label:id; }).join(', ')) : '—')+'</dd></div>',
+              '<div class="flex items-start justify-between gap-3"><dt class="text-aspire-taupe">Ingredients</dt><dd class="text-aspire-navy text-right max-w-[60%]">'+(ingredientLabels.length ? esc(ingredientLabels.join(', ')) : '—')+'</dd></div>',
+              '<div class="flex items-center justify-between gap-3"><dt class="text-aspire-taupe">Pairing</dt><dd class="text-aspire-navy text-right max-w-[60%]">'+esc(pairingLabel || '—')+'</dd></div>',
               '<div class="flex items-center justify-between gap-3 pt-3 border-t border-aspire-navy/10"><dt class="text-aspire-taupe">Host</dt><dd class="text-aspire-navy">'+esc(p.host)+'</dd></div>',
-              '<div class="flex items-center justify-between gap-3"><dt class="text-aspire-taupe">Arrival</dt><dd class="text-aspire-navy">'+esc(paState.schedule || '—')+'</dd></div>',
+              '<div class="flex items-center justify-between gap-3"><dt class="text-aspire-taupe">Timing</dt><dd class="text-aspire-navy">'+esc(timeDisplay)+'</dd></div>',
             '</dl>',
-            (!complete ? '<p class="mt-5 text-[0.72rem] uppercase tracking-[0.22em] text-[#B05A47]">Add an occasion and arrival time to send the request.</p>' : ''),
-            '<button data-pa-bespoke-send '+(!complete?'disabled':'')+' class="mt-6 w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 uppercase tracking-[0.22em] text-[0.7rem] transition-colors '+(complete?'bg-aspire-navy text-white hover:bg-aspire-navy2':'bg-aspire-navy/10 text-aspire-taupe cursor-not-allowed')+'">Send request to the chef '+paIcon('arrow','w-3 h-3')+'</button>',
+            ((ingredientNeeded || pairingNeeded) ? '<p class="mt-5 text-[0.72rem] uppercase tracking-[0.22em] text-[#B05A47]">Pick at least one ingredient and choose a pairing to send the request.</p>' : ''),
+            ((!ingredientNeeded && !pairingNeeded && timeNeeded) ? '<p class="mt-5 text-[0.72rem] uppercase tracking-[0.22em] text-[#B05A47]">Choose an arrival window to send the request.</p>' : ''),
+            '<button data-pa-bespoke-send '+(!complete?'disabled':'')+' class="mt-6 w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 uppercase tracking-[0.22em] text-[0.7rem] transition-colors '+(complete?'bg-aspire-navy text-white hover:bg-aspire-navy2':'bg-aspire-navy/10 text-aspire-taupe cursor-not-allowed')+'">'+(isNow?'Send to the chef':'Send pre-order')+' '+paIcon('arrow','w-3 h-3')+'</button>',
           '</div>',
         '</aside>',
       '</div>',
@@ -4881,7 +4922,7 @@ window.addEventListener('hashchange', () => {
 
   /* ---------- Event delegation ---------- */
   host.addEventListener('click', function(e){
-    var btn = e.target.closest('[data-pa-tier],[data-pa-size],[data-pa-combo],[data-pa-suite-combo],[data-pa-suite-mode],[data-pa-pairing],[data-pa-count-inc],[data-pa-count-dec],[data-pa-swap],[data-pa-detail],[data-pa-time],[data-pa-confirm],[data-pa-reset],[data-pa-pref],[data-pa-courses],[data-pa-bespoke-send]');
+    var btn = e.target.closest('[data-pa-tier],[data-pa-size],[data-pa-combo],[data-pa-suite-combo],[data-pa-suite-mode],[data-pa-pairing],[data-pa-count-inc],[data-pa-count-dec],[data-pa-swap],[data-pa-detail],[data-pa-time],[data-pa-confirm],[data-pa-reset],[data-pa-ingredient],[data-pa-prive-pairing],[data-pa-mode],[data-pa-bespoke-send]');
     if (!btn || btn.disabled) return;
 
     if (btn.hasAttribute('data-pa-tier')) {
@@ -4948,14 +4989,21 @@ window.addEventListener('hashchange', () => {
       paRender();
       return;
     }
-    if (btn.hasAttribute('data-pa-pref')) {
-      var pid = btn.getAttribute('data-pa-pref');
-      if (paState.prive.prefs.has(pid)) paState.prive.prefs.delete(pid); else paState.prive.prefs.add(pid);
+    if (btn.hasAttribute('data-pa-ingredient')) {
+      var ingId = btn.getAttribute('data-pa-ingredient');
+      if (paState.prive.ingredients.has(ingId)) paState.prive.ingredients.delete(ingId);
+      else paState.prive.ingredients.add(ingId);
       paRender();
       return;
     }
-    if (btn.hasAttribute('data-pa-courses')) {
-      paState.prive.courseCount = parseInt(btn.getAttribute('data-pa-courses'), 10);
+    if (btn.hasAttribute('data-pa-prive-pairing')) {
+      var pid2 = btn.getAttribute('data-pa-prive-pairing');
+      paState.prive.pairing = paState.prive.pairing === pid2 ? null : pid2;
+      paRender();
+      return;
+    }
+    if (btn.hasAttribute('data-pa-mode')) {
+      paState.prive.mode = btn.getAttribute('data-pa-mode');
       paRender();
       return;
     }
@@ -4978,19 +5026,23 @@ window.addEventListener('hashchange', () => {
     }
     if (btn.hasAttribute('data-pa-bespoke-send')) {
       var p = paState.prive;
-      if (!p.occasion || !paState.schedule) return;
+      if (p.ingredients.size === 0 || !p.pairing) return;
+      if (p.mode === 'preorder' && !paState.schedule) return;
+      var ingNames = Array.from(p.ingredients).map(function(id){ var it = PA_PRIVE_INGREDIENTS.find(function(x){return x.id===id;}); return it ? it.label : id; });
+      var bev = PA_PRIVE_PAIRINGS.find(function(x){return x.id===p.pairing;});
       paState.confirmed = {
         kind: 'bespoke',
-        time: paState.schedule,
+        time: p.mode === 'now' ? 'On arrival' : paState.schedule,
         ref: paGenerateRef(),
         tier: 'prive',
         handoff: paHandoffCopy(),
-        occasion: p.occasion,
-        courseCount: p.courseCount,
-        prefs: [].slice.call(p.prefs).map(function(id){ var pr = PA_PRIVE_PREFS.find(function(x){return x.id===id;}); return pr ? pr.label : id; }),
+        ingredients: ingNames,
+        pairing: bev ? bev.label : null,
+        chefNote: p.chefNote,
+        mode: p.mode,
       };
       paRender();
-      host.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (typeof host.scrollIntoView === 'function') host.scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
     }
     if (btn.hasAttribute('data-pa-reset')) {
@@ -5005,8 +5057,7 @@ window.addEventListener('hashchange', () => {
   host.addEventListener('input', function(e){
     var el = e.target;
     if (el.matches('[data-pa-note]')) { paState.note = el.value; return; }
-    if (el.matches('[data-pa-occasion]')) { paState.prive.occasion = el.value; return; }
-    if (el.matches('[data-pa-allergies]')) { paState.prive.allergies = el.value; return; }
+    if (el.matches('[data-pa-chef-note]')) { paState.prive.chefNote = el.value; return; }
   });
 
   // Auth + tier-lock controls (separate listener so it doesn't conflict with
