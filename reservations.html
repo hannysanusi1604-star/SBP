@@ -400,11 +400,12 @@
           <div class="flex items-start justify-between gap-3 mb-5">
             <div>
               <div class="swiss-eyebrow">Optional</div>
-              <div class="serif-heading text-2xl text-aspire-navy mt-1" id="step2-zone-heading">Reserve a specific seat</div>
-              <p class="text-[0.88rem] text-navy-500 mt-1 leading-relaxed" id="step2-zone-explainer">Lock a Communal, Dining or Quiet seat up to 24 hours before your visit and we'll hold it for you. A refundable deposit equal to the entry price secures the table — cancel any time up to 24 hours before arrival for a full refund. Otherwise, check in flexibly on the day; you'll join the queue if the lounge is full.</p>
+              <div class="serif-heading text-2xl text-aspire-navy mt-1">Reserve a specific seat</div>
+              <p class="text-[0.88rem] text-navy-500 mt-1 leading-relaxed">Lock a Communal, Dining or Quiet seat and we'll hold it for you. A refundable deposit equal to the entry price secures any reservation — cancel by 24 hours before arrival to get it back.</p>
             </div>
           </div>
           <div id="step2-zone-picker" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
+          <p class="mt-4 text-[0.78rem] text-navy-500 leading-relaxed italic">Choosing <strong class="text-aspire-navy not-italic">No preference</strong> means your seat isn't guaranteed — if the lounge is full you'll wait in the queue. To guarantee a table, pick a specific zone (subject to availability).</p>
         </div>
         <div id="step2-deposit-note" class="hidden mt-4 p-4 bg-aspire-soft border border-aspire-border flex items-start gap-3 text-[0.88rem] text-aspire-navy/85">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="mt-0.5 flex-shrink-0"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l4 2"/></svg>
@@ -1083,18 +1084,10 @@ function getLuxeSeatsRemaining() {
   return Math.max(0, state.luxe.totalCapacity - state.luxe.seatsTaken);
 }
 /* ----------------------- ADVANCE-BOOKING DEPOSIT HELPERS ----------------------- */
-function isWithin24h(booking) {
-  // True when the chosen arrival is 24 hours or less from now (or already in the past).
-  if (!booking || !booking.date || !booking.arrivalTime) return false;
-  const [h, m] = booking.arrivalTime.split(':').map(Number);
-  const arrival = new Date(booking.date);
-  arrival.setHours(h, m, 0, 0);
-  return (arrival.getTime() - Date.now()) <= 24 * 60 * 60 * 1000;
-}
 function requiresDeposit(booking) {
-  // Specific-seat reservation only exists more than 24h ahead. No zone, or
-  // inside the 24h window, means flexible check-in with no deposit.
-  return !!(booking && booking.preferredZone && !isWithin24h(booking));
+  // Reserving a specific seat = guaranteed table = refundable deposit.
+  // No preference = flexible check-in, no deposit, may have to queue.
+  return !!(booking && booking.preferredZone);
 }
 function cancellationDeadline(booking) {
   // 24 hours before the arrival timestamp on the booking date
@@ -1677,49 +1670,36 @@ function renderStep2() {
     slots.append(el('button', { class:`py-3 rounded-xl text-[0.92rem] border transition-all ${active ? 'bg-aspire-navy text-white border-aspire-navy' : 'bg-white text-aspire-navy border-aspire-border hover:border-aspire-taupe'}`, onclick:() => { state.booking.arrivalTime = t; renderStep2(); } }, t));
   });
 
-  // Zone picker — specific seats can only be reserved more than 24 hours ahead.
-  // Inside the 24h window the trade-off (deposit for a guaranteed seat) no longer
-  // makes sense, so the three specific-seat tiles are disabled and we force the
-  // "Flexible check-in" path.
-  const within24h = isWithin24h(state.booking);
-  if (within24h && state.booking.preferredZone) state.booking.preferredZone = null;
-  $('#step2-zone-heading').textContent = within24h ? 'Reservation window closed' : 'Reserve a specific seat';
-  $('#step2-zone-explainer').textContent = within24h
-    ? 'Specific seats can only be reserved more than 24 hours before your visit. You\'ll check in flexibly on arrival and our hosts will seat you based on live availability.'
-    : 'Lock a Communal, Dining or Quiet seat up to 24 hours before your visit and we\'ll hold it for you. A refundable deposit equal to the entry price secures the table — cancel any time up to 24 hours before arrival for a full refund. Otherwise, check in flexibly on the day; you\'ll join the queue if the lounge is full.';
-
+  // Zone picker — optional. Picking a specific zone holds the seat with a deposit.
   const zonePicker = $('#step2-zone-picker'); zonePicker.innerHTML = '';
   const zoneOptions = [
-    { id: null,         label: 'Flexible check-in' },
+    { id: null,         label: 'No preference' },
     { id: 'communal',   label: ZONE_META.communal.label },
     { id: 'dining',     label: ZONE_META.dining.label },
     { id: 'quiet',      label: ZONE_META.quiet.label },
   ];
   zoneOptions.forEach(opt => {
     const active = (state.booking.preferredZone || null) === opt.id;
-    const disabled = within24h && opt.id !== null;
     const swatch = opt.id ? `<span class="inline-block h-2 w-2 mr-2 align-middle" style="background:${ZONE_META[opt.id].color}"></span>` : '';
-    const attrs = {
-      class: disabled
-        ? 'py-3 px-3 text-[0.85rem] border bg-aspire-soft/60 text-navy-500/60 border-aspire-border cursor-not-allowed line-through'
-        : `py-3 px-3 text-[0.85rem] border transition-all ${active ? 'bg-aspire-navy text-white border-aspire-navy' : 'bg-white text-aspire-navy border-aspire-border hover:border-aspire-taupe'}`,
+    zonePicker.append(el('button', {
+      class:`py-3 px-3 text-[0.85rem] border transition-all ${active ? 'bg-aspire-navy text-white border-aspire-navy' : 'bg-white text-aspire-navy border-aspire-border hover:border-aspire-taupe'}`,
+      onclick: () => { state.booking.preferredZone = opt.id; renderStep2(); },
       html: swatch + opt.label,
-    };
-    if (disabled) attrs.disabled = 'disabled';
-    else attrs.onclick = () => { state.booking.preferredZone = opt.id; renderStep2(); };
-    zonePicker.append(el('button', attrs));
+    }));
   });
 
   // Populate the deposit notice with zone-aware + cancel-deadline copy
-  // (only reachable when a specific seat is held, which by definition is >24h out).
-  if (requiresDeposit(state.booking) && ZONE_META[state.booking.preferredZone]) {
+  if (state.booking.preferredZone && ZONE_META[state.booking.preferredZone]) {
     const zoneLabel = ZONE_META[state.booking.preferredZone].label;
     const dep = calculateDeposit(l);
     const grace = depositGraceTime(state.booking.arrivalTime);
+    const cancelCopy = canCancelFree(state.booking)
+      ? `Cancel by <strong class="text-aspire-navy">${formatCancellationDeadline(state.booking)}</strong> for a full refund.`
+      : `<strong class="text-aspire-navy">Non-refundable</strong> — inside the 24-hour cancellation window.`;
     $('#step2-deposit-body').innerHTML =
       `<strong class="text-aspire-navy">Specific seat reserved</strong> — a refundable ` +
       `<strong class="text-aspire-navy">${l.currency} ${dep}</strong> deposit for your ${zoneLabel}. ` +
-      `Cancel by <strong class="text-aspire-navy">${formatCancellationDeadline(state.booking)}</strong> for a full refund.` +
+      cancelCopy +
       ` Deposit is forfeited if you don't check in by <strong class="text-aspire-navy">${grace}</strong>.`;
   }
 }
@@ -1757,7 +1737,7 @@ function bookingSummaryHTML() {
   const graceTime = depositGraceTime(state.booking.arrivalTime);
   // Live occupancy is intentionally not shown during purchase — it isn't actionable
   // at booking time and was creating noise on the summary.
-  let seating = 'Flexible check-in';
+  let seating = 'No preference';
   if (state.booking.preferredZone) {
     seating = requiresDeposit(state.booking)
       ? `${ZONE_META[state.booking.preferredZone].label} reserved · table held`
@@ -1910,7 +1890,9 @@ function renderStep4() {
     $('#pay-section-badge').textContent = 'No charge · pass verified with provider';
   } else if (isPass && !hasLuxe && isAdvance) {
     $('#pay-section-title').textContent = 'Confirm access & hold deposit';
-    $('#pay-section-badge').textContent = `Table reserved · cancel free by ${formatCancellationDeadline(state.booking)}`;
+    $('#pay-section-badge').textContent = canCancelFree(state.booking)
+      ? `Table reserved · cancel free by ${formatCancellationDeadline(state.booking)}`
+      : `Table reserved · non-refundable · ${l.currency} ${deposit}`;
   } else if (isPass && hasLuxe) {
     $('#pay-section-title').textContent = 'Confirm access & pay Luxe upgrade';
     $('#pay-section-badge').textContent = isAdvance
@@ -2083,7 +2065,12 @@ function confirmBooking() {
         usingPass ? 'Refundable deposit held' : 'Refundable on check-in',
         usingPass ? `${l.currency} ${deposit}` : `${l.currency} ${entryAmount.toFixed(2)} · by ${graceTime}`
       ]);
-      rows.push(['Cancellation', `Free until ${formatCancellationDeadline(state.booking)}`]);
+      rows.push([
+        'Cancellation',
+        canCancelFree(state.booking)
+          ? `Free until ${formatCancellationDeadline(state.booking)}`
+          : 'Non-refundable · same-day'
+      ]);
     }
     if (!usingPass) {
       rows.push(['Total', `${l.currency} ${totalAmount.toFixed(2)}`]);
