@@ -2263,6 +2263,8 @@ function pickLounge(net, region) {
   if ($('#view-dashboard').classList.contains('active')) renderDashboard();
   // Pre-Arrival composer (Menu sub-tab) lazy-rerenders to pick up the new tier.
   if (typeof window.paRerender === 'function') window.paRerender();
+  // Show/hide the Pre-Arrival sub-tab depending on the new lounge's tier.
+  if (typeof window.mbSyncPreArrivalTab === 'function') window.mbSyncPreArrivalTab();
 }
 
 /* ----------------------- SEARCH ----------------------- */
@@ -5643,9 +5645,31 @@ window.addEventListener('hashchange', () => {
       '</div>';
   }
 
+  /* ---------- Tier-aware Pre-Arrival visibility ---------- */
+  function mb_loungeTier() {
+    var id = (window.state && state.booking && state.booking.loungeId) || 'zrh-abd';
+    for (var i = 0; i < LOUNGE_NETWORK.length; i++) {
+      var g = LOUNGE_NETWORK[i];
+      for (var j = 0; j < g.lounges.length; j++) {
+        var x = g.lounges[j];
+        if ((x.id || '') === id) return x.tier || 'lifestyle';
+      }
+    }
+    return 'lifestyle';
+  }
+  function mb_syncPreArrivalTab() {
+    var hide = mb_loungeTier() === 'lifestyle';
+    var tab = view.querySelector('#menu-subnav [data-mb-go="pre-arrival"]');
+    if (tab) tab.style.display = hide ? 'none' : '';
+    if (hide && mb_state.sub === 'pre-arrival') mb_show('editorial');
+  }
+  window.mbSyncPreArrivalTab = mb_syncPreArrivalTab;
+
   /* ---------- Tab switching ---------- */
   function mb_show(sub) {
     if (!sub) sub = 'editorial';
+    // Block direct navigation to pre-arrival when the lounge is lifestyle.
+    if (sub === 'pre-arrival' && mb_loungeTier() === 'lifestyle') sub = 'editorial';
     mb_state.sub = sub;
     try { sessionStorage.setItem('mb_sub', sub); } catch(e) {}
 
@@ -5780,6 +5804,7 @@ window.addEventListener('hashchange', () => {
   function mb_boot() {
     if (booted) return;
     booted = true;
+    mb_syncPreArrivalTab();
     mb_show(mb_state.sub);
   }
   function maybeBoot() {
