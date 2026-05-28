@@ -2251,6 +2251,9 @@ function pickLounge(net, region) {
   state.booking.loungeId = entry.id;
   // Luxe upgrade is anchored to a specific Lifestyle lounge's queue + price — reset on change
   state.booking.luxeUpgrade = false;
+  // Pre-Arrival auth is per-traveller. Switching lounge could mean a new boarding pass —
+  // clear the sessionStorage flag so the composer re-verifies before showing the tier.
+  try { sessionStorage.removeItem('paAuth'); } catch (e) {}
   updateLoungePickerLabel();
   closeLoungePicker();
   // Re-render any open view that depends on the selected lounge
@@ -2258,6 +2261,8 @@ function pickLounge(net, region) {
   if ($('#view-search').classList.contains('active'))    renderSearch();
   if ($('#view-reserve').classList.contains('active'))   renderReserve();
   if ($('#view-dashboard').classList.contains('active')) renderDashboard();
+  // Pre-Arrival composer (Menu sub-tab) lazy-rerenders to pick up the new tier.
+  if (typeof window.paRerender === 'function') window.paRerender();
 }
 
 /* ----------------------- SEARCH ----------------------- */
@@ -2642,16 +2647,16 @@ function bookingSummaryHTML() {
          <div class="flex items-center justify-between pt-2 mt-2 border-t border-aspire-border"><span class="serif-heading text-lg text-aspire-navy">Total</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums">${l.currency} ${total.toFixed(2)}</span></div>
        </div>`;
   } else {
-    // Direct payment with Luxe — entry + Luxe upgrade + seat-lock (entry acts as deposit if advance)
-    const entry = l.priceFrom * Math.max(1, guestsTotal);
-    const total = entry + luxeFee + seatLock;
+    // Direct payment with Luxe — Lifestyle entry is sunk (already implicitly committed by the
+    // queue / booking step); the upgrade is a delta only. Charge luxeFee + deposit + seatLock.
+    const total = luxeFee + deposit + seatLock;
     priceBlock += `
        <div class="space-y-2 text-[0.95rem]">
-         ${row('Lifestyle entry' + (guestsTotal > 1 ? ' × ' + guestsTotal : ''), l.currency + ' ' + entry.toFixed(2))}
+         <div class="flex items-center justify-between"><span class="text-navy-500">Lifestyle entry${guestsTotal > 1 ? ' × ' + guestsTotal : ''}</span><span class="text-aspire-navy inline-flex items-center gap-1.5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 12 5 5L20 6"/></svg>Included</span></div>
          ${row('Aspire Luxe upgrade', l.currency + ' ' + luxeFee)}
+         ${depositRow}
          ${seatLockRow}
-         ${isAdvance ? `<div class="text-[0.78rem] text-navy-500 italic">Lifestyle entry acts as a refundable deposit · refunded if you check in by ${graceTime}.</div>` : ''}
-         <div class="flex items-center justify-between pt-2 mt-2 border-t border-aspire-border"><span class="serif-heading text-lg text-aspire-navy">Total</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums">${l.currency} ${total.toFixed(2)}</span></div>
+         <div class="flex items-center justify-between pt-2 mt-2 border-t border-aspire-border"><span class="serif-heading text-lg text-aspire-navy">Total to pay</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums">${l.currency} ${total.toFixed(2)}</span></div>
        </div>`;
   }
 
@@ -2833,8 +2838,9 @@ function confirmBooking() {
   const refDate = formatDate(state.booking.date);
   const accessUntil = endTime(state.booking.arrivalTime);
   const luxeFee = hasLuxe ? calculateLuxeUpgradeFee(l.priceFrom) : 0;
-  const entryAmount = usingPass ? 0 : l.priceFrom * Math.max(1, guestsTotal);
-  const passDepositAmount = usingPass && isAdvance ? deposit : 0;
+  // Lifestyle entry is sunk once the user has accepted a Luxe upgrade — no double-charge.
+  const entryAmount = (usingPass || hasLuxe) ? 0 : l.priceFrom * Math.max(1, guestsTotal);
+  const passDepositAmount = isAdvance ? deposit : 0;
   const totalAmount = entryAmount + luxeFee + passDepositAmount + seatLock;
 
   const m = $('#pay-modal');
