@@ -993,6 +993,22 @@ const I18N = {
     'pa.compose.title':'Build your own tray',
     'pa.compose.body':'Pick every course, swap dishes freely, tap any plate to view ingredients and remove what you don’t want. The kitchen builds exactly what you compose.',
 
+    'pa.auth.eyebrow':'Identify yourself',
+    'pa.auth.title':'Last name & boarding pass',
+    'pa.auth.body':'Pre-arrival dining is reserved for travellers booked into this lounge. Enter your last name and the booking reference from your boarding pass to unlock the experience.',
+    'pa.auth.lastName':'Last name',
+    'pa.auth.lastName.ph':'e.g. Roulet',
+    'pa.auth.bp':'Boarding pass reference',
+    'pa.auth.bp.ph':'e.g. LX1234A',
+    'pa.auth.bp.hint':'Six-digit booking reference or PNR code, found on the top right of your boarding pass.',
+    'pa.auth.cta':'Unlock pre-arrival',
+    'pa.auth.privacy':'Stored locally on this device only. No data leaves your phone unless you submit an order.',
+    'pa.auth.detected':'Your detected lounge & tier',
+    'pa.auth.identifiedAs':'Identified as',
+    'pa.auth.notYou':'Not you? Re-enter details',
+    'pa.auth.err.lastName':'Please enter your last name (2+ characters).',
+    'pa.auth.err.bp':'Boarding pass references are 5–13 letters or numbers.',
+
     'pa.suite.mode.title':'00 · Choose your starting point',
     'pa.suite.mode.subtitle':'Suite gives you full control. Start with an empty tray and pick everything yourself, or anchor to one of our three signature combinations.',
     'pa.suite.mode.custom':'Build from scratch',
@@ -1628,6 +1644,11 @@ const STATE = {
     note: '',
     confirmed: null,
     swapTarget: null,
+    auth: {
+      lastName: localStorage.getItem('aspire-pa-lastname') || '',
+      boardingPass: localStorage.getItem('aspire-pa-bp') || '',
+      verified: localStorage.getItem('aspire-pa-verified') === '1',
+    },
     suite: { pairing: null, delivery: 'table', mode: 'custom', counts: { starters: 2, mains: 2, desserts: 1 }, combo: 'voyager' },
     prive: { nook: null, host: 'Élodie Roulet', hotTowel: true, chefNote: '', ingredients: new Set(), pairing: null, mode: 'preorder', premiumWine: null, addons: new Set() },
   },
@@ -3554,6 +3575,109 @@ function paConfirmedMarkup() {
   </div>`;
 }
 
+// Lightweight auth gate — Last name + Boarding pass. State persists in localStorage so a guest
+// only has to enter their details once per device.
+function paIsAuthed() {
+  const a = STATE.preArrival.auth;
+  return !!(a && a.verified && a.lastName && a.boardingPass);
+}
+function paAuthenticate(lastName, boardingPass) {
+  STATE.preArrival.auth.lastName = lastName;
+  STATE.preArrival.auth.boardingPass = boardingPass;
+  STATE.preArrival.auth.verified = true;
+  localStorage.setItem('aspire-pa-lastname', lastName);
+  localStorage.setItem('aspire-pa-bp', boardingPass);
+  localStorage.setItem('aspire-pa-verified', '1');
+}
+function paClearAuth() {
+  STATE.preArrival.auth.lastName = '';
+  STATE.preArrival.auth.boardingPass = '';
+  STATE.preArrival.auth.verified = false;
+  localStorage.removeItem('aspire-pa-lastname');
+  localStorage.removeItem('aspire-pa-bp');
+  localStorage.removeItem('aspire-pa-verified');
+}
+
+function paAuthGate() {
+  const a = STATE.preArrival.auth;
+  const tier = activeTier();
+  const lounge = activeLounge();
+  return `
+  <section class="mx-auto max-w-6xl px-5 sm:px-8 pt-14 sm:pt-20">
+    <div class="grid lg:grid-cols-12 gap-10 items-end">
+      <div class="lg:col-span-7 reveal">
+        <div class="inline-flex items-center gap-2 text-gold-600 text-[0.6rem] uppercase tracking-[0.36em]">
+          ${icon('i-crown','w-3.5 h-3.5')} ${esc(t('pa.eyebrow'))}
+        </div>
+        <h1 class="serif-heading text-[2.4rem] sm:text-[4rem] mt-4 text-navy-900 leading-[1.02]">${esc(t('pa.title'))}</h1>
+        <p class="mt-6 text-navy-500 leading-[1.75] max-w-xl">${esc(t('pa.lede'))}</p>
+      </div>
+      <div class="lg:col-span-5 reveal" style="transition-delay:.1s">
+        <div class="border-l-2 border-gold-500/60 pl-5 py-2">
+          <div class="swiss-eyebrow">${esc(t('pa.tierBadge'))}</div>
+          <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-[0.78rem] uppercase tracking-[0.28em]">
+            ${PA_TIERS.map(x => `<span class="${x===tier?'text-gold-600':'text-navy-700/60'}">${esc(t('pa.tier.'+x+'.label'))}</span>${x!=='prive'?'<span class="text-navy-900/20">·</span>':''}`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hairline mt-14"></div>
+  </section>
+
+  <section class="mx-auto max-w-3xl px-5 sm:px-8 pt-16 pb-24">
+    <div class="pa-feature-panel reveal">
+      <div class="text-center max-w-lg mx-auto">
+        <div class="inline-flex items-center gap-2 text-gold-600 text-[0.6rem] uppercase tracking-[0.32em]">
+          ${icon('i-qr','w-3.5 h-3.5')} ${esc(t('pa.auth.eyebrow'))}
+        </div>
+        <h2 class="serif-heading text-3xl sm:text-4xl mt-4 text-navy-900 leading-[1.05]">${esc(t('pa.auth.title'))}</h2>
+        <p class="mt-4 text-[0.9rem] text-navy-500 leading-relaxed">${esc(t('pa.auth.body'))}</p>
+      </div>
+      <form id="paAuthForm" class="mt-10 max-w-md mx-auto space-y-6" autocomplete="off">
+        <div>
+          <label for="paAuthLastName" class="block text-[0.62rem] uppercase tracking-[0.28em] text-navy-700 mb-2">${esc(t('pa.auth.lastName'))}</label>
+          <input id="paAuthLastName" name="lastName" type="text" required minlength="2" maxlength="40" autocomplete="family-name"
+            value="${esc(a.lastName)}" placeholder="${esc(t('pa.auth.lastName.ph'))}"
+            class="lounge-input w-full h-12 px-4 bg-white border border-navy-900/15 text-[0.95rem] focus:ring-0 focus:border-navy-900" />
+        </div>
+        <div>
+          <label for="paAuthBp" class="block text-[0.62rem] uppercase tracking-[0.28em] text-navy-700 mb-2">${esc(t('pa.auth.bp'))}</label>
+          <input id="paAuthBp" name="boardingPass" type="text" required minlength="5" maxlength="13" pattern="[A-Za-z0-9]{5,13}"
+            value="${esc(a.boardingPass)}" placeholder="${esc(t('pa.auth.bp.ph'))}"
+            style="text-transform: uppercase; letter-spacing: .12em;"
+            class="lounge-input w-full h-12 px-4 bg-white border border-navy-900/15 text-[0.95rem] font-medium focus:ring-0 focus:border-navy-900" />
+          <p class="mt-2 text-[0.72rem] text-navy-500 italic">${esc(t('pa.auth.bp.hint'))}</p>
+        </div>
+        <button type="submit" class="w-full inline-flex items-center justify-center gap-3 px-8 py-4 bg-gold-500 text-ivory-50 uppercase tracking-[0.28em] text-[0.66rem] hover:bg-gold-400 transition-colors">
+          ${esc(t('pa.auth.cta'))} ${icon('i-arrow','w-3.5 h-3.5')}
+        </button>
+        <p id="paAuthError" class="hidden text-[0.78rem] uppercase tracking-[0.22em] text-[#B05A47] text-center"></p>
+        <p class="text-[0.72rem] text-navy-500 italic text-center max-w-md mx-auto">${esc(t('pa.auth.privacy'))}</p>
+      </form>
+      ${lounge ? `
+      <div class="mt-10 pt-8 border-t border-navy-900/10 text-center">
+        <div class="swiss-eyebrow">${esc(t('pa.auth.detected'))}</div>
+        <p class="mt-3 text-[0.92rem] text-navy-700">${esc(lounge.name)} · <span class="text-gold-600 uppercase tracking-[0.22em] text-[0.7rem]">${esc(t('pa.tier.'+tier+'.label'))}</span></p>
+      </div>` : ''}
+    </div>
+  </section>`;
+}
+
+function paIdentifiedPill() {
+  const a = STATE.preArrival.auth;
+  if (!paIsAuthed()) return '';
+  return `
+  <div class="mx-auto max-w-6xl px-5 sm:px-8 pt-6">
+    <div class="flex flex-wrap items-center justify-between gap-3 text-[0.7rem] uppercase tracking-[0.26em] text-navy-500">
+      <div class="inline-flex items-center gap-2">
+        ${icon('i-check','w-3 h-3 text-gold-600')}
+        <span>${esc(t('pa.auth.identifiedAs'))} <span class="text-navy-900">${esc(a.lastName)}</span> · <span class="text-navy-900">${esc(a.boardingPass)}</span></span>
+      </div>
+      <button id="paAuthClear" class="text-navy-500 hover:text-navy-900 border-b border-navy-500/40 hover:border-navy-900 pb-0.5">${esc(t('pa.auth.notYou'))}</button>
+    </div>
+  </div>`;
+}
+
 function paLoungeBanner() {
   const tier = activeTier();
   const lounge = activeLounge();
@@ -4020,6 +4144,7 @@ function pagePreArrivalPrive() {
     <div class="hairline mt-14"></div>
   </section>
 
+  ${paIdentifiedPill()}
   ${paBespokeConfirmedMarkup()}
   ${paLoungeBanner()}
   ${paBespokeRequest()}
@@ -4137,6 +4262,8 @@ function paSuiteComboPickerSection() {
 
 function pagePreArrival() {
   const tier = activeTier();
+  // Gate every pre-arrival flow behind a Last name + boarding pass check
+  if (!paIsAuthed()) return paAuthGate();
   // Privé skips the tray entirely — drive a bespoke chef-request flow instead
   if (tier === 'prive') return pagePreArrivalPrive();
   paApplySizeDefaults(false);
@@ -4201,6 +4328,7 @@ function pagePreArrival() {
     <div class="hairline mt-14"></div>
   </section>
 
+  ${paIdentifiedPill()}
   ${paConfirmedMarkup()}
 
   <!-- Active-lounge banner (replaces the in-page tier picker) -->
@@ -5259,6 +5387,32 @@ function attachPageEvents() {
   // Pre-Arrival — tier is now derived from the active lounge; in-page tier picker removed
   const paChange = document.getElementById('paChangeLounge');
   if (paChange) paChange.addEventListener('click', showLoungePicker);
+
+  // Pre-Arrival auth gate
+  const authForm = document.getElementById('paAuthForm');
+  if (authForm) authForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const lastName = (document.getElementById('paAuthLastName').value || '').trim();
+    const bp = (document.getElementById('paAuthBp').value || '').trim().toUpperCase().replace(/\s+/g, '');
+    const err = document.getElementById('paAuthError');
+    if (lastName.length < 2) {
+      if (err) { err.textContent = t('pa.auth.err.lastName'); err.classList.remove('hidden'); }
+      return;
+    }
+    if (!/^[A-Z0-9]{5,13}$/.test(bp)) {
+      if (err) { err.textContent = t('pa.auth.err.bp'); err.classList.remove('hidden'); }
+      return;
+    }
+    paAuthenticate(lastName, bp);
+    renderMain();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+  const authClear = document.getElementById('paAuthClear');
+  if (authClear) authClear.addEventListener('click', () => {
+    paClearAuth();
+    renderMain();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
   document.querySelectorAll('[data-pa-combo]').forEach(b => b.addEventListener('click', () => {
     const id = b.getAttribute('data-pa-combo');
     if (STATE.preArrival.luxeCombo === id) return;
