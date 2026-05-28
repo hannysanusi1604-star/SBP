@@ -1995,12 +1995,13 @@ function renderStep4() {
 }
 function upgradeToLuxe() {
   state.booking.luxeUpgrade = true;
-  // Carry over verified pass type when available so step 4 lands in the right mode
+  // Carry over verified pass type when available so the receipt lands in the right mode
   if (state.verified && state.verification.type) {
     state.booking.membership = state.verification.type;
   }
-  state.step = 4;
-  go('reserve');
+  // Booking is already confirmed — open the pay modal directly for the upgrade fee
+  // instead of walking the user back through the booking flow.
+  confirmBooking();
 }
 
 function confirmBooking() {
