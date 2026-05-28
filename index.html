@@ -1650,7 +1650,7 @@ const STATE = {
       verified: localStorage.getItem('aspire-pa-verified') === '1',
     },
     suite: { pairing: null, delivery: 'table', mode: 'custom', counts: { starters: 2, mains: 2, desserts: 1 }, combo: 'voyager' },
-    prive: { nook: null, host: 'Élodie Roulet', hotTowel: true, chefNote: '', ingredients: new Set(), pairing: null, mode: 'preorder' },
+    prive: { host: 'Élodie Roulet', hotTowel: true, chefNote: '', ingredients: new Set(), pairing: null, mode: 'preorder' },
   },
 };
 
@@ -1660,12 +1660,6 @@ const PA_PAIRINGS = [
   { id:'pinot',     labelKey:'pa.suite.pairing.pinot',     hintKey:'pa.suite.pairing.pinot.hint' },
   { id:'champagne', labelKey:'pa.suite.pairing.champagne', hintKey:'pa.suite.pairing.champagne.hint' },
   { id:'riesling',  labelKey:'pa.suite.pairing.riesling',  hintKey:'pa.suite.pairing.riesling.hint' },
-];
-
-const PA_NOOKS = [
-  { id:'alps',      labelKey:'pa.prive.nook.alps' },
-  { id:'lake',      labelKey:'pa.prive.nook.lake' },
-  { id:'belvedere', labelKey:'pa.prive.nook.belvedere' },
 ];
 
 // Privé: five seasonal ingredients the guest can pick from. The chef composes a single surprise plate
@@ -1895,6 +1889,8 @@ function setActiveLounge(id) {
   STATE.activeLoungeId = id;
   localStorage.setItem('aspire-lounge', id);
   const newTier = activeTier();
+  // Different lounge means a different boarding pass — always re-verify identity
+  if (typeof paClearAuth === 'function') paClearAuth();
   // Reset pre-arrival when the tier changes so we don't carry stale orders across experiences
   if (prevTier !== newTier) {
     STATE.preArrival.confirmed = null;
@@ -1903,7 +1899,7 @@ function setActiveLounge(id) {
     STATE.preArrival.customizations = {};
     STATE.preArrival.dietaryPrefs = new Set();
     STATE.preArrival.suite = { pairing: null, delivery: 'table', mode: 'custom', counts: { starters: 2, mains: 2, desserts: 1 }, combo: 'voyager' };
-    STATE.preArrival.prive = { nook: null, host: 'Élodie Roulet', hotTowel: true, chefNote: '', ingredients: new Set(), pairing: null, mode: 'preorder' };
+    STATE.preArrival.prive = { host: 'Élodie Roulet', hotTowel: true, chefNote: '', ingredients: new Set(), pairing: null, mode: 'preorder' };
     if (typeof paApplySizeDefaults === 'function') paApplySizeDefaults(true);
   }
   // Drop off Pre-Arrival if the new lounge has no tier
@@ -3335,17 +3331,10 @@ function paPairingLabel() {
   return p ? t(p.labelKey) : t('pa.summary.none');
 }
 
-function paNookLabel() {
-  if (activeTier() !== 'prive') return null;
-  const n = PA_NOOKS.find(x => x.id === STATE.preArrival.prive.nook);
-  return n ? t(n.labelKey) : t('pa.summary.none');
-}
-
 function paHandoffCopy() {
   const tier = activeTier();
   if (tier === 'prive') {
-    const n = PA_NOOKS.find(x => x.id === STATE.preArrival.prive.nook);
-    return n ? `${t(n.labelKey)} — ${STATE.preArrival.prive.host}` : t('pa.tier.prive.handoff');
+    return `${t('pa.tier.prive.handoff')} — ${STATE.preArrival.prive.host}`;
   }
   if (tier === 'suite') {
     return STATE.preArrival.suite.delivery === 'table'
@@ -3366,7 +3355,6 @@ function paSummaryMarkup() {
   const tier = activeTier();
   const prep = paEffectivePrep();
   const pairing = paPairingLabel();
-  const nook = paNookLabel();
   const suiteCustom = tier === 'suite' && STATE.preArrival.suite.mode === 'custom';
   const sizeLabel = suiteCustom
     ? `${t('pa.summary.size.custom')} · ${expected} ${t('pa.summary.size.plates')}`
@@ -3397,10 +3385,6 @@ function paSummaryMarkup() {
       ${tier === 'suite' ? `<div class="flex items-center justify-between gap-3">
         <dt class="text-navy-500">${esc(t('pa.summary.delivery'))}</dt>
         <dd class="text-navy-900">${esc(STATE.preArrival.suite.delivery === 'table' ? t('pa.suite.delivery.on') : t('pa.suite.delivery.off'))}</dd>
-      </div>` : ''}
-      ${nook ? `<div class="flex items-center justify-between gap-3">
-        <dt class="text-navy-500">${esc(t('pa.summary.nook'))}</dt>
-        <dd class="text-navy-900 text-right truncate max-w-[60%]" title="${esc(nook)}">${esc(nook)}</dd>
       </div>` : ''}
       ${tier === 'prive' ? `<div class="flex items-center justify-between gap-3">
         <dt class="text-navy-500">${esc(t('pa.summary.host'))}</dt>
@@ -3792,7 +3776,6 @@ function paBespokeIsComplete() {
 function paBespokeSummaryMarkup() {
   const p = STATE.preArrival.prive;
   const bev = PA_PRIVE_BEV.find(b => b.id === p.pairing);
-  const nook = PA_NOOKS.find(n => n.id === p.nook);
   const complete = paBespokeIsComplete();
   const isNow = p.mode === 'now';
   const time = isNow ? t('pa.prive.mode.now') : (STATE.preArrival.schedule || t('pa.summary.none'));
@@ -3820,10 +3803,6 @@ function paBespokeSummaryMarkup() {
         <dd class="text-navy-900 text-right max-w-[60%] truncate" title="${esc(bev ? t(bev.labelKey) : '')}">${esc(bev ? t(bev.labelKey) : t('pa.summary.none'))}</dd>
       </div>
       <div class="flex items-center justify-between gap-3 pt-3 border-t border-navy-900/10">
-        <dt class="text-navy-500">${esc(t('pa.bespoke.summary.nook'))}</dt>
-        <dd class="text-navy-900 text-right max-w-[60%] truncate" title="${esc(nook ? t(nook.labelKey) : '')}">${esc(nook ? t(nook.labelKey) : t('pa.summary.none'))}</dd>
-      </div>
-      <div class="flex items-center justify-between gap-3">
         <dt class="text-navy-500">${esc(t('pa.summary.host'))}</dt>
         <dd class="text-navy-900">${esc(p.host)}</dd>
       </div>
@@ -3916,12 +3895,6 @@ function paBespokeRequest() {
       <span class="pa-opt-hint">${esc(t(b.hintKey))}</span>
     </button>`;
   }).join('');
-  const nooks = PA_NOOKS.map(n => {
-    const on = n.id === p.nook;
-    return `<button data-pa-nook="${n.id}" class="pa-option-chip ${on ? 'active' : ''}">
-      <span class="pa-opt-label">${icon('i-pin','w-3.5 h-3.5 inline -mt-0.5 text-gold-500')} ${esc(t(n.labelKey))}</span>
-    </button>`;
-  }).join('');
   const modes = [
     { id:'now',      labelKey:'pa.prive.mode.now',      hintKey:'pa.prive.mode.now.hint',      iconId:'i-flame' },
     { id:'preorder', labelKey:'pa.prive.mode.preorder', hintKey:'pa.prive.mode.preorder.hint', iconId:'i-clock' },
@@ -3979,10 +3952,6 @@ function paBespokeRequest() {
                 <div class="text-[0.62rem] uppercase tracking-[0.22em] text-navy-500">${esc(t('pa.schedule.title'))}</div>
                 <div class="mt-3 grid grid-cols-3 sm:grid-cols-6 gap-2">${timeChips}</div>
               </div>` : ''}
-            </div>
-            <div>
-              <div class="text-[0.68rem] uppercase tracking-[0.22em] text-navy-700">${esc(t('pa.prive.nook.title'))}</div>
-              <div class="mt-3 grid sm:grid-cols-3 gap-2.5">${nooks}</div>
             </div>
             <div>
               <div class="text-[0.68rem] uppercase tracking-[0.22em] text-navy-700">${esc(t('pa.prive.chefNote.title'))}</div>
@@ -5262,11 +5231,6 @@ function attachPageEvents() {
     paApplySizeDefaults(false);  // truncate selections that overflow new count
     renderMain();
   }));
-  document.querySelectorAll('[data-pa-nook]').forEach(b => b.addEventListener('click', () => {
-    const id = b.getAttribute('data-pa-nook');
-    STATE.preArrival.prive.nook = STATE.preArrival.prive.nook === id ? null : id;
-    renderMain();
-  }));
   document.querySelectorAll('[data-pa-time]').forEach(b => b.addEventListener('click', () => {
     const time = b.getAttribute('data-pa-time');
     STATE.preArrival.schedule = STATE.preArrival.schedule === time ? '' : time;
@@ -5305,7 +5269,6 @@ function attachPageEvents() {
     STATE.preArrival.suite.mode = 'custom';
     STATE.preArrival.suite.counts = { starters: 2, mains: 2, desserts: 1 };
     STATE.preArrival.suite.combo = 'voyager';
-    STATE.preArrival.prive.nook = null;
     STATE.preArrival.prive.chefNote = '';
     STATE.preArrival.prive.ingredients = new Set();
     STATE.preArrival.prive.pairing = null;
