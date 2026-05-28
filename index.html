@@ -2005,10 +2005,10 @@ function depositGraceTime(arrivalStr) {
 }
 
 function canOfferTierUpgrade() {
-  // Offer an upgrade to the next tier up from the current lounge, provided
-  // the current lounge is full (queue has at least one waiter) and the
-  // target tier still has seats.
-  const from = currentLoungeTier();
+  // Offer an upgrade from the user's *effective* tier (base lounge promoted
+  // by any active upgrade), provided the lounge is full and the next tier
+  // still has seats.
+  const from = effectiveTier(currentLoungeTier());
   const to = nextTier(from);
   if (!to) return { offered: false, reason: 'top-tier', from };
   const tablesFull = state.queue.length > 0;
@@ -2019,7 +2019,7 @@ function canOfferTierUpgrade() {
 }
 // Back-compat shim: only ever yields a meaningful "offered" for Lifestyle→Luxe.
 function canOfferLuxeUpgrade() {
-  const tier = currentLoungeTier();
+  const tier = effectiveTier(currentLoungeTier());
   if (tier !== 'lifestyle') return { offered: false, reason: 'tier-incompatible', remaining: tierSeatsRemaining('luxe') };
   const r = canOfferTierUpgrade();
   // Preserve the old `luxe-full` reason name for any external callers.
@@ -2027,8 +2027,10 @@ function canOfferLuxeUpgrade() {
   return r;
 }
 
+// Tier of the user's base lounge — the original booking. Receipt code uses
+// this as the "from" tier so the entry-included row stays correct after an
+// upgrade.
 function currentLoungeTier() {
-  // Resolve the tier of the currently selected lounge from LOUNGE_NETWORK.
   const id = state.booking.loungeId;
   for (const group of LOUNGE_NETWORK) {
     for (const l of group.lounges) {
@@ -2037,6 +2039,16 @@ function currentLoungeTier() {
     }
   }
   return 'lifestyle';
+}
+
+// Effective tier — promotes to state.booking.upgradeTier when higher. Use
+// this in callers that gate access (Pre-Arrival visibility, "what's the next
+// upgrade I can offer", dashboard tier label) rather than in receipt math.
+function effectiveTier(baseTier) {
+  const u = state && state.booking && state.booking.upgradeTier;
+  if (!u) return baseTier;
+  const order = ['lifestyle','luxe','suite','prive'];
+  return order.indexOf(u) > order.indexOf(baseTier) ? u : baseTier;
 }
 
 function loungeProfileFromNetwork(net, region) {
@@ -3218,7 +3230,7 @@ function upgradeStep2Markup() {
   const l = lounge();
   const toTier = state.pendingUpgrade;
   const toLabel = TIER_LABELS[toTier] || 'Tier';
-  const fromTier = currentLoungeTier();
+  const fromTier = effectiveTier(currentLoungeTier());
   const fromLabel = TIER_LABELS[fromTier] || 'Lifestyle';
   const fee = tierUpgradeFee(l.priceFrom, fromTier, toTier);
   const method = upgradeFlow.payMethod;
@@ -3272,7 +3284,7 @@ function upgradeStep3Markup() {
   const l = lounge();
   const toTier = state.pendingUpgrade;
   const toLabel = TIER_LABELS[toTier] || 'Tier';
-  const fee = tierUpgradeFee(l.priceFrom, currentLoungeTier(), toTier);
+  const fee = tierUpgradeFee(l.priceFrom, effectiveTier(currentLoungeTier()), toTier);
   return `
     <div class="text-center">
       <div class="mx-auto h-14 w-14 rounded-full border-2 border-aspire-border border-t-aspire-navy animate-spin"></div>
@@ -3731,7 +3743,7 @@ function renderQueue() {
   const ahead = myIdx >= 0 ? myIdx : state.queue.length;
   const l = lounge();
   const offer = canOfferTierUpgrade();
-  const currentTierLabel = TIER_LABELS[currentLoungeTier()] || 'Lifestyle';
+  const currentTierLabel = TIER_LABELS[effectiveTier(currentLoungeTier())] || 'Lifestyle';
   const upgradedTo = state.confirmed ? state.booking.upgradeTier : null;
   const upgradedProfile = upgradedTo ? TIER_PROFILES[upgradedTo] : null;
   const upgradeFee = offer.offered ? tierUpgradeFee(l.priceFrom, offer.from, offer.to) : 0;
@@ -4350,10 +4362,18 @@ window.addEventListener('hashchange', () => {
   // History persists across reloads for the current tab session only.
   try {
     var rawH = sessionStorage.getItem('paHistory');
-    if (rawH) paState.history = JSON.parse(rawH) || [];
+    if (rawH) {
+      paState.history = JSON.parse(rawH) || [];
+      if (paState.history.length > 20) paState.history = paState.history.slice(-20);
+    }
   } catch (e) {}
   function paPersistHistory() {
     try { sessionStorage.setItem('paHistory', JSON.stringify(paState.history)); } catch (e) {}
+  }
+  function paPushHistory(entry) {
+    paState.history.push(entry);
+    if (paState.history.length > 20) paState.history = paState.history.slice(-20);
+    paPersistHistory();
   }
 
   // Snapshot of the composer state when an order was confirmed — used by Modify
@@ -5057,16 +5077,24 @@ window.addEventListener('hashchange', () => {
   function paLoungeTier() {
     var id = (typeof state !== 'undefined' && state && state.booking && state.booking.loungeId) || 'zrh-abd';
     if (typeof LOUNGE_NETWORK === 'undefined') return { tier:'lifestyle', name:'Aspire Lounge' };
+    var baseTier = 'lifestyle', baseName = 'Aspire Lounge';
     for (var i = 0; i < LOUNGE_NETWORK.length; i++) {
       var g = LOUNGE_NETWORK[i];
       for (var j = 0; j < g.lounges.length; j++) {
         var x = g.lounges[j];
         var code = x.code || '—';
         var xid = x.id || (code.toLowerCase() + '-' + x.city.toLowerCase().replace(/[^a-z0-9]/g,''));
-        if (xid === id) return { tier: x.tier || 'lifestyle', name: x.name };
+        if (xid === id) { baseTier = x.tier || 'lifestyle'; baseName = x.name; break; }
       }
     }
-    return { tier:'lifestyle', name:'Aspire Lounge' };
+    // Promote to the upgraded tier if an upgrade is active on the booking.
+    var u = state && state.booking && state.booking.upgradeTier;
+    var order = ['lifestyle','luxe','suite','prive'];
+    if (u && order.indexOf(u) > order.indexOf(baseTier)) {
+      var profile = (typeof TIER_PROFILES !== 'undefined') ? TIER_PROFILES[u] : null;
+      return { tier: u, name: (profile && profile.name) || baseName };
+    }
+    return { tier: baseTier, name: baseName };
   }
 
   function paReadAuth() {
@@ -5622,8 +5650,7 @@ window.addEventListener('hashchange', () => {
         // receipt + history view can re-resolve names later.
         selections: { starters: paState.selections.starters.slice(), mains: paState.selections.mains.slice(), desserts: paState.selections.desserts.slice() },
       };
-      paState.history.push(paState.confirmed);
-      paPersistHistory();
+      paPushHistory(paState.confirmed);
       paRender();
       host.scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
@@ -5648,8 +5675,7 @@ window.addEventListener('hashchange', () => {
         confirmedAt: Date.now(),
         draft: paSnapshotDraft(),
       };
-      paState.history.push(paState.confirmed);
-      paPersistHistory();
+      paPushHistory(paState.confirmed);
       paRender();
       if (typeof host.scrollIntoView === 'function') host.scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
@@ -6376,14 +6402,18 @@ window.addEventListener('hashchange', () => {
   /* ---------- Tier-aware Pre-Arrival visibility ---------- */
   function mb_loungeTier() {
     var id = (typeof state !== 'undefined' && state && state.booking && state.booking.loungeId) || 'zrh-abd';
+    var base = 'lifestyle';
     for (var i = 0; i < LOUNGE_NETWORK.length; i++) {
       var g = LOUNGE_NETWORK[i];
       for (var j = 0; j < g.lounges.length; j++) {
         var x = g.lounges[j];
-        if ((x.id || '') === id) return x.tier || 'lifestyle';
+        if ((x.id || '') === id) { base = x.tier || 'lifestyle'; break; }
       }
     }
-    return 'lifestyle';
+    // Promote to the upgraded tier if an upgrade is active.
+    var u = state && state.booking && state.booking.upgradeTier;
+    var order = ['lifestyle','luxe','suite','prive'];
+    return (u && order.indexOf(u) > order.indexOf(base)) ? u : base;
   }
   function mb_syncPreArrivalTab() {
     var hide = mb_loungeTier() === 'lifestyle';
