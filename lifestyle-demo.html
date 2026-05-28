@@ -6603,12 +6603,13 @@ window.addEventListener('hashchange', () => {
 })();
 </script>
 <!-- ============================================================ -->
-<!-- LIFESTYLE ONE-FLOW DEMO · forces a single guided path -->
+<!-- ASPIRE GUIDED DEMO · multi-tier one-flow walkthrough -->
+<!-- Lifestyle / Luxe / Suite / Privé · with Pre-Arrival Dining -->
 <!-- ============================================================ -->
 <style>
-  body.lifestyle-demo .nav-link,
-  body.lifestyle-demo #mobile-menu,
-  body.lifestyle-demo #lang-toggle { pointer-events: none; opacity: 0.45; }
+  body.aspire-demo .nav-link,
+  body.aspire-demo #mobile-menu,
+  body.aspire-demo #lang-toggle { pointer-events: none; opacity: 0.45; }
   #demo-veil {
     position: fixed; inset: 0;
     background: rgba(31, 42, 68, 0.32);
@@ -6692,7 +6693,7 @@ window.addEventListener('hashchange', () => {
     padding: 0.2rem 0.6rem; border-radius: 999px; cursor: pointer;
   }
   #demo-banner button:hover { background: rgba(255,255,255,0.1); }
-  #demo-finale {
+  #demo-finale, #demo-tier-picker {
     position: fixed; inset: 0; z-index: 9100;
     background: rgba(31, 42, 68, 0.78);
     display: flex; align-items: center; justify-content: center;
@@ -6716,13 +6717,103 @@ window.addEventListener('hashchange', () => {
   #demo-finale .dm-card .row {
     display: flex; gap: 0.6rem; margin-top: 1.4rem; justify-content: center;
   }
+  /* Tier picker */
+  #demo-tier-picker .tp-card {
+    background: #fff; border-radius: 16px; max-width: 760px; width: 100%;
+    padding: 2.2rem 2.4rem 2.4rem;
+    box-shadow: 0 30px 80px -20px rgba(0,0,0,0.5);
+  }
+  #demo-tier-picker h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400; font-size: 2.4rem; color: #1F2A44;
+    margin-top: 0.4rem; line-height: 1.05;
+  }
+  #demo-tier-picker .tp-sub {
+    color: #3D4A66; margin-top: 0.6rem; font-size: 0.96rem; line-height: 1.5;
+    max-width: 540px;
+  }
+  #demo-tier-picker .tp-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 12px; margin-top: 1.5rem;
+  }
+  @media (min-width: 720px) {
+    #demo-tier-picker .tp-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+  #demo-tier-picker .tp-btn {
+    cursor: pointer; text-align: left;
+    background: #FFFFFF; border: 1px solid #ECECEC;
+    border-radius: 12px; padding: 1.05rem 1.1rem 1.15rem;
+    transition: all 180ms ease;
+    font-family: 'Inter', sans-serif; font-weight: 300;
+    color: #1F2A44;
+  }
+  #demo-tier-picker .tp-btn:hover {
+    border-color: #B59D88;
+    box-shadow: 0 12px 30px -16px rgba(31,42,68,0.35);
+    transform: translateY(-2px);
+  }
+  #demo-tier-picker .tp-eyebrow {
+    font-family: 'Inter', sans-serif; font-weight: 500;
+    font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.22em;
+    color: #9B8470;
+  }
+  #demo-tier-picker .tp-title {
+    font-family: 'Cormorant Garamond', serif; font-weight: 500;
+    font-size: 1.7rem; line-height: 1.05; color: #1F2A44;
+    margin-top: 0.45rem;
+  }
+  #demo-tier-picker .tp-body {
+    margin-top: 0.4rem; font-size: 0.82rem; color: #3D4A66; line-height: 1.45;
+  }
+  #demo-tier-picker .tp-meta {
+    margin-top: 0.7rem; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.18em;
+    color: #9B8470;
+  }
+  #demo-tier-picker .tp-foot {
+    margin-top: 1.3rem; font-size: 0.74rem; color: #9B8470;
+  }
 </style>
 
-<div id="demo-veil"></div>
-<div id="demo-banner">
+<div id="demo-tier-picker">
+  <div class="tp-card">
+    <div class="swiss-eyebrow" style="color:#9B8470;">— Aspire guided demo</div>
+    <h2>Which experience would you like to walk through?</h2>
+    <p class="tp-sub">Pick a tier and you'll be led down a single forced path through every feature available for that tier — booking, seating, virtual queue, the menu, and (for Luxe / Suite / Privé) Pre-Arrival Dining.</p>
+    <div class="tp-grid">
+      <button class="tp-btn" data-demo-tier="lifestyle">
+        <div class="tp-eyebrow">— Tier 01</div>
+        <div class="tp-title">Lifestyle</div>
+        <div class="tp-body">Buffet, bar &amp; à la carte service — a calm pre-flight ritual.</div>
+        <div class="tp-meta">Zurich · Gates A, B &amp; D</div>
+      </button>
+      <button class="tp-btn" data-demo-tier="luxe">
+        <div class="tp-eyebrow">— Tier 02</div>
+        <div class="tp-title">Luxe</div>
+        <div class="tp-body">Curated three-course tray, signature pairings, prepped before arrival.</div>
+        <div class="tp-meta">Geneva · Aspire Luxe</div>
+      </button>
+      <button class="tp-btn" data-demo-tier="suite">
+        <div class="tp-eyebrow">— Tier 03</div>
+        <div class="tp-title">Suite</div>
+        <div class="tp-body">Private suite, curated or bespoke tray, sommelier-paired.</div>
+        <div class="tp-meta">Zurich · Suite by Aspire</div>
+      </button>
+      <button class="tp-btn" data-demo-tier="prive">
+        <div class="tp-eyebrow">— Tier 04</div>
+        <div class="tp-title">Privé</div>
+        <div class="tp-body">Five-ingredient bespoke plate, dedicated host, fine porcelain.</div>
+        <div class="tp-meta">Zurich · Privé by Aspire</div>
+      </button>
+    </div>
+    <div class="tp-foot">You can restart the demo and pick a different tier at any time.</div>
+  </div>
+</div>
+
+<div id="demo-veil" style="display:none;"></div>
+<div id="demo-banner" style="display:none;">
   <span class="dm-dot"></span>
-  <span>Lifestyle Demo · Guided Flow</span>
-  <span id="dm-step-count" style="opacity:.55;">1 / 10</span>
+  <span id="dm-banner-label">Aspire Demo</span>
+  <span id="dm-step-count" style="opacity:.55;">1 / 1</span>
   <button type="button" id="dm-exit">Exit</button>
 </div>
 <div id="demo-coachmark" style="display:none;">
@@ -6732,7 +6823,7 @@ window.addEventListener('hashchange', () => {
   <div class="dm-body" id="dm-body">Body</div>
   <div class="dm-foot">
     <span id="dm-hint">Tap the highlighted button</span>
-    <span>Lifestyle only</span>
+    <span id="dm-tier-tag">—</span>
   </div>
 </div>
 
@@ -6740,12 +6831,45 @@ window.addEventListener('hashchange', () => {
 (function () {
   'use strict';
 
-  document.body.classList.add('lifestyle-demo');
+  document.body.classList.add('aspire-demo');
 
-  // Make sure we start on a Lifestyle lounge (zrh-abd is lifestyle).
-  try {
-    if (typeof state !== 'undefined' && state && state.booking) {
-      state.booking.loungeId = 'zrh-abd';
+  // ----------------------------------------------------------------
+  // Tier setup — each chosen tier maps to a specific lounge in the
+  // network so the booking flow, dashboard tier label and pre-arrival
+  // composer all light up the right experience.
+  // ----------------------------------------------------------------
+  var TIER_META = {
+    lifestyle: { label: 'Lifestyle', loungeId: 'zrh-abd',   tag: 'Lifestyle · Buffet & bar' },
+    luxe:      { label: 'Luxe',      loungeId: 'gva-luxe',  tag: 'Luxe · Curated tray' },
+    suite:     { label: 'Suite',     loungeId: 'zrh-suite', tag: 'Suite · Private suite tray' },
+    prive:     { label: 'Privé',     loungeId: 'zrh-prive', tag: 'Privé · Bespoke plate' }
+  };
+  var chosenTier = null;
+
+  function findNetEntry(loungeId) {
+    if (typeof LOUNGE_NETWORK === 'undefined') return null;
+    for (var i = 0; i < LOUNGE_NETWORK.length; i++) {
+      var g = LOUNGE_NETWORK[i];
+      for (var j = 0; j < g.lounges.length; j++) {
+        if (g.lounges[j].id === loungeId) {
+          return { net: g.lounges[j], region: g.region };
+        }
+      }
+    }
+    return null;
+  }
+
+  function configureLounge(tier) {
+    var meta = TIER_META[tier];
+    try {
+      var match = findNetEntry(meta.loungeId);
+      if (match && typeof pickLounge === 'function') {
+        pickLounge(match.net, match.region);
+      } else if (typeof state !== 'undefined' && state && state.booking) {
+        state.booking.loungeId = meta.loungeId;
+      }
+    } catch (_) {}
+    try {
       state.booking.guestName = '';
       state.booking.email = '';
       state.booking.membership = 'priority-pass';
@@ -6754,147 +6878,238 @@ window.addEventListener('hashchange', () => {
       state.verified = false;
       state.preferredZone = null;
       state.tableSlot = '14:00';
-    }
-    if (typeof updateLoungePickerLabel === 'function') updateLoungePickerLabel();
-    if (typeof go === 'function') go('home');
-  } catch (_) { /* page may still be booting */ }
+      state.booking.upgradeTier = null;
+      state.booking.luxeUpgrade = false;
+    } catch (_) {}
+    try { sessionStorage.removeItem('paAuth'); } catch (_) {}
+    try { if (typeof updateLoungePickerLabel === 'function') updateLoungePickerLabel(); } catch (_) {}
+    try { if (typeof go === 'function') go('home'); } catch (_) {}
+  }
 
   // ----------------------------------------------------------------
-  // Step definitions — one click each, forces a single Lifestyle path
+  // Step builder — base reservation flow is the same for every tier;
+  // the post-confirmation continuation differs (Lifestyle = seating →
+  // queue → menu, others = seating → pre-arrival → queue → menu).
   // ----------------------------------------------------------------
-  var STEPS = [
-    {
-      view: 'home',
-      eyebrow: 'Step 1 · Home',
-      title: 'Reserve the Lifestyle lounge',
-      body: 'Your Lifestyle lounge — Zürich Aspire Gates A, B & D — is already selected. Tap the highlighted button to start the booking flow.',
-      selector: '#view-home button[onclick="searchAndGo()"]'
-    },
-    {
-      view: 'reserve',
-      reserveStep: 1,
-      eyebrow: 'Step 2 · Lounge',
-      title: 'Continue to schedule',
-      body: 'This is the Lifestyle lounge card. No tier upgrades in this demo — tap Continue to pick a date and arrival window.',
-      selector: '#view-reserve [data-step="1"] button.btn-primary'
-    },
-    {
-      view: 'reserve',
-      reserveStep: 2,
-      eyebrow: 'Step 3 · Schedule',
-      title: 'Continue to guest details',
-      body: 'Date, party size and a 3-hour arrival window are pre-set. Lifestyle entry doesn\'t need a reserved seat — tap Continue.',
-      selector: '#view-reserve [data-step="2"] button.btn-primary',
-      onEnter: function () {
-        try {
-          state.booking.preferredZone = null;
-          if (typeof renderStep2 === 'function') renderStep2();
-        } catch (_) {}
+  function buildSteps(tier) {
+    var meta = TIER_META[tier];
+    var isLifestyle = tier === 'lifestyle';
+
+    var common = [
+      {
+        view: 'home',
+        eyebrow: 'Step 1 · Home',
+        title: 'Reserve the ' + meta.label + ' lounge',
+        body: 'Your ' + meta.label + ' lounge is selected. Tap the highlighted button to start the booking flow.',
+        selector: '#view-home button[onclick="searchAndGo()"]'
+      },
+      {
+        view: 'reserve', reserveStep: 1,
+        eyebrow: 'Step 2 · Lounge',
+        title: 'Continue to schedule',
+        body: 'This is the lounge card for your ' + meta.label + ' selection. Tap Continue to pick a date and arrival window.',
+        selector: '#view-reserve [data-step="1"] button.btn-primary'
+      },
+      {
+        view: 'reserve', reserveStep: 2,
+        eyebrow: 'Step 3 · Schedule',
+        title: 'Continue to guest details',
+        body: 'Date, party size and a 3-hour arrival window are pre-set. Tap Continue.',
+        selector: '#view-reserve [data-step="2"] button.btn-primary',
+        onEnter: function () {
+          try {
+            state.booking.preferredZone = null;
+            if (typeof renderStep2 === 'function') renderStep2();
+          } catch (_) {}
+        }
+      },
+      {
+        view: 'reserve', reserveStep: 3,
+        eyebrow: 'Step 4 · Guest details',
+        title: 'Continue to payment',
+        body: 'We\'ve auto-filled the guest details for the demo. Tap Continue to review and confirm.',
+        selector: '#step3-next',
+        onEnter: function () {
+          try {
+            state.booking.guestName = 'Lukas Zimmermann';
+            state.booking.email = 'lukas@example.com';
+            var n = document.getElementById('step-name'); if (n) n.value = state.booking.guestName;
+            var e = document.getElementById('step-email'); if (e) e.value = state.booking.email;
+            var p = document.getElementById('step-phone'); if (p) p.value = '+41 79 000 00 00';
+            if (typeof validateStep3 === 'function') validateStep3();
+          } catch (_) {}
+        }
+      },
+      {
+        view: 'reserve', reserveStep: 4,
+        eyebrow: 'Step 5 · Payment',
+        title: 'Confirm reservation',
+        body: 'Priority Pass is on file so no charge is taken. Terms accepted automatically — tap Confirm.',
+        selector: '#confirm-btn',
+        onEnter: function () {
+          try {
+            var ln = document.getElementById('pass-lastname'); if (ln) ln.value = 'Zimmermann';
+            var pn = document.getElementById('pass-number');   if (pn) pn.value = 'PP-2026-3458';
+            ['input','change'].forEach(function (ev) {
+              if (ln) ln.dispatchEvent(new Event(ev, { bubbles: true }));
+              if (pn) pn.dispatchEvent(new Event(ev, { bubbles: true }));
+            });
+            var accept = document.getElementById('pay-accept');
+            if (accept && !accept.checked) {
+              accept.checked = true;
+              accept.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+            var cbtn = document.getElementById('confirm-btn');
+            if (cbtn) cbtn.classList.remove('disabled');
+          } catch (_) {}
+        }
+      },
+      {
+        view: 'pay-modal',
+        eyebrow: 'Step 6 · Confirmation',
+        title: 'Booking confirmed',
+        body: 'Your ' + meta.label + ' reservation is held. Tap Done to open your dashboard.',
+        selector: '#pay-modal #pay-stage-success button.btn-primary'
+      },
+      {
+        view: 'dashboard',
+        eyebrow: 'Step 7 · My Stay',
+        title: 'Open the seating preference',
+        body: 'Your booking and QR pass live here. Next, let\'s share a seat preference for arrival.',
+        selector: '#dm-jump-tables'
+      },
+      {
+        view: 'tables',
+        eyebrow: 'Step 8 · Seating',
+        title: 'Submit your preference',
+        body: 'Communal is pre-selected for the demo. Tap Submit and we\'ll match a table on arrival.',
+        selector: '#confirm-table-btn',
+        onEnter: function () {
+          try {
+            state.verified = true;
+            state.verification.type = 'priority-pass';
+            state.verification.lastName = 'Zimmermann';
+            state.verification.number = 'PP-2026-3458';
+            state.preferredZone = 'communal';
+            state.tableSlot = state.booking.arrivalTime || '14:00';
+            if (typeof renderTables === 'function') renderTables();
+          } catch (_) {}
+        }
       }
-    },
-    {
-      view: 'reserve',
-      reserveStep: 3,
-      eyebrow: 'Step 4 · Guest details',
-      title: 'Continue to payment',
-      body: 'We\'ve auto-filled the guest details for the demo. Tap Continue to review and confirm.',
-      selector: '#step3-next',
-      onEnter: function () {
-        try {
-          state.booking.guestName = 'Lukas Zimmermann';
-          state.booking.email = 'lukas@example.com';
-          var n = document.getElementById('step-name'); if (n) n.value = state.booking.guestName;
-          var e = document.getElementById('step-email'); if (e) e.value = state.booking.email;
-          var p = document.getElementById('step-phone'); if (p) p.value = '+41 79 000 00 00';
-          if (typeof validateStep3 === 'function') validateStep3();
-        } catch (_) {}
+    ];
+
+    var lifestyleTail = [
+      {
+        view: 'queue',
+        eyebrow: 'Step 9 · Walk-in queue',
+        title: 'Browse the buffet menu',
+        body: 'The live queue ticker shows current waits. Tap Continue to see today\'s editorial buffet.',
+        selector: '#dm-jump-menu',
+        onEnter: function () { try { if (typeof renderQueue === 'function') renderQueue(); } catch (_) {} }
+      },
+      {
+        view: 'menu',
+        eyebrow: 'Step 10 · Buffet menu',
+        title: 'Return to your QR pass',
+        body: 'A look at today\'s editorial Lifestyle buffet. Tap Continue to see your QR check-in pass.',
+        selector: '#dm-jump-dashboard',
+        onEnter: function () { try { if (typeof mb_show === 'function') {} } catch (_) {} }
+      },
+      {
+        view: 'dashboard',
+        final: true
       }
-    },
-    {
-      view: 'reserve',
-      reserveStep: 4,
-      eyebrow: 'Step 5 · Payment',
-      title: 'Confirm reservation',
-      body: 'Priority Pass is on file so no charge is taken. Terms accepted automatically for the demo — tap Confirm.',
-      selector: '#confirm-btn',
-      onEnter: function () {
-        try {
-          var ln = document.getElementById('pass-lastname'); if (ln) ln.value = 'Zimmermann';
-          var pn = document.getElementById('pass-number');   if (pn) pn.value = 'PP-2026-3458';
-          ['input','change'].forEach(function (ev) {
-            if (ln) ln.dispatchEvent(new Event(ev, { bubbles: true }));
-            if (pn) pn.dispatchEvent(new Event(ev, { bubbles: true }));
+    ];
+
+    var preArrivalTail = [
+      {
+        view: 'menu', menuSub: 'pre-arrival',
+        eyebrow: 'Step 9 · Pre-Arrival Dining',
+        title: 'Verify access for Pre-Arrival',
+        body: meta.label + ' unlocks pre-ordering before you arrive. The last name and pass number are pre-filled — tap Verify access.',
+        selector: '#view-menu [data-pa-auth-submit]',
+        onEnter: function () {
+          try {
+            if (typeof window.paBoot === 'function') window.paBoot();
+            sessionStorage.removeItem('paAuth');
+            if (typeof window.paRerender === 'function') window.paRerender();
+          } catch (_) {}
+          requestAnimationFrame(function () {
+            var ln = document.querySelector('#view-menu [data-pa-auth-lastname]');
+            var pn = document.querySelector('#view-menu [data-pa-auth-pass]');
+            if (ln) ln.value = 'Zimmermann';
+            if (pn) pn.value = 'PP-2026-3458';
           });
-          var accept = document.getElementById('pay-accept');
-          if (accept && !accept.checked) {
-            accept.checked = true;
-            accept.dispatchEvent(new Event('change', { bubbles: true }));
-          }
-          var cbtn = document.getElementById('confirm-btn');
-          if (cbtn) cbtn.classList.remove('disabled');
-        } catch (_) {}
+        }
+      },
+      {
+        view: 'menu', menuSub: 'pre-arrival',
+        eyebrow: 'Step 10 · Pre-Arrival composer',
+        title: tier === 'prive' ? 'Send the bespoke request' : 'Confirm your pre-order',
+        body: tier === 'prive'
+          ? 'Five ingredients, a pairing and an arrival window are pre-set — tap to send the request to the chef.'
+          : 'A signature tray, pairing and arrival window are pre-set — tap to send your pre-order to the kitchen.',
+        selector: tier === 'prive'
+          ? '#view-menu [data-pa-bespoke-send]'
+          : '#view-menu [data-pa-confirm]',
+        // wait ~750ms for the auth simulation to flip into the composer
+        delayMs: 850,
+        onEnter: function () {
+          try {
+            // Prefill composer state per-tier so the Confirm CTA is enabled.
+            if (typeof paState !== 'undefined') {
+              paState.tier = tier;
+              paState.size = 'medium';
+              paState.schedule = '14:00';
+              if (tier === 'luxe') {
+                paState.luxeCombo = 'voyager';
+                if (typeof paApplyLuxeCombo === 'function') paApplyLuxeCombo();
+              } else if (tier === 'suite') {
+                paState.suite.mode = 'curated';
+                paState.suite.combo = 'voyager';
+                paState.suite.pairing = 'champagne';
+                if (typeof paApplySuiteCurated === 'function') paApplySuiteCurated();
+              } else if (tier === 'prive') {
+                paState.prive.mode = 'preorder';
+                paState.prive.pairing = 'wine';
+                paState.prive.ingredients = new Set(['mushroom','vegetable','potato']);
+              }
+              if (typeof window.paRerender === 'function') window.paRerender();
+            }
+          } catch (_) {}
+        }
+      },
+      {
+        view: 'queue',
+        eyebrow: 'Step 11 · Walk-in queue',
+        title: 'Browse the buffet menu',
+        body: 'For when you walk in without a pre-order. Tap Continue to see the editorial buffet.',
+        selector: '#dm-jump-menu',
+        onEnter: function () { try { if (typeof renderQueue === 'function') renderQueue(); } catch (_) {} }
+      },
+      {
+        view: 'menu', menuSub: 'editorial',
+        eyebrow: 'Step 12 · Editorial menu',
+        title: 'Return to your QR pass',
+        body: 'A look at today\'s editorial menu. Tap Continue to see your QR check-in pass.',
+        selector: '#dm-jump-dashboard'
+      },
+      {
+        view: 'dashboard',
+        final: true
       }
-    },
-    {
-      view: 'pay-modal',
-      eyebrow: 'Step 6 · Confirmation',
-      title: 'Booking confirmed',
-      body: 'Your Lifestyle reservation is held — no payment needed. Tap Done to open your dashboard.',
-      selector: '#pay-modal #pay-stage-success button.btn-primary'
-    },
-    {
-      view: 'dashboard',
-      eyebrow: 'Step 7 · My Stay',
-      title: 'Open the seating preference',
-      body: 'Your booking and QR pass live here. Next, let\'s share a seat preference — tap the highlighted action.',
-      selector: '#dm-jump-tables'
-    },
-    {
-      view: 'tables',
-      eyebrow: 'Step 8 · Seating',
-      title: 'Submit your preference',
-      body: 'Lifestyle floor plan — Communal is pre-selected for you. Tap Submit and we\'ll match a table on arrival.',
-      selector: '#confirm-table-btn',
-      onEnter: function () {
-        try {
-          state.verified = true;
-          state.verification.type = 'priority-pass';
-          state.verification.lastName = 'Zimmermann';
-          state.verification.number = 'PP-2026-3458';
-          state.preferredZone = 'communal';
-          state.tableSlot = state.booking.arrivalTime || '14:00';
-          if (typeof renderTables === 'function') renderTables();
-        } catch (_) {}
-      }
-    },
-    {
-      view: 'queue',
-      eyebrow: 'Step 9 · Walk-in queue',
-      title: 'Browse the virtual queue',
-      body: 'For Lifestyle walk-ins — the live ticker shows current waits. Tap Continue to view today\'s buffet menu.',
-      selector: '#dm-jump-menu',
-      onEnter: function () { try { if (typeof renderQueue === 'function') renderQueue(); } catch (_) {} }
-    },
-    {
-      view: 'menu',
-      eyebrow: 'Step 10 · Buffet menu',
-      title: 'Return to your QR pass',
-      body: 'A look at today\'s editorial Lifestyle buffet. Tap Continue to see your QR check-in pass — that\'s the demo.',
-      selector: '#dm-jump-dashboard'
-    },
-    {
-      view: 'dashboard',
-      final: true
-    }
-  ];
+    ];
+
+    return common.concat(isLifestyle ? lifestyleTail : preArrivalTail);
+  }
 
   // ----------------------------------------------------------------
-  // Inject hidden helper buttons that the demo uses to chain views.
-  // These give the coachmark a stable target across view changes
-  // without depending on which dashboard / queue / menu CTA exists.
+  // Hidden jump buttons that the demo uses to chain views without
+  // depending on whichever CTA each page exposes.
   // ----------------------------------------------------------------
-  function injectJumpButton(id, view, label) {
+  function injectJumpButton(id, viewName, label, opts) {
     if (document.getElementById(id)) return;
+    opts = opts || {};
     var b = document.createElement('button');
     b.id = id;
     b.type = 'button';
@@ -6908,7 +7123,13 @@ window.addEventListener('hashchange', () => {
     b.style.justifyContent = 'center';
     b.style.display = 'none';
     b.addEventListener('click', function () {
-      if (typeof go === 'function') go(view);
+      if (typeof go === 'function') go(viewName);
+      if (opts.menuSub) {
+        setTimeout(function () {
+          var tab = document.querySelector('#view-menu [data-mb-go="'+opts.menuSub+'"]');
+          demoTrustedClick(tab);
+        }, 80);
+      }
     });
     document.body.appendChild(b);
   }
@@ -6918,24 +7139,26 @@ window.addEventListener('hashchange', () => {
   injectJumpButton('dm-jump-dashboard', 'dashboard', 'See my QR pass →');
 
   // ----------------------------------------------------------------
-  // Click gate — only the highlighted element (and its descendants)
-  // can be clicked. Everything else is blocked at capture phase.
+  // Click gate
   // ----------------------------------------------------------------
   var currentTarget = null;
   var idx = 0;
+  var STEPS = [];
 
   function isAllowed(el) {
     if (!el) return false;
-    if (el.closest('#demo-banner')) return true;
-    if (el.closest('#demo-coachmark')) return true;
-    if (el.closest('#demo-finale')) return true;
+    if (el.closest('#demo-banner'))      return true;
+    if (el.closest('#demo-coachmark'))   return true;
+    if (el.closest('#demo-finale'))      return true;
+    if (el.closest('#demo-tier-picker')) return true;
     if (currentTarget && (el === currentTarget || currentTarget.contains(el))) return true;
     return false;
   }
 
   ['click','mousedown','mouseup','touchstart','touchend','pointerdown','pointerup'].forEach(function (type) {
     document.addEventListener(type, function (e) {
-      if (window.__lifestyleDemoExited) return;
+      if (window.__aspireDemoExited) return;
+      if (window.__demoTrustedClick) return;
       if (!isAllowed(e.target)) {
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -6943,19 +7166,24 @@ window.addEventListener('hashchange', () => {
       }
     }, true);
   });
-
   document.addEventListener('keydown', function (e) {
-    if (window.__lifestyleDemoExited) return;
-    // Block Tab/Enter on non-target inputs so the demo path is the only path.
-    var tgt = e.target;
-    if (!isAllowed(tgt) && (e.key === 'Enter' || e.key === ' ' || e.key === 'Tab')) {
+    if (window.__aspireDemoExited) return;
+    if (!isAllowed(e.target) && (e.key === 'Enter' || e.key === ' ' || e.key === 'Tab')) {
       e.preventDefault();
       e.stopPropagation();
     }
   }, true);
+  function demoTrustedClick(el) {
+    if (!el) return;
+    window.__demoTrustedClick = true;
+    try { el.click(); } finally {
+      setTimeout(function () { window.__demoTrustedClick = false; }, 30);
+    }
+  }
+  window.__demoTrustedClick = false;
 
   // ----------------------------------------------------------------
-  // Coachmark positioning + step driver
+  // Coachmark positioning
   // ----------------------------------------------------------------
   var coach   = document.getElementById('demo-coachmark');
   var arrow   = document.getElementById('dm-arrow');
@@ -6963,6 +7191,8 @@ window.addEventListener('hashchange', () => {
   var title   = document.getElementById('dm-title');
   var body    = document.getElementById('dm-body');
   var counter = document.getElementById('dm-step-count');
+  var tierTag = document.getElementById('dm-tier-tag');
+  var bannerLabel = document.getElementById('dm-banner-label');
 
   function placeCoach(tgt) {
     if (!tgt) { coach.style.display = 'none'; return; }
@@ -6994,7 +7224,6 @@ window.addEventListener('hashchange', () => {
     coach.style.top = top + 'px';
     coach.style.left = left + 'px';
 
-    // arrow
     if (place === 'below') {
       arrow.style.top = '-7px';
       arrow.style.left = Math.max(16, Math.min(cw - 24, (r.left + r.width / 2) - left - 7)) + 'px';
@@ -7028,17 +7257,12 @@ window.addEventListener('hashchange', () => {
   }
 
   function onTargetClick() {
-    // The real handler fires too because we don't preventDefault on allowed
-    // targets — just queue the advance after the resulting view change.
     setTimeout(advance, 60);
   }
 
   function ensureView(step) {
     if (!step.view) return Promise.resolve();
-    if (step.view === 'pay-modal') {
-      // Special: pay-modal is opened by the previous step's click.
-      return Promise.resolve();
-    }
+    if (step.view === 'pay-modal') return Promise.resolve();
     if (typeof go === 'function') {
       var current = document.querySelector('.view.active');
       if (!current || current.id !== 'view-' + step.view) {
@@ -7050,7 +7274,14 @@ window.addEventListener('hashchange', () => {
         goStep(step.reserveStep);
       }
     }
-    return new Promise(function (res) { setTimeout(res, 80); });
+    if (step.menuSub) {
+      // mb_show is inside an IIFE; trigger via the tab button instead.
+      setTimeout(function () {
+        var tab = document.querySelector('#view-menu [data-mb-go="'+step.menuSub+'"]');
+        if (tab && !tab.classList.contains('active')) demoTrustedClick(tab);
+      }, 60);
+    }
+    return new Promise(function (res) { setTimeout(res, 100); });
   }
 
   function refreshJumpButtons(activeId) {
@@ -7064,8 +7295,8 @@ window.addEventListener('hashchange', () => {
   function findTarget(step, tries) {
     tries = tries || 0;
     var el = step.selector ? document.querySelector(step.selector) : null;
-    if (el) return Promise.resolve(el);
-    if (tries > 25) return Promise.resolve(null);
+    if (el && el.offsetParent !== null) return Promise.resolve(el);
+    if (tries > 40) return Promise.resolve(null);
     return new Promise(function (res) {
       setTimeout(function () { findTarget(step, tries + 1).then(res); }, 120);
     });
@@ -7074,41 +7305,44 @@ window.addEventListener('hashchange', () => {
   function showFinale() {
     clearTarget();
     document.getElementById('demo-banner').style.display = 'none';
-    var v = document.getElementById('demo-veil'); if (v) v.style.opacity = '0.0';
+    var v = document.getElementById('demo-veil'); if (v) v.style.opacity = '0';
     var f = document.createElement('div');
     f.id = 'demo-finale';
     f.innerHTML = '' +
       '<div class="dm-card">' +
       '  <div class="swiss-eyebrow">Demo complete</div>' +
-      '  <h2>That\'s the Lifestyle flow.</h2>' +
-      '  <p>You walked the one-way path: Home → Reserve → Confirmation → My Stay → Seating → Queue → Menu → QR pass — all on the Lifestyle tier with no detours.</p>' +
+      '  <h2>That\'s the ' + TIER_META[chosenTier].label + ' flow.</h2>' +
+      '  <p>You walked the one-way path from booking through every feature available on the ' + TIER_META[chosenTier].label + ' tier' +
+        (chosenTier === 'lifestyle' ? '' : ', including Pre-Arrival Dining') + '. Try a different tier?</p>' +
       '  <div class="row">' +
-      '    <button type="button" class="btn-outline" id="dm-restart">Restart demo</button>' +
+      '    <button type="button" class="btn-outline" id="dm-pick-again">Choose another tier</button>' +
       '    <button type="button" class="btn-primary" id="dm-close">Explore freely</button>' +
       '  </div>' +
       '</div>';
     document.body.appendChild(f);
-    document.getElementById('dm-restart').addEventListener('click', function () {
+    document.getElementById('dm-pick-again').addEventListener('click', function () {
       f.remove();
-      document.getElementById('demo-banner').style.display = 'flex';
-      var vl = document.getElementById('demo-veil'); if (vl) vl.style.opacity = '';
+      document.getElementById('demo-banner').style.display = 'none';
+      document.getElementById('demo-veil').style.display = 'none';
       idx = 0;
+      chosenTier = null;
       try { state.confirmed = false; state.verified = false; state.preferredZone = null; } catch (_) {}
-      runStep();
+      try { sessionStorage.removeItem('paAuth'); } catch (_) {}
+      try { if (typeof paState !== 'undefined') { paState.confirmed = null; } } catch (_) {}
+      document.getElementById('demo-tier-picker').style.display = 'flex';
     });
     document.getElementById('dm-close').addEventListener('click', exitDemo);
   }
 
   function exitDemo() {
     clearTarget();
-    document.body.classList.remove('lifestyle-demo');
-    ['demo-veil','demo-banner','demo-coachmark','demo-finale',
+    document.body.classList.remove('aspire-demo');
+    window.__aspireDemoExited = true;
+    ['demo-veil','demo-banner','demo-coachmark','demo-finale','demo-tier-picker',
      'dm-jump-tables','dm-jump-queue','dm-jump-menu','dm-jump-dashboard'].forEach(function (id) {
       var el = document.getElementById(id);
       if (el) el.remove();
     });
-    // Wipe our click gate by reloading style — easiest is to set a sentinel
-    window.__lifestyleDemoExited = true;
   }
   document.getElementById('dm-exit').addEventListener('click', exitDemo);
 
@@ -7119,7 +7353,7 @@ window.addEventListener('hashchange', () => {
   }
 
   function runStep() {
-    if (window.__lifestyleDemoExited) return;
+    if (window.__aspireDemoExited) return;
     var step = STEPS[idx];
     counter.textContent = (idx + 1) + ' / ' + STEPS.length;
 
@@ -7128,37 +7362,37 @@ window.addEventListener('hashchange', () => {
     clearTarget();
 
     ensureView(step).then(function () {
-      if (typeof step.onEnter === 'function') {
-        try { step.onEnter(); } catch (_) {}
-      }
-      // Show / hide jump buttons appropriate to this step
-      var jumpIds = ['dm-jump-tables','dm-jump-queue','dm-jump-menu','dm-jump-dashboard'];
-      var selId = step.selector ? step.selector.replace('#','') : null;
-      if (selId && jumpIds.indexOf(selId) !== -1) {
-        refreshJumpButtons(selId);
-      } else {
-        refreshJumpButtons(null);
-      }
+      var enter = function () {
+        if (typeof step.onEnter === 'function') {
+          try { step.onEnter(); } catch (_) {}
+        }
+        var jumpIds = ['dm-jump-tables','dm-jump-queue','dm-jump-menu','dm-jump-dashboard'];
+        var selId = step.selector ? step.selector.replace('#','') : null;
+        if (selId && jumpIds.indexOf(selId) !== -1) {
+          refreshJumpButtons(selId);
+        } else {
+          refreshJumpButtons(null);
+        }
+        if (step.view === 'pay-modal') return;
 
-      // pay-modal step is wired up by the mutation watcher once the success
-      // stage becomes visible — skip findTarget so we don't latch onto the
-      // still-hidden Done button beforehand.
-      if (step.view === 'pay-modal') return;
+        findTarget(step).then(function (el) {
+          if (!el) return;
+          currentTarget = el;
+          el.classList.add('demo-target');
+          el.classList.remove('disabled');
+          if (el.hasAttribute && el.hasAttribute('disabled')) el.removeAttribute('disabled');
+          el.addEventListener('click', onTargetClick, true);
 
-      findTarget(step).then(function (el) {
-        if (!el) { return; }
-        currentTarget = el;
-        el.classList.add('demo-target');
-        el.classList.remove('disabled');
-        el.addEventListener('click', onTargetClick, true);
+          eyebrow.textContent = step.eyebrow || '';
+          title.textContent   = step.title || '';
+          body.textContent    = step.body || '';
+          placeCoach(el);
 
-        eyebrow.textContent = step.eyebrow || '';
-        title.textContent   = step.title || '';
-        body.textContent    = step.body || '';
-        placeCoach(el);
-
-        try { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (_) {}
-      });
+          try { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (_) {}
+        });
+      };
+      if (step.delayMs) setTimeout(enter, step.delayMs);
+      else enter();
     });
   }
 
@@ -7169,15 +7403,14 @@ window.addEventListener('hashchange', () => {
     if (currentTarget) placeCoach(currentTarget);
   }, true);
 
-  // Watch for the pay-modal opening so we can advance to the success step.
+  // Watch for pay-modal success stage so we can wire up its Done button.
   var modalWatcher = new MutationObserver(function () {
-    if (window.__lifestyleDemoExited) return;
+    if (window.__aspireDemoExited) return;
     var step = STEPS[idx];
     if (!step || step.view !== 'pay-modal') return;
     var success = document.querySelector('#pay-modal #pay-stage-success');
     var modal   = document.getElementById('pay-modal');
     if (modal && !modal.classList.contains('hidden') && success && !success.classList.contains('hidden')) {
-      // success stage is visible — make sure target is wired
       var btn = success.querySelector('button.btn-primary');
       if (btn && btn !== currentTarget) {
         clearTarget();
@@ -7193,12 +7426,52 @@ window.addEventListener('hashchange', () => {
   });
   modalWatcher.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['class'] });
 
-  // Kick off after the page finishes its own init.
-  function boot() {
-    setTimeout(runStep, 350);
+  // Watch for pre-arrival auth → composer transition so the composer's
+  // Confirm button picks up the highlight as soon as it renders.
+  var paWatcher = new MutationObserver(function () {
+    if (window.__aspireDemoExited) return;
+    var step = STEPS[idx];
+    if (!step || !step.selector) return;
+    if (step.selector.indexOf('data-pa-confirm') === -1 &&
+        step.selector.indexOf('data-pa-bespoke-send') === -1) return;
+    var btn = document.querySelector(step.selector);
+    if (btn && btn !== currentTarget && btn.offsetParent !== null) {
+      clearTarget();
+      currentTarget = btn;
+      btn.classList.add('demo-target');
+      if (btn.hasAttribute('disabled')) btn.removeAttribute('disabled');
+      btn.addEventListener('click', onTargetClick, true);
+      eyebrow.textContent = step.eyebrow;
+      title.textContent   = step.title;
+      body.textContent    = step.body;
+      placeCoach(btn);
+    }
+  });
+  paWatcher.observe(document.body, { childList: true, subtree: true });
+
+  // ----------------------------------------------------------------
+  // Tier picker — entry point.
+  // ----------------------------------------------------------------
+  function startTier(tier) {
+    chosenTier = tier;
+    var meta = TIER_META[tier];
+    bannerLabel.textContent = 'Aspire Demo · ' + meta.label;
+    tierTag.textContent = meta.tag;
+    document.getElementById('demo-tier-picker').style.display = 'none';
+    document.getElementById('demo-veil').style.display = 'block';
+    document.getElementById('demo-banner').style.display = 'flex';
+
+    configureLounge(tier);
+    STEPS = buildSteps(tier);
+    idx = 0;
+    setTimeout(runStep, 280);
   }
-  if (document.readyState === 'complete') boot();
-  else window.addEventListener('load', boot);
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-demo-tier]'), function (btn) {
+    btn.addEventListener('click', function () {
+      startTier(btn.getAttribute('data-demo-tier'));
+    });
+  });
 })();
 </script>
 </body>
