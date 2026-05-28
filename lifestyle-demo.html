@@ -6901,6 +6901,39 @@ window.addEventListener('hashchange', () => {
   #demo-chapter-pill .cp-sub {
     margin-top: 0.2rem; font-size: 0.78rem; color: #3D4A66; line-height: 1.45;
   }
+
+  /* "What just changed" toast — fires the moment the user taps a
+     highlighted control so the cause/effect of every click is visible
+     before the next coachmark appears. */
+  #demo-change-toast {
+    position: fixed;
+    top: 16px; right: 22px;
+    z-index: 9050;
+    background: #1F2A44; color: #fff;
+    padding: 0.55rem 1.05rem 0.6rem 0.65rem;
+    border-radius: 999px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    box-shadow: 0 14px 32px -12px rgba(31,42,68,0.6);
+    display: inline-flex; align-items: center; gap: 0.55rem;
+    opacity: 0;
+    transform: translateX(24px);
+    pointer-events: none;
+    transition: opacity 280ms ease, transform 320ms cubic-bezier(0.4,0,0.2,1);
+  }
+  #demo-change-toast.dc-visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  #demo-change-toast .dc-check {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: #B59D88; color: #fff;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
 </style>
 
 <div id="demo-intro">
@@ -6951,6 +6984,11 @@ window.addEventListener('hashchange', () => {
   <div class="cp-eyebrow"><span id="cp-eyebrow">Chapter 01</span></div>
   <div class="cp-title" id="cp-title">Locking it in</div>
   <div class="cp-sub" id="cp-sub">—</div>
+</div>
+
+<div id="demo-change-toast">
+  <span class="dc-check"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m4 12 5 5L20 6"/></svg></span>
+  <span class="dc-text">—</span>
 </div>
 
 <div id="demo-tier-picker" style="display:none;">
@@ -7091,14 +7129,16 @@ window.addEventListener('hashchange', () => {
         eyebrow: 'Reserve',
         title: 'Reserve the ' + meta.label + ' lounge',
         body: "Your " + meta.label + " lounge is already selected. The whole booking takes two minutes — tap Reserve to begin.",
-        selector: '#view-home button[onclick="searchAndGo()"]'
+        selector: '#view-home button[onclick="searchAndGo()"]',
+        change: 'Booking flow opened'
       },
       {
         view: 'reserve', reserveStep: 1,
         eyebrow: 'Your lounge',
         title: 'Confirm the lounge',
         body: "Review the " + meta.label + " lounge — amenities, hours, the lot. Tap Continue to schedule the visit.",
-        selector: '#view-reserve [data-step="1"] button.btn-primary'
+        selector: '#view-reserve [data-step="1"] button.btn-primary',
+        change: 'Lounge confirmed'
       },
       {
         view: 'reserve', reserveStep: 2,
@@ -7106,6 +7146,7 @@ window.addEventListener('hashchange', () => {
         title: 'Pick the arrival window',
         body: 'Date, party size and a 3-hour arrival window pre-set for the demo. Tap Continue to guest details.',
         selector: '#view-reserve [data-step="2"] button.btn-primary',
+        change: 'Schedule locked',
         onEnter: function () {
           try {
             state.booking.preferredZone = null;
@@ -7119,6 +7160,7 @@ window.addEventListener('hashchange', () => {
         title: 'Confirm guest details',
         body: 'Name, email and mobile auto-filled — the customer never types. Tap Continue to payment.',
         selector: '#step3-next',
+        change: 'Guest details saved',
         onEnter: function () {
           try {
             state.booking.guestName = 'Lukas Zimmermann';
@@ -7136,6 +7178,7 @@ window.addEventListener('hashchange', () => {
         title: 'Confirm the reservation',
         body: "Priority Pass on file — no charge taken. Terms accepted for the demo. Tap Confirm.",
         selector: '#confirm-btn',
+        change: 'Verifying with provider…',
         onEnter: function () {
           try {
             var ln = document.getElementById('pass-lastname'); if (ln) ln.value = 'Zimmermann';
@@ -7159,14 +7202,16 @@ window.addEventListener('hashchange', () => {
         eyebrow: 'Confirmation',
         title: 'Booking confirmed',
         body: 'Reservation held, no payment required for Priority Pass. Tap View my booking to open the dashboard.',
-        selector: '#pay-modal #pay-stage-success button.btn-primary'
+        selector: '#pay-modal #pay-stage-success button.btn-primary',
+        change: 'Reservation confirmed'
       },
       {
         view: 'dashboard',
         eyebrow: 'My Stay',
         title: 'Share a seating preference',
         body: "Your booking and QR pass live here. Tell the lounge where you'd like to sit so a table is ready on arrival.",
-        selector: '#dm-jump-tables'
+        selector: '#dm-jump-tables',
+        change: 'Seating opened'
       },
       {
         view: 'tables',
@@ -7174,6 +7219,7 @@ window.addEventListener('hashchange', () => {
         title: 'Submit the preference',
         body: 'Communal pre-selected for the demo. Hosts assign a matching table the moment you arrive. Tap Submit preference.',
         selector: '#confirm-table-btn',
+        change: 'Communal seat shared',
         onEnter: function () {
           try {
             state.verified = true;
@@ -7197,7 +7243,8 @@ window.addEventListener('hashchange', () => {
       eyebrow: 'My Stay',
       title: 'Open the menu',
       body: "Booking held, seat preference shared. Now let's walk the menu — editorial first, then through every tab.",
-      selector: '#dm-jump-menu'
+      selector: '#dm-jump-menu',
+      change: 'Menu opened'
     };
 
     var editorialIntro = {
@@ -7209,7 +7256,8 @@ window.addEventListener('hashchange', () => {
         : meta.label + ' unlocks Pre-Arrival Dining — composing your tray or plate in transit. Tap the Pre-Arrival tab to open it.',
       selector: isLifestyle
         ? '#view-menu #menu-subnav [data-mb-go="dishes"]'
-        : '#view-menu #menu-subnav [data-mb-go="pre-arrival"]'
+        : '#view-menu #menu-subnav [data-mb-go="pre-arrival"]',
+      change: isLifestyle ? "Today's dishes" : 'Pre-Arrival Dining open'
     };
 
     var lifestyleTail = [
@@ -7220,28 +7268,32 @@ window.addEventListener('hashchange', () => {
         eyebrow: 'Dishes',
         title: 'Open the drinks list',
         body: "Filter by dietary, search by ingredient, browse by category — at a glance. Now tap Drinks.",
-        selector: '#view-menu #menu-subnav [data-mb-go="drinks"]'
+        selector: '#view-menu #menu-subnav [data-mb-go="drinks"]',
+        change: 'Drinks list open'
       },
       {
         view: 'menu', menuSub: 'drinks',
         eyebrow: 'Drinks',
         title: 'Open the dietary guide',
         body: 'House cocktails, Swiss wines, alcohol-free — every option mapped. Next, the dietary guide.',
-        selector: '#view-menu #menu-subnav [data-mb-go="dietary"]'
+        selector: '#view-menu #menu-subnav [data-mb-go="dietary"]',
+        change: 'Dietary guide open'
       },
       {
         view: 'menu', menuSub: 'dietary',
         eyebrow: 'Dietary guide',
         title: 'See the sourcing story',
         body: 'Every dietary need mapped to dishes — no asking, no surprises. Now meet the producers.',
-        selector: '#view-menu #menu-subnav [data-mb-go="about"]'
+        selector: '#view-menu #menu-subnav [data-mb-go="about"]',
+        change: 'Sourcing open'
       },
       {
         view: 'menu', menuSub: 'about',
         eyebrow: 'Local sourcing',
         title: "See today's queue",
         body: 'Where the ingredients come from, who made them. Tap Continue to see the walk-in queue.',
-        selector: '#dm-jump-queue'
+        selector: '#dm-jump-queue',
+        change: 'Walk-in queue open'
       },
       {
         view: 'queue',
@@ -7249,6 +7301,7 @@ window.addEventListener('hashchange', () => {
         title: 'Lounge at capacity — Luxe open',
         body: "The Lifestyle floor is full. Aspire offers the traveller a live upsell — move up to Luxe where seats are free right now. Tap Upgrade to Luxe.",
         selector: '#view-queue [class*="border-aspire-navy/40"] button.btn-primary',
+        change: 'Luxe upgrade flow opened',
         onEnter: function () {
           try {
             state.booking.upgradeTier = null;
@@ -7263,6 +7316,7 @@ window.addEventListener('hashchange', () => {
         title: 'Verify access for Luxe',
         body: "Same 700-ms check that gates the lounge. Name and pass pre-filled — tap Verify access.",
         selector: '#up-v-btn',
+        change: 'Access verified',
         onEnter: function () {
           setTimeout(function () {
             var nm = document.getElementById('up-v-name');
@@ -7278,6 +7332,7 @@ window.addEventListener('hashchange', () => {
         title: 'Pay the upgrade fee',
         body: "Card and terms pre-filled. Tap Pay — the traveller moves to the Luxe Lounge and skips the queue entirely.",
         selector: '#up-pay-btn',
+        change: 'Luxe upgrade purchased',
         onEnter: function () {
           setTimeout(function () {
             var cn = document.getElementById('up-card-num');
@@ -7302,7 +7357,8 @@ window.addEventListener('hashchange', () => {
         title: 'See the QR pass',
         body: 'Upgraded to Luxe · seats reserved · queue skipped. Tap to see the QR check-in pass.',
         selector: '#dm-jump-dashboard',
-        delayMs: 1500
+        delayMs: 1500,
+        change: 'QR pass open'
       },
       { view: 'dashboard', final: true }
     ];
@@ -7319,6 +7375,7 @@ window.addEventListener('hashchange', () => {
       title: 'Verify the boarding pass',
       body: 'Pre-Arrival is gated by your boarding pass — same 700-ms check as the lounge door. Name and pass pre-filled. Tap Verify access.',
       selector: '#view-menu [data-pa-auth-submit]',
+      change: 'Pre-Arrival unlocked',
       onEnter: function () {
         try {
           sessionStorage.removeItem('paAuth');
@@ -7366,7 +7423,8 @@ window.addEventListener('hashchange', () => {
       body: tier === 'prive'
         ? "Sent. The chef receives the request, the host meets you at the nook. Tap to see today's walk-in queue."
         : "Sent. The tray pipeline is live above — mise en place, cooking, garnish, delivery. Tap to see today's walk-in queue.",
-      selector: '#dm-jump-queue'
+      selector: '#dm-jump-queue',
+      change: 'Walk-in queue open'
     };
 
     var queueStep = {
@@ -7374,6 +7432,7 @@ window.addEventListener('hashchange', () => {
       title: 'See the QR pass',
       body: 'Live queue ticker, anonymised waits per zone — no walk-ups left wondering. Tap to see the QR check-in pass.',
       selector: '#dm-jump-dashboard',
+      change: 'QR pass open',
       onEnter: function () { try { if (typeof renderQueue === 'function') renderQueue(); } catch (_) {} }
     };
 
@@ -7384,22 +7443,26 @@ window.addEventListener('hashchange', () => {
           eyebrow: 'Tray size',
           title: 'Pick the Medium tray',
           body: 'Three sizes — Small (solo), Medium (2–3 guests), Large (4 guests). Tap Medium.',
-          selector: '#view-menu [data-pa-size="medium"]' },
+          selector: '#view-menu [data-pa-size="medium"]',
+          change: 'Medium tray locked' },
         { view: 'menu', menuSub: 'pre-arrival',
           eyebrow: 'Curated combination',
           title: 'Pick The Voyager',
           body: "Medium tray locked — 3 starters, 3 mains, 2 desserts. Three signature combos from the chef. Tap The Voyager.",
-          selector: '#view-menu [data-pa-combo="voyager"]' },
+          selector: '#view-menu [data-pa-combo="voyager"]',
+          change: 'Voyager loaded' },
         { view: 'menu', menuSub: 'pre-arrival',
           eyebrow: 'Arrival window',
           title: 'Pick an arrival time',
           body: "Voyager combo loaded — Swiss-meets-world. Now tell the kitchen when you'll arrive so the tray lands in time.",
-          selector: '#view-menu [data-pa-time]' },
+          selector: '#view-menu [data-pa-time]',
+          change: 'Arrival window set' },
         { view: 'menu', menuSub: 'pre-arrival',
           eyebrow: 'Confirm',
           title: 'Confirm the pre-order',
           body: 'Time locked. Size, combo and arrival all set. Tap Confirm pre-order — the kitchen receives it instantly.',
-          selector: '#view-menu [data-pa-confirm]' },
+          selector: '#view-menu [data-pa-confirm]',
+          change: 'Pre-order sent to the kitchen' },
         Object.assign({ eyebrow: 'Tray in motion' }, receiptStep),
         Object.assign({ eyebrow: 'Walk-in queue' }, queueStep, { view: 'queue', menuSub: undefined })
       ];
@@ -7411,22 +7474,26 @@ window.addEventListener('hashchange', () => {
           eyebrow: 'Build from scratch',
           title: 'Switch to Build from scratch',
           body: "Curated trays are quick — but Suite's signature is composing your own. Tap Build from scratch.",
-          selector: '#view-menu [data-pa-suite-mode="custom"]' },
+          selector: '#view-menu [data-pa-suite-mode="custom"]',
+          change: 'Tray cleared' },
         { view: 'menu', menuSub: 'pre-arrival',
           eyebrow: 'Tray slot',
           title: 'Open a starter slot',
           body: "Tray cleared — five empty slots, every one yours to fill. Tap the highlighted starter slot to choose its dish.",
-          selector: '#view-menu [data-pa-swap="starters:0"]' },
+          selector: '#view-menu [data-pa-swap="starters:0"]',
+          change: 'Dish picker open' },
         { view: 'menu', menuSub: 'pre-arrival',
           eyebrow: 'Choose a dish',
           title: 'Pick Swiss Cheese & Charcuterie',
           body: 'Dish picker open — the full Suite library, filtered to starters. Tap the Cheese & Charcuterie board.',
-          selector: '[data-pa-pick="cheese-charcuterie"]' },
+          selector: '[data-pa-pick="cheese-charcuterie"]',
+          change: 'Cheese & Charcuterie placed' },
         { view: 'menu', menuSub: 'pre-arrival',
           eyebrow: 'Pairing',
           title: 'Pick Champagne Brut',
           body: "Slot filled. Remaining slots auto-completed for the demo — every one stays editable. Now pick a pairing.",
           selector: '#view-menu [data-pa-pairing="champagne"]',
+          change: 'Champagne paired',
           onEnter: function () {
             // Auto-fill the remaining empty slots so the user only walks
             // the marquee interaction (one slot, one dish), and the tray
@@ -7452,12 +7519,14 @@ window.addEventListener('hashchange', () => {
           eyebrow: 'Arrival window',
           title: 'Pick an arrival time',
           body: 'Champagne added. Now lock the arrival window — the kitchen lines up the tray for that minute.',
-          selector: '#view-menu [data-pa-time]' },
+          selector: '#view-menu [data-pa-time]',
+          change: 'Arrival window set' },
         { view: 'menu', menuSub: 'pre-arrival',
           eyebrow: 'Confirm',
           title: 'Confirm the pre-order',
           body: "Time locked. Your bespoke Suite tray is composed end-to-end. Tap Confirm pre-order — the Suite kitchen receives it instantly.",
-          selector: '#view-menu [data-pa-confirm]' },
+          selector: '#view-menu [data-pa-confirm]',
+          change: 'Pre-order sent to the Suite kitchen' },
         Object.assign({ eyebrow: 'Tray in motion' }, receiptStep),
         Object.assign({ eyebrow: 'Walk-in queue' }, queueStep, { view: 'queue', menuSub: undefined })
       ];
@@ -7468,32 +7537,38 @@ window.addEventListener('hashchange', () => {
           eyebrow: 'Ingredient · 01',
           title: 'Add Mushrooms',
           body: "Privé skips the tray. Pick the ingredients you crave — the chef composes one bespoke plate around them. Tap Mushrooms.",
-          selector: '#view-menu [data-pa-ingredient="mushroom"]' },
+          selector: '#view-menu [data-pa-ingredient="mushroom"]',
+          change: 'Mushrooms added' },
         { view: 'menu', menuSub: 'pre-arrival',
           eyebrow: 'Ingredient · 02',
           title: 'Add Seasonal vegetables',
           body: 'Mushrooms added. The more you pick the richer the composition — tap Seasonal vegetables.',
-          selector: '#view-menu [data-pa-ingredient="vegetable"]' },
+          selector: '#view-menu [data-pa-ingredient="vegetable"]',
+          change: 'Vegetables added' },
         { view: 'menu', menuSub: 'pre-arrival',
           eyebrow: 'Ingredient · 03',
           title: 'Add Potato',
           body: 'Two ingredients locked. Tap Potato — Swiss Bintje, crisped or in fondant.',
-          selector: '#view-menu [data-pa-ingredient="potato"]' },
+          selector: '#view-menu [data-pa-ingredient="potato"]',
+          change: 'Potato added' },
         { view: 'menu', menuSub: 'pre-arrival',
           eyebrow: 'Pairing',
           title: 'Pick the sommelier-paired wine',
           body: 'Three ingredients on the chef. Now pair it — a glass matched by the sommelier, or a botanical mocktail.',
-          selector: '#view-menu [data-pa-prive-pairing="wine"]' },
+          selector: '#view-menu [data-pa-prive-pairing="wine"]',
+          change: 'Wine pairing locked' },
         { view: 'menu', menuSub: 'pre-arrival',
           eyebrow: 'Arrival window',
           title: 'Pick an arrival time',
           body: 'Wine pairing locked. Tell the chef when you arrive — the plate lands moments before you sit down.',
-          selector: '#view-menu [data-pa-time]' },
+          selector: '#view-menu [data-pa-time]',
+          change: 'Arrival window set' },
         { view: 'menu', menuSub: 'pre-arrival',
           eyebrow: 'Send',
           title: 'Send the bespoke request',
           body: 'Arrival window locked. Three ingredients, a pairing, a time — the chef has everything. Tap Send pre-order.',
-          selector: '#view-menu [data-pa-bespoke-send]' },
+          selector: '#view-menu [data-pa-bespoke-send]',
+          change: 'Bespoke plate sent to the chef' },
         Object.assign({ eyebrow: 'Plate in motion' }, receiptStep),
         Object.assign({ eyebrow: 'Walk-in queue' }, queueStep, { view: 'queue', menuSub: undefined })
       ];
@@ -7610,6 +7685,7 @@ window.addEventListener('hashchange', () => {
     if (el.closest('#demo-tier-picker')) return true;
     if (el.closest('#demo-intro'))       return true;
     if (el.closest('#demo-chapter-pill')) return true;
+    if (el.closest('#demo-change-toast')) return true;
     if (currentTarget && document.body.contains(currentTarget) &&
         (el === currentTarget || currentTarget.contains(el))) return true;
     // currentTarget may be detached (paRender just replaced the highlighted
@@ -7745,12 +7821,36 @@ window.addEventListener('hashchange', () => {
     initialBoot: 700      // pause after tier-picker before step 1 lights up
   };
 
+  // "What just changed" toast — surfaces the cause/effect of every click
+  // the moment the user taps a highlighted control. Reads the active
+  // step's `change` field so the cue arrives BEFORE the next coachmark.
+  var changeToastTimer = null;
+  function showChangeToast(text) {
+    if (!text) return;
+    var t = document.getElementById('demo-change-toast');
+    if (!t) return;
+    var slot = t.querySelector('.dc-text');
+    if (slot) slot.textContent = text;
+    t.classList.add('dc-visible');
+    if (changeToastTimer) clearTimeout(changeToastTimer);
+    changeToastTimer = setTimeout(function () {
+      t.classList.remove('dc-visible');
+    }, 1700);
+  }
+  function hideChangeToast() {
+    var t = document.getElementById('demo-change-toast');
+    if (t) t.classList.remove('dc-visible');
+    if (changeToastTimer) { clearTimeout(changeToastTimer); changeToastTimer = null; }
+  }
+
   function onTargetClick() {
-    // advance() itself is guarded by advanceLock, so duplicate clicks are
-    // a no-op. The delay gives the original click handler (form submit,
-    // confirmBooking, finishPayment, mb_show, paRender, …) time to run
-    // AND gives the user a beat to register what they just did before the
-    // next step lights up.
+    // Fire the "what just changed" toast first — it animates in while the
+    // original click handler runs (paRender, mb_show, confirmBooking, …)
+    // so the cause/effect of the tap is visible in the same beat.
+    var step = STEPS[idx];
+    if (step && step.change) showChangeToast(step.change);
+    // advance() itself is guarded by advanceLock; setTimeout gives the
+    // original handler time to run and the user a beat to register.
     setTimeout(advance, TIMING.afterClick);
   }
 
@@ -7845,7 +7945,7 @@ window.addEventListener('hashchange', () => {
     document.body.classList.remove('aspire-demo');
     window.__aspireDemoExited = true;
     ['demo-veil','demo-banner','demo-coachmark','demo-finale','demo-tier-picker',
-     'demo-intro','demo-chapter-pill',
+     'demo-intro','demo-chapter-pill','demo-change-toast',
      'dm-jump-tables','dm-jump-queue','dm-jump-menu','dm-jump-dashboard'].forEach(function (id) {
       var el = document.getElementById(id);
       if (el) el.remove();
@@ -7966,10 +8066,11 @@ window.addEventListener('hashchange', () => {
       if (t.id === 'demo-coachmark' || t.id === 'demo-banner' ||
           t.id === 'demo-veil' || t.id === 'demo-finale' ||
           t.id === 'demo-tier-picker' || t.id === 'demo-intro' ||
-          t.id === 'demo-chapter-pill') return true;
+          t.id === 'demo-chapter-pill' || t.id === 'demo-change-toast') return true;
       if (t.closest && (t.closest('#demo-coachmark') || t.closest('#demo-banner') ||
           t.closest('#demo-finale') || t.closest('#demo-tier-picker') ||
-          t.closest('#demo-intro') || t.closest('#demo-chapter-pill'))) return true;
+          t.closest('#demo-intro') || t.closest('#demo-chapter-pill') ||
+          t.closest('#demo-change-toast'))) return true;
     }
     return false;
   }
