@@ -478,6 +478,14 @@
   #menu-subnav .mb-tab.active { color: #1F2A44; }
   #menu-subnav .mb-tab.active::after { transform: scaleX(1); }
 
+  /* Tier pills (Lifestyle / Suite / Privé / Luxe) — used in the lounge picker */
+  .tier-pill { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 9999px; font-family: 'Inter', sans-serif; font-size: 0.58rem; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
+  .tier-pill.tier-lifestyle { background: #ECE6E0; color: #1F2A44; }
+  .tier-pill.tier-suite     { background: #E6E0D8; color: #1F2A44; }
+  .tier-pill.tier-prive     { background: rgba(181,157,136,0.18); color: #9B8470; }
+  .tier-pill.tier-luxe      { background: rgba(181,157,136,0.28); color: #6B5640; }
+  .here-pill { font-family: 'Inter', sans-serif; font-size: 0.62rem; font-weight: 500; letter-spacing: 0.28em; text-transform: uppercase; color: #B59D88; white-space: nowrap; flex-shrink: 0; }
+
   /* Dish cards */
   #view-menu .mb-dish-card { transition: transform .3s ease; cursor: pointer; }
   #view-menu .mb-dish-card:hover { transform: translateY(-2px); }
@@ -1733,18 +1741,20 @@ const LOUNGES = [
 
 const LOUNGE_NETWORK = [
   { region:'Europe', lounges:[
-    { name:'Zurich Aspire Lounge Gates A, B & D', city:'Zurich', country:'Switzerland', count:2, code:'ZRH', id:'zrh-abd' },
-    { name:'Zurich Aspire Lounge Midfield',        city:'Zurich', country:'Switzerland', count:2, code:'ZRH' },
+    { name:'Zürich Aspire Lounge — Gates A, B & D', city:'Zurich', country:'Switzerland', count:2, code:'ZRH', id:'zrh-abd', tier:'lifestyle' },
+    { name:'Suite by Aspire · Zürich Airport (Non-Schengen)', city:'Zurich', country:'Switzerland', code:'ZRH', id:'zrh-suite', tier:'suite' },
+    { name:'Privé by Aspire · Zürich Terminal 2', city:'Zurich', country:'Switzerland', code:'ZRH', id:'zrh-prive', tier:'prive' },
+    { name:'Geneva Lounge',                        city:'Geneva', country:'Switzerland', count:2, code:'GVA', id:'gva-luxe', tier:'luxe' },
+    { name:'Zurich Aspire Lounge Midfield',        city:'Zurich', country:'Switzerland', count:2, code:'ZRH', tier:'lifestyle' },
     { name:'Zurich Swiss Airlines Lounges',        city:'Zurich', country:'Switzerland', count:10, code:'ZRH' },
-    { name:'Amsterdam Schiphol Aspire Lounge 26',  city:'Amsterdam', country:'Netherlands', code:'AMS' },
-    { name:'Amsterdam Schiphol Aspire Lounge 41',  city:'Amsterdam', country:'Netherlands', code:'AMS' },
+    { name:'Amsterdam Schiphol Aspire Lounge 26',  city:'Amsterdam', country:'Netherlands', code:'AMS', tier:'lifestyle' },
+    { name:'Amsterdam Schiphol Aspire Lounge 41',  city:'Amsterdam', country:'Netherlands', code:'AMS', tier:'lifestyle' },
     { name:'Amsterdam Schiphol Star Alliance Lounge', city:'Amsterdam', country:'Netherlands', code:'AMS' },
     { name:'Amsterdam oneworld Lounge',            city:'Amsterdam', country:'Netherlands', code:'AMS' },
-    { name:'Athens Lounge',                        city:'Athens', country:'Greece', code:'ATH' },
-    { name:'Basel EuroAirport Skyview Lounge',     city:'Basel',  country:'Switzerland', code:'BSL' },
-    { name:'Copenhagen Aspire Lounge',             city:'Copenhagen', country:'Denmark', code:'CPH' },
-    { name:'Cork Aspire Lounge',                   city:'Cork',   country:'Ireland', code:'ORK' },
-    { name:'Geneva Lounge',                        city:'Geneva', country:'Switzerland', count:2, code:'GVA' },
+    { name:'Athens Lounge',                        city:'Athens', country:'Greece', code:'ATH', tier:'lifestyle' },
+    { name:'Basel EuroAirport Skyview Lounge',     city:'Basel',  country:'Switzerland', code:'BSL', tier:'lifestyle' },
+    { name:'Copenhagen Aspire Lounge',             city:'Copenhagen', country:'Denmark', code:'CPH', tier:'lifestyle' },
+    { name:'Cork Aspire Lounge',                   city:'Cork',   country:'Ireland', code:'ORK', tier:'lifestyle' },
     { name:'Helsinki Aspire Lounge',               city:'Helsinki', country:'Finland', count:3, code:'HEL' },
     { name:'Milan ITA Lounge',                     city:'Milan',  country:'Italy', code:'MXP' },
     { name:'Sofia Vitosha Aspire Lounge',          city:'Sofia',  country:'Bulgaria', code:'SOF' },
@@ -2207,6 +2217,7 @@ function renderLoungePickerList(q) {
   $('#lounge-modal-count').textContent = total === NETWORK_TOTAL ? `All ${NETWORK_TOTAL}` : String(total);
   if (total === 0) host.append(el('div', { class:'text-center py-12 text-navy-500' }, 'No lounges match your search.'));
 }
+const TIER_LABELS = { lifestyle:'Lifestyle', suite:'Suite', prive:'Privé', luxe:'Luxe' };
 function loungeRow(net, region) {
   const profile = loungeProfileFromNetwork(net, region);
   const selected = state.booking.loungeId === profile.id;
@@ -2214,14 +2225,20 @@ function loungeRow(net, region) {
     class:`w-full text-left flex items-center gap-4 p-4 rounded-2xl border transition-all cursor-pointer ${selected ? 'border-aspire-navy bg-aspire-soft' : 'border-aspire-border bg-white hover:border-aspire-taupe hover:bg-aspire-soft/60'}`,
     onclick: () => pickLounge(net, region)
   });
+  const nameRow = el('div', { class:'flex items-center gap-2.5 min-w-0' },
+    el('span', { class:'text-aspire-navy text-[0.95rem] truncate' }, net.name + (net.count && net.count > 1 ? `  ×${net.count}` : ''))
+  );
+  if (net.tier && TIER_LABELS[net.tier]) {
+    nameRow.append(el('span', { class:`tier-pill tier-${net.tier}` }, TIER_LABELS[net.tier]));
+  }
   wrap.append(
     el('div', { class:`h-11 w-11 rounded-xl flex items-center justify-center text-[0.7rem] font-medium tracking-widest flex-shrink-0 ${selected ? 'bg-aspire-navy text-white' : 'bg-aspire-soft text-aspire-navy border border-aspire-border'}` }, net.code || '—'),
     el('div', { class:'flex-1 min-w-0' },
-      el('div', { class:'text-aspire-navy text-[0.95rem] truncate' }, net.name + (net.count && net.count > 1 ? `  ×${net.count}` : '')),
-      el('div', { class:'text-[0.78rem] text-navy-500 truncate' }, `${net.city} · ${net.country}`)
+      nameRow,
+      el('div', { class:'text-[0.78rem] text-navy-500 truncate mt-0.5' }, `${net.city} · ${net.country}`)
     ),
     selected
-      ? el('span', { class:'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-aspire-navy text-white text-[0.7rem] uppercase tracking-widest flex-shrink-0', html:'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5L20 6"/></svg>Selected' })
+      ? el('span', { class:'here-pill' }, 'You are here')
       : el('span', { class:'inline-flex items-center gap-1.5 text-[0.7rem] uppercase tracking-widest text-navy-500 flex-shrink-0', html:'Select <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m9 6 6 6-6 6"/></svg>' })
   );
   return wrap;
