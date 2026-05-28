@@ -1289,7 +1289,7 @@
         A quiet pause between gates. Swiss-rooted dining, alpine light, and the slow warmth of an evening before take-off — for travellers who'd rather arrive unhurried.
       </p>
       <div class="mt-10 sm:mt-12">
-        <a href="#reserve" data-view="reserve" class="inline-flex items-center gap-3 px-8 py-4 bg-aspire-taupe text-white uppercase tracking-[0.28em] text-[0.66rem] hover:bg-aspire-taupeDark transition-colors">
+        <a id="menu-hero-cta" href="#reserve" data-view="reserve" class="inline-flex items-center gap-3 px-8 py-4 bg-aspire-taupe text-white uppercase tracking-[0.28em] text-[0.66rem] hover:bg-aspire-taupeDark transition-colors">
           Reserve a table
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </a>
@@ -2221,12 +2221,15 @@ function go(view) {
   if (target) target.classList.add('active');
   $$('.nav-link').forEach(n => n.classList.toggle('active', n.dataset.view === view));
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  if (view === 'home')      { renderHomeFeatured(); syncHomeStaticCTAs(); }
+  if (view === 'home')      { renderHomeFeatured(); }
   if (view === 'search')    renderSearch();
   if (view === 'reserve')   { state.step = 1; renderReserve(); }
   if (view === 'tables')    renderTables();
   if (view === 'queue')     renderQueue();
   if (view === 'dashboard') renderDashboard();
+  // Static CTAs (home hero, sticky reserve, menu hero) reflect whether a
+  // booking is already confirmed — sync on every nav, not just on home.
+  syncHomeStaticCTAs();
   $('#mobile-nav')?.classList.add('hidden');
 }
 document.addEventListener('click', (e) => {
@@ -2270,18 +2273,33 @@ function initHome() {
 // Keep the non-rendered static hero / footer CTAs in sync with homeCTA().
 function syncHomeStaticCTAs() {
   const cta = homeCTA();
+  const arrow = ' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
   // Top hero "Reserve the Lounge" button
   const hero = document.querySelector('#view-home button[onclick="searchAndGo()"]');
   if (hero) {
-    hero.innerHTML = (state.confirmed ? 'Explore the menu' : 'Reserve the Lounge') +
-      ' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+    hero.innerHTML = (state.confirmed ? 'Explore the menu' : 'Reserve the Lounge') + arrow;
   }
   // Lower "Reserve a lounge" sticky CTA in the "new lounge experience" block
   const stickyReserve = document.querySelector('#view-home a[data-view="reserve"].btn-primary');
   if (stickyReserve) {
     stickyReserve.setAttribute('href', '#' + cta.view);
     stickyReserve.setAttribute('data-view', cta.view);
-    stickyReserve.innerHTML = cta.label + ' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+    stickyReserve.innerHTML = cta.label + arrow;
+  }
+  // Menu view's editorial hero CTA — "Reserve a table" when no booking, else
+  // "Explore the menu" loses meaning (we're already in menu), so swap to a
+  // contextual jump to Pre-Arrival composer / lounge picker.
+  const menuHero = document.getElementById('menu-hero-cta');
+  if (menuHero) {
+    if (state.confirmed) {
+      menuHero.setAttribute('href', '#dashboard');
+      menuHero.setAttribute('data-view', 'dashboard');
+      menuHero.innerHTML = 'View my stay' + arrow;
+    } else {
+      menuHero.setAttribute('href', '#reserve');
+      menuHero.setAttribute('data-view', 'reserve');
+      menuHero.innerHTML = 'Reserve a table' + arrow;
+    }
   }
 }
 function updateLoungePickerLabel() {
@@ -4719,7 +4737,7 @@ window.addEventListener('hashchange', () => {
             '<span class="text-[0.6rem] uppercase tracking-[0.32em] text-aspire-navy">'+esc(PA_TIER_META[c.tier].label)+'</span>' +
           '</div>' +
           '<h2 class="serif-heading text-3xl sm:text-5xl mt-4 text-aspire-navy">Your tray is in motion.</h2>' +
-          '<p class="mt-4 text-aspire-taupe leading-[1.7] max-w-xl">Live preparation status. Modify or cancel up to 20 minutes before arrival.</p>' +
+          '<p class="mt-4 text-aspire-taupe leading-[1.7] max-w-xl">Live preparation status. Cancel up to 20 minutes before arrival, or compose another tray any time.</p>' +
           '<div class="mt-10" data-pa-live-pipeline>'+paPipelineMarkup(activeIdx)+'</div>' +
           '<div data-pa-ready-state class="hidden mt-8 p-5 bg-white border border-aspire-navy/15">' +
             '<div class="swiss-eyebrow text-aspire-navy">Tray ready</div>' +
@@ -4729,13 +4747,6 @@ window.addEventListener('hashchange', () => {
             '<div><div class="swiss-eyebrow">Ready by</div><div class="mt-2 serif-heading text-2xl text-aspire-navy">'+esc(c.time)+'</div></div>' +
             '<div><div class="swiss-eyebrow">Plated in</div><div class="mt-2 serif-heading text-2xl text-aspire-navy tabular-nums" data-pa-countdown>'+c.prep+' min 00 s</div></div>' +
             '<div><div class="swiss-eyebrow">Where to find your tray</div><div class="mt-2 text-[0.92rem] text-aspire-navy leading-snug inline-flex items-start gap-1.5">'+paIcon('pin','w-4 h-4 mt-0.5')+' <span>'+esc(c.handoff)+'</span></div></div>' +
-          '</div>' +
-          '<div class="mt-10 pt-8 border-t border-aspire-navy/10">' +
-            '<div class="flex items-baseline justify-between gap-4 flex-wrap">' +
-              '<div><div class="swiss-eyebrow">— Preparation timeline</div><p class="mt-2 text-[0.88rem] text-aspire-taupe max-w-md leading-relaxed">Total prep time scales with your tray size. Suite and Privé travellers gain a three-minute priority allocation.</p></div>' +
-              '<span class="pa-pill">'+paIcon('clock','w-2.5 h-2.5')+' '+c.prep+' min</span>' +
-            '</div>' +
-            '<div class="mt-5">'+paPrepStagesMarkup(c.prep)+'</div>' +
           '</div>' +
         '</div>' +
         '<aside class="lg:col-span-5 flex flex-col gap-6">' +
@@ -4752,10 +4763,10 @@ window.addEventListener('hashchange', () => {
             '<div class="pa-push-time">Now</div>' +
           '</div>' +
           '<div class="border border-aspire-navy/10 bg-white p-5">' +
-            '<div class="swiss-eyebrow">Modify or cancel</div>' +
-            '<p class="mt-2 text-[0.85rem] text-aspire-taupe leading-relaxed">Editable up to 20 minutes before arrival.</p>' +
+            '<div class="swiss-eyebrow">Order more</div>' +
+            '<p class="mt-2 text-[0.85rem] text-aspire-taupe leading-relaxed">Compose another tray — or cancel this one up to 20 minutes before arrival.</p>' +
             '<div class="mt-4 flex flex-wrap gap-2">' +
-              '<button data-pa-modify class="inline-flex items-center gap-2 px-3 py-2 text-[0.7rem] uppercase tracking-[0.22em] text-aspire-navy border border-aspire-navy/15 hover:border-aspire-navy">Modify '+paIcon('shuffle','w-3 h-3')+'</button>' +
+              '<button data-pa-reset class="inline-flex items-center gap-2 px-3 py-2 text-[0.7rem] uppercase tracking-[0.22em] text-aspire-navy border border-aspire-navy/15 hover:border-aspire-navy">Add another tray '+paIcon('plus','w-3 h-3')+'</button>' +
               '<button data-pa-cancel class="inline-flex items-center gap-2 px-3 py-2 text-[0.7rem] uppercase tracking-[0.22em] text-[#B05A47] border border-[#B05A47]/30 hover:border-[#B05A47]">Cancel '+paIcon('x','w-3 h-3')+'</button>' +
             '</div>' +
           '</div>' +
@@ -4803,9 +4814,9 @@ window.addEventListener('hashchange', () => {
         '<div class="mt-6 flex items-baseline gap-3"><span class="swiss-eyebrow">Plated in</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums" data-pa-countdown>'+(c.prep||12)+' min 00 s</span></div>' +
         '<div data-pa-ready-state class="hidden mt-5 p-4 bg-white border border-aspire-navy/15"><div class="swiss-eyebrow text-aspire-navy">Plate ready</div><p class="mt-2 text-[0.95rem] text-aspire-navy">Your plate is ready · meet host at <span data-pa-ready-host class="font-medium">'+esc(c.handoff)+'</span>.</p></div>' +
       '</div>' +
-      '<p class="mt-8 text-[0.82rem] text-aspire-taupe italic max-w-2xl">You can amend the request up to 10 minutes before arrival.</p>' +
+      '<p class="mt-8 text-[0.82rem] text-aspire-taupe italic max-w-2xl">You can cancel the request up to 10 minutes before arrival.</p>' +
       '<div class="mt-4 flex flex-wrap gap-2">' +
-        '<button data-pa-modify class="inline-flex items-center gap-2 px-3 py-2 text-[0.7rem] uppercase tracking-[0.22em] text-aspire-navy border border-aspire-navy/15 hover:border-aspire-navy">Modify '+paIcon('shuffle','w-3 h-3')+'</button>' +
+        '<button data-pa-reset class="inline-flex items-center gap-2 px-3 py-2 text-[0.7rem] uppercase tracking-[0.22em] text-aspire-navy border border-aspire-navy/15 hover:border-aspire-navy">Send another request '+paIcon('plus','w-3 h-3')+'</button>' +
         '<button data-pa-cancel class="inline-flex items-center gap-2 px-3 py-2 text-[0.7rem] uppercase tracking-[0.22em] text-[#B05A47] border border-[#B05A47]/30 hover:border-[#B05A47]">Cancel '+paIcon('x','w-3 h-3')+'</button>' +
       '</div>' +
     '</div>';
