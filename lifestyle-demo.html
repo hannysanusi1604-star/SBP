@@ -6993,6 +6993,76 @@ window.addEventListener('hashchange', () => {
     50%      { box-shadow: 0 20px 48px -10px rgba(31,42,68,0.6),
                            0 0 0 10px rgba(181,157,136,0.12); }
   }
+
+  /* Scenario picker — six focused journeys, each spotlights one feature */
+  #demo-scenario-picker {
+    position: fixed; inset: 0; z-index: 9100;
+    background: rgba(31, 42, 68, 0.78);
+    display: flex; align-items: center; justify-content: center;
+    padding: 1.25rem;
+    animation: fadeIn .35s ease-out;
+    overflow-y: auto;
+  }
+  #demo-scenario-picker .sc-card {
+    background: #fff; border-radius: 18px; max-width: 1100px; width: 100%;
+    padding: 2.1rem 2.4rem 2.3rem;
+    box-shadow: 0 30px 80px -20px rgba(0,0,0,0.5);
+    color: #1F2A44;
+    font-family: 'Inter', sans-serif; font-weight: 300;
+  }
+  #demo-scenario-picker .sc-eyebrow {
+    font-weight: 500; font-size: 0.6rem;
+    text-transform: uppercase; letter-spacing: 0.32em; color: #9B8470;
+  }
+  #demo-scenario-picker h2 {
+    font-family: 'Cormorant Garamond', serif; font-weight: 400;
+    font-size: 2.4rem; line-height: 1.05; margin-top: 0.45rem;
+  }
+  #demo-scenario-picker .sc-sub {
+    margin-top: 0.65rem; color: #3D4A66; font-size: 0.96rem; line-height: 1.5; max-width: 640px;
+  }
+  #demo-scenario-picker .sc-grid {
+    margin-top: 1.7rem;
+    display: grid; grid-template-columns: repeat(1, 1fr);
+    gap: 12px;
+  }
+  @media (min-width: 720px) { #demo-scenario-picker .sc-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 980px) { #demo-scenario-picker .sc-grid { grid-template-columns: repeat(3, 1fr); } }
+  #demo-scenario-picker .sc-btn {
+    cursor: pointer; text-align: left;
+    background: #FBF8F4; border: 1px solid #ECE6E0; border-radius: 14px;
+    padding: 1.15rem 1.25rem 1.3rem;
+    transition: all 200ms ease;
+    font-family: 'Inter', sans-serif; font-weight: 300; color: #1F2A44;
+    position: relative;
+  }
+  #demo-scenario-picker .sc-btn:hover {
+    border-color: #B59D88; background: #fff;
+    box-shadow: 0 14px 32px -16px rgba(31,42,68,0.4);
+    transform: translateY(-2px);
+  }
+  #demo-scenario-picker .sc-num {
+    font-weight: 500; font-size: 0.58rem; text-transform: uppercase;
+    letter-spacing: 0.28em; color: #B59D88;
+  }
+  #demo-scenario-picker .sc-title {
+    font-family: 'Cormorant Garamond', serif; font-weight: 500;
+    font-size: 1.55rem; line-height: 1.1; color: #1F2A44; margin-top: 0.45rem;
+  }
+  #demo-scenario-picker .sc-body {
+    margin-top: 0.5rem; font-size: 0.84rem; color: #3D4A66; line-height: 1.5;
+  }
+  #demo-scenario-picker .sc-meta {
+    margin-top: 0.85rem; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.22em;
+    color: #9B8470; display: inline-flex; align-items: center; gap: 0.4rem;
+  }
+  #demo-scenario-picker .sc-meta::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: #B59D88; flex-shrink: 0;
+  }
+  #demo-scenario-picker .sc-foot {
+    margin-top: 1.4rem; font-size: 0.74rem; color: #9B8470;
+  }
 </style>
 
 <div id="demo-intro">
@@ -7050,6 +7120,53 @@ window.addEventListener('hashchange', () => {
 <div id="demo-change-toast">
   <span class="dc-check"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m4 12 5 5L20 6"/></svg></span>
   <span class="dc-text">—</span>
+</div>
+
+<div id="demo-scenario-picker" style="display:none;">
+  <div class="sc-card">
+    <div class="sc-eyebrow">— Choose a scenario</div>
+    <h2>Which traveller journey shall we walk?</h2>
+    <p class="sc-sub">Each scenario is a focused 8&ndash;12 step path that spotlights one feature — the booking ritual, the live upsell, the menu story, the pre-arrival composers. Pick the moment you want the client to feel.</p>
+    <div class="sc-grid">
+      <button class="sc-btn" data-demo-scenario="taxi-booking">
+        <div class="sc-num">Scenario 01</div>
+        <div class="sc-title">The taxi booking</div>
+        <div class="sc-body">Reserve, schedule, pay, share a seat preference — the two-minute commit from the back of a taxi.</div>
+        <div class="sc-meta">Lifestyle · end-to-end booking</div>
+      </button>
+      <button class="sc-btn" data-demo-scenario="lounge-upsell">
+        <div class="sc-num">Scenario 02</div>
+        <div class="sc-title">The live lounge upsell</div>
+        <div class="sc-body">Lifestyle floor at capacity. Watch the traveller move up to Luxe in three taps and skip the queue entirely.</div>
+        <div class="sc-meta">Lifestyle → Luxe · upsell</div>
+      </button>
+      <button class="sc-btn" data-demo-scenario="buffet-browser">
+        <div class="sc-num">Scenario 03</div>
+        <div class="sc-title">The buffet browser</div>
+        <div class="sc-body">Editorial &rarr; Dishes &rarr; Drinks &rarr; Dietary &rarr; Partners &rarr; Sourcing &rarr; Feedback. The menu story end-to-end.</div>
+        <div class="sc-meta">Lifestyle · menu tour</div>
+      </button>
+      <button class="sc-btn" data-demo-scenario="curated-tray">
+        <div class="sc-num">Scenario 04</div>
+        <div class="sc-title">The curated tray</div>
+        <div class="sc-body">Pick size, pick The Voyager, pick the arrival window. Tray plated moments before the traveller sits down.</div>
+        <div class="sc-meta">Luxe · Pre-Arrival composer</div>
+      </button>
+      <button class="sc-btn" data-demo-scenario="build-from-scratch">
+        <div class="sc-num">Scenario 05</div>
+        <div class="sc-title">Build your own tray</div>
+        <div class="sc-body">Empty tray, every slot editable. Pick a starter, swap a dish, pair, time — the marquee Suite differentiator.</div>
+        <div class="sc-meta">Suite · custom composer</div>
+      </button>
+      <button class="sc-btn" data-demo-scenario="bespoke-plate">
+        <div class="sc-num">Scenario 06</div>
+        <div class="sc-title">The bespoke plate</div>
+        <div class="sc-body">Pick the ingredients you crave. The chef composes one private plate around them. Wine pairing, fine porcelain.</div>
+        <div class="sc-meta">Privé · bespoke composer</div>
+      </button>
+    </div>
+    <div class="sc-foot">Restart from the finale to walk any other scenario.</div>
+  </div>
 </div>
 
 <div id="demo-tier-picker" style="display:none;">
@@ -7770,6 +7887,7 @@ window.addEventListener('hashchange', () => {
     if (el.closest('#demo-coachmark'))   return true;
     if (el.closest('#demo-finale'))      return true;
     if (el.closest('#demo-tier-picker')) return true;
+    if (el.closest('#demo-scenario-picker')) return true;
     if (el.closest('#demo-intro'))       return true;
     if (el.closest('#demo-chapter-pill')) return true;
     if (el.closest('#demo-change-toast')) return true;
@@ -8035,7 +8153,7 @@ window.addEventListener('hashchange', () => {
       '  <h2>That\'s the ' + lbl + ' journey.</h2>' +
       '  <p>' + tail + " Walk a different traveller next?</p>" +
       '  <div class="row">' +
-      '    <button type="button" class="btn-outline" id="dm-pick-again">Choose another traveller</button>' +
+      '    <button type="button" class="btn-outline" id="dm-pick-again">Choose another scenario</button>' +
       '    <button type="button" class="btn-primary" id="dm-close">Explore freely</button>' +
       '  </div>' +
       '</div>';
@@ -8053,7 +8171,7 @@ window.addEventListener('hashchange', () => {
       try { state.confirmed = false; state.verified = false; state.preferredZone = null; } catch (_) {}
       try { sessionStorage.removeItem('paAuth'); } catch (_) {}
       try { if (typeof paState !== 'undefined') { paState.confirmed = null; } } catch (_) {}
-      document.getElementById('demo-tier-picker').style.display = 'flex';
+      document.getElementById('demo-scenario-picker').style.display = 'flex';
     });
     document.getElementById('dm-close').addEventListener('click', exitDemo);
   }
@@ -8063,7 +8181,7 @@ window.addEventListener('hashchange', () => {
     document.body.classList.remove('aspire-demo','tier-lifestyle','tier-luxe','tier-suite','tier-prive');
     window.__aspireDemoExited = true;
     ['demo-veil','demo-banner','demo-coachmark','demo-finale','demo-tier-picker',
-     'demo-intro','demo-chapter-pill','demo-change-toast','demo-highlight',
+     'demo-scenario-picker','demo-intro','demo-chapter-pill','demo-change-toast','demo-highlight',
      'dm-jump-tables','dm-jump-queue','dm-jump-menu','dm-jump-dashboard'].forEach(function (id) {
       var el = document.getElementById(id);
       if (el) el.remove();
@@ -8183,11 +8301,13 @@ window.addEventListener('hashchange', () => {
       if (!t) continue;
       if (t.id === 'demo-coachmark' || t.id === 'demo-banner' ||
           t.id === 'demo-veil' || t.id === 'demo-finale' ||
-          t.id === 'demo-tier-picker' || t.id === 'demo-intro' ||
+          t.id === 'demo-tier-picker' || t.id === 'demo-scenario-picker' ||
+          t.id === 'demo-intro' ||
           t.id === 'demo-chapter-pill' || t.id === 'demo-change-toast' ||
           t.id === 'demo-highlight') return true;
       if (t.closest && (t.closest('#demo-coachmark') || t.closest('#demo-banner') ||
           t.closest('#demo-finale') || t.closest('#demo-tier-picker') ||
+          t.closest('#demo-scenario-picker') ||
           t.closest('#demo-intro') || t.closest('#demo-chapter-pill') ||
           t.closest('#demo-change-toast') || t.closest('#demo-highlight'))) return true;
     }
@@ -8262,13 +8382,181 @@ window.addEventListener('hashchange', () => {
     });
   });
 
+  // ----------------------------------------------------------------
+  // SCENARIOS — six focused journeys, each spotlights one feature.
+  // Implementation strategy: every scenario picks a tier and a "phase
+  // filter". buildSteps(tier) already produces tagged steps for the
+  // full tier walk; the scenario slices that down to just the phases
+  // that matter and (for scenarios that start mid-journey) pre-confirms
+  // state.confirmed/state.verified so the page lands ready.
+  // ----------------------------------------------------------------
+  var SCENARIOS = {
+    'taxi-booking': {
+      title: 'The taxi booking',
+      tier: 'lifestyle',
+      tag: 'Lifestyle · end-to-end booking',
+      phases: ['reserve', 'seating', 'final'],
+      preConfirm: false
+    },
+    'lounge-upsell': {
+      title: 'The live lounge upsell',
+      tier: 'lifestyle',
+      tag: 'Lifestyle → Luxe',
+      phases: ['queue', 'final'],
+      preConfirm: true
+    },
+    'buffet-browser': {
+      title: 'The buffet browser',
+      tier: 'lifestyle',
+      tag: 'Lifestyle · menu tour',
+      phases: ['menu', 'final'],
+      preConfirm: true
+    },
+    'curated-tray': {
+      title: 'The curated tray',
+      tier: 'luxe',
+      tag: 'Luxe · Pre-Arrival',
+      phases: ['menu', 'final'],
+      preConfirm: true
+    },
+    'build-from-scratch': {
+      title: 'Build your own tray',
+      tier: 'suite',
+      tag: 'Suite · custom composer',
+      phases: ['menu', 'final'],
+      preConfirm: true
+    },
+    'bespoke-plate': {
+      title: 'The bespoke plate',
+      tier: 'prive',
+      tag: 'Privé · bespoke composer',
+      phases: ['menu', 'final'],
+      preConfirm: true
+    }
+  };
+
+  // Tag every step from buildSteps with a phase so a scenario can
+  // filter to just the journey it spotlights. Phase is routed by what
+  // the step *does* (which view it lives on + which view its selector
+  // jumps to), not by position in the list.
+  function assignPhases(steps) {
+    for (var i = 0; i < steps.length; i++) {
+      var s = steps[i];
+      var sel = s.selector || '';
+      if (s.final) { s.phase = 'final'; continue; }
+      // Reserve flow + pay-modal celebration
+      if (s.view === 'home' || s.view === 'reserve' || s.view === 'pay-modal') {
+        s.phase = 'reserve'; continue;
+      }
+      // Tables view always = seating.
+      if (s.view === 'tables') { s.phase = 'seating'; continue; }
+      // Dashboard / menu steps route by which jump-button they target.
+      if (sel === '#dm-jump-tables') { s.phase = 'seating'; continue; }
+      if (sel === '#dm-jump-menu')   { s.phase = 'menu'; continue; }
+      if (sel === '#dm-jump-queue')  { s.phase = 'queue'; continue; }
+      if (sel === '#dm-jump-dashboard') { s.phase = 'final'; continue; }
+      // Queue view = queue (upgrade flow lives here too).
+      if (s.view === 'queue') { s.phase = 'queue'; continue; }
+      // Anything else on the menu = menu (tabs walk, pre-arrival composer,
+      // receipt overlay).
+      if (s.view === 'menu') { s.phase = 'menu'; continue; }
+      // Bare dashboard step (no jump selector) — treat as final.
+      if (s.view === 'dashboard') { s.phase = 'final'; continue; }
+      s.phase = s.phase || 'reserve';
+    }
+    return steps;
+  }
+
+  // For scenarios that skip the queue phase, rewrite the receipt step's
+  // jump-to-queue selector so it goes straight to the final dashboard
+  // instead. Same for the menu's last "→ queue" step in lifestyle.
+  function reroutePhaseSkips(steps, phaseSet) {
+    if (phaseSet.queue) return steps;
+    for (var i = 0; i < steps.length; i++) {
+      var s = steps[i];
+      if (s.selector === '#dm-jump-queue') {
+        s.selector = '#dm-jump-dashboard';
+        s.title = s.title.replace(/queue/i, 'QR pass');
+        s.body = (s.body || '').replace(/walk-in queue/i, 'QR check-in pass');
+        s.change = 'QR pass open';
+        s.phase = 'final';
+      }
+    }
+    return steps;
+  }
+
+  function preConfirmBookingState() {
+    // Walk into the demo with a booking already confirmed — used by every
+    // scenario that opens mid-journey (queue / menu).
+    try {
+      state.confirmed = true;
+      state.verified = true;
+      state.booking.guestName = 'Lukas Zimmermann';
+      state.booking.email = 'lukas@example.com';
+      state.booking.membership = 'priority-pass';
+      state.booking.preferredZone = 'communal';
+      state.booking.slot = state.booking.arrivalTime || '14:00';
+      state.preferredZone = 'communal';
+      state.tableSlot = state.booking.arrivalTime || '14:00';
+      state.verification.type = 'priority-pass';
+      state.verification.lastName = 'Zimmermann';
+      state.verification.number = 'PP-2026-3458';
+    } catch (_) {}
+  }
+
+  function buildScenarioSteps(scenarioId) {
+    var s = SCENARIOS[scenarioId];
+    if (!s) return [];
+    var full = buildSteps(s.tier);
+    assignPhases(full);
+    var wanted = {};
+    s.phases.forEach(function (p) { wanted[p] = true; });
+    var filtered = full.filter(function (st) { return wanted[st.phase] || st.final; });
+    // For scenarios that skip queue, reroute the receipt-step's
+    // "→ queue" jump button to "→ QR pass" so the demo lands cleanly
+    // on the final dashboard instead of visiting an unwanted queue.
+    reroutePhaseSkips(filtered, wanted);
+    // Always end on a final dashboard celebration.
+    if (!filtered.length || !filtered[filtered.length - 1].final) {
+      filtered.push({ view: 'dashboard', final: true, phase: 'final' });
+    }
+    return filtered;
+  }
+
+  function startScenario(scenarioId) {
+    var s = SCENARIOS[scenarioId];
+    if (!s) return;
+    chosenTier = s.tier;
+    var meta = TIER_META[s.tier];
+    bannerLabel.textContent = 'Aspire Demo · ' + s.title;
+    tierTag.textContent = s.tag;
+    document.getElementById('demo-scenario-picker').style.display = 'none';
+    document.getElementById('demo-veil').style.display = 'block';
+    document.getElementById('demo-banner').style.display = 'flex';
+    document.body.classList.remove('tier-lifestyle','tier-luxe','tier-suite','tier-prive');
+    document.body.classList.add('tier-' + s.tier);
+
+    configureLounge(s.tier);
+    if (s.preConfirm) preConfirmBookingState();
+    STEPS = buildScenarioSteps(scenarioId);
+    idx = 0;
+    currentChapter = null;
+    setTimeout(runStep, TIMING.initialBoot);
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-demo-scenario]'), function (btn) {
+    btn.addEventListener('click', function () {
+      startScenario(btn.getAttribute('data-demo-scenario'));
+    });
+  });
+
   // Intro card → tier picker.
   var introBtn = document.getElementById('dm-intro-begin');
   if (introBtn) {
     introBtn.addEventListener('click', function () {
       var intro = document.getElementById('demo-intro');
       if (intro) intro.style.display = 'none';
-      var picker = document.getElementById('demo-tier-picker');
+      var picker = document.getElementById('demo-scenario-picker');
       if (picker) picker.style.display = 'flex';
     });
   }
