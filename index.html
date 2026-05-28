@@ -207,6 +207,252 @@
     letter-spacing: .36em; text-transform: uppercase; color: #B59D88;
   }
 
+  /* ===== Pre-Arrival Dining composer — full UI ===== */
+  #view-menu .pa-tier-num {
+    font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300;
+    color: rgba(31,42,68,.35); font-size: 1.1rem; line-height: 1;
+  }
+  #view-menu .pa-dish-slot {
+    border: 1px dashed rgba(31,42,68,.18);
+    background: rgba(255,255,255,.55);
+    border-radius: 8px; padding: 12px 14px;
+    display: flex; align-items: center; gap: 12px;
+    transition: border-color .25s, background .25s, transform .25s;
+  }
+  #view-menu .pa-dish-slot.filled { border-style: solid; border-color: rgba(181,157,136,.4); background: rgba(255,255,255,.9); }
+  #view-menu .pa-dish-slot.recommend { box-shadow: 0 0 0 2px rgba(181,157,136,.18); }
+  #view-menu .pa-dish-slot:hover { transform: translateY(-1px); border-color: rgba(181,157,136,.65); }
+  #view-menu .pa-dish-slot.locked { background: rgba(255,255,255,.85); }
+  #view-menu .pa-thumb {
+    width: 48px; height: 48px; border-radius: 6px; object-fit: cover; flex: none;
+    background: #ECE6E0;
+  }
+  #view-menu .pa-tier-card {
+    border: 1px solid rgba(31,42,68,.12);
+    background: #fff;
+    padding: 22px 22px 24px;
+    cursor: pointer;
+    transition: border-color .3s, transform .3s, box-shadow .3s;
+    position: relative; text-align: left;
+    display: flex; flex-direction: column; height: 100%;
+  }
+  #view-menu .pa-tier-card:hover { border-color: rgba(181,157,136,.6); transform: translateY(-2px); box-shadow: 0 18px 30px -22px rgba(31,42,68,.25); }
+  #view-menu .pa-tier-card.active { border-color: #B59D88; box-shadow: 0 0 0 2px rgba(181,157,136,.22), 0 22px 36px -24px rgba(31,42,68,.3); background: linear-gradient(180deg, #fff 0%, #EFEAE5 220%); }
+  #view-menu .pa-tier-card .pa-tier-crown {
+    width: 44px; height: 44px; border-radius: 50%;
+    display:flex; align-items:center; justify-content:center;
+    background: rgba(181,157,136,.14); color: #B59D88; margin-bottom: 16px;
+  }
+  #view-menu .pa-tier-card.active .pa-tier-crown { background: #B59D88; color: #fff; }
+  #view-menu .pa-perk-list { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; padding: 0; list-style: none; }
+  #view-menu .pa-perk-list li {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: .82rem; color: #1F2A44; line-height: 1.5;
+  }
+  #view-menu .pa-perk-list li::before {
+    content: ''; flex: none; width: 5px; height: 5px; border-radius: 50%;
+    background: #B59D88; margin-top: 8px;
+  }
+  #view-menu .pa-size-card {
+    border: 1px solid rgba(31,42,68,.12);
+    background: #fff; padding: 22px 22px 24px;
+    cursor: pointer; text-align: left;
+    transition: border-color .3s, transform .3s, box-shadow .3s;
+    position: relative;
+  }
+  #view-menu .pa-size-card:hover { border-color: rgba(181,157,136,.6); transform: translateY(-2px); box-shadow: 0 18px 30px -22px rgba(31,42,68,.25); }
+  #view-menu .pa-size-card.active { border-color: #B59D88; box-shadow: 0 0 0 2px rgba(181,157,136,.22), 0 22px 36px -24px rgba(31,42,68,.3); }
+  #view-menu .pa-size-card .pa-size-glyph {
+    width: 56px; height: 56px; border-radius: 50%;
+    display:flex; align-items:center; justify-content:center;
+    background: rgba(181,157,136,.12); color: #B59D88; margin-bottom: 14px;
+  }
+  #view-menu .pa-pill {
+    display:inline-flex; align-items:center; gap:6px;
+    padding: 4px 9px; border-radius: 999px;
+    font-size: .58rem; letter-spacing: .18em; text-transform: uppercase;
+    background: rgba(181,157,136,.12); color: #9B8470;
+  }
+  #view-menu .pa-pill.muted { background: rgba(31,42,68,.06); color: #1F2A44; }
+  #view-menu .pa-pill.allergen { background: rgba(176,90,71,.08); color: #B05A47; }
+  #view-menu .pa-time-chip {
+    padding: 10px 14px; border: 1px solid rgba(31,42,68,.15);
+    font-size: .8rem; cursor: pointer; transition: all .25s;
+    text-align: center; background: #fff; color: #1F2A44;
+  }
+  #view-menu .pa-time-chip.active { background: #1F2A44; color: #fff; border-color: #1F2A44; }
+  #view-menu .pa-time-chip:hover { border-color: #B59D88; }
+  #view-menu .pa-status-dot {
+    display:inline-block; width: 8px; height: 8px; border-radius: 50%;
+    background: #7A8C73; box-shadow: 0 0 0 4px rgba(122,140,115,.18);
+    animation: paPulse 2.2s infinite;
+  }
+  @keyframes paPulse { 0%,100%{box-shadow:0 0 0 4px rgba(122,140,115,.18);} 50%{box-shadow:0 0 0 8px rgba(122,140,115,.08);} }
+  #view-menu .pa-confirm-overlay {
+    background: linear-gradient(140deg, #FFFFFF 0%, #ECE6E0 100%);
+    border: 1px solid rgba(181,157,136,.35);
+  }
+  #view-menu .pa-feature-panel {
+    border: 1px solid rgba(181,157,136,.3);
+    background: linear-gradient(180deg, rgba(255,255,255,.7) 0%, rgba(236,230,224,.5) 100%);
+    padding: 22px 24px 24px;
+  }
+  #view-menu .pa-option-chip {
+    padding: 11px 14px;
+    border: 1px solid rgba(31,42,68,.15);
+    background: #fff; cursor: pointer; transition: all .25s;
+    display: flex; flex-direction: column; gap: 4px; text-align: left;
+  }
+  #view-menu .pa-option-chip:hover { border-color: #B59D88; }
+  #view-menu .pa-option-chip.active {
+    border-color: #B59D88;
+    background: linear-gradient(180deg, #fff 0%, #EFEAE5 200%);
+    box-shadow: 0 0 0 2px rgba(181,157,136,.18);
+  }
+  #view-menu .pa-option-chip .pa-opt-label { font-size: .82rem; color: #1F2A44; font-weight: 500; letter-spacing: .01em; }
+  #view-menu .pa-option-chip .pa-opt-hint { font-size: .7rem; color: #8A8475; line-height: 1.4; }
+  #view-menu .pa-pipeline {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; position: relative;
+  }
+  #view-menu .pa-pipeline::before {
+    content: ''; position: absolute; left: 10%; right: 10%;
+    top: 16px; height: 1px;
+    background: rgba(31,42,68,.18); z-index: 0;
+  }
+  #view-menu .pa-pipeline-step {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    text-align: center;
+  }
+  #view-menu .pa-pipeline-step .pa-step-dot {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #fff; border: 1px solid rgba(31,42,68,.18);
+    display: flex; align-items: center; justify-content: center;
+    color: #8A8475; transition: all .35s;
+  }
+  #view-menu .pa-pipeline-step.done .pa-step-dot { background: #1F2A44; color: #fff; border-color: #1F2A44; }
+  #view-menu .pa-pipeline-step.active .pa-step-dot {
+    background: #B59D88; color: #fff; border-color: #B59D88;
+    box-shadow: 0 0 0 6px rgba(181,157,136,.18);
+    animation: paPulse 2.4s infinite;
+  }
+  #view-menu .pa-pipeline-step .pa-step-label {
+    font-size: .58rem; letter-spacing: .22em; text-transform: uppercase;
+    color: #8A8475; max-width: 100px;
+  }
+  #view-menu .pa-pipeline-step.done .pa-step-label,
+  #view-menu .pa-pipeline-step.active .pa-step-label { color: #1F2A44; }
+  #view-menu .pa-prep-row {
+    display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center;
+    padding: 12px 0; border-bottom: 1px solid rgba(31,42,68,.08);
+    font-size: .88rem;
+  }
+  #view-menu .pa-prep-row:last-child { border-bottom: 0; }
+  #view-menu .pa-prep-num {
+    font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300;
+    color: rgba(31,42,68,.4); font-size: 1rem;
+  }
+  #view-menu .pa-prep-bar {
+    height: 3px; background: rgba(31,42,68,.08); border-radius: 2px; overflow: hidden;
+    grid-column: 1 / -1; margin-top: 4px;
+  }
+  #view-menu .pa-prep-bar > span { display: block; height: 100%; background: linear-gradient(90deg, #B59D88, #E0CDB8); }
+  #view-menu .pa-push {
+    background: rgba(31,42,68,.95); color: #fff;
+    padding: 14px 16px; border-radius: 16px;
+    box-shadow: 0 18px 30px -20px rgba(31,42,68,.5);
+    max-width: 360px; backdrop-filter: blur(8px);
+  }
+  #view-menu .pa-push .pa-push-head {
+    display: flex; align-items: center; gap: 8px;
+    font-size: .58rem; letter-spacing: .26em; text-transform: uppercase;
+    color: rgba(255,255,255,.7); margin-bottom: 6px;
+  }
+  #view-menu .pa-push .pa-push-body { font-size: .9rem; line-height: 1.5; }
+  #view-menu .pa-push .pa-push-time { font-size: .58rem; color: rgba(255,255,255,.5); margin-top: 4px; letter-spacing: .12em; }
+  #view-menu .pa-ref-card {
+    border: 1px solid rgba(31,42,68,.12);
+    background: #fff; padding: 18px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  #view-menu .pa-ref-card .pa-qr-host { flex: none; width: 88px; height: 88px; background: #FFFFFF; padding: 6px; border: 1px solid rgba(31,42,68,.08); }
+  #view-menu .pa-detail-btn {
+    background: rgba(31,42,68,.05); color: #1F2A44;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .25s, color .25s;
+    border-radius: 4px; flex: none;
+  }
+  #view-menu .pa-detail-btn:hover { background: #1F2A44; color: #fff; }
+  #view-menu .pa-combo-card {
+    border: 1px solid rgba(31,42,68,.12);
+    background: #fff; cursor: pointer;
+    transition: border-color .3s, transform .3s, box-shadow .3s;
+    position: relative; overflow: hidden;
+    text-align: left; display: flex; flex-direction: column;
+  }
+  #view-menu .pa-combo-card:hover { border-color: rgba(181,157,136,.6); transform: translateY(-2px); box-shadow: 0 18px 30px -22px rgba(31,42,68,.25); }
+  #view-menu .pa-combo-card.active { border-color: #B59D88; box-shadow: 0 0 0 2px rgba(181,157,136,.22), 0 22px 36px -24px rgba(31,42,68,.3); }
+  #view-menu .pa-combo-card .pa-combo-img { aspect-ratio: 5/4; overflow: hidden; background: #ECE6E0; }
+  #view-menu .pa-combo-card .pa-combo-img img { width:100%; height:100%; object-fit: cover; transition: transform .8s cubic-bezier(.2,.8,.2,1); }
+  #view-menu .pa-combo-card:hover .pa-combo-img img { transform: scale(1.04); }
+  #view-menu .pa-combo-card .pa-combo-body { padding: 18px 20px 22px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  #view-menu .pa-locked-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: .54rem; letter-spacing: .26em; text-transform: uppercase;
+    color: #8A8475; padding: 3px 7px; border: 1px solid rgba(31,42,68,.12);
+    background: rgba(255,255,255,.6);
+  }
+  #view-menu .pa-ing-toggle {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px;
+    border: 1px solid rgba(31,42,68,.12);
+    background: #fff; width: 100%;
+    cursor: pointer; transition: all .2s; text-align: left;
+  }
+  #view-menu .pa-ing-toggle:hover { border-color: #B59D88; }
+  #view-menu .pa-ing-toggle.removed {
+    background: rgba(31,42,68,.04); color: rgba(31,42,68,.4); text-decoration: line-through;
+  }
+  #view-menu .pa-ing-toggle.allergen { border-left: 3px solid #B05A47; }
+  #view-menu .pa-ing-toggle .pa-ing-x {
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; flex: none;
+    background: rgba(31,42,68,.06);
+    transition: background .2s, color .2s;
+  }
+  #view-menu .pa-ing-toggle:hover .pa-ing-x { background: #B05A47; color: #fff; }
+  #view-menu .pa-ing-toggle.removed .pa-ing-x { background: #B05A47; color: #fff; }
+  #view-menu .pa-pref-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px;
+    border: 1px solid rgba(31,42,68,.15);
+    background: #fff; cursor: pointer;
+    transition: all .25s; font-size: .82rem; color: #1F2A44;
+  }
+  #view-menu .pa-pref-chip:hover { border-color: #B59D88; }
+  #view-menu .pa-pref-chip.active {
+    border-color: #B59D88; background: #B59D88; color: #fff;
+    box-shadow: 0 0 0 2px rgba(181,157,136,.18);
+  }
+  #view-menu .pa-swap-backdrop {
+    position: fixed; inset: 0; z-index: 60;
+    background: rgba(31,42,68,.45); backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center; padding: 16px;
+  }
+  #view-menu .pa-swap-modal-card {
+    background: #fff; max-height: 84vh; overflow-y: auto;
+    width: 100%; max-width: 720px;
+    padding: 28px;
+    box-shadow: 0 40px 80px -30px rgba(31,42,68,.4);
+  }
+  @media (max-width: 640px) {
+    #view-menu .pa-pipeline-step .pa-step-label { font-size: .52rem; letter-spacing: .18em; }
+    #view-menu .pa-pipeline::before { top: 14px; }
+    #view-menu .pa-pipeline-step .pa-step-dot { width: 28px; height: 28px; }
+  }
+
   /* Tilt-card hover for editorial cards */
   #view-menu .tilt-card:hover .tilt-inner { transform: translateZ(40px) translateY(-4px); }
 </style>
@@ -1203,31 +1449,9 @@
     </div>
   </section>
 
-  <!-- ===== Pre-Arrival Dining promo ===== -->
-  <section id="menu-pa-promo" class="bg-aspire-soft border-y border-aspire-navy/10">
-    <div class="mx-auto max-w-6xl px-5 sm:px-8 py-24 sm:py-32">
-      <div class="grid md:grid-cols-12 gap-10 md:gap-16 items-center">
-        <div class="md:col-span-7 reveal">
-          <div class="inline-flex items-center gap-2 text-aspire-taupeDark text-[0.6rem] uppercase tracking-[0.36em]">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 8l4 5 5-8 5 8 4-5-2 11H5L3 8z"/><path d="M5 19h14"/></svg>
-            Luxe &middot; Suite &middot; Priv&eacute; tiers &middot; Aspire Lounge
-          </div>
-          <h2 class="serif-heading text-3xl sm:text-5xl mt-5 text-aspire-navy leading-[1.05]">Pre-order before you arrive</h2>
-          <p class="mt-6 text-navy-500 leading-[1.75] max-w-xl">A new ritual for Luxe, Suite and Priv&eacute; travellers — curated tiered trays of luxury biteables, plated and timed to the minute you sit down.</p>
-          <a href="#reserve" data-view="reserve" class="mt-8 inline-flex items-center gap-3 px-7 py-3.5 bg-aspire-navy text-white uppercase tracking-[0.28em] text-[0.66rem] hover:bg-aspire-navy2 transition-colors">
-            Compose your tray
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          </a>
-        </div>
-        <div class="md:col-span-5 reveal" style="transition-delay:.1s">
-          <div class="pa-tray-stack">
-            <div class="pa-tray-tier"><span class="pa-tier-label">Top tier &middot; Starters</span><div class="mt-5 h-6 rounded bg-aspire-navy/5"></div></div>
-            <div class="pa-tray-tier"><span class="pa-tier-label">Middle tier &middot; Mains</span><div class="mt-5 h-6 rounded bg-aspire-navy/5"></div></div>
-            <div class="pa-tray-tier"><span class="pa-tier-label">Bottom tier &middot; Desserts</span><div class="mt-5 h-6 rounded bg-aspire-navy/5"></div></div>
-          </div>
-        </div>
-      </div>
-    </div>
+  <!-- ===== Pre-Arrival Dining composer ===== -->
+  <section id="menu-pa-composer" class="bg-aspire-soft border-y border-aspire-navy/10">
+    <div id="pa-host" class="mx-auto max-w-6xl px-5 sm:px-8 py-16 sm:py-24"></div>
   </section>
 
   <!-- ===== QR section ===== -->
@@ -3340,6 +3564,7 @@ window.addEventListener('hashchange', () => {
     initParallax();
     initTilt();
     initQR();
+    if (typeof window.paBoot === 'function') window.paBoot();
   }
 
   // Hydrate the first time the view becomes active.
@@ -3350,6 +3575,1117 @@ window.addEventListener('hashchange', () => {
   // Observe class changes on the view to lazy-hydrate.
   var mo = new MutationObserver(maybeHydrate);
   mo.observe(menuRoot, { attributes: true, attributeFilter: ['class'] });
+})();
+
+/* =========================================================================
+   Pre-Arrival Dining composer — self-contained IIFE, English only.
+   Hydrates into #pa-host on first activation of #view-menu (driven by the
+   menu IIFE above via window.paBoot). State, helpers and renderers are
+   prefixed pa* and live inside this closure — nothing leaks to globals
+   apart from window.paBoot.
+   ========================================================================= */
+(function(){
+  var host = document.getElementById('pa-host');
+  if (!host) return;
+
+  /* ---------- Data ---------- */
+  var PA_TIERS = ['luxe','suite','prive'];
+
+  var PA_TIER_META = {
+    luxe: {
+      label: 'Luxe', tagline: 'Curated, ready to enjoy',
+      perks: [
+        'Three chef-curated tray combinations',
+        'Plated to your seat by a host',
+        'Standard 18-minute preparation',
+        'Fixed composition — no editing required',
+      ],
+      handoff: 'Your seat · Luxe lounge',
+    },
+    suite: {
+      label: 'Suite', tagline: 'Build your own tray',
+      perks: [
+        'Build every tier — starters, mains, desserts',
+        'Start from scratch — or from a chef-curated combination',
+        'Plated to your seat in the Suite zone',
+        'Priority preparation — three minutes saved',
+      ],
+      handoff: 'Your table · Suite zone',
+    },
+    prive: {
+      label: 'Privé', tagline: 'A bespoke menu, composed for you',
+      perks: [
+        'No tray — a private menu written by the chef',
+        'Set dietary preferences, occasion and course count',
+        'Reserved nook · dedicated host · porcelain & crystal',
+        'Hot-towel ritual & sommelier-paired wine flight',
+      ],
+      handoff: 'Privé Nook · seated greeting',
+    },
+  };
+
+  var PA_PAIRINGS = [
+    { id:'pinot',     label:'Pinot Noir · Graubünden',  hint:'Light Alpine fruit, bright finish — pairs with cured meats.' },
+    { id:'champagne', label:'Champagne Brut · Henriot', hint:'Crisp, fine bubble — the all-day companion.' },
+    { id:'riesling',  label:'Alpine Riesling · Wallis', hint:'Mineral, off-dry — pairs with smoked fish and Asian notes.' },
+  ];
+
+  var PA_PRIVE_PREFS = [
+    { id:'vegetarian',    label:'Vegetarian' },
+    { id:'vegan',         label:'Vegan' },
+    { id:'gluten-free',   label:'Gluten-free' },
+    { id:'dairy-free',    label:'Dairy-free' },
+    { id:'halal-friendly',label:'Halal-friendly' },
+    { id:'nut-free',      label:'Nut-free' },
+  ];
+
+  var PA_PREP_STAGES = [
+    { id:'mise',     label:'Mise en place',          ratio:.25 },
+    { id:'cook',     label:'Cooking & plating',      ratio:.45 },
+    { id:'qa',       label:'Garnish & quality check',ratio:.15 },
+    { id:'delivery', label:'Delivery to handoff',    ratio:.15 },
+  ];
+
+  var PA_PIPELINE_STEPS = [
+    { id:'received',  label:'Received'         },
+    { id:'confirmed', label:'Confirmed'        },
+    { id:'preparing', label:'Preparing'        },
+    { id:'plated',    label:'Plated'           },
+    { id:'ready',     label:'Ready at lounge'  },
+  ];
+
+  var PA_TRAY_SIZES = {
+    small:  { starters: 2, mains: 2, desserts: 2, guests:'For 1 traveller',  detail:'2 starters · 2 mains · 2 desserts', prep: 14 },
+    medium: { starters: 3, mains: 3, desserts: 2, guests:'For 2–3 guests',   detail:'3 starters · 3 mains · 2 desserts', prep: 18 },
+    large:  { starters: 4, mains: 4, desserts: 3, guests:'For 3–4 guests',   detail:'4 starters · 4 mains · 3 desserts', prep: 24 },
+  };
+
+  var PA_RECOMMENDED = {
+    starters: ['cheese-charcuterie','smoked-trout-salad','french-pastry','greek-yogurt-parfait'],
+    mains:    ['zurcher-geschnetzeltes','herb-lake-fish','rosti-alpine-cheese','shakshuka'],
+    desserts: ['zuger-kirschtorte','chocolate-mousse','panna-cotta'],
+  };
+
+  var PA_LUXE_COMBOS = [
+    {
+      id:'voyager',
+      name:'The Voyager',
+      tag:'Swiss heritage meets the world — Gruyère, geschnetzeltes, shakshuka and pastry.',
+      image:'https://i.pinimg.com/736x/b7/02/65/b702653e4bf4542e18b7b0c0da5c41e1.jpg',
+      starters:['cheese-charcuterie','french-pastry','smoked-trout-salad','greek-yogurt-parfait'],
+      mains:   ['zurcher-geschnetzeltes','shakshuka','herb-lake-fish','asian-fried-rice'],
+      desserts:['zuger-kirschtorte','panna-cotta','chocolate-mousse'],
+    },
+    {
+      id:'garden',
+      name:'The Garden',
+      tag:'Plant-forward — light, fresh, vegetable-led plates.',
+      image:'https://i.pinimg.com/736x/36/e4/fa/36e4fa1c06d7b955d94a5a4cc92b78f6.jpg',
+      starters:['cucumber-radish-salad','fruit-compote','chickpea-salad','avocado-wraps'],
+      mains:   ['shakshuka','asian-fried-rice','rosti-alpine-cheese','herb-lake-fish'],
+      desserts:['panna-cotta','frozen-yoghurt','chocolate-mousse'],
+    },
+    {
+      id:'pure',
+      name:'The Pure',
+      tag:'Gluten-free & lactose-free — the chef adapts every plate to be lighter on the system.',
+      image:'https://images.unsplash.com/photo-1543339308-43e59d6b73a6?auto=format&fit=crop&w=1200&q=80',
+      starters:['cucumber-radish-salad','fruit-compote','chickpea-salad','avocado-wraps'],
+      mains:   ['herb-lake-fish','shakshuka','asian-fried-rice','chicken-skillet'],
+      desserts:['panna-cotta','frozen-yoghurt','chocolate-mousse'],
+    },
+  ];
+
+  var PA_DISHES = [
+    { id:'cheese-charcuterie',     name:'Swiss Cheese & Charcuterie Board', description:'Aged Gruyère AOP, Tête de Moine, Bündnerfleisch and Walliser dried meats with fig compote.', category:'starters', image:'https://i.postimg.cc/4xhgTmSN/Chat-GPT-Image-May-26-2026-12-12-21-PM.png', temperature:'cold', dietary:['nut-free'], allergens:['dairy'] },
+    { id:'smoked-trout-salad',     name:'Smoked Trout Potato Salad',        description:'Cold-smoked alpine trout, Ratte potatoes, dill crème fraîche, lemon zest.', category:'starters', image:'https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=1200&q=80', temperature:'cold', dietary:['gluten-free','nut-free'], allergens:['dairy','eggs'] },
+    { id:'cucumber-radish-salad',  name:'Cucumber & Radish Herb Salad',     description:'Crisp cucumber, French breakfast radishes, garden herbs, lemon vinaigrette.', category:'starters', image:'https://images.unsplash.com/photo-1505253213348-cd54c92b37e6?auto=format&fit=crop&w=1200&q=80', temperature:'cold', dietary:['vegan','vegetarian','gluten-free','dairy-free','halal-friendly','nut-free'], allergens:[] },
+    { id:'fruit-compote',          name:'Seasonal Fruit Compote Cups',      description:'Slow-cooked seasonal fruits, vanilla bean, light alpine honey syrup.', category:'starters', image:'https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=1200&q=80', temperature:'cold', dietary:['vegan','vegetarian','gluten-free','dairy-free','halal-friendly','nut-free'], allergens:[] },
+    { id:'greek-yogurt-parfait',   name:'Greek Yogurt Parfait',             description:'Thick Greek yoghurt, honey, granola, fresh berries and seasonal fruits.', category:'starters', image:'https://images.unsplash.com/photo-1542691457-cbe4df041eb2?auto=format&fit=crop&w=1200&q=80', temperature:'cold', dietary:['vegetarian','halal-friendly'], allergens:['dairy','gluten','nuts'] },
+    { id:'french-pastry',          name:'Mini French Pastry Selection',     description:'Pain au chocolat, croissant, brioche and palmier — baked each morning.', category:'starters', image:'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=1200&q=80', temperature:'cold', dietary:['vegetarian','nut-free'], allergens:['gluten','dairy','eggs'] },
+    { id:'chickpea-salad',         name:'Middle Eastern Chickpea Salad',    description:'Chickpeas, tomato, cucumber, parsley, lemon, cumin and olive oil.', category:'starters', image:'https://images.unsplash.com/photo-1543339308-43e59d6b73a6?auto=format&fit=crop&w=1200&q=80', temperature:'cold', dietary:['vegan','vegetarian','gluten-free','dairy-free','halal-friendly','nut-free'], allergens:[] },
+    { id:'avocado-wraps',          name:'Avocado & Tomato Breakfast Wraps', description:'Smashed avocado, sun-ripened tomato, baby spinach, lemon, soft wheat wrap.', category:'starters', image:'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=1200&q=80', temperature:'cold', dietary:['vegan','vegetarian','dairy-free','halal-friendly','nut-free'], allergens:['gluten'] },
+    { id:'zurcher-geschnetzeltes', name:'Zürcher Geschnetzeltes',           description:'Sliced veal in white wine and mushroom cream sauce, traditional Zürich style.', category:'mains', image:'https://images.unsplash.com/photo-1432139509613-5c4255815697?auto=format&fit=crop&w=1200&q=80', temperature:'hot', dietary:['nut-free'], allergens:['dairy','gluten'] },
+    { id:'rosti-alpine-cheese',    name:'Rösti with Alpine Cheese',         description:'Crisp golden potato rösti baked with melted Berner Hobelkäse and chives.', category:'mains', image:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=80', temperature:'hot', dietary:['vegetarian','gluten-free','nut-free','halal-friendly'], allergens:['dairy'] },
+    { id:'herb-lake-fish',         name:'Herb-Roasted Lake Fish',           description:'Filet of Lake Zürich perch, herb butter, citrus beurre blanc, garden vegetables.', category:'mains', image:'https://images.unsplash.com/photo-1485921325833-c519f76c4927?auto=format&fit=crop&w=1200&q=80', temperature:'hot', dietary:['gluten-free','nut-free'], allergens:['dairy'] },
+    { id:'shakshuka',              name:'Mediterranean Shakshuka',          description:'Slow-simmered tomatoes, peppers, spices and baked eggs with crusty bread.', category:'mains', image:'https://images.unsplash.com/photo-1590412200988-a436970781fa?auto=format&fit=crop&w=1200&q=80', temperature:'hot', dietary:['vegetarian','gluten-free','halal-friendly'], allergens:['eggs'] },
+    { id:'chicken-skillet',        name:'Chicken Sausage Skillet',          description:'Halal chicken sausage, peppers, onions, golden potatoes and baked eggs.', category:'mains', image:'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=1200&q=80', temperature:'hot', dietary:['halal-friendly','nut-free'], allergens:['eggs'] },
+    { id:'asian-fried-rice',       name:'Asian Vegetable Fried Rice',       description:'Jasmine rice, ginger, garlic, soy and seasonal vegetables, finished with sesame.', category:'mains', image:'https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=1200&q=80', temperature:'hot', dietary:['vegan','vegetarian','dairy-free','halal-friendly','nut-free'], allergens:['soy','sesame'] },
+    { id:'zuger-kirschtorte',      name:'Mini Zuger Kirschtorte',           description:'Layered hazelnut meringue, buttercream and kirsch-soaked sponge from canton Zug.', category:'desserts', image:'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=1200&q=80', temperature:'cold', dietary:['vegetarian'], allergens:['gluten','dairy','nuts','eggs'] },
+    { id:'chocolate-mousse',       name:'Swiss Chocolate Mousse Cups',      description:'70% Lindt grand cru chocolate, whipped cream, cocoa nibs, gold leaf.', category:'desserts', image:'https://images.unsplash.com/photo-1541783245831-57d6fb0926d3?auto=format&fit=crop&w=1200&q=80', temperature:'cold', dietary:['vegetarian','gluten-free'], allergens:['dairy','eggs','soy'] },
+    { id:'panna-cotta',            name:'Tropical Fruit Panna Cotta',       description:'Vanilla bean panna cotta, passion-fruit coulis, mango, micro basil.', category:'desserts', image:'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=1200&q=80', temperature:'cold', dietary:['vegetarian','gluten-free','nut-free'], allergens:['dairy'] },
+    { id:'frozen-yoghurt',         name:'Frozen Yoghurt',                   description:'House-made frozen yoghurt with seasonal berry, vanilla and dark chocolate sauces.', category:'desserts', image:'https://images.unsplash.com/photo-1488900128323-21503983a07e?auto=format&fit=crop&w=1200&q=80', temperature:'cold', dietary:['vegetarian','gluten-free','halal-friendly','nut-free'], allergens:['dairy'] },
+  ];
+
+  var PA_DISH_INGREDIENTS = {
+    'cheese-charcuterie': ['Gruyère AOP (18-month)','Tête de Moine rosettes','Bündnerfleisch','Valais dried beef','Black-mission fig compote','Toasted walnut crispbread'],
+    'smoked-trout-salad': ['Cold-smoked alpine trout','Ratte fingerling potatoes','Dill crème fraîche','Pickled shallot','Lemon zest','Garden chives'],
+    'cucumber-radish-salad': ['Crisp cucumber ribbons','French breakfast radishes','Garden herbs','Cold-pressed olive oil','Aged white-balsamic vinaigrette','Sea-salt flakes'],
+    'fruit-compote': ['Slow-cooked seasonal stone fruit','Bourbon vanilla bean','Alpine honey syrup','Fresh mint'],
+    'greek-yogurt-parfait': ['Thick Greek yoghurt','Acacia honey','House granola','Mixed berries','Pomegranate seeds'],
+    'french-pastry': ['Mini pain au chocolat','Mini all-butter croissant','Brioche bouchon','Palmier biscuit'],
+    'chickpea-salad': ['Slow-cooked chickpeas','Vine tomato','Cucumber','Flat-leaf parsley','Cumin','Lemon','Cold-pressed olive oil'],
+    'avocado-wraps': ['Smashed Hass avocado','Sun-ripened tomato','Baby spinach','Lemon zest','Soft wheat wrap'],
+    'zurcher-geschnetzeltes': ['Sliced milk-fed veal','White wine reduction','Cream','Crémini & porcini mushrooms','Shallot','Parsley'],
+    'rosti-alpine-cheese': ['Grated Bintje potato','Berner Hobelkäse AOP','Cultured butter','Chives'],
+    'herb-lake-fish': ['Filet of lake perch','Herb butter','Citrus beurre blanc','Charred lemon','Garden vegetables'],
+    'shakshuka': ['Slow-simmered tomato','Red & yellow peppers','Smoked paprika','Cumin','Baked free-range egg','Crusty sourdough'],
+    'chicken-skillet': ['Halal chicken sausage','Bell peppers','Sweet onion','Golden potatoes','Baked free-range egg','Smoked paprika'],
+    'asian-fried-rice': ['Jasmine rice','Ginger','Garlic','Light soy','Carrot','Spring onion','Toasted sesame'],
+    'zuger-kirschtorte': ['Hazelnut meringue','Genoise sponge','Kirsch syrup','Buttercream','Toasted almond flakes'],
+    'chocolate-mousse': ['Lindt grand cru 70%','Whipped cream','Cocoa nibs','24-carat gold leaf'],
+    'panna-cotta': ['Bourbon vanilla panna cotta','Passion-fruit coulis','Diced mango','Micro basil'],
+    'frozen-yoghurt': ['House-cultured frozen yoghurt','Berry coulis','Madagascar vanilla sauce','Dark chocolate sauce'],
+  };
+
+  var PA_ALLERGEN_KEYWORDS = {
+    gluten:    ['bread','pretzel','rolls','crispbread','sourdough','pastry','biscuit','sponge','wrap','wheat','granola','oat','genoise','meringue'],
+    dairy:     ['butter','cream','crème','yoghurt','yogurt','cheese','gruyère','tête de moine','hobelkäse','panna cotta','buttercream','milk'],
+    nuts:      ['hazelnut','walnut','almond','pistachio','praline','nut'],
+    shellfish: ['shrimp','prawn','crab','lobster','shellfish'],
+    eggs:      ['egg','meringue','buttercream','sponge','genoise'],
+    soy:       ['soy','soya','tofu','tamari'],
+    sesame:    ['sesame','tahini'],
+  };
+
+  /* ---------- State ---------- */
+  var paState = {
+    tier: 'luxe',
+    size: 'medium',
+    luxeCombo: 'voyager',
+    selections: { starters: [], mains: [], desserts: [] },
+    suite: { mode: 'curated', combo: 'voyager', pairing: null, counts: { starters: 2, mains: 2, desserts: 1 }, customizations: {} },
+    prive: { ingredients: new Set(), occasion: '', courseCount: 3, allergies: '', prefs: new Set(), pairing: null, host: 'Élodie Roulet', chefNote: '' },
+    schedule: '',
+    note: '',
+    confirmed: null,
+  };
+
+  /* ---------- Helpers ---------- */
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]; }); }
+  function paDish(id) { for (var i=0;i<PA_DISHES.length;i++) if (PA_DISHES[i].id === id) return PA_DISHES[i]; return null; }
+  function paFindCombo(id) { for (var i=0;i<PA_LUXE_COMBOS.length;i++) if (PA_LUXE_COMBOS[i].id === id) return PA_LUXE_COMBOS[i]; return PA_LUXE_COMBOS[0]; }
+
+  function paIngredientAllergens(ingredient, dishAllergens) {
+    var lc = ingredient.toLowerCase();
+    return (dishAllergens || []).filter(function(a){
+      var kws = PA_ALLERGEN_KEYWORDS[a] || [];
+      return kws.some(function(k){ return lc.indexOf(k) !== -1; });
+    });
+  }
+
+  function paGenerateRef() { return 'APR-' + (Math.floor(Math.random() * 9000) + 1000); }
+
+  function paTimeSlots() {
+    var slots = [];
+    var now = new Date();
+    var startMin = Math.ceil((now.getMinutes() + 1) / 15) * 15;
+    var base = new Date(now);
+    base.setMinutes(startMin, 0, 0);
+    for (var i = 0; i < 6; i++) {
+      var d = new Date(base.getTime() + i * 30 * 60 * 1000);
+      slots.push(('0'+d.getHours()).slice(-2) + ':' + ('0'+d.getMinutes()).slice(-2));
+    }
+    return slots;
+  }
+
+  function paSuiteCounts() {
+    if (paState.tier === 'suite' && paState.suite.mode === 'custom') return paState.suite.counts;
+    return PA_TRAY_SIZES[paState.size];
+  }
+
+  function paApplyLuxeCombo() {
+    var combo = paFindCombo(paState.luxeCombo);
+    var cfg = PA_TRAY_SIZES[paState.size];
+    paState.selections = {
+      starters: combo.starters.slice(0, cfg.starters),
+      mains:    combo.mains.slice(0, cfg.mains),
+      desserts: combo.desserts.slice(0, cfg.desserts),
+    };
+  }
+  function paApplySuiteCurated() {
+    var combo = paFindCombo(paState.suite.combo);
+    var cfg = PA_TRAY_SIZES[paState.size];
+    paState.selections = {
+      starters: combo.starters.slice(0, cfg.starters),
+      mains:    combo.mains.slice(0, cfg.mains),
+      desserts: combo.desserts.slice(0, cfg.desserts),
+    };
+  }
+  function paApplySizeDefaults(force) {
+    if (paState.tier === 'luxe') { paApplyLuxeCombo(); return; }
+    if (paState.tier === 'suite' && paState.suite.mode === 'curated') { paApplySuiteCurated(); return; }
+    if (paState.tier === 'suite') {
+      var counts = paState.suite.counts;
+      ['starters','mains','desserts'].forEach(function(cat){
+        if (force) { paState.selections[cat] = []; return; }
+        if (paState.selections[cat].length > counts[cat]) paState.selections[cat] = paState.selections[cat].slice(0, counts[cat]);
+      });
+    }
+  }
+
+  function paEffectivePrep() {
+    var cfg = PA_TRAY_SIZES[paState.size];
+    return paState.tier === 'luxe' ? cfg.prep : Math.max(8, cfg.prep - 3);
+  }
+
+  function paPairingLabel() {
+    if (paState.tier === 'luxe') return null;
+    var p = PA_PAIRINGS.find(function(x){ return x.id === paState.suite.pairing; });
+    return p ? p.label : '—';
+  }
+
+  function paHandoffCopy() {
+    if (paState.tier === 'prive') return PA_TIER_META.prive.handoff + ' — ' + paState.prive.host;
+    return PA_TIER_META[paState.tier].handoff;
+  }
+
+  /* ---------- Inline icons ---------- */
+  function paIcon(name, cls) {
+    cls = cls || 'w-3 h-3';
+    var paths = {
+      crown:   '<path d="M3 8l4 5 5-8 5 8 4-5-2 11H5L3 8z"/><path d="M5 19h14"/>',
+      arrow:   '<path d="M5 12h14M13 6l6 6-6 6"/>',
+      check:   '<polyline points="4 12 10 18 20 6"/>',
+      plus:    '<path d="M12 5v14M5 12h14"/>',
+      minus:   '<path d="M5 12h14"/>',
+      shuffle: '<polyline points="16 3 21 3 21 8"/><path d="M4 20 21 3"/><polyline points="21 16 21 21 16 21"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/>',
+      sparkle: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3"/>',
+      clock:   '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+      tray:    '<path d="M3 9h18l-2 11H5L3 9zM5 5h14"/>',
+      pin:     '<path d="M12 22s7-7.5 7-13a7 7 0 1 0-14 0c0 5.5 7 13 7 13z"/><circle cx="12" cy="9" r="2.5"/>',
+      bell:    '<path d="M18 8a6 6 0 1 0-12 0c0 7-3 8-3 8h18s-3-1-3-8z"/><path d="M10 21h4"/>',
+      wine:    '<path d="M8 3h8s0 7-4 9c-4-2-4-9-4-9zM12 12v7M9 22h6"/>',
+      leaf:    '<path d="M11 20A7 7 0 0 1 4 13c0-5 4-9 17-9 0 13-4 17-9 17-2 0-3-1-3-1z"/><path d="M4 13s4-1 7-4"/>',
+      flame:   '<path d="M12 22c5 0 8-3 8-8 0-4-4-6-4-10 0 4-4 4-4 8 0-3-4-3-4 0 0 5 1 10 4 10z"/>',
+      x:       '<path d="M6 6l12 12M18 6L6 18"/>',
+      info:    '<circle cx="12" cy="12" r="9"/><path d="M12 8v.01M11 12h1v5h1"/>',
+      qr:      '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM18 18h3v3h-3z"/>',
+    };
+    var p = paths[name] || '';
+    return '<svg class="'+esc(cls)+'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' + p + '</svg>';
+  }
+
+  /* ---------- Markup builders ---------- */
+  function paTierPickerMarkup() {
+    return PA_TIERS.map(function(id){
+      var meta = PA_TIER_META[id];
+      var on = paState.tier === id;
+      return '<button data-pa-tier="'+id+'" class="pa-tier-card '+(on?'active':'')+'">' +
+        '<div class="pa-tier-crown">'+paIcon('crown','w-5 h-5')+'</div>' +
+        '<div class="text-[0.6rem] uppercase tracking-[0.32em] text-aspire-taupe">'+esc(meta.label)+'</div>' +
+        '<div class="serif-heading text-2xl text-aspire-navy mt-1">'+esc(meta.tagline)+'</div>' +
+        '<ul class="pa-perk-list">' + meta.perks.map(function(p){ return '<li>'+esc(p)+'</li>'; }).join('') + '</ul>' +
+        '<div class="mt-5 pt-4 border-t border-aspire-navy/10 text-[0.7rem] uppercase tracking-[0.22em] text-aspire-taupe inline-flex items-center gap-2">' +
+          paIcon('pin','w-3 h-3') + '<span>'+esc(meta.handoff)+'</span>' +
+        '</div>' +
+      '</button>';
+    }).join('');
+  }
+
+  function paSizePickerMarkup() {
+    return ['small','medium','large'].map(function(s){
+      var cfg = PA_TRAY_SIZES[s];
+      var on = paState.size === s;
+      return '<button data-pa-size="'+s+'" class="pa-size-card '+(on?'active':'')+'">' +
+        '<div class="pa-size-glyph">'+paIcon('tray','w-6 h-6')+'</div>' +
+        '<div class="flex items-baseline justify-between">' +
+          '<h3 class="serif-heading text-2xl text-aspire-navy">'+esc(s.charAt(0).toUpperCase()+s.slice(1))+'</h3>' +
+          '<span class="text-[0.6rem] uppercase tracking-[0.28em] text-aspire-taupe">'+esc(cfg.guests)+'</span>' +
+        '</div>' +
+        '<div class="mt-4 text-[0.7rem] uppercase tracking-[0.22em] text-aspire-taupe">Includes</div>' +
+        '<div class="mt-2 text-[0.92rem] text-aspire-navy leading-relaxed">'+esc(cfg.detail)+'</div>' +
+        '<div class="mt-5 inline-flex items-center gap-1.5 text-[0.62rem] uppercase tracking-[0.22em] '+(on?'text-aspire-taupeDark':'text-aspire-taupe')+'">' +
+          paIcon('clock','w-3 h-3')+' '+cfg.prep+' min' +
+        '</div>' +
+      '</button>';
+    }).join('');
+  }
+
+  function paComboPickerMarkup(activeId, dataAttr) {
+    return PA_LUXE_COMBOS.map(function(c){
+      var on = c.id === activeId;
+      return '<button '+dataAttr+'="'+c.id+'" class="pa-combo-card '+(on?'active':'')+'">' +
+        '<div class="pa-combo-img"><img src="'+esc(c.image)+'" alt="'+esc(c.name)+'" loading="lazy" onerror="this.style.opacity=\'.3\'" /></div>' +
+        '<div class="pa-combo-body">' +
+          '<div class="flex items-baseline justify-between">' +
+            '<h4 class="serif-heading text-xl text-aspire-navy">'+esc(c.name)+'</h4>' +
+            (on?'<span class="text-aspire-taupeDark">'+paIcon('check','w-4 h-4')+'</span>':'') +
+          '</div>' +
+          '<p class="text-[0.82rem] text-aspire-taupe leading-snug">'+esc(c.tag)+'</p>' +
+        '</div>' +
+      '</button>';
+    }).join('');
+  }
+
+  function paSlotMarkup(cat, idx, dishId) {
+    var d = dishId ? paDish(dishId) : null;
+    var recommended = d && PA_RECOMMENDED[cat][0] === dishId;
+    var num = ('0'+(idx+1)).slice(-2);
+    var canEdit = paState.tier !== 'luxe';
+    if (!d) {
+      return '<div class="pa-dish-slot">' +
+        '<span class="pa-tier-num">'+num+'</span>' +
+        '<div class="flex-1 text-[0.85rem] text-aspire-taupe italic">Select a dish</div>' +
+        (canEdit
+          ? '<button data-pa-swap="'+cat+':'+idx+'" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-[0.62rem] uppercase tracking-[0.22em] bg-aspire-navy text-white hover:bg-aspire-navy2 transition-colors">'+paIcon('plus','w-3 h-3')+' Choose dish</button>'
+          : '<span class="pa-locked-badge">'+paIcon('check','w-2.5 h-2.5')+' Curated</span>') +
+      '</div>';
+    }
+    var ingredients = PA_DISH_INGREDIENTS[d.id] || [];
+    var teaser = ingredients.slice(0,3).join(' — ');
+    return '<div class="pa-dish-slot filled '+(recommended?'recommend':'')+' '+(canEdit?'':'locked')+'" style="align-items:flex-start;">' +
+      '<span class="pa-tier-num" style="margin-top:4px;">'+num+'</span>' +
+      '<img src="'+esc(d.image)+'" alt="'+esc(d.name)+'" loading="lazy" class="pa-thumb" onerror="this.style.opacity=\'.3\'" />' +
+      '<div class="flex-1 min-w-0">' +
+        '<div class="flex items-center gap-2 flex-wrap">' +
+          '<h4 class="text-[0.95rem] text-aspire-navy truncate" title="'+esc(d.name)+'">'+esc(d.name)+'</h4>' +
+          (recommended && canEdit ? '<span class="pa-pill">'+paIcon('sparkle','w-2.5 h-2.5')+' Chef’s pick</span>' : '') +
+        '</div>' +
+        (teaser ? '<p class="mt-1 text-[0.78rem] text-aspire-taupe leading-snug">'+esc(teaser)+'</p>' : '') +
+        '<div class="mt-2 flex items-center gap-2 flex-wrap">' +
+          '<span class="text-[0.6rem] uppercase tracking-[0.22em] '+(d.temperature==='hot'?'text-[#C0481E]':'text-[#2E7BB8]')+'">'+esc(d.temperature)+'</span>' +
+          (d.allergens.length ? '<span class="text-[0.58rem] uppercase tracking-[0.18em] text-aspire-taupe">Contains: '+esc(d.allergens.slice(0,3).join(', '))+'</span>' : '') +
+        '</div>' +
+      '</div>' +
+      '<div class="flex flex-col gap-1.5 items-end">' +
+        '<button data-pa-detail="'+d.id+'" class="pa-detail-btn" aria-label="View ingredients" title="View ingredients">'+paIcon('info','w-4 h-4')+'</button>' +
+        (canEdit
+          ? '<button data-pa-swap="'+cat+':'+idx+'" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-[0.6rem] uppercase tracking-[0.22em] text-aspire-navy border border-aspire-navy/15 hover:border-aspire-navy transition-colors">'+paIcon('shuffle','w-3 h-3')+' Swap</button>'
+          : '<span class="pa-locked-badge" title="Curated · locked composition">'+paIcon('check','w-2.5 h-2.5')+' Curated</span>') +
+      '</div>' +
+    '</div>';
+  }
+
+  function paTierMarkup(cat, label) {
+    var slots = paState.selections[cat];
+    var need = paSuiteCounts()[cat];
+    if (need === 0) return '';
+    var items = [];
+    for (var i = 0; i < need; i++) items.push(paSlotMarkup(cat, i, slots[i]));
+    return '<div class="pa-tray-tier">' +
+      '<span class="pa-tier-label">'+esc(label)+'</span>' +
+      '<div class="mt-6 flex flex-col gap-2.5">'+items.join('')+'</div>' +
+    '</div>';
+  }
+
+  function paSummaryMarkup() {
+    var counts = paSuiteCounts();
+    var sel = paState.selections;
+    var expected = counts.starters + counts.mains + counts.desserts;
+    var filled = sel.starters.filter(Boolean).length + sel.mains.filter(Boolean).length + sel.desserts.filter(Boolean).length;
+    var complete = expected > 0 && filled === expected;
+    var time = paState.schedule || 'now';
+    var prep = paEffectivePrep();
+    var pairing = paPairingLabel();
+    var suiteCustom = paState.tier === 'suite' && paState.suite.mode === 'custom';
+    var sizeLabel = suiteCustom ? ('Custom · '+expected+' plates') : (paState.size.charAt(0).toUpperCase()+paState.size.slice(1));
+    return '<div class="border border-aspire-navy/12 bg-white p-6 sm:p-7 sticky top-[80px]">' +
+      '<div class="flex items-center justify-between mb-4">' +
+        '<div class="swiss-eyebrow">— Your tray</div>' +
+        '<span class="pa-pill">'+paIcon('crown','w-2.5 h-2.5')+' '+esc(PA_TIER_META[paState.tier].label)+'</span>' +
+      '</div>' +
+      '<dl class="space-y-3 text-[0.9rem]">' +
+        '<div class="flex items-center justify-between gap-3"><dt class="text-aspire-taupe">Tray size</dt><dd class="text-aspire-navy">'+esc(sizeLabel)+'</dd></div>' +
+        (!suiteCustom ? '<div class="flex items-center justify-between gap-3"><dt class="text-aspire-taupe">Guests</dt><dd class="text-aspire-navy">'+esc(PA_TRAY_SIZES[paState.size].guests)+'</dd></div>' : '') +
+        '<div class="flex items-center justify-between gap-3"><dt class="text-aspire-taupe">Dishes selected</dt><dd class="text-aspire-navy">'+filled+' / '+expected+'</dd></div>' +
+        (pairing ? '<div class="flex items-center justify-between gap-3"><dt class="text-aspire-taupe">Pairing</dt><dd class="text-aspire-navy text-right truncate max-w-[60%]" title="'+esc(pairing)+'">'+esc(pairing)+'</dd></div>' : '') +
+        '<div class="flex items-center justify-between gap-3"><dt class="text-aspire-taupe">Estimated prep</dt><dd class="text-aspire-navy inline-flex items-center gap-1.5">'+paIcon('clock','w-3.5 h-3.5')+' '+prep+' min'+(paState.tier!=='luxe'?' <span class="pa-pill" style="font-size:.5rem;padding:2px 6px;">−3</span>':'')+'</dd></div>' +
+        '<div class="flex items-center justify-between gap-3 pt-3 border-t border-aspire-navy/10"><dt class="text-aspire-taupe">Handoff</dt><dd class="text-aspire-navy text-right text-[0.82rem] leading-snug max-w-[60%]">'+esc(paHandoffCopy())+'</dd></div>' +
+        '<div class="flex items-center justify-between gap-3"><dt class="text-aspire-taupe">Ready by</dt><dd class="text-aspire-navy font-medium">'+esc(time)+'</dd></div>' +
+      '</dl>' +
+      (!complete ? '<p class="mt-5 text-[0.72rem] uppercase tracking-[0.22em] text-[#B05A47]">Please fill all slots before pre-ordering.</p>' : '') +
+      '<button data-pa-confirm '+(!complete?'disabled':'')+' class="mt-6 w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 uppercase tracking-[0.22em] text-[0.7rem] transition-colors '+(complete?'bg-aspire-navy text-white hover:bg-aspire-navy2':'bg-aspire-navy/10 text-aspire-taupe cursor-not-allowed')+'">' +
+        'Confirm pre-order '+paIcon('arrow','w-3 h-3') +
+      '</button>' +
+    '</div>';
+  }
+
+  function paPipelineMarkup(activeIdx) {
+    return '<div class="pa-pipeline">' +
+      PA_PIPELINE_STEPS.map(function(step, i){
+        var cls = i < activeIdx ? 'done' : (i === activeIdx ? 'active' : 'pending');
+        var glyph = i < activeIdx ? paIcon('check','w-3.5 h-3.5') : '<span class="text-[0.62rem]">'+(i+1)+'</span>';
+        return '<div class="pa-pipeline-step '+cls+'">' +
+          '<span class="pa-step-dot">'+glyph+'</span>' +
+          '<span class="pa-step-label">'+esc(step.label)+'</span>' +
+        '</div>';
+      }).join('') +
+    '</div>';
+  }
+
+  function paPrepStagesMarkup(totalMin) {
+    var cumulative = 0;
+    return PA_PREP_STAGES.map(function(stage, i){
+      var mins = Math.max(2, Math.round(totalMin * stage.ratio));
+      cumulative += mins;
+      return '<div>' +
+        '<div class="pa-prep-row">' +
+          '<span class="pa-prep-num">'+('0'+(i+1)).slice(-2)+'</span>' +
+          '<span class="text-aspire-navy">'+esc(stage.label)+'</span>' +
+          '<span class="text-aspire-taupe inline-flex items-center gap-1.5">'+paIcon('clock','w-3 h-3')+' '+mins+' min</span>' +
+        '</div>' +
+        '<div class="pa-prep-bar"><span style="width: '+Math.min(100, Math.round(cumulative/totalMin*100))+'%"></span></div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function paRefQrMarkup(ref) {
+    if (typeof qrcode === 'undefined') return '<div class="pa-qr-host"></div>';
+    try {
+      var qr = qrcode(0, 'M');
+      qr.addData('ASPIRE://pa/' + ref);
+      qr.make();
+      var count = qr.getModuleCount();
+      var size = 88, cell = size / count, rects = '';
+      for (var r = 0; r < count; r++) {
+        for (var c = 0; c < count; c++) {
+          if (qr.isDark(r, c)) {
+            rects += '<rect x="'+(c*cell).toFixed(2)+'" y="'+(r*cell).toFixed(2)+'" width="'+cell.toFixed(2)+'" height="'+cell.toFixed(2)+'" fill="#1F2A44"/>';
+          }
+        }
+      }
+      return '<div class="pa-qr-host"><svg viewBox="0 0 '+size+' '+size+'" width="100%" height="100%" shape-rendering="crispEdges">'+rects+'</svg></div>';
+    } catch (e) {
+      return '<div class="pa-qr-host"></div>';
+    }
+  }
+
+  function paConfirmedTrayMarkup() {
+    var c = paState.confirmed;
+    if (!c || c.kind === 'bespoke') return '';
+    var activeIdx = 2;
+    var pushMins = Math.max(2, Math.round(c.prep * 0.55));
+    return '<div class="pa-confirm-overlay px-6 sm:px-10 py-12 sm:py-14 mb-16">' +
+      '<div class="grid lg:grid-cols-12 gap-10 items-start">' +
+        '<div class="lg:col-span-7">' +
+          '<div class="flex items-center gap-3 text-aspire-taupeDark">' +
+            '<span class="pa-status-dot"></span>' +
+            '<span class="text-[0.6rem] uppercase tracking-[0.32em]">Live order</span>' +
+            '<span class="text-aspire-navy/20">·</span>' +
+            '<span class="text-[0.6rem] uppercase tracking-[0.32em] text-aspire-navy">'+esc(PA_TIER_META[c.tier].label)+'</span>' +
+          '</div>' +
+          '<h2 class="serif-heading text-3xl sm:text-5xl mt-4 text-aspire-navy">Your tray is in motion.</h2>' +
+          '<p class="mt-4 text-aspire-taupe leading-[1.7] max-w-xl">Pre-arrival orders are tracked from the moment we receive them. Modify or cancel up to 20 minutes before arrival.</p>' +
+          '<div class="mt-10">'+paPipelineMarkup(activeIdx)+'</div>' +
+          '<div class="mt-12 grid sm:grid-cols-3 gap-6 pt-8 border-t border-aspire-navy/10">' +
+            '<div><div class="swiss-eyebrow">Ready by</div><div class="mt-2 serif-heading text-2xl text-aspire-navy">'+esc(c.time)+'</div></div>' +
+            '<div><div class="swiss-eyebrow">Prep</div><div class="mt-2 serif-heading text-2xl text-aspire-navy">'+c.prep+' min</div></div>' +
+            '<div><div class="swiss-eyebrow">Where to find your tray</div><div class="mt-2 text-[0.92rem] text-aspire-navy leading-snug inline-flex items-start gap-1.5">'+paIcon('pin','w-4 h-4 mt-0.5')+' <span>'+esc(c.handoff)+'</span></div></div>' +
+          '</div>' +
+          '<div class="mt-10 pt-8 border-t border-aspire-navy/10">' +
+            '<div class="flex items-baseline justify-between gap-4 flex-wrap">' +
+              '<div><div class="swiss-eyebrow">— Preparation timeline</div><p class="mt-2 text-[0.88rem] text-aspire-taupe max-w-md leading-relaxed">Total prep time scales with your tray size. Suite and Privé travellers gain a three-minute priority allocation.</p></div>' +
+              '<span class="pa-pill">'+paIcon('clock','w-2.5 h-2.5')+' '+c.prep+' min</span>' +
+            '</div>' +
+            '<div class="mt-5">'+paPrepStagesMarkup(c.prep)+'</div>' +
+          '</div>' +
+        '</div>' +
+        '<aside class="lg:col-span-5 flex flex-col gap-6">' +
+          '<div class="pa-ref-card">'+paRefQrMarkup(c.ref)+
+            '<div class="flex-1 min-w-0">' +
+              '<div class="swiss-eyebrow">Order reference</div>' +
+              '<div class="mt-1 serif-heading text-2xl text-aspire-navy tracking-wide">'+esc(c.ref)+'</div>' +
+              '<p class="mt-2 text-[0.76rem] text-aspire-taupe leading-snug">Scan at the lounge desk to retrieve your order.</p>' +
+            '</div>' +
+          '</div>' +
+          '<div class="pa-push">' +
+            '<div class="pa-push-head">'+paIcon('bell','w-3 h-3')+' Aspire · Pre-Arrival</div>' +
+            '<div class="pa-push-body">Your tray is being plated. We’ll meet you in about '+pushMins+' minutes.</div>' +
+            '<div class="pa-push-time">Now</div>' +
+          '</div>' +
+          '<div class="border border-aspire-navy/10 bg-white p-5">' +
+            '<div class="swiss-eyebrow">Modify or cancel</div>' +
+            '<p class="mt-2 text-[0.85rem] text-aspire-taupe leading-relaxed">Editable up to 20 minutes before arrival.</p>' +
+            '<button data-pa-reset class="mt-4 inline-flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.22em] text-aspire-navy border-b border-aspire-navy/40 pb-1 hover:border-aspire-navy">Compose another tray '+paIcon('arrow','w-3 h-3')+'</button>' +
+          '</div>' +
+        '</aside>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function paConfirmedBespokeMarkup() {
+    var c = paState.confirmed;
+    if (!c || c.kind !== 'bespoke') return '';
+    return '<div class="pa-confirm-overlay px-6 sm:px-10 py-12 sm:py-14 mb-16">' +
+      '<div class="flex items-center gap-3 text-aspire-taupeDark">' +
+        '<span class="pa-status-dot"></span>' +
+        '<span class="text-[0.6rem] uppercase tracking-[0.32em]">Request received</span>' +
+        '<span class="text-aspire-navy/20">·</span>' +
+        '<span class="text-[0.6rem] uppercase tracking-[0.32em] text-aspire-navy">Privé</span>' +
+      '</div>' +
+      '<h2 class="serif-heading text-3xl sm:text-5xl mt-4 text-aspire-navy">The chef is composing your bespoke menu.</h2>' +
+      '<p class="mt-5 text-aspire-taupe leading-[1.7] max-w-xl">A host will greet you at the Privé nook with the plated dish and your chosen pairing. The sommelier finalises the wine the moment the plate leaves the pass.</p>' +
+      '<div class="mt-9 grid sm:grid-cols-2 gap-8 pt-7 border-t border-aspire-navy/10">' +
+        '<div><div class="swiss-eyebrow">Occasion</div><div class="mt-2 text-[0.95rem] text-aspire-navy">'+esc(c.occasion || '—')+'</div></div>' +
+        '<div><div class="swiss-eyebrow">Course count</div><div class="mt-2 text-[0.95rem] text-aspire-navy">'+esc(String(c.courseCount))+' courses</div></div>' +
+      '</div>' +
+      '<div class="mt-8 grid sm:grid-cols-3 gap-6 pt-7 border-t border-aspire-navy/10">' +
+        '<div><div class="swiss-eyebrow">Arrival</div><div class="mt-2 serif-heading text-2xl text-aspire-navy">'+esc(c.time)+'</div></div>' +
+        '<div><div class="swiss-eyebrow">Handoff</div><div class="mt-2 text-[0.95rem] text-aspire-navy leading-snug inline-flex items-start gap-1.5">'+paIcon('pin','w-4 h-4 mt-0.5')+' <span>'+esc(c.handoff)+'</span></div></div>' +
+        '<div><div class="swiss-eyebrow">Reference</div><div class="mt-2 serif-heading text-2xl text-aspire-navy tracking-wide">'+esc(c.ref)+'</div></div>' +
+      '</div>' +
+      (c.prefs && c.prefs.length ? '<div class="mt-8 pt-7 border-t border-aspire-navy/10"><div class="swiss-eyebrow">Dietary preferences</div><div class="mt-3 flex flex-wrap gap-2">'+c.prefs.map(function(p){ return '<span class="pa-pill muted">'+esc(p)+'</span>'; }).join('')+'</div></div>' : '') +
+      '<div class="mt-8 pt-7 border-t border-aspire-navy/10 grid sm:grid-cols-2 gap-6">' +
+        '<div class="pa-ref-card">'+paRefQrMarkup(c.ref)+
+          '<div class="flex-1 min-w-0"><div class="swiss-eyebrow">Reference QR</div><p class="mt-2 text-[0.76rem] text-aspire-taupe leading-snug">Scan at the Privé desk.</p></div>' +
+        '</div>' +
+        '<div class="pa-push">' +
+          '<div class="pa-push-head">'+paIcon('bell','w-3 h-3')+' Aspire · Privé</div>' +
+          '<div class="pa-push-body">Your chef has received the request and will plate it on arrival.</div>' +
+          '<div class="pa-push-time">Now</div>' +
+        '</div>' +
+      '</div>' +
+      '<p class="mt-8 text-[0.82rem] text-aspire-taupe italic max-w-2xl">You can amend the request up to 10 minutes before arrival.</p>' +
+      '<button data-pa-reset class="mt-6 inline-flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.22em] text-aspire-navy border-b border-aspire-navy/40 pb-1 hover:border-aspire-navy">Compose another request '+paIcon('arrow','w-3 h-3')+'</button>' +
+    '</div>';
+  }
+
+  /* ---------- Per-tier section markup ---------- */
+  function paLuxeSectionMarkup() {
+    var sizeCards = paSizePickerMarkup();
+    var comboCards = paComboPickerMarkup(paState.luxeCombo, 'data-pa-combo');
+    var timeChips = paTimeSlots().map(function(time){
+      var on = paState.schedule === time;
+      return '<button data-pa-time="'+time+'" class="pa-time-chip '+(on?'active':'')+'">'+time+'</button>';
+    }).join('');
+    return [
+      '<div class="mt-16">',
+        '<div class="max-w-xl"><div class="swiss-eyebrow">— 01 · Pick your tray size</div><p class="mt-4 text-aspire-taupe leading-[1.7]">Three sizes, each with starters, mains and desserts. Perfect for solo travellers, couples or a small group.</p></div>',
+        '<div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">'+sizeCards+'</div>',
+      '</div>',
+      '<div class="mt-16">',
+        '<div class="max-w-xl"><div class="swiss-eyebrow">— Curated combinations</div><p class="mt-4 text-aspire-taupe leading-[1.7]">Three signature trays composed by our executive chef. Pick a story — your tray fills automatically to the size you chose.</p></div>',
+        '<div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">'+comboCards+'</div>',
+        '<p class="mt-6 text-[0.78rem] text-aspire-taupe italic max-w-2xl">Want to swap an item or remove an allergen? Visit a Suite or Privé lounge to unlock composition.</p>',
+      '</div>',
+      '<div class="mt-16">',
+        '<div class="max-w-xl"><div class="swiss-eyebrow">— 02 · Luxe — curated, ready in minutes</div><p class="mt-4 text-aspire-taupe leading-[1.7]">Browse signature trays composed by our team. Beautifully fixed compositions — no editing needed.</p></div>',
+        '<div class="mt-10 grid lg:grid-cols-12 gap-10">',
+          '<div class="lg:col-span-8"><div class="pa-tray-stack">'+
+            paTierMarkup('starters','Top tier · Starters')+
+            paTierMarkup('mains','Middle tier · Mains')+
+            paTierMarkup('desserts','Bottom tier · Desserts')+
+          '</div></div>',
+          '<aside class="lg:col-span-4">'+paSummaryMarkup()+'</aside>',
+        '</div>',
+      '</div>',
+      '<div class="mt-16">',
+        '<div class="max-w-xl"><div class="swiss-eyebrow">— 03 · Pre-order before arrival</div><p class="mt-4 text-aspire-taupe leading-[1.7]">Tell us when you’ll be at the lounge. Your tray is finished moments before you sit down.</p></div>',
+        '<div class="mt-8 grid lg:grid-cols-12 gap-10">',
+          '<div class="lg:col-span-7">',
+            '<div class="text-[0.7rem] uppercase tracking-[0.22em] text-aspire-taupe">When will you arrive?</div>',
+            '<div class="mt-4 grid grid-cols-3 sm:grid-cols-6 gap-2">'+timeChips+'</div>',
+            '<textarea data-pa-note rows="3" placeholder="Add a note — celebration, allergy, seating preference…" class="mt-6 w-full bg-transparent border-b border-aspire-navy/15 px-1 py-3 text-[0.95rem] focus:outline-none focus:border-aspire-navy">'+esc(paState.note)+'</textarea>',
+          '</div>',
+          '<div class="lg:col-span-5"><p class="text-aspire-taupe leading-[1.7]">Each tray takes roughly 18 minutes to plate, so we finish moments before you sit down.</p></div>',
+        '</div>',
+      '</div>',
+    ].join('');
+  }
+
+  function paSuiteSectionMarkup() {
+    var mode = paState.suite.mode;
+    var sizeCards = paSizePickerMarkup();
+    var suiteCounts = paState.suite.counts;
+    var suiteTotal = suiteCounts.starters + suiteCounts.mains + suiteCounts.desserts;
+    var comboCards = paComboPickerMarkup(paState.suite.combo, 'data-pa-suite-combo');
+    var pairingChips = PA_PAIRINGS.map(function(p){
+      var on = paState.suite.pairing === p.id;
+      return '<button data-pa-pairing="'+p.id+'" class="pa-option-chip '+(on?'active':'')+'">' +
+        '<span class="pa-opt-label">'+paIcon('wine','w-3.5 h-3.5')+' '+esc(p.label)+'</span>' +
+        '<span class="pa-opt-hint">'+esc(p.hint)+'</span>' +
+      '</button>';
+    }).join('');
+    var modeOpts = [
+      { id:'custom',  iconId:'sparkle', label:'Build from scratch',     hint:'Empty tray. You decide how many starters, mains and desserts — and which dish goes in each slot.' },
+      { id:'curated', iconId:'crown',   label:'Curated combinations',   hint:'Three signature trays from our chef. Pick one, pick a size.' },
+    ].map(function(o){
+      var on = mode === o.id;
+      return '<button data-pa-suite-mode="'+o.id+'" class="pa-option-chip '+(on?'active':'')+'" style="padding:18px 20px;gap:8px;">' +
+        '<span class="pa-opt-label">'+paIcon(o.iconId,'w-4 h-4')+' '+esc(o.label)+'</span>' +
+        '<span class="pa-opt-hint">'+esc(o.hint)+'</span>' +
+      '</button>';
+    }).join('');
+    var timeChips = paTimeSlots().map(function(time){
+      var on = paState.schedule === time;
+      return '<button data-pa-time="'+time+'" class="pa-time-chip '+(on?'active':'')+'">'+time+'</button>';
+    }).join('');
+
+    var stepperRows = [
+      { cat:'starters', label:'Starters' },
+      { cat:'mains',    label:'Mains' },
+      { cat:'desserts', label:'Desserts' },
+    ].map(function(r){
+      var n = suiteCounts[r.cat];
+      return '<div class="flex items-center justify-between gap-4 py-4 border-b border-aspire-navy/10">' +
+        '<div class="text-[0.95rem] text-aspire-navy">'+esc(r.label)+'</div>' +
+        '<div class="flex items-center gap-3">' +
+          '<button data-pa-count-dec="'+r.cat+'" '+(n<=0?'disabled':'')+' class="w-9 h-9 inline-flex items-center justify-center border border-aspire-navy/15 '+(n<=0?'text-aspire-taupe/40 cursor-not-allowed':'text-aspire-navy hover:border-aspire-navy')+'">'+paIcon('minus','w-3.5 h-3.5')+'</button>' +
+          '<span class="serif-heading text-2xl text-aspire-navy w-8 text-center">'+n+'</span>' +
+          '<button data-pa-count-inc="'+r.cat+'" '+(n>=6?'disabled':'')+' class="w-9 h-9 inline-flex items-center justify-center border border-aspire-navy/15 '+(n>=6?'text-aspire-taupe/40 cursor-not-allowed':'text-aspire-navy hover:border-aspire-navy')+'">'+paIcon('plus','w-3.5 h-3.5')+'</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    return [
+      '<div class="mt-16">',
+        '<div class="max-w-xl"><div class="swiss-eyebrow">— 00 · Choose your starting point</div><p class="mt-4 text-aspire-taupe leading-[1.7]">Suite gives you full control. Start with an empty tray, or anchor to a chef-curated combination.</p></div>',
+        '<div class="mt-8 grid sm:grid-cols-2 gap-3">'+modeOpts+'</div>',
+      '</div>',
+      // Step 01: size OR stepper
+      (mode === 'custom'
+        ? '<div class="mt-16">' +
+            '<div class="max-w-xl"><div class="swiss-eyebrow">— 01 · How many plates?</div><p class="mt-4 text-aspire-taupe leading-[1.7]">Set the count for each tier — from zero to six. The tray composer adjusts in real time.</p></div>' +
+            '<div class="mt-8 max-w-xl"><div class="border-t border-aspire-navy/10">'+stepperRows+'</div>' +
+              '<div class="mt-5 flex items-center justify-between gap-3 text-[0.78rem] text-aspire-taupe">' +
+                '<span class="uppercase tracking-[0.22em] text-[0.62rem]">Custom</span>' +
+                '<span class="serif-heading text-aspire-navy text-lg">'+suiteTotal+' plates</span>' +
+              '</div>' +
+              (suiteTotal === 0 ? '<p class="mt-4 text-[0.78rem] text-aspire-taupe italic">Add at least one plate to start composing — use the + buttons above.</p>' : '') +
+            '</div>' +
+          '</div>'
+        : '<div class="mt-16">' +
+            '<div class="max-w-xl"><div class="swiss-eyebrow">— 01 · Pick your tray size</div><p class="mt-4 text-aspire-taupe leading-[1.7]">Choose a base size; the curated combination fills your slots.</p></div>' +
+            '<div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">'+sizeCards+'</div>' +
+            '<div class="mt-12"><div class="max-w-xl"><div class="swiss-eyebrow">— Choose a curated combination</div><p class="mt-4 text-aspire-taupe leading-[1.7]">Three signature trays — every slot is filled, and you can still swap any individual dish.</p></div>' +
+            '<div class="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">'+comboCards+'</div></div>' +
+          '</div>'),
+      // Suite sommelier panel
+      '<div class="mt-16"><div class="pa-feature-panel">',
+        '<div class="grid md:grid-cols-12 gap-8">',
+          '<div class="md:col-span-4">',
+            '<div class="inline-flex items-center gap-2 text-aspire-taupeDark text-[0.6rem] uppercase tracking-[0.32em]">'+paIcon('crown','w-3.5 h-3.5')+' Suite</div>',
+            '<h3 class="serif-heading text-2xl sm:text-3xl mt-3 text-aspire-navy">Suite enhancements</h3>',
+            '<p class="mt-3 text-[0.9rem] text-aspire-taupe leading-relaxed">Composed for travellers who like the world to come to them. Pour and plating are timed to your seat.</p>',
+            '<div class="mt-5 pa-pill">'+paIcon('sparkle','w-2.5 h-2.5')+' Priority prep · −3 min</div>',
+          '</div>',
+          '<div class="md:col-span-8">',
+            '<div class="text-[0.7rem] uppercase tracking-[0.22em] text-aspire-navy">Sommelier pairing</div>',
+            '<p class="mt-1 text-[0.78rem] text-aspire-taupe">Choose one — complimentary with your tray.</p>',
+            '<div class="mt-3 grid sm:grid-cols-3 gap-2.5">'+pairingChips+'</div>',
+          '</div>',
+        '</div>',
+      '</div></div>',
+      // Composer
+      '<div class="mt-16">',
+        '<div class="max-w-xl"><div class="swiss-eyebrow">— 02 · '+(mode==='custom'?'Fill every slot':'Build your own tray')+'</div><p class="mt-4 text-aspire-taupe leading-[1.7]">'+(mode==='custom'?'Empty slots are waiting. Tap a slot to pick a dish; tap the info icon to view ingredients or remove what you don’t want.':'Pick every course, swap dishes freely, tap any plate to view ingredients and remove what you don’t want.')+'</p></div>',
+        '<div class="mt-10 grid lg:grid-cols-12 gap-10">',
+          '<div class="lg:col-span-8"><div class="pa-tray-stack">'+
+            paTierMarkup('starters','Top tier · Starters')+
+            paTierMarkup('mains','Middle tier · Mains')+
+            paTierMarkup('desserts','Bottom tier · Desserts')+
+          '</div></div>',
+          '<aside class="lg:col-span-4">'+paSummaryMarkup()+'</aside>',
+        '</div>',
+      '</div>',
+      '<div class="mt-16">',
+        '<div class="max-w-xl"><div class="swiss-eyebrow">— 03 · Pre-order before arrival</div><p class="mt-4 text-aspire-taupe leading-[1.7]">Tell us when you’ll be at the lounge.</p></div>',
+        '<div class="mt-8 grid lg:grid-cols-12 gap-10">',
+          '<div class="lg:col-span-7">',
+            '<div class="text-[0.7rem] uppercase tracking-[0.22em] text-aspire-taupe">When will you arrive?</div>',
+            '<div class="mt-4 grid grid-cols-3 sm:grid-cols-6 gap-2">'+timeChips+'</div>',
+            '<textarea data-pa-note rows="3" placeholder="Add a note — celebration, allergy, seating preference…" class="mt-6 w-full bg-transparent border-b border-aspire-navy/15 px-1 py-3 text-[0.95rem] focus:outline-none focus:border-aspire-navy">'+esc(paState.note)+'</textarea>',
+          '</div>',
+          '<div class="lg:col-span-5"><p class="text-aspire-taupe leading-[1.7]">Suite travellers gain a three-minute priority allocation in the kitchen.</p></div>',
+        '</div>',
+      '</div>',
+    ].join('');
+  }
+
+  function paPriveSectionMarkup() {
+    var p = paState.prive;
+    var prefChips = PA_PRIVE_PREFS.map(function(pr){
+      var on = p.prefs.has(pr.id);
+      return '<button data-pa-pref="'+pr.id+'" class="pa-pref-chip '+(on?'active':'')+'">'+(on?paIcon('check','w-3 h-3'):paIcon('plus','w-3 h-3'))+' '+esc(pr.label)+'</button>';
+    }).join('');
+    var timeChips = paTimeSlots().map(function(time){
+      var on = paState.schedule === time;
+      return '<button data-pa-time="'+time+'" class="pa-time-chip '+(on?'active':'')+'">'+time+'</button>';
+    }).join('');
+    var courseOpts = [2,3,4,5,6].map(function(n){
+      var on = p.courseCount === n;
+      return '<button data-pa-courses="'+n+'" class="pa-time-chip '+(on?'active':'')+'">'+n+'</button>';
+    }).join('');
+    var complete = p.prefs.size === 0 ? !!p.occasion : true; // lenient — at minimum needs an occasion when no prefs
+    complete = !!(p.occasion && paState.schedule);
+    return [
+      '<div class="mt-16">',
+        '<div class="max-w-2xl"><h2 class="serif-heading text-3xl sm:text-5xl text-aspire-navy leading-[1.05]">A bespoke menu, written for you.</h2>',
+        '<p class="mt-5 text-aspire-taupe leading-[1.75]">Privé skips the tray entirely. Tell our chef who you are, how you eat, and the occasion — the kitchen composes a private menu around it.</p></div>',
+      '</div>',
+      '<div class="mt-12 grid lg:grid-cols-12 gap-10">',
+        '<div class="lg:col-span-8 flex flex-col gap-12">',
+          // Step 1: prefs
+          '<div>',
+            '<div class="swiss-eyebrow">— 01 · Dietary preferences</div>',
+            '<p class="mt-3 text-aspire-taupe leading-[1.7] max-w-xl">Tell us how you eat. Every plate, every pairing will filter to match.</p>',
+            '<div class="mt-6 flex flex-wrap gap-2">'+prefChips+'</div>',
+          '</div>',
+          // Step 2: occasion + courses
+          '<div>',
+            '<div class="swiss-eyebrow">— 02 · Your occasion</div>',
+            '<p class="mt-3 text-aspire-taupe leading-[1.7] max-w-xl">A single line — birthday, anniversary, business handover, decompression layover.</p>',
+            '<input data-pa-occasion type="text" maxlength="120" placeholder="e.g. anniversary dinner, lighter portions, extra Gruyère…" value="'+esc(p.occasion)+'" class="mt-5 w-full bg-transparent border-b border-aspire-navy/15 px-1 py-3 text-[0.95rem] focus:outline-none focus:border-aspire-navy">',
+            '<div class="mt-8 text-[0.7rem] uppercase tracking-[0.22em] text-aspire-taupe">Courses</div>',
+            '<div class="mt-3 flex gap-2 flex-wrap">'+courseOpts+'</div>',
+          '</div>',
+          // Step 3: allergies
+          '<div>',
+            '<div class="swiss-eyebrow">— 03 · Allergies & avoidances</div>',
+            '<p class="mt-3 text-aspire-taupe leading-[1.7] max-w-xl">Anything the chef must avoid. Be specific — they read every word.</p>',
+            '<textarea data-pa-allergies rows="3" placeholder="e.g. severe shellfish allergy, no raw fish, dairy-light…" class="mt-5 w-full bg-transparent border border-aspire-navy/15 p-4 text-[0.95rem] focus:outline-none focus:border-aspire-navy">'+esc(p.allergies)+'</textarea>',
+          '</div>',
+          // Step 4: schedule
+          '<div>',
+            '<div class="swiss-eyebrow">— 04 · Arrival</div>',
+            '<p class="mt-3 text-aspire-taupe leading-[1.7] max-w-xl">Pick your arrival window — your menu is plated moments before you sit down.</p>',
+            '<div class="mt-5 grid grid-cols-3 sm:grid-cols-6 gap-2">'+timeChips+'</div>',
+          '</div>',
+          // Host card
+          '<div class="border-l-2 border-aspire-taupe pl-5 py-2">',
+            '<div class="text-[0.7rem] uppercase tracking-[0.22em] text-aspire-navy">Dedicated host</div>',
+            '<div class="mt-1 text-[0.6rem] uppercase tracking-[0.28em] text-aspire-taupeDark">Assigned to your menu</div>',
+            '<div class="mt-2 serif-heading italic text-xl text-aspire-navy">'+esc(p.host)+'</div>',
+            '<p class="mt-2 text-[0.82rem] text-aspire-taupe leading-relaxed max-w-md">will greet you at the nook, plate the courses, and remain available throughout your stay.</p>',
+            '<p class="mt-3 text-[0.72rem] uppercase tracking-[0.22em] text-aspire-taupeDark">'+paIcon('sparkle','w-3 h-3')+' Includes hot-towel ritual & fine porcelain service.</p>',
+          '</div>',
+        '</div>',
+        // Summary aside
+        '<aside class="lg:col-span-4">',
+          '<div class="border border-aspire-navy/12 bg-white p-6 sm:p-7 sticky top-[80px]">',
+            '<div class="flex items-center justify-between mb-4">',
+              '<div class="swiss-eyebrow">— Your Privé request</div>',
+              '<span class="pa-pill">'+paIcon('crown','w-2.5 h-2.5')+' Privé</span>',
+            '</div>',
+            '<dl class="space-y-3 text-[0.9rem]">',
+              '<div class="flex items-start justify-between gap-3"><dt class="text-aspire-taupe">Occasion</dt><dd class="text-aspire-navy text-right max-w-[60%]">'+esc(p.occasion || '—')+'</dd></div>',
+              '<div class="flex items-center justify-between gap-3"><dt class="text-aspire-taupe">Courses</dt><dd class="text-aspire-navy">'+p.courseCount+'</dd></div>',
+              '<div class="flex items-start justify-between gap-3"><dt class="text-aspire-taupe">Dietary</dt><dd class="text-aspire-navy text-right max-w-[60%]">'+(p.prefs.size ? esc([].slice.call(p.prefs).map(function(id){ var pr = PA_PRIVE_PREFS.find(function(x){return x.id===id;}); return pr?pr.label:id; }).join(', ')) : '—')+'</dd></div>',
+              '<div class="flex items-center justify-between gap-3 pt-3 border-t border-aspire-navy/10"><dt class="text-aspire-taupe">Host</dt><dd class="text-aspire-navy">'+esc(p.host)+'</dd></div>',
+              '<div class="flex items-center justify-between gap-3"><dt class="text-aspire-taupe">Arrival</dt><dd class="text-aspire-navy">'+esc(paState.schedule || '—')+'</dd></div>',
+            '</dl>',
+            (!complete ? '<p class="mt-5 text-[0.72rem] uppercase tracking-[0.22em] text-[#B05A47]">Add an occasion and arrival time to send the request.</p>' : ''),
+            '<button data-pa-bespoke-send '+(!complete?'disabled':'')+' class="mt-6 w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 uppercase tracking-[0.22em] text-[0.7rem] transition-colors '+(complete?'bg-aspire-navy text-white hover:bg-aspire-navy2':'bg-aspire-navy/10 text-aspire-taupe cursor-not-allowed')+'">Send request to the chef '+paIcon('arrow','w-3 h-3')+'</button>',
+          '</div>',
+        '</aside>',
+      '</div>',
+    ].join('');
+  }
+
+  /* ---------- Top-level render ---------- */
+  function paRender() {
+    var heroEyebrow = '<div class="inline-flex items-center gap-2 text-aspire-taupeDark text-[0.6rem] uppercase tracking-[0.36em]">' +
+      paIcon('crown','w-3.5 h-3.5') + ' Luxe &middot; Suite &middot; Priv&eacute; tiers' +
+    '</div>';
+    var hero =
+      '<div class="grid lg:grid-cols-12 gap-10 items-end">' +
+        '<div class="lg:col-span-7">' +
+          heroEyebrow +
+          '<h2 class="serif-heading text-3xl sm:text-5xl mt-5 text-aspire-navy leading-[1.05]">Pre-order before you arrive</h2>' +
+          '<p class="mt-6 text-aspire-taupe leading-[1.75] max-w-xl">A new ritual for Luxe, Suite and Privé travellers — compose your tray or your bespoke menu and we plate it the minute you sit down.</p>' +
+        '</div>' +
+        '<div class="lg:col-span-5">' +
+          '<div class="border-l-2 border-aspire-taupe pl-5 py-2">' +
+            '<div class="swiss-eyebrow">Reserved for tiered travellers</div>' +
+            '<div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-[0.78rem] uppercase tracking-[0.28em]">' +
+              PA_TIERS.map(function(x){
+                return '<span class="'+(x===paState.tier?'text-aspire-taupeDark':'text-aspire-taupe')+'">'+esc(PA_TIER_META[x].label)+'</span>' + (x!=='prive'?'<span class="text-aspire-navy/20">·</span>':'');
+              }).join('') +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+
+    var tierPicker =
+      '<div class="mt-14">' +
+        '<div class="max-w-xl">' +
+          '<div class="swiss-eyebrow">— 00 · Choose your tier</div>' +
+          '<p class="mt-4 text-aspire-taupe leading-[1.7]">Your boarding pass profile determines the welcome. Switch to preview what each tier unlocks.</p>' +
+        '</div>' +
+        '<div class="mt-8 grid md:grid-cols-3 gap-5">'+paTierPickerMarkup()+'</div>' +
+      '</div>';
+
+    var confirmed = '';
+    if (paState.confirmed) {
+      confirmed = paState.confirmed.kind === 'bespoke' ? paConfirmedBespokeMarkup() : paConfirmedTrayMarkup();
+    }
+
+    var body = '';
+    if (!paState.confirmed) {
+      if (paState.tier === 'luxe') body = paLuxeSectionMarkup();
+      else if (paState.tier === 'suite') body = paSuiteSectionMarkup();
+      else body = paPriveSectionMarkup();
+    }
+
+    host.innerHTML = hero + tierPicker + confirmed + body;
+  }
+
+  /* ---------- Modal: swap & detail ---------- */
+  var backdropEl = null;
+  function paCloseModal() {
+    if (backdropEl && backdropEl.parentNode) backdropEl.parentNode.removeChild(backdropEl);
+    backdropEl = null;
+    document.body.style.overflow = '';
+  }
+  function paOpenSwapModal(cat, idx) {
+    var options = PA_DISHES.filter(function(d){ return d.category === cat; });
+    document.body.style.overflow = 'hidden';
+    backdropEl = document.createElement('div');
+    backdropEl.className = 'pa-swap-backdrop';
+    backdropEl.innerHTML =
+      '<div class="pa-swap-modal-card" onclick="event.stopPropagation()">' +
+        '<div class="flex items-start justify-between gap-6 mb-6">' +
+          '<div>' +
+            '<div class="swiss-eyebrow">'+esc(cat.charAt(0).toUpperCase()+cat.slice(1))+'</div>' +
+            '<h3 class="serif-heading text-2xl sm:text-3xl mt-2 text-aspire-navy">Choose a dish</h3>' +
+            '<p class="mt-2 text-aspire-taupe text-[0.92rem]">Tap any dish to slot it into your tray.</p>' +
+          '</div>' +
+          '<button class="h-9 w-9 flex items-center justify-center text-aspire-navy" data-close>'+paIcon('x','w-4 h-4')+'</button>' +
+        '</div>' +
+        '<div class="grid sm:grid-cols-2 gap-3">' +
+          options.map(function(d){
+            return '<button data-pa-pick="'+d.id+'" class="flex items-start gap-3 p-3 text-left border border-aspire-navy/10 hover:border-aspire-taupe hover:bg-aspire-soft transition-colors">' +
+              '<img src="'+esc(d.image)+'" alt="'+esc(d.name)+'" loading="lazy" class="pa-thumb" />' +
+              '<div class="flex-1 min-w-0">' +
+                '<h4 class="text-[0.95rem] text-aspire-navy leading-tight">'+esc(d.name)+'</h4>' +
+                '<p class="mt-1 text-[0.78rem] text-aspire-taupe">'+esc(d.description)+'</p>' +
+                (d.allergens.length ? '<div class="mt-2"><span class="pa-pill allergen">Contains · '+esc(d.allergens.slice(0,3).join(', '))+'</span></div>' : '') +
+              '</div>' +
+            '</button>';
+          }).join('') +
+        '</div>' +
+      '</div>';
+    backdropEl.addEventListener('click', function(e){
+      if (e.target === backdropEl || e.target.hasAttribute('data-close') || e.target.closest('[data-close]')) {
+        paCloseModal();
+      }
+    });
+    backdropEl.querySelectorAll('[data-pa-pick]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.getAttribute('data-pa-pick');
+        var sel = paState.selections[cat];
+        // remove duplicates
+        var dupIdx = sel.indexOf(id);
+        if (dupIdx !== -1 && dupIdx !== idx) sel[dupIdx] = null;
+        sel[idx] = id;
+        paCloseModal();
+        paRender();
+      });
+    });
+    document.body.appendChild(backdropEl);
+  }
+  function paOpenDetailModal(id) {
+    var d = paDish(id); if (!d) return;
+    var ings = PA_DISH_INGREDIENTS[id] || [];
+    var canEdit = paState.tier !== 'luxe';
+    var custom = paState.suite.customizations[id] || { removed: [] };
+    var removed = new Set(custom.removed);
+    document.body.style.overflow = 'hidden';
+    backdropEl = document.createElement('div');
+    backdropEl.className = 'pa-swap-backdrop';
+    backdropEl.innerHTML =
+      '<div class="pa-swap-modal-card" onclick="event.stopPropagation()">' +
+        '<div class="flex items-start justify-between gap-6 mb-4">' +
+          '<div>' +
+            '<div class="swiss-eyebrow">'+esc(d.category.charAt(0).toUpperCase()+d.category.slice(1))+'</div>' +
+            '<h3 class="serif-heading text-2xl sm:text-3xl mt-2 text-aspire-navy">'+esc(d.name)+'</h3>' +
+            '<p class="mt-2 text-aspire-taupe text-[0.92rem] max-w-md">'+esc(d.description)+'</p>' +
+          '</div>' +
+          '<button class="h-9 w-9 flex items-center justify-center text-aspire-navy" data-close>'+paIcon('x','w-4 h-4')+'</button>' +
+        '</div>' +
+        (ings.length
+          ? '<div class="mt-6">' +
+              '<div class="flex items-baseline justify-between gap-3 mb-4">' +
+                '<div class="swiss-eyebrow">— '+esc(canEdit ? 'Customize this dish' : 'Inside this biteable')+'</div>' +
+                (canEdit && removed.size ? '<button data-pa-reset-custom class="text-[0.62rem] uppercase tracking-[0.22em] text-aspire-taupe">Restore all</button>' : '') +
+              '</div>' +
+              (canEdit
+                ? '<div class="flex flex-col gap-2">' +
+                    ings.map(function(ing){
+                      var ingAllergens = paIngredientAllergens(ing, d.allergens);
+                      var isRemoved = removed.has(ing);
+                      return '<button data-pa-toggle-ing="'+esc(ing)+'" class="pa-ing-toggle '+(isRemoved?'removed':'')+' '+(ingAllergens.length?'allergen':'')+'">' +
+                        '<span class="pa-ing-x">'+paIcon(isRemoved?'plus':'x','w-3 h-3')+'</span>' +
+                        '<span class="flex-1 text-[0.92rem]">'+esc(ing)+'</span>' +
+                        (ingAllergens.length ? '<span class="text-[0.52rem] uppercase tracking-[0.22em] text-[#B05A47]">'+esc(ingAllergens.join(' · '))+'</span>' : '') +
+                      '</button>';
+                    }).join('') +
+                  '</div>'
+                : '<ul class="space-y-2">'+ings.map(function(i){ return '<li class="text-[0.92rem] text-aspire-navy">— '+esc(i)+'</li>'; }).join('')+'</ul>' +
+                  '<p class="mt-4 text-[0.78rem] text-aspire-taupe italic">Luxe trays are fixed by the chef. Switch to Suite or Privé to remove ingredients.</p>') +
+            '</div>'
+          : '') +
+        '<div class="mt-8 pt-6 border-t border-aspire-navy/10 flex flex-wrap items-center gap-3 justify-end">' +
+          '<button class="px-5 py-2.5 border border-aspire-navy/15 text-aspire-navy uppercase tracking-[0.22em] text-[0.7rem] hover:border-aspire-navy transition-colors" data-close>Keep on tray</button>' +
+        '</div>' +
+      '</div>';
+    backdropEl.addEventListener('click', function(e){
+      if (e.target === backdropEl || e.target.hasAttribute('data-close') || e.target.closest('[data-close]')) {
+        paCloseModal();
+      }
+    });
+    backdropEl.querySelectorAll('[data-pa-toggle-ing]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var ing = btn.getAttribute('data-pa-toggle-ing');
+        var c = paState.suite.customizations[id] || { removed: [] };
+        var i = c.removed.indexOf(ing);
+        if (i === -1) c.removed.push(ing); else c.removed.splice(i, 1);
+        paState.suite.customizations[id] = c;
+        paCloseModal();
+        paOpenDetailModal(id);
+      });
+    });
+    var resetBtn = backdropEl.querySelector('[data-pa-reset-custom]');
+    if (resetBtn) resetBtn.addEventListener('click', function(){
+      delete paState.suite.customizations[id];
+      paCloseModal();
+      paOpenDetailModal(id);
+    });
+    document.body.appendChild(backdropEl);
+  }
+
+  /* ---------- Event delegation ---------- */
+  host.addEventListener('click', function(e){
+    var btn = e.target.closest('[data-pa-tier],[data-pa-size],[data-pa-combo],[data-pa-suite-combo],[data-pa-suite-mode],[data-pa-pairing],[data-pa-count-inc],[data-pa-count-dec],[data-pa-swap],[data-pa-detail],[data-pa-time],[data-pa-confirm],[data-pa-reset],[data-pa-pref],[data-pa-courses],[data-pa-bespoke-send]');
+    if (!btn || btn.disabled) return;
+
+    if (btn.hasAttribute('data-pa-tier')) {
+      paState.tier = btn.getAttribute('data-pa-tier');
+      paApplySizeDefaults(true);
+      paRender();
+      return;
+    }
+    if (btn.hasAttribute('data-pa-size')) {
+      paState.size = btn.getAttribute('data-pa-size');
+      paApplySizeDefaults(true);
+      paRender();
+      return;
+    }
+    if (btn.hasAttribute('data-pa-combo')) {
+      paState.luxeCombo = btn.getAttribute('data-pa-combo');
+      paApplyLuxeCombo();
+      paRender();
+      return;
+    }
+    if (btn.hasAttribute('data-pa-suite-combo')) {
+      paState.suite.combo = btn.getAttribute('data-pa-suite-combo');
+      paApplySuiteCurated();
+      paRender();
+      return;
+    }
+    if (btn.hasAttribute('data-pa-suite-mode')) {
+      paState.suite.mode = btn.getAttribute('data-pa-suite-mode');
+      paApplySizeDefaults(true);
+      paRender();
+      return;
+    }
+    if (btn.hasAttribute('data-pa-pairing')) {
+      var id = btn.getAttribute('data-pa-pairing');
+      paState.suite.pairing = paState.suite.pairing === id ? null : id;
+      paRender();
+      return;
+    }
+    if (btn.hasAttribute('data-pa-count-inc')) {
+      var k = btn.getAttribute('data-pa-count-inc');
+      if (paState.suite.counts[k] < 6) paState.suite.counts[k]++;
+      paApplySizeDefaults(false);
+      paRender();
+      return;
+    }
+    if (btn.hasAttribute('data-pa-count-dec')) {
+      var k2 = btn.getAttribute('data-pa-count-dec');
+      if (paState.suite.counts[k2] > 0) paState.suite.counts[k2]--;
+      paApplySizeDefaults(false);
+      paRender();
+      return;
+    }
+    if (btn.hasAttribute('data-pa-swap')) {
+      var parts = btn.getAttribute('data-pa-swap').split(':');
+      paOpenSwapModal(parts[0], parseInt(parts[1], 10));
+      return;
+    }
+    if (btn.hasAttribute('data-pa-detail')) {
+      paOpenDetailModal(btn.getAttribute('data-pa-detail'));
+      return;
+    }
+    if (btn.hasAttribute('data-pa-time')) {
+      paState.schedule = btn.getAttribute('data-pa-time');
+      paRender();
+      return;
+    }
+    if (btn.hasAttribute('data-pa-pref')) {
+      var pid = btn.getAttribute('data-pa-pref');
+      if (paState.prive.prefs.has(pid)) paState.prive.prefs.delete(pid); else paState.prive.prefs.add(pid);
+      paRender();
+      return;
+    }
+    if (btn.hasAttribute('data-pa-courses')) {
+      paState.prive.courseCount = parseInt(btn.getAttribute('data-pa-courses'), 10);
+      paRender();
+      return;
+    }
+    if (btn.hasAttribute('data-pa-confirm')) {
+      var counts = paSuiteCounts();
+      var expected = counts.starters + counts.mains + counts.desserts;
+      var filled = paState.selections.starters.filter(Boolean).length + paState.selections.mains.filter(Boolean).length + paState.selections.desserts.filter(Boolean).length;
+      if (expected === 0 || filled !== expected) return;
+      paState.confirmed = {
+        kind: 'tray',
+        time: paState.schedule || 'now',
+        prep: paEffectivePrep(),
+        ref: paGenerateRef(),
+        tier: paState.tier,
+        handoff: paHandoffCopy(),
+      };
+      paRender();
+      host.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    if (btn.hasAttribute('data-pa-bespoke-send')) {
+      var p = paState.prive;
+      if (!p.occasion || !paState.schedule) return;
+      paState.confirmed = {
+        kind: 'bespoke',
+        time: paState.schedule,
+        ref: paGenerateRef(),
+        tier: 'prive',
+        handoff: paHandoffCopy(),
+        occasion: p.occasion,
+        courseCount: p.courseCount,
+        prefs: [].slice.call(p.prefs).map(function(id){ var pr = PA_PRIVE_PREFS.find(function(x){return x.id===id;}); return pr ? pr.label : id; }),
+      };
+      paRender();
+      host.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    if (btn.hasAttribute('data-pa-reset')) {
+      paState.confirmed = null;
+      paRender();
+      host.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+  });
+
+  // Text inputs (delegated input/change)
+  host.addEventListener('input', function(e){
+    var el = e.target;
+    if (el.matches('[data-pa-note]')) { paState.note = el.value; return; }
+    if (el.matches('[data-pa-occasion]')) { paState.prive.occasion = el.value; return; }
+    if (el.matches('[data-pa-allergies]')) { paState.prive.allergies = el.value; return; }
+  });
+
+  /* ---------- Boot ---------- */
+  var booted = false;
+  window.paBoot = function() {
+    if (booted) return;
+    booted = true;
+    paApplySizeDefaults(true);
+    paRender();
+  };
+  // If view-menu is already active when this script runs, boot immediately.
+  var menu = document.getElementById('view-menu');
+  if (menu && menu.classList.contains('active')) window.paBoot();
 })();
 </script>
 </body>
