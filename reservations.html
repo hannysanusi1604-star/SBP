@@ -384,11 +384,11 @@
             <div>
               <div class="swiss-eyebrow">Optional</div>
               <div class="serif-heading text-2xl text-aspire-navy mt-1">Reserve a specific seat</div>
-              <p class="text-[0.88rem] text-navy-500 mt-1 leading-relaxed">Lock a Communal, Dining or Quiet seat and we'll hold it for you. A refundable deposit equal to the entry price secures any reservation — cancel by 24 hours before arrival to get it back.</p>
+              <p class="text-[0.88rem] text-navy-500 mt-1 leading-relaxed">Every reservation holds a refundable deposit equal to the entry price. Pick a Communal, Dining or Quiet seat for a small extra fee and we'll lock that table. Cancel by 6 hours before arrival for a full refund.</p>
             </div>
           </div>
           <div id="step2-zone-picker" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
-          <p class="mt-4 text-[0.78rem] text-navy-500 leading-relaxed italic">Choosing <strong class="text-aspire-navy not-italic">No preference</strong> means your seat isn't guaranteed — if the lounge is full you'll wait in the queue. To guarantee a table, pick a specific zone (subject to availability).</p>
+          <p class="mt-4 text-[0.78rem] text-navy-500 leading-relaxed italic">Choosing <strong class="text-aspire-navy not-italic">No preference</strong> means your seat isn't guaranteed — if the lounge is full you'll wait in the queue. Pick a specific zone for a small extra fee to guarantee a table (subject to availability).</p>
         </div>
         <div id="step2-deposit-note" class="hidden mt-4 p-4 bg-aspire-soft border border-aspire-border flex items-start gap-3 text-[0.88rem] text-aspire-navy/85">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="mt-0.5 flex-shrink-0"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l4 2"/></svg>
@@ -520,7 +520,7 @@
 
               <label class="mt-6 flex items-start gap-3 text-[0.88rem] text-navy-500 cursor-pointer">
                 <input id="pay-accept" type="checkbox" class="mt-1 accent-aspire-navy" />
-                <span>I agree to Aspire's lounge access terms and cancellation policy (free cancellation up to 24 hr before arrival).</span>
+                <span>I agree to Aspire's lounge access terms and cancellation policy (free cancellation up to 6 hr before arrival).</span>
               </label>
             </section>
           </div>
@@ -871,7 +871,7 @@
     <div class="swiss-eyebrow mt-6 text-center">Seating preference</div>
     <div class="serif-heading text-2xl text-aspire-navy mt-2 text-center">Change seat preference</div>
     <div id="zone-modal-picker" class="mt-6 grid grid-cols-2 gap-2"></div>
-    <p class="mt-4 text-[0.78rem] text-navy-500 leading-relaxed italic text-center">Picking a zone holds the seat with a refundable deposit. <strong class="text-aspire-navy not-italic">No preference</strong> means you may need to queue if the lounge is full.</p>
+    <p class="mt-4 text-[0.78rem] text-navy-500 leading-relaxed italic text-center">Picking a zone adds a small seat reservation fee that locks the table. <strong class="text-aspire-navy not-italic">No preference</strong> means you may need to queue if the lounge is full.</p>
     <div class="mt-6">
       <button onclick="closeZoneModal()" class="btn-primary w-full justify-center">Back to confirmation</button>
     </div>
@@ -1083,17 +1083,26 @@ function getLuxeSeatsRemaining() {
 }
 /* ----------------------- ADVANCE-BOOKING DEPOSIT HELPERS ----------------------- */
 function requiresDeposit(booking) {
-  // Reserving a specific seat = guaranteed table = refundable deposit.
-  // No preference = flexible check-in, no deposit, may have to queue.
+  // Every reservation holds a refundable deposit equal to the entry price —
+  // it binds the guest to actually showing up and is refunded at check-in.
+  return !!(booking && booking.date && booking.arrivalTime);
+}
+function requiresSeatLock(booking) {
+  // An additional small fee on top of the deposit when a specific zone is picked,
+  // since the table is held exclusively rather than assigned on arrival.
   return !!(booking && booking.preferredZone);
 }
+function calculateSeatLockFee(lounge) {
+  // Flat 3 units of the lounge's local currency (CHF 3 in Zurich, €3, etc.)
+  return 3;
+}
 function cancellationDeadline(booking) {
-  // 24 hours before the arrival timestamp on the booking date
+  // 6 hours before the arrival timestamp on the booking date
   if (!booking || !booking.date || !booking.arrivalTime) return null;
   const [h, m] = booking.arrivalTime.split(':').map(Number);
   const arrival = new Date(booking.date);
   arrival.setHours(h, m, 0, 0);
-  return new Date(arrival.getTime() - 24 * 60 * 60 * 1000);
+  return new Date(arrival.getTime() - 6 * 60 * 60 * 1000);
 }
 function canCancelFree(booking) {
   const deadline = cancellationDeadline(booking);
@@ -1681,19 +1690,28 @@ function renderStep2() {
     }));
   });
 
-  // Populate the deposit notice with zone-aware + cancel-deadline copy
+  // Populate the deposit notice — every reservation holds a deposit; specific
+  // zones add a small seat-lock fee on top.
+  const dep = calculateDeposit(l);
+  const lockFee = calculateSeatLockFee(l);
+  const grace = depositGraceTime(state.booking.arrivalTime);
+  const cancelCopy = canCancelFree(state.booking)
+    ? `Cancel by <strong class="text-aspire-navy">${formatCancellationDeadline(state.booking)}</strong> for a full refund.`
+    : `<strong class="text-aspire-navy">Non-refundable</strong> — inside the 6-hour cancellation window.`;
   if (state.booking.preferredZone && ZONE_META[state.booking.preferredZone]) {
     const zoneLabel = ZONE_META[state.booking.preferredZone].label;
-    const dep = calculateDeposit(l);
-    const grace = depositGraceTime(state.booking.arrivalTime);
-    const cancelCopy = canCancelFree(state.booking)
-      ? `Cancel by <strong class="text-aspire-navy">${formatCancellationDeadline(state.booking)}</strong> for a full refund.`
-      : `<strong class="text-aspire-navy">Non-refundable</strong> — inside the 24-hour cancellation window.`;
     $('#step2-deposit-body').innerHTML =
-      `<strong class="text-aspire-navy">Specific seat reserved</strong> — a refundable ` +
-      `<strong class="text-aspire-navy">${l.currency} ${dep}</strong> deposit for your ${zoneLabel}. ` +
+      `<strong class="text-aspire-navy">${zoneLabel} reserved</strong> — a refundable ` +
+      `<strong class="text-aspire-navy">${l.currency} ${dep}</strong> deposit plus a ` +
+      `<strong class="text-aspire-navy">${l.currency} ${lockFee}</strong> seat reservation fee. ` +
       cancelCopy +
-      ` Deposit is forfeited if you don't check in by <strong class="text-aspire-navy">${grace}</strong>.`;
+      ` Forfeited if you don't check in by <strong class="text-aspire-navy">${grace}</strong>.`;
+  } else {
+    $('#step2-deposit-body').innerHTML =
+      `<strong class="text-aspire-navy">No preference</strong> — a refundable ` +
+      `<strong class="text-aspire-navy">${l.currency} ${dep}</strong> deposit holds your booking. ` +
+      cancelCopy +
+      ` Forfeited if you don't check in by <strong class="text-aspire-navy">${grace}</strong>.`;
   }
 }
 function renderStep3() {
@@ -1727,15 +1745,12 @@ function bookingSummaryHTML() {
   const luxeFee = hasLuxe ? calculateLuxeUpgradeFee(l.priceFrom) : 0;
   const isAdvance = requiresDeposit(state.booking);
   const deposit = isAdvance ? calculateDeposit(l) : 0;
+  const hasSeatLock = requiresSeatLock(state.booking);
+  const seatLock = hasSeatLock ? calculateSeatLockFee(l) : 0;
   const graceTime = depositGraceTime(state.booking.arrivalTime);
-  // Live occupancy is intentionally not shown during purchase — it isn't actionable
-  // at booking time and was creating noise on the summary.
-  let seating = 'No preference';
-  if (state.booking.preferredZone) {
-    seating = requiresDeposit(state.booking)
-      ? `${ZONE_META[state.booking.preferredZone].label} reserved · table held`
-      : `${ZONE_META[state.booking.preferredZone].label} preferred · table assigned on arrival`;
-  }
+  let seating = state.booking.preferredZone
+    ? `${ZONE_META[state.booking.preferredZone].label} reserved · table held`
+    : 'No preference · seat assigned on arrival';
   const accessTypeLabel = hasLuxe
     ? `<span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-aspire-navy"></span>Luxe upgrade</span>`
     : 'Lifestyle';
@@ -1761,6 +1776,9 @@ function bookingSummaryHTML() {
   const depositRow = isAdvance
     ? `<div class="flex items-start justify-between gap-3"><span class="text-navy-500">Refundable deposit <span class="block text-[0.72rem] text-navy-500/70">held now · refunded at check-in</span></span><span class="text-aspire-navy tabular-nums whitespace-nowrap">${l.currency} ${deposit}</span></div>`
     : '';
+  const seatLockRow = hasSeatLock
+    ? `<div class="flex items-start justify-between gap-3"><span class="text-navy-500">Seat reservation fee <span class="block text-[0.72rem] text-navy-500/70">locks your ${ZONE_META[state.booking.preferredZone].label}</span></span><span class="text-aspire-navy tabular-nums whitespace-nowrap">${l.currency} ${seatLock}</span></div>`
+    : '';
 
   // Price block depends on (pass vs direct payment) × (with vs without Luxe upgrade) × (same-day vs advance)
   let priceBlock = '<div class="hairline my-7"></div>';
@@ -1777,20 +1795,23 @@ function bookingSummaryHTML() {
        </div>`;
   } else if (isPass && !hasLuxe && isAdvance) {
     // Pass holder, advance booking — entry is free but a deposit is held on card
+    const totalHeld = deposit + seatLock;
     priceBlock += `
        <div class="space-y-2 text-[0.95rem]">
          <div class="flex items-center justify-between"><span class="text-navy-500">Lounge entry</span><span class="text-aspire-navy inline-flex items-center gap-1.5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 12 5 5L20 6"/></svg>Included</span></div>
          ${depositRow}
-         <div class="flex items-center justify-between pt-2 mt-2 border-t border-aspire-border"><span class="serif-heading text-lg text-aspire-navy">Total held now</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums">${l.currency} ${deposit}</span></div>
+         ${seatLockRow}
+         <div class="flex items-center justify-between pt-2 mt-2 border-t border-aspire-border"><span class="serif-heading text-lg text-aspire-navy">Total held now</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums">${l.currency} ${totalHeld}</span></div>
        </div>`;
   } else if (isPass && hasLuxe) {
-    // Pass holder upgrading to Luxe — only the tier differential is payable (+ deposit if advance)
-    const totalDue = luxeFee + deposit;
+    // Pass holder upgrading to Luxe — tier differential + deposit + seat-lock fee
+    const totalDue = luxeFee + deposit + seatLock;
     priceBlock += `
        <div class="space-y-2 text-[0.95rem]">
          <div class="flex items-center justify-between"><span class="text-navy-500">Lifestyle entry</span><span class="text-aspire-navy inline-flex items-center gap-1.5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 12 5 5L20 6"/></svg>Included</span></div>
          ${row('Aspire Luxe upgrade', l.currency + ' ' + luxeFee)}
          ${depositRow}
+         ${seatLockRow}
          <div class="flex items-center justify-between pt-2 mt-2 border-t border-aspire-border"><span class="serif-heading text-lg text-aspire-navy">Total to pay</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums">${l.currency} ${totalDue}</span></div>
        </div>`;
   } else if (!isPass && !hasLuxe && !isAdvance) {
@@ -1809,37 +1830,42 @@ function bookingSummaryHTML() {
          </div>
        </div>`;
   } else if (!isPass && !hasLuxe && isAdvance) {
-    // Direct payment, advance booking — payment doubles as the deposit
+    // Direct payment, advance booking — entry doubles as the deposit, plus seat-lock if a zone is held
     const entry = l.priceFrom * Math.max(1, guestsTotal);
+    const total = entry + seatLock;
     priceBlock += `
        <div class="space-y-2 text-[0.95rem]">
          ${row('Lifestyle entry' + (guestsTotal > 1 ? ' × ' + guestsTotal : ''), l.currency + ' ' + entry.toFixed(2))}
+         ${seatLockRow}
          <div class="flex items-center justify-between"><span class="text-navy-500">Acts as refundable deposit<span class="block text-[0.72rem] text-navy-500/70">refunded if you check in by ${graceTime}</span></span><span class="text-aspire-navy tabular-nums">—</span></div>
-         <div class="flex items-center justify-between pt-2 mt-2 border-t border-aspire-border"><span class="serif-heading text-lg text-aspire-navy">Total</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums">${l.currency} ${entry.toFixed(2)}</span></div>
+         <div class="flex items-center justify-between pt-2 mt-2 border-t border-aspire-border"><span class="serif-heading text-lg text-aspire-navy">Total</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums">${l.currency} ${total.toFixed(2)}</span></div>
        </div>`;
   } else {
-    // Direct payment with Luxe — Lifestyle entry + Luxe upgrade breakdown (+ deposit signalling if advance)
+    // Direct payment with Luxe — entry + Luxe upgrade + seat-lock (entry acts as deposit if advance)
     const entry = l.priceFrom * Math.max(1, guestsTotal);
-    const total = entry + luxeFee;
+    const total = entry + luxeFee + seatLock;
     priceBlock += `
        <div class="space-y-2 text-[0.95rem]">
          ${row('Lifestyle entry' + (guestsTotal > 1 ? ' × ' + guestsTotal : ''), l.currency + ' ' + entry.toFixed(2))}
          ${row('Aspire Luxe upgrade', l.currency + ' ' + luxeFee)}
+         ${seatLockRow}
          ${isAdvance ? `<div class="text-[0.78rem] text-navy-500 italic">Lifestyle entry acts as a refundable deposit · refunded if you check in by ${graceTime}.</div>` : ''}
          <div class="flex items-center justify-between pt-2 mt-2 border-t border-aspire-border"><span class="serif-heading text-lg text-aspire-navy">Total</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums">${l.currency} ${total.toFixed(2)}</span></div>
        </div>`;
   }
 
-  // Deposit policy footnote — whenever a seat is held (any zone pick, any date)
+  // Deposit policy footnote — every reservation holds a deposit; zone picks add a seat-lock fee
   if (isAdvance) {
-    const zoneLabel = state.booking.preferredZone ? ZONE_META[state.booking.preferredZone].label : 'table';
     const cancelLine = canCancelFree(state.booking)
       ? `Cancel by <strong class="text-aspire-navy">${formatCancellationDeadline(state.booking)}</strong> for a full refund.`
-      : `<strong class="text-aspire-navy">Non-refundable</strong> — same-day reservations cannot be cancelled.`;
+      : `<strong class="text-aspire-navy">Non-refundable</strong> — inside the 6-hour cancellation window.`;
+    const lockLine = hasSeatLock
+      ? ` Plus a <strong class="text-aspire-navy">${l.currency} ${seatLock}</strong> seat reservation fee that locks your ${ZONE_META[state.booking.preferredZone].label}.`
+      : '';
     priceBlock += `
        <div class="mt-4 flex items-start gap-2 text-[0.78rem] text-navy-500 leading-relaxed">
          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="mt-0.5 flex-shrink-0"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
-         <span>Your ${zoneLabel} is held with a <strong class="text-aspire-navy">${l.currency} ${deposit}</strong> refundable deposit. ${cancelLine} Otherwise the deposit is forfeited if you don't check in by <strong class="text-aspire-navy">${graceTime}</strong>.</span>
+         <span>Your reservation is held with a <strong class="text-aspire-navy">${l.currency} ${deposit}</strong> refundable deposit.${lockLine} ${cancelLine} Otherwise forfeited if you don't check in by <strong class="text-aspire-navy">${graceTime}</strong>.</span>
        </div>`;
   }
   return `
@@ -1871,6 +1897,7 @@ function renderStep4() {
   const l = lounge();
   const luxeFee = hasLuxe ? calculateLuxeUpgradeFee(l.priceFrom) : 0;
   const deposit = isAdvance ? calculateDeposit(l) : 0;
+  const seatLock = requiresSeatLock(state.booking) ? calculateSeatLockFee(l) : 0;
   // Pass holders need a card whenever there is anything to charge (Luxe upgrade and/or deposit)
   const needsCardPayment = !isPass || hasLuxe || (isPass && isAdvance);
 
@@ -1891,12 +1918,12 @@ function renderStep4() {
   } else if (isPass && !hasLuxe && isAdvance) {
     $('#pay-section-title').textContent = 'Confirm access & hold deposit';
     $('#pay-section-badge').textContent = canCancelFree(state.booking)
-      ? `Table reserved · cancel free by ${formatCancellationDeadline(state.booking)}`
-      : `Table reserved · non-refundable · ${l.currency} ${deposit}`;
+      ? `Reservation held · cancel free by ${formatCancellationDeadline(state.booking)}`
+      : `Reservation · non-refundable · ${l.currency} ${deposit + seatLock}`;
   } else if (isPass && hasLuxe) {
     $('#pay-section-title').textContent = 'Confirm access & pay Luxe upgrade';
     $('#pay-section-badge').textContent = isAdvance
-      ? `Luxe upgrade + deposit · ${l.currency} ${luxeFee + deposit}`
+      ? `Luxe upgrade + reservation · ${l.currency} ${luxeFee + deposit + seatLock}`
       : `Luxe upgrade only · ${l.currency} ${luxeFee}`;
   } else {
     $('#pay-section-title').textContent = 'Payment method';
@@ -1970,8 +1997,8 @@ function renderStep4() {
   // Confirm CTA copy — reflects what is actually charged or held
   let cta;
   if (isPass && !hasLuxe && !isAdvance)      cta = 'Confirm booking';
-  else if (isPass && !hasLuxe && isAdvance)  cta = `Confirm & hold ${l.currency} ${deposit}`;
-  else if (isPass && hasLuxe)                cta = `Confirm & pay ${l.currency} ${luxeFee + deposit}`;
+  else if (isPass && !hasLuxe && isAdvance)  cta = `Confirm & hold ${l.currency} ${deposit + seatLock}`;
+  else if (isPass && hasLuxe)                cta = `Confirm & pay ${l.currency} ${luxeFee + deposit + seatLock}`;
   else                                       cta = 'Confirm and pay';
   $('#confirm-btn').innerHTML = cta + ' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m9 6 6 6-6 6"/></svg>';
 }
@@ -1993,6 +2020,8 @@ function confirmBooking() {
   const hasLuxe = !!state.booking.luxeUpgrade;
   const isAdvance = requiresDeposit(state.booking);
   const deposit = isAdvance ? calculateDeposit(l) : 0;
+  const hasSeatLock = requiresSeatLock(state.booking);
+  const seatLock = hasSeatLock ? calculateSeatLockFee(l) : 0;
   const graceTime = depositGraceTime(state.booking.arrivalTime);
   const passLabel = (MEMBERSHIPS.find(m => m.id === state.booking.membership) || {}).label || 'Pass';
   const passNum = ($('#pass-number')?.value || state.verification.number || '').trim();
@@ -2005,7 +2034,7 @@ function confirmBooking() {
   const luxeFee = hasLuxe ? calculateLuxeUpgradeFee(l.priceFrom) : 0;
   const entryAmount = usingPass ? 0 : l.priceFrom * Math.max(1, guestsTotal);
   const passDepositAmount = usingPass && isAdvance ? deposit : 0;
-  const totalAmount = entryAmount + luxeFee + passDepositAmount;
+  const totalAmount = entryAmount + luxeFee + passDepositAmount + seatLock;
 
   const m = $('#pay-modal');
   m.classList.remove('hidden'); m.classList.add('flex');
@@ -2033,9 +2062,9 @@ function confirmBooking() {
 
     // Headline on the success screen
     let headline;
-    if (hasLuxe && usingPass)            headline = `Luxe upgrade confirmed · ${l.currency} ${(luxeFee + passDepositAmount)} charged`;
+    if (hasLuxe && usingPass)            headline = `Luxe upgrade confirmed · ${l.currency} ${(luxeFee + passDepositAmount + seatLock)} charged`;
     else if (hasLuxe && !usingPass)      headline = `Luxe upgrade confirmed · ${l.currency} ${totalAmount.toFixed(2)} charged`;
-    else if (usingPass && isAdvance)     headline = `Table reserved · ${l.currency} ${deposit} held`;
+    else if (usingPass && isAdvance)     headline = `Reservation held · ${l.currency} ${deposit + seatLock}`;
     else if (usingPass)                  headline = 'Booking confirmed';
     else                                 headline = `${l.currency} ${totalAmount.toFixed(2)} charged`;
     $('#pay-amount').textContent = headline;
@@ -2065,11 +2094,17 @@ function confirmBooking() {
         usingPass ? 'Refundable deposit held' : 'Refundable on check-in',
         usingPass ? `${l.currency} ${deposit}` : `${l.currency} ${entryAmount.toFixed(2)} · by ${graceTime}`
       ]);
+      if (hasSeatLock) {
+        rows.push([
+          `Seat reservation fee · ${ZONE_META[state.booking.preferredZone].label}`,
+          `${l.currency} ${seatLock}`
+        ]);
+      }
       rows.push([
         'Cancellation',
         canCancelFree(state.booking)
           ? `Free until ${formatCancellationDeadline(state.booking)}`
-          : 'Non-refundable · same-day'
+          : 'Non-refundable · inside 6h window'
       ]);
     }
     if (!usingPass) {
@@ -2126,11 +2161,15 @@ function openCancelModal() {
   const l = lounge();
   const free = canCancelFree(state.booking);
   const dep = calculateDeposit(l);
-  const zoneLabel = state.booking.preferredZone ? ZONE_META[state.booking.preferredZone].label : 'table';
-  $('#cancel-modal-headline').textContent = free ? 'Cancel for a full refund?' : 'Cancel inside the 24-hour window?';
+  const lockFee = requiresSeatLock(state.booking) ? calculateSeatLockFee(l) : 0;
+  const total = dep + lockFee;
+  const what = state.booking.preferredZone
+    ? `your ${ZONE_META[state.booking.preferredZone].label} reservation`
+    : 'your reservation';
+  $('#cancel-modal-headline').textContent = free ? 'Cancel for a full refund?' : 'Cancel inside the 6-hour window?';
   $('#cancel-modal-body').innerHTML = free
-    ? `Your <strong class="text-aspire-navy">${zoneLabel}</strong> reservation will be cancelled and your <strong class="text-aspire-navy">${l.currency} ${dep}</strong> deposit refunded to your card within 1–3 business days.`
-    : `Your reservation is inside the 24-hour cancellation window. Cancelling now <strong class="text-aspire-navy">forfeits the ${l.currency} ${dep} deposit</strong> and releases the table for other guests.`;
+    ? `We'll cancel ${what} and refund the full <strong class="text-aspire-navy">${l.currency} ${total}</strong> to your card within 1–3 business days.`
+    : `Your reservation is inside the 6-hour cancellation window. Cancelling now <strong class="text-aspire-navy">forfeits the ${l.currency} ${total}</strong> held on your card and releases the table for other guests.`;
   const m = $('#cancel-modal');
   m.classList.remove('hidden'); m.classList.add('flex');
 }
@@ -2150,8 +2189,15 @@ function cancelReservation() {
 
 /* ----------------------- VERIFICATION ----------------------- */
 function renderVerifyForm(suffix) {
-  // suffix: 'tbl' or 'q'
+  // suffix: 'tbl' or 'q'. The queue card requires an extra boarding-pass field
+  // for non-boarding-pass access types so only same-day travellers can join.
   const ts = $('#v-type-' + suffix);
+  const boardingWrap = suffix === 'q' ? $('#v-boarding-wrap-q') : null;
+  const boardingInp  = suffix === 'q' ? $('#v-boarding-q') : null;
+  const syncBoardingVisibility = () => {
+    if (!boardingWrap) return;
+    boardingWrap.classList.toggle('hidden', ts.value === 'boarding-pass');
+  };
   if (!ts.options.length) {
     VERIFY_TYPES.forEach(t => ts.append(new Option(t.label, t.id)));
     ts.value = state.verification.type;
@@ -2160,10 +2206,13 @@ function renderVerifyForm(suffix) {
       const meta = VERIFY_TYPES.find(t => t.id === ts.value);
       const lbl = $('#v-num-label-' + suffix);
       if (lbl) lbl.textContent = meta.numLabel;
+      syncBoardingVisibility();
+      check();
     };
     const meta = VERIFY_TYPES.find(t => t.id === ts.value);
     $('#v-num-label-' + suffix).textContent = meta.numLabel;
   }
+  syncBoardingVisibility();
   const nameInp = $('#v-name-' + suffix);
   const numInp  = $('#v-num-' + suffix);
   const btn     = $('#v-btn-' + suffix);
@@ -2172,10 +2221,15 @@ function renderVerifyForm(suffix) {
   const check = () => {
     state.verification.lastName = nameInp.value;
     state.verification.number   = numInp.value;
-    btn.classList.toggle('disabled', !(nameInp.value.trim().length > 1 && numInp.value.trim().length >= 4));
+    let ok = nameInp.value.trim().length > 1 && numInp.value.trim().length >= 4;
+    if (boardingInp && ts.value !== 'boarding-pass') {
+      ok = ok && boardingInp.value.trim().length >= 4;
+    }
+    btn.classList.toggle('disabled', !ok);
   };
   nameInp.oninput = check;
   numInp.oninput  = check;
+  if (boardingInp) boardingInp.oninput = check;
   check();
   $('#v-err-' + suffix).classList.add('hidden');
 }
@@ -2209,6 +2263,11 @@ function renderQueueVerifyCard() {
     <label class="block mt-4">
       <div class="text-[0.72rem] uppercase tracking-widest text-navy-500 mb-2"><span id="v-num-label-q">Boarding pass / membership number</span></div>
       <input id="v-num-q" placeholder="ABC123456" class="input-cream" />
+    </label>
+    <label id="v-boarding-wrap-q" class="hidden block mt-4">
+      <div class="text-[0.72rem] uppercase tracking-widest text-navy-500 mb-2">Boarding pass reference (PNR)</div>
+      <input id="v-boarding-q" placeholder="ABC123" class="input-cream" />
+      <p class="mt-2 text-[0.72rem] text-navy-500 leading-relaxed">Queue access is reserved for travellers with a same-day boarding pass.</p>
     </label>
     <button id="v-btn-q" onclick="verifyAccess('queue')" class="btn-primary disabled mt-5 w-full justify-center">
       Verify access
@@ -2451,14 +2510,15 @@ function renderQueue() {
     // Pair the queue counter with the Luxe upgrade card whenever the Lifestyle tables are full
     const showsLuxe = luxe.offered || luxe.reason === 'luxe-full';
     const grid = el('div', { class: showsLuxe ? 'grid grid-cols-1 lg:grid-cols-2 gap-3' : '' });
-    grid.append(el('div', { class:'card-aspire p-6 sm:p-8 text-center' },
+    grid.append(el('div', { class:'card-aspire p-6 sm:p-8 text-center flex flex-col' },
       el('div', { class:'swiss-eyebrow text-aspire-navy/70' }, state.joined ? 'Guests ahead of you' : 'People currently waiting'),
       el('div', { class:'serif-heading text-6xl sm:text-7xl text-aspire-navy mt-2 tabular-nums' }, String(ahead)),
       el('div', { class:'text-aspire-navy/80 mt-2' }, ahead === 1 ? 'guest' : 'guests'),
-      el('div', { class:'mt-5 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-aspire-border text-[0.72rem] uppercase tracking-widest text-aspire-navy' },
+      el('div', { class:'mt-5 inline-flex self-center items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-aspire-border text-[0.72rem] uppercase tracking-widest text-aspire-navy' },
         el('span', { class:'live-dot amber' }),
         `~${maxWait || 0} min longest wait`
-      )
+      ),
+      el('div', { class:'mt-6 -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 overflow-hidden', html:`<img src="https://i.postimg.cc/pT8GJ0Jh/macbook-hd-wallpaper.png" alt="Lifestyle lounge" class="w-full h-40 object-cover" />` })
     ));
 
     if (luxe.offered) {
@@ -2471,6 +2531,7 @@ function renderQueue() {
         ));
       });
       grid.append(el('div', { class:'card-cream p-6 sm:p-8 border-aspire-navy/40 flex flex-col' },
+        el('div', { class:'-mx-6 sm:-mx-8 -mt-6 sm:-mt-8 mb-5 overflow-hidden', html:`<img src="https://i.postimg.cc/L4W51N0f/macbook-hd-wallpaper-2.png" alt="Aspire Luxe Lounge" class="w-full h-40 object-cover" />` }),
         el('div', { class:'flex items-start justify-between gap-3' },
           el('div', {},
             el('div', { class:'swiss-eyebrow text-aspire-navy' }, `${LUXE_PROFILE.name} · seats available now`),
