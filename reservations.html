@@ -678,7 +678,7 @@
       <div>
         <div class="swiss-eyebrow">Walk-ins · Virtual queue</div>
         <h1 class="serif-heading text-4xl sm:text-6xl mt-2 text-aspire-navy">Skip the doorway</h1>
-        <p class="mt-2 text-navy-500 max-w-xl">Verify your boarding pass or membership first — then we'll save your place in line and notify you the moment a table opens.</p>
+        <p id="queue-page-sub" class="mt-2 text-navy-500 max-w-xl">Verify your boarding pass or membership first — then we'll save your place in line and notify you the moment a table opens.</p>
       </div>
       <span id="queue-summary" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-aspire-border text-[0.7rem] uppercase tracking-widest text-aspire-navy"></span>
     </div>
@@ -2377,8 +2377,10 @@ function submitPreference() {
 
 /* ----------------------- QUEUE ----------------------- */
 function renderQueue() {
+  const ql = lounge();
   const maxWait = Math.max(...state.queue.map(q => q.estimatedWait), 0);
   $('#queue-summary').innerHTML = `<span class="live-dot amber"></span>${state.queue.length} in queue · ~${maxWait}m max wait`;
+  $('#queue-page-sub').innerHTML = `You're joining the <strong class="text-aspire-navy">${ql.name}</strong> Lifestyle queue (${ql.city} · ${ql.terminal}). Verify your boarding pass or membership and we'll save your place in line and notify you the moment a table opens.`;
 
   // Anonymized ticker — only zone + wait, never names or party sizes
   const ticker = $('#queue-ticker'); ticker.innerHTML = '';
@@ -2511,14 +2513,15 @@ function renderQueue() {
     const showsLuxe = luxe.offered || luxe.reason === 'luxe-full';
     const grid = el('div', { class: showsLuxe ? 'grid grid-cols-1 lg:grid-cols-2 gap-3' : '' });
     grid.append(el('div', { class:'card-aspire p-6 sm:p-8 text-center flex flex-col' },
-      el('div', { class:'swiss-eyebrow text-aspire-navy/70' }, state.joined ? 'Guests ahead of you' : 'People currently waiting'),
+      el('div', { class:'-mx-6 sm:-mx-8 -mt-6 sm:-mt-8 mb-5 overflow-hidden', html:`<img src="https://i.postimg.cc/pT8GJ0Jh/macbook-hd-wallpaper.png" alt="${l.name}" class="w-full h-40 object-cover" />` }),
+      el('div', { class:'swiss-eyebrow text-aspire-navy' }, `${l.name} · Lifestyle queue`),
+      el('div', { class:'swiss-eyebrow text-aspire-navy/70 mt-4' }, state.joined ? 'Guests ahead of you' : 'People currently waiting'),
       el('div', { class:'serif-heading text-6xl sm:text-7xl text-aspire-navy mt-2 tabular-nums' }, String(ahead)),
       el('div', { class:'text-aspire-navy/80 mt-2' }, ahead === 1 ? 'guest' : 'guests'),
       el('div', { class:'mt-5 inline-flex self-center items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-aspire-border text-[0.72rem] uppercase tracking-widest text-aspire-navy' },
         el('span', { class:'live-dot amber' }),
         `~${maxWait || 0} min longest wait`
-      ),
-      el('div', { class:'mt-6 -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 overflow-hidden', html:`<img src="https://i.postimg.cc/pT8GJ0Jh/macbook-hd-wallpaper.png" alt="Lifestyle lounge" class="w-full h-40 object-cover" />` })
+      )
     ));
 
     if (luxe.offered) {
