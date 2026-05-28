@@ -6784,9 +6784,176 @@ window.addEventListener('hashchange', () => {
   #demo-tier-picker .tp-foot {
     margin-top: 1.3rem; font-size: 0.74rem; color: #9B8470;
   }
+
+  /* Intro card — the pitch frame shown before the tier picker */
+  #demo-intro {
+    position: fixed; inset: 0; z-index: 9100;
+    background: rgba(31, 42, 68, 0.78);
+    display: flex; align-items: center; justify-content: center;
+    padding: 1.25rem;
+    overflow-y: auto;
+    animation: fadeIn .35s ease-out;
+  }
+  #demo-intro .in-card {
+    background: #fff; border-radius: 18px;
+    max-width: 920px; width: 100%;
+    padding: 2.1rem 2.4rem 2.2rem;
+    box-shadow: 0 30px 80px -20px rgba(0,0,0,0.5);
+    color: #1F2A44;
+    font-family: 'Inter', sans-serif; font-weight: 300;
+  }
+  #demo-intro .in-eyebrow {
+    font-weight: 500; font-size: 0.6rem;
+    text-transform: uppercase; letter-spacing: 0.32em; color: #9B8470;
+  }
+  #demo-intro h2 {
+    font-family: 'Cormorant Garamond', serif; font-weight: 400;
+    font-size: 2.4rem; line-height: 1.05; color: #1F2A44;
+    margin-top: 0.45rem;
+    max-width: 720px;
+  }
+  #demo-intro .in-sub {
+    margin-top: 0.7rem; max-width: 640px;
+    color: #3D4A66; font-size: 0.95rem; line-height: 1.55;
+  }
+  #demo-intro .in-chapters {
+    margin-top: 1.6rem;
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+  @media (max-width: 800px) {
+    #demo-intro .in-chapters { grid-template-columns: repeat(2, 1fr); }
+  }
+  #demo-intro .in-chapter {
+    background: #FBF8F4;
+    border: 1px solid #ECE6E0;
+    border-radius: 12px;
+    padding: 0.9rem 0.95rem 1rem;
+    position: relative;
+  }
+  #demo-intro .in-chapter .in-num {
+    font-weight: 500; font-size: 0.58rem;
+    text-transform: uppercase; letter-spacing: 0.28em; color: #B59D88;
+  }
+  #demo-intro .in-chapter .in-title {
+    font-family: 'Cormorant Garamond', serif; font-weight: 500;
+    font-size: 1.15rem; line-height: 1.15; color: #1F2A44;
+    margin-top: 0.4rem;
+  }
+  #demo-intro .in-chapter .in-body {
+    margin-top: 0.4rem; font-size: 0.78rem; color: #3D4A66; line-height: 1.45;
+  }
+  #demo-intro .in-row {
+    margin-top: 1.7rem;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; flex-wrap: wrap;
+  }
+  #demo-intro .in-foot {
+    font-size: 0.74rem; color: #9B8470; max-width: 460px;
+  }
+  #demo-intro .in-begin {
+    cursor: pointer;
+    background: #1F2A44; color: #fff;
+    border: none;
+    padding: 0.85rem 1.6rem;
+    font-family: 'Inter', sans-serif; font-weight: 400;
+    font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+    border-radius: 999px;
+    transition: background 180ms ease, transform 180ms ease;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+  }
+  #demo-intro .in-begin:hover { background: #28344C; transform: translateY(-1px); }
+
+  /* Chapter banner — slides in when the demo enters a new chapter */
+  #demo-chapter-pill {
+    position: fixed;
+    top: 58px; left: 50%;
+    transform: translateX(-50%) translateY(-12px);
+    z-index: 9003;
+    background: rgba(255,255,255,0.94);
+    backdrop-filter: blur(12px) saturate(1.4);
+    -webkit-backdrop-filter: blur(12px) saturate(1.4);
+    border: 1px solid #ECE6E0;
+    box-shadow: 0 12px 30px -10px rgba(31,42,68,0.25);
+    color: #1F2A44;
+    padding: 0.55rem 1.05rem 0.65rem;
+    border-radius: 14px;
+    font-family: 'Inter', sans-serif;
+    max-width: 360px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 320ms ease, transform 420ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  #demo-chapter-pill.cp-visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  #demo-chapter-pill .cp-eyebrow {
+    font-weight: 500; font-size: 0.55rem;
+    text-transform: uppercase; letter-spacing: 0.3em;
+    color: #B59D88;
+  }
+  #demo-chapter-pill .cp-title {
+    font-family: 'Cormorant Garamond', serif; font-weight: 500;
+    font-size: 1.15rem; line-height: 1.15; color: #1F2A44;
+    margin-top: 0.15rem;
+  }
+  #demo-chapter-pill .cp-sub {
+    margin-top: 0.2rem; font-size: 0.78rem; color: #3D4A66; line-height: 1.45;
+  }
 </style>
 
-<div id="demo-tier-picker">
+<div id="demo-intro">
+  <div class="in-card">
+    <div class="in-eyebrow">— Aspire · Pre-flight hospitality</div>
+    <h2>How Aspire elevates the pre-flight hour.</h2>
+    <p class="in-sub">Aspire turns the pre-flight hour from queues and decisions into a calm ritual. The demo walks you through it as one continuous journey across five customer moments — feel how every tap takes friction out of the traveller's day.</p>
+
+    <div class="in-chapters">
+      <div class="in-chapter">
+        <div class="in-num">Chapter 01</div>
+        <div class="in-title">Locking it in</div>
+        <div class="in-body">Reserve the lounge, share the schedule, settle payment — done in two minutes from your taxi.</div>
+      </div>
+      <div class="in-chapter">
+        <div class="in-num">Chapter 02</div>
+        <div class="in-title">On the way</div>
+        <div class="in-body">Share a seat preference and let the lounge know you're coming. Hosts ready your table.</div>
+      </div>
+      <div class="in-chapter">
+        <div class="in-num">Chapter 03</div>
+        <div class="in-title">The menu</div>
+        <div class="in-body">Browse the buffet, drinks, dietary guide and sourcing — or unlock Pre-Arrival Dining at Luxe, Suite or Privé.</div>
+      </div>
+      <div class="in-chapter">
+        <div class="in-num">Chapter 04</div>
+        <div class="in-title">Pre-arrival composer</div>
+        <div class="in-body">Compose your tray or bespoke plate in the taxi. The kitchen plates it moments before you sit down.</div>
+      </div>
+      <div class="in-chapter">
+        <div class="in-num">Chapter 05</div>
+        <div class="in-title">Walk in &amp; board</div>
+        <div class="in-body">QR check-in at the door. Tray waiting. Boarding nudge before you need to move.</div>
+      </div>
+    </div>
+
+    <div class="in-row">
+      <div class="in-foot">Pick a tier in the next step and you'll walk every chapter in a single forced path — one tap per screen.</div>
+      <button type="button" class="in-begin" id="dm-intro-begin">
+        Begin the walkthrough
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="demo-chapter-pill">
+  <div class="cp-eyebrow"><span id="cp-eyebrow">Chapter 01</span></div>
+  <div class="cp-title" id="cp-title">Locking it in</div>
+  <div class="cp-sub" id="cp-sub">—</div>
+</div>
+
+<div id="demo-tier-picker" style="display:none;">
   <div class="tp-card">
     <div class="swiss-eyebrow" style="color:#9B8470;">— Aspire guided demo</div>
     <h2>Which experience would you like to walk through?</h2>
@@ -7255,7 +7422,61 @@ window.addEventListener('hashchange', () => {
       .concat(composerSteps)
       .concat([{ view: 'dashboard', final: true }]);
 
-    return common.concat(isLifestyle ? lifestyleTail : preArrivalTail);
+    var all = common.concat(isLifestyle ? lifestyleTail : preArrivalTail);
+    return assignChapters(all, tier);
+  }
+
+  // Tag each step with a chapter number (1-5) so the chapter pill knows
+  // when to slide in. The mapping is by-view, walked left-to-right.
+  function assignChapters(steps, tier) {
+    var ch = 1;
+    var seenDashboardOnce = false;
+    var seenMenu = false;
+    var inComposer = false;
+    var paConfirmed = false;
+    var isLifestyle = tier === 'lifestyle';
+    for (var i = 0; i < steps.length; i++) {
+      var s = steps[i];
+      if (s.final) { s.chapter = 5; continue; }
+      // Reserve flow + pay modal = Chapter 1 (Locking it in)
+      if (s.view === 'home' || s.view === 'reserve' || s.view === 'pay-modal') {
+        s.chapter = 1; continue;
+      }
+      // First dashboard step + tables = Chapter 2 (On the way)
+      if (s.view === 'tables') { s.chapter = 2; continue; }
+      if (s.view === 'dashboard' && !seenDashboardOnce) {
+        s.chapter = 2;
+        seenDashboardOnce = true;
+        continue;
+      }
+      // Second dashboard step (after seating submit) = transition to menu
+      if (s.view === 'dashboard' && !seenMenu) {
+        s.chapter = 3;   // "Open the menu"
+        continue;
+      }
+      // Menu — editorial sub-tab + lifestyle tab tour
+      if (s.view === 'menu' && s.menuSub && s.menuSub !== 'pre-arrival') {
+        s.chapter = 3;
+        seenMenu = true;
+        continue;
+      }
+      // Pre-Arrival composer = Chapter 4
+      if (s.view === 'menu' && s.menuSub === 'pre-arrival') {
+        // The "receipt" step has #dm-jump-queue as its selector — that's the
+        // hand-off into walk-in / boarding (Chapter 5).
+        if (s.selector === '#dm-jump-queue') { s.chapter = 5; continue; }
+        s.chapter = 4;
+        inComposer = true;
+        continue;
+      }
+      // Walk-in queue + final dashboard QR pass = Chapter 5
+      if (s.view === 'queue' || s.view === 'dashboard') {
+        s.chapter = 5;
+        continue;
+      }
+      s.chapter = s.chapter || 1;
+    }
+    return steps;
   }
 
   // ----------------------------------------------------------------
@@ -7306,6 +7527,8 @@ window.addEventListener('hashchange', () => {
     if (el.closest('#demo-coachmark'))   return true;
     if (el.closest('#demo-finale'))      return true;
     if (el.closest('#demo-tier-picker')) return true;
+    if (el.closest('#demo-intro'))       return true;
+    if (el.closest('#demo-chapter-pill')) return true;
     if (currentTarget && document.body.contains(currentTarget) &&
         (el === currentTarget || currentTarget.contains(el))) return true;
     // currentTarget may be detached (paRender just replaced the highlighted
@@ -7517,6 +7740,10 @@ window.addEventListener('hashchange', () => {
       f.remove();
       document.getElementById('demo-banner').style.display = 'none';
       document.getElementById('demo-veil').style.display = 'none';
+      var pill = document.getElementById('demo-chapter-pill');
+      if (pill) pill.classList.remove('cp-visible');
+      // Reset chapter tracking so the pill fires again on the new walk.
+      currentChapter = null;
       idx = 0;
       chosenTier = null;
       try { state.confirmed = false; state.verified = false; state.preferredZone = null; } catch (_) {}
@@ -7532,6 +7759,7 @@ window.addEventListener('hashchange', () => {
     document.body.classList.remove('aspire-demo');
     window.__aspireDemoExited = true;
     ['demo-veil','demo-banner','demo-coachmark','demo-finale','demo-tier-picker',
+     'demo-intro','demo-chapter-pill',
      'dm-jump-tables','dm-jump-queue','dm-jump-menu','dm-jump-dashboard'].forEach(function (id) {
       var el = document.getElementById(id);
       if (el) el.remove();
@@ -7558,6 +7786,10 @@ window.addEventListener('hashchange', () => {
     advanceLock = false;
     var step = STEPS[idx];
     counter.textContent = (idx + 1) + ' / ' + STEPS.length;
+    // Slide the chapter pill in when the demo crosses into a new chapter.
+    if (typeof window.__demoMaybeAdvanceChapter === 'function') {
+      window.__demoMaybeAdvanceChapter();
+    }
 
     if (step.final) { showFinale(); return; }
 
@@ -7647,9 +7879,11 @@ window.addEventListener('hashchange', () => {
       if (!t) continue;
       if (t.id === 'demo-coachmark' || t.id === 'demo-banner' ||
           t.id === 'demo-veil' || t.id === 'demo-finale' ||
-          t.id === 'demo-tier-picker') return true;
+          t.id === 'demo-tier-picker' || t.id === 'demo-intro' ||
+          t.id === 'demo-chapter-pill') return true;
       if (t.closest && (t.closest('#demo-coachmark') || t.closest('#demo-banner') ||
-          t.closest('#demo-finale') || t.closest('#demo-tier-picker'))) return true;
+          t.closest('#demo-finale') || t.closest('#demo-tier-picker') ||
+          t.closest('#demo-intro') || t.closest('#demo-chapter-pill'))) return true;
     }
     return false;
   }
@@ -7717,6 +7951,52 @@ window.addEventListener('hashchange', () => {
       startTier(btn.getAttribute('data-demo-tier'));
     });
   });
+
+  // Intro card → tier picker.
+  var introBtn = document.getElementById('dm-intro-begin');
+  if (introBtn) {
+    introBtn.addEventListener('click', function () {
+      var intro = document.getElementById('demo-intro');
+      if (intro) intro.style.display = 'none';
+      var picker = document.getElementById('demo-tier-picker');
+      if (picker) picker.style.display = 'flex';
+    });
+  }
+
+  // ----------------------------------------------------------------
+  // Chapter banner — slides in when the demo enters a new chapter.
+  // ----------------------------------------------------------------
+  var CHAPTERS = {
+    1: { title: 'Locking it in',         sub: 'Reserve, schedule, pay — done in two minutes from your taxi.' },
+    2: { title: 'On the way',            sub: "Tell the lounge where you'd like to sit and they'll prepare your table." },
+    3: { title: 'The menu',              sub: 'Browse buffet, drinks, dietary guide and sourcing — at a glance.' },
+    4: { title: 'Pre-Arrival composer',  sub: 'Compose your tray or plate in the taxi. The kitchen plates it before you sit.' },
+    5: { title: 'Walk in & board',       sub: 'QR check-in, table ready, boarding nudged at the right moment.' }
+  };
+  var currentChapter = null;
+  var chapterTimer = null;
+  function showChapterPill(num) {
+    var meta = CHAPTERS[num];
+    if (!meta) return;
+    var pill = document.getElementById('demo-chapter-pill');
+    if (!pill) return;
+    document.getElementById('cp-eyebrow').textContent = 'Chapter ' + String(num).padStart(2, '0');
+    document.getElementById('cp-title').textContent = meta.title;
+    document.getElementById('cp-sub').textContent = meta.sub;
+    pill.classList.add('cp-visible');
+    if (chapterTimer) clearTimeout(chapterTimer);
+    chapterTimer = setTimeout(function () {
+      pill.classList.remove('cp-visible');
+    }, 4200);
+  }
+  function maybeAdvanceChapter() {
+    var step = STEPS[idx];
+    if (!step || !step.chapter) return;
+    if (step.chapter === currentChapter) return;
+    currentChapter = step.chapter;
+    showChapterPill(currentChapter);
+  }
+  window.__demoMaybeAdvanceChapter = maybeAdvanceChapter;
 })();
 </script>
 </body>
