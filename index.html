@@ -1655,6 +1655,30 @@
   </div>
 </div>
 
+<!-- ============================================================ UPGRADE MODAL (queue → tier hop: verify + pay + confirm) -->
+<div id="upgrade-modal" class="hidden fixed inset-0 z-50 items-center justify-center p-4" role="dialog" aria-modal="true">
+  <div class="absolute inset-0 bg-aspire-navy/40 backdrop-blur-sm" onclick="closeUpgradeModal()"></div>
+  <div class="relative w-full max-w-lg card-cream shadow-float p-7 sm:p-8 max-h-[90vh] overflow-y-auto">
+    <button onclick="closeUpgradeModal()" class="absolute top-3 right-3 h-9 w-9 rounded-full text-aspire-navy hover:bg-aspire-soft flex items-center justify-center" aria-label="Close">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 6l12 12M6 18L18 6"/></svg>
+    </button>
+    <div class="font-medium tracking-[0.42em] text-base text-aspire-navy text-center">ASPIRE</div>
+    <div id="upgrade-stepper" class="mt-4 flex items-center justify-center gap-1.5 text-[0.65rem] uppercase tracking-widest text-navy-500"></div>
+    <div id="upgrade-modal-body" class="mt-5"></div>
+  </div>
+</div>
+
+<!-- ============================================================ PRE-ARRIVAL RECEIPT MODAL -->
+<div id="pa-receipt-modal" class="hidden fixed inset-0 z-50 items-center justify-center p-4" role="dialog" aria-modal="true">
+  <div class="absolute inset-0 bg-aspire-navy/40 backdrop-blur-sm" onclick="paCloseReceipt()"></div>
+  <div class="relative w-full max-w-md card-cream shadow-float p-7 sm:p-8 max-h-[90vh] overflow-y-auto">
+    <button onclick="paCloseReceipt()" class="absolute top-3 right-3 h-9 w-9 rounded-full text-aspire-navy hover:bg-aspire-soft flex items-center justify-center" aria-label="Close">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 6l12 12M6 18L18 6"/></svg>
+    </button>
+    <div id="pa-receipt-body"></div>
+  </div>
+</div>
+
 <!-- ============================================================ ZONE PICKER MODAL (step 4 add-on) -->
 <div id="zone-modal" class="hidden fixed inset-0 z-50 items-center justify-center p-4" role="dialog" aria-modal="true">
   <div class="absolute inset-0 bg-aspire-navy/40 backdrop-blur-sm" onclick="closeZoneModal()"></div>
@@ -2185,6 +2209,7 @@ function go(view) {
   if (target) target.classList.add('active');
   $$('.nav-link').forEach(n => n.classList.toggle('active', n.dataset.view === view));
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (view === 'home')      { renderHomeFeatured(); syncHomeStaticCTAs(); }
   if (view === 'search')    renderSearch();
   if (view === 'reserve')   { state.step = 1; renderReserve(); }
   if (view === 'tables')    renderTables();
@@ -2429,7 +2454,12 @@ function renderSearch() {
             el('div', { class:'text-[0.7rem] uppercase tracking-widest text-navy-500' }, 'from'),
             el('div', { class:'text-aspire-navy text-xl' }, `${sel.currency} ${sel.priceFrom}`)
           ),
-          el('button', { class:'btn-primary', onclick: () => { state.step = 2; go('reserve'); }, html:'Reserve this lounge <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>' })
+          (function(){
+            // Once confirmed, the search hero swap mirrors the home CTA → menu.
+            const cta = homeCTA();
+            const label = state.confirmed ? 'Open the menu' : 'Reserve this lounge';
+            return el('button', { class:'btn-primary', onclick: () => { if (state.confirmed) { go('menu'); } else { state.step = 2; go('reserve'); } }, html: label + ' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>' });
+          })()
         )
       )
     ));
@@ -2474,6 +2504,8 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     closeLoungePicker();
     closeCancelModal();
+    if (typeof closeUpgradeModal === 'function' && !$('#upgrade-modal')?.classList.contains('hidden')) closeUpgradeModal();
+    if (typeof paCloseReceipt === 'function' && !$('#pa-receipt-modal')?.classList.contains('hidden')) paCloseReceipt();
     $('#lang-menu')?.classList.add('hidden');
     $('#lang-toggle')?.setAttribute('aria-expanded', 'false');
   }
@@ -2961,21 +2993,36 @@ function renderStep4() {
   $('#confirm-btn').innerHTML = cta + ' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m9 6 6 6-6 6"/></svg>';
 }
 function upgradeToTier(toTier) {
-  // Mark the upgrade target. Keep `luxeUpgrade` in sync as a derived boolean so
-  // any legacy code path that still reads it (receipt, dashboard banner) keeps
-  // working for the Lifestyle→Luxe case.
-  state.booking.upgradeTier = toTier;
-  state.booking.luxeUpgrade = (toTier === 'luxe');
-  // Carry over verified pass type when available so the receipt lands in the right mode
-  if (state.verified && state.verification.type) {
-    state.booking.membership = state.verification.type;
-  }
-  // Booking is already confirmed — open the pay modal directly for the upgrade fee
-  // instead of walking the user back through the booking flow.
-  confirmBooking();
+  // Stage the target tier and open the dedicated upgrade modal — the tier flag
+  // only commits when the user clears verify → pay → confirm in the modal.
+  state.pendingUpgrade = toTier;
+  openUpgradeModal();
 }
 // Back-compat: the queue card used to call this directly.
 function upgradeToLuxe() { upgradeToTier('luxe'); }
+
+// Commit an upgrade after the modal flow succeeds. Mirrors the bookkeeping
+// that confirmBooking() does, but without the #pay-modal UI (we already paid
+// inside #upgrade-modal).
+function finaliseBooking(opts) {
+  opts = opts || {};
+  const toTier = state.pendingUpgrade;
+  if (toTier) {
+    state.booking.upgradeTier = toTier;
+    state.booking.luxeUpgrade = (toTier === 'luxe');
+    if (state.verified && state.verification.type) {
+      state.booking.membership = state.verification.type;
+    }
+    const bucket = tierCapacityBucket(toTier);
+    if (bucket) bucket.seatsTaken += 1;
+    state.pendingUpgrade = null;
+  }
+  state.confirmed = true;
+  if (!opts.skipPayUi) {
+    // Future callers that still want the legacy modal path can opt back in.
+    confirmBooking();
+  }
+}
 
 function confirmBooking() {
   const l = lounge();
@@ -3103,6 +3150,215 @@ function finishPayment() {
   m.classList.add('hidden'); m.classList.remove('flex');
   go('dashboard');
 }
+
+/* ----------------------- UPGRADE MODAL (queue → tier hop) ----------------------- */
+const upgradeFlow = { step: 1, verifyType: 'priority-pass', lastName: '', number: '', payMethod: 'card', cardNum: '', cardExp: '', cardCvc: '', cardName: '', tos: false };
+
+function openUpgradeModal() {
+  upgradeFlow.step = 1;
+  upgradeFlow.verifyType = state.verification.type || 'priority-pass';
+  upgradeFlow.lastName = state.verification.lastName || '';
+  upgradeFlow.number = state.verification.number || '';
+  upgradeFlow.payMethod = 'card';
+  upgradeFlow.cardNum = ''; upgradeFlow.cardExp = ''; upgradeFlow.cardCvc = ''; upgradeFlow.cardName = '';
+  upgradeFlow.tos = false;
+  const m = $('#upgrade-modal');
+  m.classList.remove('hidden'); m.classList.add('flex');
+  renderUpgradeModal();
+}
+function closeUpgradeModal() {
+  const m = $('#upgrade-modal');
+  m.classList.add('hidden'); m.classList.remove('flex');
+  // Abandoning the flow drops the staged target tier so the queue can re-offer.
+  state.pendingUpgrade = null;
+}
+function renderUpgradeModal() {
+  const body = $('#upgrade-modal-body');
+  const stepper = $('#upgrade-stepper');
+  const labels = ['Verify', 'Pay', 'Confirm'];
+  stepper.innerHTML = labels.map((lbl, i) => {
+    const n = i + 1, on = n === upgradeFlow.step, done = n < upgradeFlow.step;
+    return `<span class="inline-flex items-center gap-1.5"><span class="h-5 w-5 inline-flex items-center justify-center text-[0.6rem] ${on ? 'bg-aspire-navy text-white' : done ? 'bg-aspire-taupe text-white' : 'bg-aspire-soft text-navy-500'}">${n}</span><span class="${on ? 'text-aspire-navy' : 'text-navy-500'}">${lbl}</span></span>${n < 3 ? '<span class="text-navy-500/40">·</span>' : ''}`;
+  }).join('');
+  if (upgradeFlow.step === 1) body.innerHTML = upgradeStep1Markup();
+  else if (upgradeFlow.step === 2) body.innerHTML = upgradeStep2Markup();
+  else body.innerHTML = upgradeStep3Markup();
+  bindUpgradeModal();
+}
+function upgradeStep1Markup() {
+  const toTier = state.pendingUpgrade;
+  const toLabel = TIER_LABELS[toTier] || 'Tier';
+  const fromLabel = TIER_LABELS[currentLoungeTier()] || 'Lifestyle';
+  const typeOpts = VERIFY_TYPES.map(t => `<option value="${t.id}"${t.id === upgradeFlow.verifyType ? ' selected' : ''}>${t.label}</option>`).join('');
+  const numLabel = (VERIFY_TYPES.find(t => t.id === upgradeFlow.verifyType) || VERIFY_TYPES[1]).numLabel;
+  return `
+    <div class="swiss-eyebrow text-center">Step 1 · Verify access</div>
+    <div class="serif-heading text-2xl text-aspire-navy text-center mt-1">Confirm eligibility for ${toLabel}</div>
+    <p class="mt-2 text-[0.85rem] text-navy-500 text-center">Upgrading from <strong class="text-aspire-navy">${fromLabel}</strong> — a quick check first.</p>
+    <label class="block mt-5">
+      <div class="text-[0.7rem] uppercase tracking-widest text-navy-500 mb-2">Access type</div>
+      <select id="up-v-type" class="input-cream">${typeOpts}</select>
+    </label>
+    <label class="block mt-4">
+      <div class="text-[0.7rem] uppercase tracking-widest text-navy-500 mb-2">Last name (as on pass)</div>
+      <input id="up-v-name" value="${upgradeFlow.lastName.replace(/"/g, '&quot;')}" placeholder="Hofmann" class="input-cream" />
+    </label>
+    <label class="block mt-4">
+      <div class="text-[0.7rem] uppercase tracking-widest text-navy-500 mb-2"><span id="up-v-num-label">${numLabel}</span></div>
+      <input id="up-v-num" value="${upgradeFlow.number.replace(/"/g, '&quot;')}" placeholder="ABC123456" class="input-cream" />
+    </label>
+    <button id="up-v-btn" class="btn-primary disabled mt-5 w-full justify-center">
+      Verify access
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m4 12 5 5L20 6"/></svg>
+    </button>
+    <p id="up-v-err" class="hidden mt-3 text-[0.82rem] text-red-700">We couldn't verify those details. Please check the pass number and try again.</p>
+  `;
+}
+function upgradeStep2Markup() {
+  const l = lounge();
+  const toTier = state.pendingUpgrade;
+  const toLabel = TIER_LABELS[toTier] || 'Tier';
+  const fromTier = currentLoungeTier();
+  const fromLabel = TIER_LABELS[fromTier] || 'Lifestyle';
+  const fee = tierUpgradeFee(l.priceFrom, fromTier, toTier);
+  const method = upgradeFlow.payMethod;
+  const methodBtn = (id, label) => `<button data-up-pay="${id}" class="px-3 py-2.5 text-[0.78rem] border ${method === id ? 'bg-aspire-navy text-white border-aspire-navy' : 'bg-white text-aspire-navy border-aspire-border hover:border-aspire-taupe'}">${label}</button>`;
+  return `
+    <div class="swiss-eyebrow text-center">Step 2 · Payment</div>
+    <div class="serif-heading text-2xl text-aspire-navy text-center mt-1">${toLabel} upgrade fee</div>
+    <div class="mt-4 p-4 bg-aspire-soft rounded-xl text-[0.85rem] space-y-1.5">
+      <div class="flex justify-between"><span class="text-navy-500">Original booking</span><span class="text-aspire-navy">${fromLabel} · ${l.name}</span></div>
+      <div class="flex justify-between"><span class="text-navy-500">Upgrade target</span><span class="text-aspire-navy">${toLabel}</span></div>
+      <div class="flex justify-between pt-2 border-t border-aspire-border mt-2"><span class="text-navy-500">Upgrade fee</span><span class="text-aspire-navy font-medium tabular-nums">${l.currency} ${fee}</span></div>
+    </div>
+    <div class="mt-5 grid grid-cols-3 gap-2">
+      ${methodBtn('card', 'Card')}
+      ${methodBtn('apple', 'Apple Pay')}
+      ${methodBtn('twint', 'TWINT')}
+    </div>
+    ${method === 'card' ? `
+      <label class="block mt-4">
+        <div class="text-[0.7rem] uppercase tracking-widest text-navy-500 mb-2">Card number</div>
+        <input id="up-card-num" value="${upgradeFlow.cardNum}" placeholder="4242 4242 4242 4242" class="input-cream" inputmode="numeric" />
+      </label>
+      <div class="grid grid-cols-2 gap-3 mt-3">
+        <label class="block">
+          <div class="text-[0.7rem] uppercase tracking-widest text-navy-500 mb-2">Expiry (MM/YY)</div>
+          <input id="up-card-exp" value="${upgradeFlow.cardExp}" placeholder="04/27" class="input-cream" />
+        </label>
+        <label class="block">
+          <div class="text-[0.7rem] uppercase tracking-widest text-navy-500 mb-2">CVC</div>
+          <input id="up-card-cvc" value="${upgradeFlow.cardCvc}" placeholder="123" class="input-cream" inputmode="numeric" />
+        </label>
+      </div>
+      <label class="block mt-3">
+        <div class="text-[0.7rem] uppercase tracking-widest text-navy-500 mb-2">Name on card</div>
+        <input id="up-card-name" value="${upgradeFlow.cardName.replace(/"/g, '&quot;')}" placeholder="A. Hofmann" class="input-cream" />
+      </label>
+    ` : `
+      <p class="mt-4 p-4 bg-white border border-aspire-border rounded-xl text-[0.85rem] text-navy-500">You'll confirm the ${l.currency} ${fee} charge on your ${method === 'apple' ? 'iPhone' : 'TWINT app'} after pressing Pay.</p>
+    `}
+    <label class="mt-4 flex items-start gap-2.5 text-[0.78rem] text-navy-500">
+      <input id="up-tos" type="checkbox" ${upgradeFlow.tos ? 'checked' : ''} class="mt-0.5" />
+      <span>I agree to the Aspire terms and the ${l.currency} ${fee} upgrade charge.</span>
+    </label>
+    <div class="mt-5 grid grid-cols-2 gap-2.5">
+      <button onclick="upgradeBack()" class="btn-outline justify-center">Back</button>
+      <button id="up-pay-btn" class="btn-primary disabled justify-center">Pay ${l.currency} ${fee}</button>
+    </div>
+  `;
+}
+function upgradeStep3Markup() {
+  const l = lounge();
+  const toTier = state.pendingUpgrade;
+  const toLabel = TIER_LABELS[toTier] || 'Tier';
+  const fee = tierUpgradeFee(l.priceFrom, currentLoungeTier(), toTier);
+  return `
+    <div class="text-center">
+      <div class="mx-auto h-14 w-14 rounded-full border-2 border-aspire-border border-t-aspire-navy animate-spin"></div>
+      <div class="swiss-eyebrow mt-6">Securing ${toLabel} seat</div>
+      <div class="serif-heading text-2xl text-aspire-navy mt-2">Confirming ${toLabel} upgrade…</div>
+      <p class="mt-3 text-[0.85rem] text-navy-500 leading-relaxed">Charging ${l.currency} ${fee} and reserving your seat at the ${TIER_PROFILES[toTier]?.name || toLabel}.</p>
+    </div>
+  `;
+}
+function bindUpgradeModal() {
+  if (upgradeFlow.step === 1) {
+    const ts = $('#up-v-type'), nm = $('#up-v-name'), nu = $('#up-v-num'), btn = $('#up-v-btn');
+    const check = () => {
+      upgradeFlow.verifyType = ts.value;
+      upgradeFlow.lastName = nm.value;
+      upgradeFlow.number = nu.value;
+      const ok = nm.value.trim().length > 1 && nu.value.trim().length >= 4;
+      btn.classList.toggle('disabled', !ok);
+    };
+    ts.onchange = () => {
+      upgradeFlow.verifyType = ts.value;
+      const meta = VERIFY_TYPES.find(t => t.id === ts.value) || VERIFY_TYPES[1];
+      $('#up-v-num-label').textContent = meta.numLabel;
+      check();
+    };
+    nm.oninput = check; nu.oninput = check;
+    check();
+    btn.onclick = () => {
+      if (btn.classList.contains('disabled')) return;
+      // Simulated 700ms provider check, same UX as verifyAccess().
+      btn.classList.add('disabled');
+      btn.textContent = 'Verifying…';
+      $('#up-v-err').classList.add('hidden');
+      setTimeout(() => {
+        state.verification.type = upgradeFlow.verifyType;
+        state.verification.lastName = upgradeFlow.lastName;
+        state.verification.number = upgradeFlow.number;
+        state.verified = true;
+        upgradeFlow.step = 2;
+        renderUpgradeModal();
+      }, 700);
+    };
+  } else if (upgradeFlow.step === 2) {
+    document.querySelectorAll('[data-up-pay]').forEach(b => {
+      b.onclick = () => { upgradeFlow.payMethod = b.getAttribute('data-up-pay'); renderUpgradeModal(); };
+    });
+    const tos = $('#up-tos');
+    if (tos) tos.onchange = () => { upgradeFlow.tos = tos.checked; refreshUpgradePayBtn(); };
+    if (upgradeFlow.payMethod === 'card') {
+      const cn = $('#up-card-num'), ce = $('#up-card-exp'), cc = $('#up-card-cvc'), cna = $('#up-card-name');
+      const onInput = () => {
+        upgradeFlow.cardNum = cn.value; upgradeFlow.cardExp = ce.value;
+        upgradeFlow.cardCvc = cc.value; upgradeFlow.cardName = cna.value;
+        refreshUpgradePayBtn();
+      };
+      cn.oninput = onInput; ce.oninput = onInput; cc.oninput = onInput; cna.oninput = onInput;
+    }
+    $('#up-pay-btn').onclick = () => {
+      const btn = $('#up-pay-btn');
+      if (btn.classList.contains('disabled')) return;
+      upgradeFlow.step = 3;
+      renderUpgradeModal();
+      // 1.2s simulated processing then finalise + navigate.
+      setTimeout(() => {
+        state.payMethod = upgradeFlow.payMethod;
+        finaliseBooking({ skipPayUi: true });
+        closeUpgradeModal();
+        go('dashboard');
+      }, 1200);
+    };
+    refreshUpgradePayBtn();
+  }
+}
+function refreshUpgradePayBtn() {
+  const btn = $('#up-pay-btn');
+  if (!btn) return;
+  let ok = upgradeFlow.tos;
+  if (upgradeFlow.payMethod === 'card') {
+    ok = ok && upgradeFlow.cardNum.replace(/\s/g, '').length >= 12
+      && /\d{1,2}\/?\d{2}/.test(upgradeFlow.cardExp)
+      && upgradeFlow.cardCvc.length >= 3
+      && upgradeFlow.cardName.trim().length > 1;
+  }
+  btn.classList.toggle('disabled', !ok);
+}
+function upgradeBack() { upgradeFlow.step = 1; renderUpgradeModal(); }
 
 /* ----------------------- ZONE PICKER MODAL (step 4 add-on) ----------------------- */
 function openZoneModal() {
@@ -4087,7 +4343,56 @@ window.addEventListener('hashchange', () => {
     schedule: '',
     note: '',
     confirmed: null,
+    history: [],
+    showHistory: false,
   };
+
+  // History persists across reloads for the current tab session only.
+  try {
+    var rawH = sessionStorage.getItem('paHistory');
+    if (rawH) paState.history = JSON.parse(rawH) || [];
+  } catch (e) {}
+  function paPersistHistory() {
+    try { sessionStorage.setItem('paHistory', JSON.stringify(paState.history)); } catch (e) {}
+  }
+
+  // Snapshot of the composer state when an order was confirmed — used by Modify
+  // to repopulate the composer with the user's prior selections.
+  function paSnapshotDraft() {
+    return {
+      tier: paState.tier, size: paState.size, luxeCombo: paState.luxeCombo,
+      selections: {
+        starters: paState.selections.starters.slice(),
+        mains: paState.selections.mains.slice(),
+        desserts: paState.selections.desserts.slice(),
+      },
+      suite: {
+        mode: paState.suite.mode, combo: paState.suite.combo, pairing: paState.suite.pairing,
+        counts: { starters: paState.suite.counts.starters, mains: paState.suite.counts.mains, desserts: paState.suite.counts.desserts },
+        customizations: JSON.parse(JSON.stringify(paState.suite.customizations || {})),
+      },
+      prive: {
+        ingredients: Array.from(paState.prive.ingredients),
+        pairing: paState.prive.pairing,
+        host: paState.prive.host,
+        chefNote: paState.prive.chefNote,
+        mode: paState.prive.mode,
+      },
+      schedule: paState.schedule,
+      note: paState.note,
+    };
+  }
+  function paRestoreDraft(d) {
+    if (!d) return;
+    paState.tier = d.tier; paState.size = d.size; paState.luxeCombo = d.luxeCombo;
+    paState.selections = { starters: d.selections.starters.slice(), mains: d.selections.mains.slice(), desserts: d.selections.desserts.slice() };
+    paState.suite = { mode: d.suite.mode, combo: d.suite.combo, pairing: d.suite.pairing,
+      counts: { starters: d.suite.counts.starters, mains: d.suite.counts.mains, desserts: d.suite.counts.desserts },
+      customizations: JSON.parse(JSON.stringify(d.suite.customizations || {})) };
+    paState.prive = { ingredients: new Set(d.prive.ingredients || []), pairing: d.prive.pairing,
+      host: d.prive.host, chefNote: d.prive.chefNote, mode: d.prive.mode };
+    paState.schedule = d.schedule; paState.note = d.note;
+  }
 
   /* ---------- Helpers ---------- */
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]; }); }
@@ -4382,7 +4687,7 @@ window.addEventListener('hashchange', () => {
   function paConfirmedTrayMarkup() {
     var c = paState.confirmed;
     if (!c || c.kind === 'bespoke') return '';
-    var activeIdx = 2;
+    var activeIdx = 1;
     var pushMins = Math.max(2, Math.round(c.prep * 0.55));
     return '<div class="pa-confirm-overlay px-6 sm:px-10 py-12 sm:py-14 mb-16">' +
       '<div class="grid lg:grid-cols-12 gap-10 items-start">' +
@@ -4394,11 +4699,15 @@ window.addEventListener('hashchange', () => {
             '<span class="text-[0.6rem] uppercase tracking-[0.32em] text-aspire-navy">'+esc(PA_TIER_META[c.tier].label)+'</span>' +
           '</div>' +
           '<h2 class="serif-heading text-3xl sm:text-5xl mt-4 text-aspire-navy">Your tray is in motion.</h2>' +
-          '<p class="mt-4 text-aspire-taupe leading-[1.7] max-w-xl">Pre-arrival orders are tracked from the moment we receive them. Modify or cancel up to 20 minutes before arrival.</p>' +
-          '<div class="mt-10">'+paPipelineMarkup(activeIdx)+'</div>' +
+          '<p class="mt-4 text-aspire-taupe leading-[1.7] max-w-xl">Live preparation status. Modify or cancel up to 20 minutes before arrival.</p>' +
+          '<div class="mt-10" data-pa-live-pipeline>'+paPipelineMarkup(activeIdx)+'</div>' +
+          '<div data-pa-ready-state class="hidden mt-8 p-5 bg-white border border-aspire-navy/15">' +
+            '<div class="swiss-eyebrow text-aspire-navy">Tray ready</div>' +
+            '<p class="mt-2 text-[0.95rem] text-aspire-navy">Your tray is ready · meet host at <span data-pa-ready-host class="font-medium">'+esc(c.handoff)+'</span>.</p>' +
+          '</div>' +
           '<div class="mt-12 grid sm:grid-cols-3 gap-6 pt-8 border-t border-aspire-navy/10">' +
             '<div><div class="swiss-eyebrow">Ready by</div><div class="mt-2 serif-heading text-2xl text-aspire-navy">'+esc(c.time)+'</div></div>' +
-            '<div><div class="swiss-eyebrow">Prep</div><div class="mt-2 serif-heading text-2xl text-aspire-navy">'+c.prep+' min</div></div>' +
+            '<div><div class="swiss-eyebrow">Plated in</div><div class="mt-2 serif-heading text-2xl text-aspire-navy tabular-nums" data-pa-countdown>'+c.prep+' min 00 s</div></div>' +
             '<div><div class="swiss-eyebrow">Where to find your tray</div><div class="mt-2 text-[0.92rem] text-aspire-navy leading-snug inline-flex items-start gap-1.5">'+paIcon('pin','w-4 h-4 mt-0.5')+' <span>'+esc(c.handoff)+'</span></div></div>' +
           '</div>' +
           '<div class="mt-10 pt-8 border-t border-aspire-navy/10">' +
@@ -4425,7 +4734,10 @@ window.addEventListener('hashchange', () => {
           '<div class="border border-aspire-navy/10 bg-white p-5">' +
             '<div class="swiss-eyebrow">Modify or cancel</div>' +
             '<p class="mt-2 text-[0.85rem] text-aspire-taupe leading-relaxed">Editable up to 20 minutes before arrival.</p>' +
-            '<button data-pa-reset class="mt-4 inline-flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.22em] text-aspire-navy border-b border-aspire-navy/40 pb-1 hover:border-aspire-navy">Compose another tray '+paIcon('arrow','w-3 h-3')+'</button>' +
+            '<div class="mt-4 flex flex-wrap gap-2">' +
+              '<button data-pa-modify class="inline-flex items-center gap-2 px-3 py-2 text-[0.7rem] uppercase tracking-[0.22em] text-aspire-navy border border-aspire-navy/15 hover:border-aspire-navy">Modify '+paIcon('shuffle','w-3 h-3')+'</button>' +
+              '<button data-pa-cancel class="inline-flex items-center gap-2 px-3 py-2 text-[0.7rem] uppercase tracking-[0.22em] text-[#B05A47] border border-[#B05A47]/30 hover:border-[#B05A47]">Cancel '+paIcon('x','w-3 h-3')+'</button>' +
+            '</div>' +
           '</div>' +
         '</aside>' +
       '</div>' +
@@ -4465,8 +4777,17 @@ window.addEventListener('hashchange', () => {
           '<div class="pa-push-time">Now</div>' +
         '</div>' +
       '</div>' +
+      '<div class="mt-8 pt-7 border-t border-aspire-navy/10">' +
+        '<div class="swiss-eyebrow">— Live preparation</div>' +
+        '<div class="mt-5" data-pa-live-pipeline>'+paPipelineMarkup(1)+'</div>' +
+        '<div class="mt-6 flex items-baseline gap-3"><span class="swiss-eyebrow">Plated in</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums" data-pa-countdown>'+(c.prep||12)+' min 00 s</span></div>' +
+        '<div data-pa-ready-state class="hidden mt-5 p-4 bg-white border border-aspire-navy/15"><div class="swiss-eyebrow text-aspire-navy">Plate ready</div><p class="mt-2 text-[0.95rem] text-aspire-navy">Your plate is ready · meet host at <span data-pa-ready-host class="font-medium">'+esc(c.handoff)+'</span>.</p></div>' +
+      '</div>' +
       '<p class="mt-8 text-[0.82rem] text-aspire-taupe italic max-w-2xl">You can amend the request up to 10 minutes before arrival.</p>' +
-      '<button data-pa-reset class="mt-6 inline-flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.22em] text-aspire-navy border-b border-aspire-navy/40 pb-1 hover:border-aspire-navy">Compose another request '+paIcon('arrow','w-3 h-3')+'</button>' +
+      '<div class="mt-4 flex flex-wrap gap-2">' +
+        '<button data-pa-modify class="inline-flex items-center gap-2 px-3 py-2 text-[0.7rem] uppercase tracking-[0.22em] text-aspire-navy border border-aspire-navy/15 hover:border-aspire-navy">Modify '+paIcon('shuffle','w-3 h-3')+'</button>' +
+        '<button data-pa-cancel class="inline-flex items-center gap-2 px-3 py-2 text-[0.7rem] uppercase tracking-[0.22em] text-[#B05A47] border border-[#B05A47]/30 hover:border-[#B05A47]">Cancel '+paIcon('x','w-3 h-3')+'</button>' +
+      '</div>' +
     '</div>';
   }
 
@@ -4870,7 +5191,10 @@ window.addEventListener('hashchange', () => {
           '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m4 12 5 5L20 6"/></svg>',
           'Signed in as '+esc(display)+' &middot; '+esc(last4),
         '</span>',
-        '<button type="button" data-pa-signout class="text-[0.72rem] uppercase tracking-[0.22em] text-aspire-taupeDark underline underline-offset-4 hover:text-aspire-navy">Switch traveller</button>',
+        '<div class="flex items-center gap-4">',
+          paHistoryButtonMarkup(),
+          '<button type="button" data-pa-signout class="text-[0.72rem] uppercase tracking-[0.22em] text-aspire-taupeDark underline underline-offset-4 hover:text-aspire-navy">Switch traveller</button>',
+        '</div>',
       '</div>'
     ].join('');
   }
@@ -4893,6 +5217,125 @@ window.addEventListener('hashchange', () => {
       '</div>'
     ].join('');
   }
+
+  /* ---------- Live status timer ---------- */
+  // The confirmed overlay shows a live pipeline that advances every ~7s and a
+  // ready-by countdown derived from confirmedAt + prep*60s. The timer is torn
+  // down whenever the composer re-renders into a non-confirmed state.
+  var paLiveTimer = null;
+  function paStopLive() { if (paLiveTimer) { clearInterval(paLiveTimer); paLiveTimer = null; } }
+  function paStartLive() {
+    paStopLive();
+    if (!paState.confirmed || !paState.confirmed.confirmedAt) return;
+    paLiveTimer = setInterval(paTickLive, 1000);
+  }
+  function paTickLive() {
+    var c = paState.confirmed;
+    if (!c || !c.confirmedAt) { paStopLive(); return; }
+    var totalSec = Math.max(60, (c.prep || 12) * 60);
+    var elapsed = Math.floor((Date.now() - c.confirmedAt) / 1000);
+    var remaining = Math.max(0, totalSec - elapsed);
+    // Pipeline step ~ every (total/5) seconds, capped at last index.
+    var idx = Math.min(PA_PIPELINE_STEPS.length - 1, Math.floor(elapsed / Math.max(6, Math.floor(totalSec / PA_PIPELINE_STEPS.length))));
+    // Update DOM in place — avoid full re-render so user interaction isn't disrupted.
+    var pipelineHost = host.querySelector('[data-pa-live-pipeline]');
+    if (pipelineHost) pipelineHost.innerHTML = paPipelineMarkup(idx);
+    var cd = host.querySelector('[data-pa-countdown]');
+    if (cd) {
+      var mins = Math.floor(remaining / 60), secs = remaining % 60;
+      cd.textContent = remaining > 0 ? (mins + ' min ' + ('0'+secs).slice(-2) + ' s') : 'Ready';
+    }
+    var ready = host.querySelector('[data-pa-ready-state]');
+    if (remaining === 0 && ready) {
+      ready.classList.remove('hidden');
+      var hostLine = host.querySelector('[data-pa-ready-host]');
+      if (hostLine) hostLine.textContent = c.handoff || '—';
+      paStopLive();
+    }
+  }
+
+  /* ---------- History panel + receipt modal ---------- */
+  function paHistoryButtonMarkup() {
+    var count = paState.history.length;
+    if (!count) return '';
+    return '<button type="button" data-pa-history class="text-[0.72rem] uppercase tracking-[0.22em] text-aspire-taupeDark underline underline-offset-4 hover:text-aspire-navy">History · ' + count + '</button>';
+  }
+  function paHistoryPanelMarkup() {
+    if (!paState.showHistory) return '';
+    if (!paState.history.length) {
+      return '<div class="card-cream p-6 mb-8"><div class="swiss-eyebrow">Past Pre-Arrival orders</div><p class="mt-2 text-[0.88rem] text-aspire-taupe">No previous orders yet.</p></div>';
+    }
+    var rows = paState.history.slice().reverse().map(function(o){
+      var dt = new Date(o.confirmedAt || Date.now());
+      var dts = dt.toLocaleString('en-GB', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+      var items;
+      if (o.kind === 'bespoke') items = (o.ingredients || []).slice(0, 3).join(', ') || '—';
+      else {
+        var names = [];
+        ['starters','mains','desserts'].forEach(function(cat){
+          (o.selections && o.selections[cat] || []).forEach(function(id){ if (!id) return; var d = paDish(id); if (d) names.push(d.name); });
+        });
+        items = names.slice(0, 3).join(', ') || '—';
+      }
+      return '<div class="flex items-center justify-between gap-3 py-3 border-b border-aspire-navy/10 last:border-b-0">' +
+        '<div class="flex-1 min-w-0">' +
+          '<div class="text-[0.7rem] uppercase tracking-widest text-aspire-taupe">'+esc(dts)+' · '+esc((PA_TIER_META[o.tier]||{}).label || o.tier)+'</div>' +
+          '<div class="text-[0.92rem] text-aspire-navy truncate">'+esc(items)+'</div>' +
+          '<div class="text-[0.7rem] text-aspire-taupe tabular-nums mt-0.5">'+esc(o.ref)+'</div>' +
+        '</div>' +
+        '<button data-pa-view-receipt="'+esc(o.ref)+'" class="px-3 py-2 text-[0.7rem] uppercase tracking-[0.22em] text-aspire-navy border border-aspire-navy/15 hover:border-aspire-navy">View receipt</button>' +
+      '</div>';
+    }).join('');
+    return '<div class="card-cream p-6 mb-8">' +
+      '<div class="flex items-center justify-between mb-3">' +
+        '<div class="swiss-eyebrow">Past Pre-Arrival orders</div>' +
+        '<button type="button" data-pa-history-close class="text-[0.72rem] uppercase tracking-[0.22em] text-aspire-taupeDark hover:text-aspire-navy">Close</button>' +
+      '</div>' + rows +
+    '</div>';
+  }
+  function paReceiptMarkup(o) {
+    var dt = new Date(o.confirmedAt || Date.now());
+    var dts = dt.toLocaleString('en-GB', { weekday:'short', day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    var rows = '';
+    if (o.kind === 'bespoke') {
+      rows += '<div class="flex justify-between gap-3"><span class="text-aspire-taupe">Ingredients</span><span class="text-aspire-navy text-right max-w-[60%]">'+esc((o.ingredients||[]).join(', ') || '—')+'</span></div>';
+      rows += '<div class="flex justify-between gap-3"><span class="text-aspire-taupe">Pairing</span><span class="text-aspire-navy text-right">'+esc(o.pairing || '—')+'</span></div>';
+      if (o.chefNote) rows += '<div class="flex justify-between gap-3"><span class="text-aspire-taupe">Note</span><span class="text-aspire-navy text-right max-w-[60%]">'+esc(o.chefNote)+'</span></div>';
+    } else {
+      ['starters','mains','desserts'].forEach(function(cat){
+        var ids = (o.selections && o.selections[cat]) || [];
+        var names = ids.map(function(id){ var d = paDish(id); return d ? d.name : id; }).filter(Boolean);
+        if (names.length) rows += '<div class="flex justify-between gap-3"><span class="text-aspire-taupe capitalize">'+cat+'</span><span class="text-aspire-navy text-right max-w-[60%]">'+esc(names.join(', '))+'</span></div>';
+      });
+    }
+    return '<div class="font-medium tracking-[0.42em] text-base text-aspire-navy text-center">ASPIRE</div>' +
+      '<div class="swiss-eyebrow text-center mt-4">Pre-Arrival receipt</div>' +
+      '<div class="serif-heading text-2xl text-aspire-navy text-center mt-1">'+esc((PA_TIER_META[o.tier]||{}).label || o.tier)+'</div>' +
+      '<div class="text-[0.78rem] text-aspire-taupe text-center mt-1">'+esc(dts)+'</div>' +
+      '<div class="mt-5 p-4 bg-aspire-soft rounded-xl space-y-2 text-[0.85rem]">' +
+        '<div class="flex justify-between gap-3"><span class="text-aspire-taupe">Reference</span><span class="text-aspire-navy tabular-nums">'+esc(o.ref)+'</span></div>' +
+        '<div class="flex justify-between gap-3"><span class="text-aspire-taupe">Ready by</span><span class="text-aspire-navy">'+esc(o.time || '—')+'</span></div>' +
+        '<div class="flex justify-between gap-3"><span class="text-aspire-taupe">Handoff</span><span class="text-aspire-navy text-right max-w-[60%]">'+esc(o.handoff || '—')+'</span></div>' +
+        '<div class="pt-2 mt-2 border-t border-aspire-border space-y-1.5">' + rows + '</div>' +
+      '</div>' +
+      '<p class="mt-4 text-[0.72rem] text-aspire-taupe text-center italic">A copy of this receipt has been emailed to your traveller profile.</p>';
+  }
+  // Receipt modal is opened from the history panel — exposed globally for the
+  // delegated click handler (data-pa-view-receipt) and the Esc keybinding.
+  window.paOpenReceipt = function(ref) {
+    var o = paState.history.find(function(x){ return x.ref === ref; });
+    if (!o) return;
+    var body = document.getElementById('pa-receipt-body');
+    var modal = document.getElementById('pa-receipt-modal');
+    if (!body || !modal) return;
+    body.innerHTML = paReceiptMarkup(o);
+    modal.classList.remove('hidden'); modal.classList.add('flex');
+  };
+  window.paCloseReceipt = function() {
+    var modal = document.getElementById('pa-receipt-modal');
+    if (!modal) return;
+    modal.classList.add('hidden'); modal.classList.remove('flex');
+  };
 
   /* ---------- Top-level render ---------- */
   function paRender() {
@@ -4936,7 +5379,9 @@ window.addEventListener('hashchange', () => {
       else body = paPriveSectionMarkup();
     }
 
-    host.innerHTML = paAuthPillMarkup(auth) + hero + banner + confirmed + body;
+    host.innerHTML = paAuthPillMarkup(auth) + paHistoryPanelMarkup() + hero + banner + confirmed + body;
+    // Boot or tear down the live timer to match the confirmed state.
+    if (paState.confirmed && paState.confirmed.confirmedAt) paStartLive(); else paStopLive();
   }
 
   // Re-render entry exposed so pickLounge() can refresh the composer when
@@ -5074,7 +5519,7 @@ window.addEventListener('hashchange', () => {
 
   /* ---------- Event delegation ---------- */
   host.addEventListener('click', function(e){
-    var btn = e.target.closest('[data-pa-tier],[data-pa-size],[data-pa-combo],[data-pa-suite-combo],[data-pa-suite-mode],[data-pa-pairing],[data-pa-count-inc],[data-pa-count-dec],[data-pa-swap],[data-pa-detail],[data-pa-time],[data-pa-confirm],[data-pa-reset],[data-pa-ingredient],[data-pa-prive-pairing],[data-pa-mode],[data-pa-bespoke-send]');
+    var btn = e.target.closest('[data-pa-tier],[data-pa-size],[data-pa-combo],[data-pa-suite-combo],[data-pa-suite-mode],[data-pa-pairing],[data-pa-count-inc],[data-pa-count-dec],[data-pa-swap],[data-pa-detail],[data-pa-time],[data-pa-confirm],[data-pa-reset],[data-pa-modify],[data-pa-cancel],[data-pa-history],[data-pa-history-close],[data-pa-view-receipt],[data-pa-ingredient],[data-pa-prive-pairing],[data-pa-mode],[data-pa-bespoke-send]');
     if (!btn || btn.disabled) return;
 
     if (btn.hasAttribute('data-pa-tier')) {
@@ -5171,7 +5616,14 @@ window.addEventListener('hashchange', () => {
         ref: paGenerateRef(),
         tier: paState.tier,
         handoff: paHandoffCopy(),
+        confirmedAt: Date.now(),
+        draft: paSnapshotDraft(),
+        // Mirror the per-category dish IDs into the confirmed object so the
+        // receipt + history view can re-resolve names later.
+        selections: { starters: paState.selections.starters.slice(), mains: paState.selections.mains.slice(), desserts: paState.selections.desserts.slice() },
       };
+      paState.history.push(paState.confirmed);
+      paPersistHistory();
       paRender();
       host.scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
@@ -5192,15 +5644,70 @@ window.addEventListener('hashchange', () => {
         pairing: bev ? bev.label : null,
         chefNote: p.chefNote,
         mode: p.mode,
+        prep: paEffectivePrep(),
+        confirmedAt: Date.now(),
+        draft: paSnapshotDraft(),
       };
+      paState.history.push(paState.confirmed);
+      paPersistHistory();
       paRender();
       if (typeof host.scrollIntoView === 'function') host.scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
     }
-    if (btn.hasAttribute('data-pa-reset')) {
+    if (btn.hasAttribute('data-pa-modify')) {
+      // Reopen the composer pre-populated with the confirmed order's draft.
+      if (paState.confirmed && paState.confirmed.draft) paRestoreDraft(paState.confirmed.draft);
       paState.confirmed = null;
       paRender();
       host.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    if (btn.hasAttribute('data-pa-cancel')) {
+      // Hard cancel — flag the latest history entry as cancelled and reset
+      // the composer to defaults inside the current tier/lounge.
+      paStopLive();
+      if (paState.confirmed && paState.history.length) {
+        var lastIdx = paState.history.length - 1;
+        paState.history[lastIdx].cancelled = true;
+        paState.history[lastIdx].cancelledAt = Date.now();
+        paPersistHistory();
+      }
+      paState.confirmed = null;
+      paState.selections = { starters: [], mains: [], desserts: [] };
+      paState.suite.combo = 'voyager';
+      paState.suite.mode = 'curated';
+      paState.suite.pairing = null;
+      paState.suite.customizations = {};
+      paState.prive.ingredients = new Set();
+      paState.prive.pairing = null;
+      paState.prive.chefNote = '';
+      paApplySizeDefaults(true);
+      paState.schedule = '';
+      paState.note = '';
+      paRender();
+      host.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    if (btn.hasAttribute('data-pa-reset')) {
+      // "Compose another tray" — preserves selections so user can tweak.
+      paStopLive();
+      paState.confirmed = null;
+      paRender();
+      host.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    if (btn.hasAttribute('data-pa-history')) {
+      paState.showHistory = true;
+      paRender();
+      return;
+    }
+    if (btn.hasAttribute('data-pa-history-close')) {
+      paState.showHistory = false;
+      paRender();
+      return;
+    }
+    if (btn.hasAttribute('data-pa-view-receipt')) {
+      window.paOpenReceipt(btn.getAttribute('data-pa-view-receipt'));
       return;
     }
   });
@@ -5269,6 +5776,14 @@ window.addEventListener('hashchange', () => {
   // If view-menu is already active when this script runs, boot immediately.
   var menu = document.getElementById('view-menu');
   if (menu && menu.classList.contains('active')) window.paBoot();
+  // Stop the live status timer when the user navigates away from the menu
+  // view — the DOM nodes the ticker targets vanish, no point ticking.
+  if (menu) {
+    var paViewMo = new MutationObserver(function(){
+      if (!menu.classList.contains('active')) paStopLive();
+    });
+    paViewMo.observe(menu, { attributes: true, attributeFilter: ['class'] });
+  }
 })();
 
 /* =========================================================================
