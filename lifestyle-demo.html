@@ -7399,11 +7399,24 @@ window.addEventListener('hashchange', () => {
     coach.style.display = 'none';
   }
 
+  // ----------------------------------------------------------------
+  // Demo pacing — tuned to feel walked, not raced. Bump these to slow
+  // everything down further if needed.
+  // ----------------------------------------------------------------
+  var TIMING = {
+    afterClick: 700,      // pause after the user taps before the next coachmark appears
+    afterEnsureView: 250, // pause inside ensureView so view / sub-tab transitions settle
+    findTargetPoll: 150,  // how often findTarget re-checks for the next selector
+    initialBoot: 500      // pause after tier-picker before step 1 lights up
+  };
+
   function onTargetClick() {
     // advance() itself is guarded by advanceLock, so duplicate clicks are
-    // a no-op. setTimeout gives the original click handler (form submit,
-    // confirmBooking, finishPayment, …) a tick to run first.
-    setTimeout(advance, 80);
+    // a no-op. The delay gives the original click handler (form submit,
+    // confirmBooking, finishPayment, mb_show, paRender, …) time to run
+    // AND gives the user a beat to register what they just did before the
+    // next step lights up.
+    setTimeout(advance, TIMING.afterClick);
   }
 
   function ensureView(step) {
@@ -7427,7 +7440,7 @@ window.addEventListener('hashchange', () => {
         if (tab && !tab.classList.contains('active')) demoTrustedClick(tab);
       }, 60);
     }
-    return new Promise(function (res) { setTimeout(res, 100); });
+    return new Promise(function (res) { setTimeout(res, TIMING.afterEnsureView); });
   }
 
   function refreshJumpButtons(activeId) {
@@ -7444,10 +7457,10 @@ window.addEventListener('hashchange', () => {
     // Accept a hidden-by-parent element after several tries — pa-confirm and
     // pa-bespoke-send live behind the auth gate at first; the auth submit
     // handler swaps them in after ~700ms.
-    if (el && (el.offsetParent !== null || tries > 6)) return Promise.resolve(el);
-    if (tries > 80) return Promise.resolve(null);   // ~10 s
+    if (el && (el.offsetParent !== null || tries > 8)) return Promise.resolve(el);
+    if (tries > 100) return Promise.resolve(null);   // ~15 s
     return new Promise(function (res) {
-      setTimeout(function () { findTarget(step, tries + 1).then(res); }, 120);
+      setTimeout(function () { findTarget(step, tries + 1).then(res); }, TIMING.findTargetPoll);
     });
   }
 
@@ -7622,7 +7635,7 @@ window.addEventListener('hashchange', () => {
     configureLounge(tier);
     STEPS = buildSteps(tier);
     idx = 0;
-    setTimeout(runStep, 280);
+    setTimeout(runStep, TIMING.initialBoot);
   }
 
   Array.prototype.forEach.call(document.querySelectorAll('[data-demo-tier]'), function (btn) {
