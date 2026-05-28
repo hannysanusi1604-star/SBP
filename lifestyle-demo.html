@@ -7281,7 +7281,8 @@ window.addEventListener('hashchange', () => {
         title: 'Submit the preference',
         body: 'Communal pre-selected for the demo. Hosts assign a matching table the moment you arrive. Tap Submit preference.',
         selector: '#confirm-table-btn',
-        change: 'Communal seat shared',
+        change: 'Communal seat shared with the hosts',
+        milestone: true,
         onEnter: function () {
           try {
             state.verified = true;
@@ -7319,7 +7320,8 @@ window.addEventListener('hashchange', () => {
       selector: isLifestyle
         ? '#view-menu #menu-subnav [data-mb-go="dishes"]'
         : '#view-menu #menu-subnav [data-mb-go="pre-arrival"]',
-      change: isLifestyle ? "Today's dishes" : 'Pre-Arrival Dining open'
+      change: isLifestyle ? "Today's dishes" : 'Pre-Arrival Dining unlocked',
+      milestone: !isLifestyle
     };
 
     var lifestyleTail = [
@@ -7344,16 +7346,32 @@ window.addEventListener('hashchange', () => {
       {
         view: 'menu', menuSub: 'dietary',
         eyebrow: 'Dietary guide',
+        title: 'Open Partnerships',
+        body: 'Every dietary need mapped to dishes — no asking, no surprises. Now meet the airline and lounge-network partners.',
+        selector: '#view-menu #menu-subnav [data-mb-go="partners"]',
+        change: 'Partnerships open'
+      },
+      {
+        view: 'menu', menuSub: 'partners',
+        eyebrow: 'Partnerships',
         title: 'See the sourcing story',
-        body: 'Every dietary need mapped to dishes — no asking, no surprises. Now meet the producers.',
+        body: 'Priority Pass, the airline alliances, the loyalty programmes that gate access. Now meet the producers behind the food.',
         selector: '#view-menu #menu-subnav [data-mb-go="about"]',
         change: 'Sourcing open'
       },
       {
         view: 'menu', menuSub: 'about',
         eyebrow: 'Local sourcing',
+        title: 'Open Feedback',
+        body: 'Where every ingredient comes from, who made it. Now: tell the lounge what worked and what could improve.',
+        selector: '#view-menu #menu-subnav [data-mb-go="feedback"]',
+        change: 'Feedback open'
+      },
+      {
+        view: 'menu', menuSub: 'feedback',
+        eyebrow: 'Feedback',
         title: "See today's queue",
-        body: 'Where the ingredients come from, who made them. Tap Continue to see the walk-in queue.',
+        body: 'Star-rate dishes, leave a note for the chef, request a follow-up. Tap Continue to see the walk-in queue.',
         selector: '#dm-jump-queue',
         change: 'Walk-in queue open'
       },
@@ -7364,6 +7382,7 @@ window.addEventListener('hashchange', () => {
         body: "The Lifestyle floor is full. Aspire offers the traveller a live upsell — move up to Luxe where seats are free right now. Tap Upgrade to Luxe.",
         selector: '#view-queue [class*="border-aspire-navy/40"] button.btn-primary',
         change: 'Luxe upgrade flow opened',
+        milestone: true,
         onEnter: function () {
           try {
             state.booking.upgradeTier = null;
@@ -7379,6 +7398,7 @@ window.addEventListener('hashchange', () => {
         body: "Same 700-ms check that gates the lounge. Name and pass pre-filled — tap Verify access.",
         selector: '#up-v-btn',
         change: 'Access verified',
+        milestone: true,
         onEnter: function () {
           setTimeout(function () {
             var nm = document.getElementById('up-v-name');
