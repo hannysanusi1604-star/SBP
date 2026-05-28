@@ -1853,6 +1853,42 @@ const LUXE_PROFILE = {
   location: 'Adjacent to Lifestyle · 2 min walk',
 };
 
+/* ----------------------- TIER MODEL ----------------------- */
+// Hierarchy of upgradeable tiers. Each lounge sits in one of these; the queue
+// "upgrade" CTA always offers the next tier up (or nothing, if already at top).
+const TIER_ORDER = ['lifestyle', 'luxe', 'suite', 'prive'];
+// Premium multiplier over the Lifestyle base price for each tier's full ticket.
+// An upgrade charges only the differential (to-mult minus from-mult).
+const TIER_MULTIPLIER = { lifestyle: 1.00, luxe: 1.70, suite: 2.20, prive: 3.20 };
+// Per-tier profile (name + amenities + tagline + location) used by the queue
+// upgrade card and the pay-modal copy. LUXE_PROFILE stays as the canonical
+// Luxe entry so existing receipt code that still references it keeps working.
+const TIER_PROFILES = {
+  luxe: LUXE_PROFILE,
+  suite: {
+    name: 'Suite by Aspire',
+    tagline: 'A composed suite, a curated tray',
+    amenities: [
+      'Dedicated host',
+      'Private tray service',
+      'Sommelier pairing',
+      'Quiet zone seating',
+    ],
+    location: 'Non-Schengen pier · 4 min walk',
+  },
+  prive: {
+    name: 'Privé by Aspire',
+    tagline: 'A bespoke menu, written for you',
+    amenities: [
+      'Private nook seating',
+      'Bespoke chef plate',
+      'Hot-towel ritual',
+      'Fine porcelain service',
+    ],
+    location: 'Terminal 2 · 6 min walk',
+  },
+};
+
 const STANDARD_AMENITIES = [
   'Free WiFi',
   'Charging points',
@@ -1867,13 +1903,34 @@ function seedHash(s) {
   return Math.abs(h);
 }
 
-/* ----------------------- LUXE UPGRADE HELPERS ----------------------- */
+/* ----------------------- TIER UPGRADE HELPERS ----------------------- */
+function nextTier(t) {
+  const i = TIER_ORDER.indexOf(t);
+  return (i >= 0 && i < TIER_ORDER.length - 1) ? TIER_ORDER[i + 1] : null;
+}
+function tierUpgradeFee(basePrice, from, to) {
+  const fromMult = TIER_MULTIPLIER[from] || 1;
+  const toMult   = TIER_MULTIPLIER[to]   || 1;
+  return Math.max(0, Math.round(basePrice * (toMult - fromMult)));
+}
+function tierSeatsRemaining(t) {
+  if (t === 'luxe')  return Math.max(0, state.luxe.totalCapacity  - state.luxe.seatsTaken);
+  if (t === 'suite') return Math.max(0, state.suite.totalCapacity - state.suite.seatsTaken);
+  if (t === 'prive') return Math.max(0, state.prive.totalCapacity - state.prive.seatsTaken);
+  return 0;
+}
+function tierCapacityBucket(t) {
+  if (t === 'luxe')  return state.luxe;
+  if (t === 'suite') return state.suite;
+  if (t === 'prive') return state.prive;
+  return null;
+}
+// Backwards-compatible shims so older call sites keep working.
 function calculateLuxeUpgradeFee(basePrice) {
-  // Luxe tier differential — fixed 70% premium on the Lifestyle base, rounded
-  return Math.round(basePrice * 0.7);
+  return tierUpgradeFee(basePrice, 'lifestyle', 'luxe');
 }
 function getLuxeSeatsRemaining() {
-  return Math.max(0, state.luxe.totalCapacity - state.luxe.seatsTaken);
+  return tierSeatsRemaining('luxe');
 }
 /* ----------------------- ADVANCE-BOOKING DEPOSIT HELPERS ----------------------- */
 function requiresDeposit(booking) {
@@ -1923,17 +1980,27 @@ function depositGraceTime(arrivalStr) {
   return `${String(eh).padStart(2,'0')}:${String(em).padStart(2,'0')}`;
 }
 
-function canOfferLuxeUpgrade() {
-  // The upgrade is a Lifestyle-tier concept — guests already in Suite/Privé/Luxe
-  // lounges should never see the "Upgrade to Luxe" CTA.
-  const tier = currentLoungeTier();
-  if (tier && tier !== 'lifestyle') return { offered: false, reason: 'tier-incompatible', remaining: getLuxeSeatsRemaining() };
-  // Only offered when the Lifestyle lounge tables are full — derived from queue depth
+function canOfferTierUpgrade() {
+  // Offer an upgrade to the next tier up from the current lounge, provided
+  // the current lounge is full (queue has at least one waiter) and the
+  // target tier still has seats.
+  const from = currentLoungeTier();
+  const to = nextTier(from);
+  if (!to) return { offered: false, reason: 'top-tier', from };
   const tablesFull = state.queue.length > 0;
-  if (!tablesFull) return { offered: false, reason: 'tables-available', remaining: getLuxeSeatsRemaining() };
-  const remaining = getLuxeSeatsRemaining();
-  if (remaining <= 0) return { offered: false, reason: 'luxe-full', remaining: 0 };
-  return { offered: true, remaining };
+  if (!tablesFull) return { offered: false, reason: 'tables-available', from, to, remaining: tierSeatsRemaining(to) };
+  const remaining = tierSeatsRemaining(to);
+  if (remaining <= 0) return { offered: false, reason: 'tier-full', from, to, remaining: 0 };
+  return { offered: true, from, to, remaining };
+}
+// Back-compat shim: only ever yields a meaningful "offered" for Lifestyle→Luxe.
+function canOfferLuxeUpgrade() {
+  const tier = currentLoungeTier();
+  if (tier !== 'lifestyle') return { offered: false, reason: 'tier-incompatible', remaining: tierSeatsRemaining('luxe') };
+  const r = canOfferTierUpgrade();
+  // Preserve the old `luxe-full` reason name for any external callers.
+  if (!r.offered && r.reason === 'tier-full') return { offered: false, reason: 'luxe-full', remaining: 0 };
+  return r;
 }
 
 function currentLoungeTier() {
@@ -2048,11 +2115,20 @@ const state = {
     preferredZone: null,    // customer's preferred zone (assigned by hosts, not picked)
     assignedTable: null,    // table assigned on arrival
     slot: null,
-    luxeUpgrade: false,     // upgraded to the higher-tier Aspire Luxe Lounge
+    luxeUpgrade: false,     // legacy boolean — kept in sync with upgradeTier === 'luxe'
+    upgradeTier: null,      // 'luxe' | 'suite' | 'prive' — the tier the guest upgraded to
   },
   luxe: {
     totalCapacity: 20,      // seats in the Aspire Luxe Lounge
     seatsTaken: 8,          // simulated current Luxe occupancy
+  },
+  suite: {
+    totalCapacity: 14,      // seats in the Suite by Aspire
+    seatsTaken: 4,
+  },
+  prive: {
+    totalCapacity: 6,       // seats in the Privé by Aspire
+    seatsTaken: 2,
   },
   step: 1,
   payMethod: 'pass',
@@ -2265,8 +2341,9 @@ function pickLounge(net, region) {
   let entry = LOUNGES.find(x => x.id === profile.id);
   if (!entry) { LOUNGES.push(profile); entry = profile; }
   state.booking.loungeId = entry.id;
-  // Luxe upgrade is anchored to a specific Lifestyle lounge's queue + price — reset on change
+  // Tier upgrade is anchored to a specific lounge's queue + price — reset on change
   state.booking.luxeUpgrade = false;
+  state.booking.upgradeTier = null;
   // Floor plans and zones are lounge-specific — drop the prior selection so the
   // summary, dashboard and step 4 right rail don't carry stale seating into the
   // newly-chosen lounge.
@@ -2572,8 +2649,13 @@ function bookingSummaryHTML() {
   const guestsTotal = state.booking.guests.adults + state.booking.guests.children;
   const memberLabel = (MEMBERSHIPS.find(m => m.id === state.booking.membership) || {}).label || '—';
   const isPass = state.booking.membership !== 'pay';
-  const hasLuxe = !!state.booking.luxeUpgrade;
-  const luxeFee = hasLuxe ? calculateLuxeUpgradeFee(l.priceFrom) : 0;
+  const upgradeTier = state.booking.upgradeTier || (state.booking.luxeUpgrade ? 'luxe' : null);
+  const hasUpgrade = !!upgradeTier;
+  const fromTier = currentLoungeTier();
+  const upgradeFee = hasUpgrade ? tierUpgradeFee(l.priceFrom, fromTier, upgradeTier) : 0;
+  const upgradeLabel = hasUpgrade ? TIER_LABELS[upgradeTier] : '';
+  const upgradeProfileName = hasUpgrade ? TIER_PROFILES[upgradeTier].name : '';
+  const fromTierLabel = TIER_LABELS[fromTier] || 'Lifestyle';
   const isAdvance = requiresDeposit(state.booking);
   const deposit = isAdvance ? calculateDeposit(l) : 0;
   const hasSeatLock = requiresSeatLock(state.booking);
@@ -2582,11 +2664,11 @@ function bookingSummaryHTML() {
   let seating = state.booking.preferredZone
     ? `${ZONE_META[state.booking.preferredZone].label} reserved · table held`
     : 'No preference · seat assigned on arrival';
-  const accessTypeLabel = hasLuxe
-    ? `<span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-aspire-navy"></span>Luxe upgrade</span>`
-    : 'Lifestyle';
-  const queueStatus = hasLuxe
-    ? `<span class="text-emerald-700">Luxe — proceed direct</span>`
+  const accessTypeLabel = hasUpgrade
+    ? `<span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-aspire-navy"></span>${upgradeLabel} upgrade</span>`
+    : fromTierLabel;
+  const queueStatus = hasUpgrade
+    ? `<span class="text-emerald-700">${upgradeLabel} — proceed direct</span>`
     : (state.confirmed ? 'Confirmed' : 'Waiting');
   const fields = [
     ['Airport', l.airport],
@@ -2611,7 +2693,15 @@ function bookingSummaryHTML() {
     ? `<div class="flex items-start justify-between gap-3"><span class="text-navy-500">Seat reservation fee <span class="block text-[0.72rem] text-navy-500/70">locks your ${ZONE_META[state.booking.preferredZone].label}</span></span><span class="text-aspire-navy tabular-nums whitespace-nowrap">${l.currency} ${seatLock}</span></div>`
     : '';
 
-  // Price block depends on (pass vs direct payment) × (with vs without Luxe upgrade) × (same-day vs advance)
+  // Price block depends on (pass vs direct payment) × (with vs without tier upgrade) × (same-day vs advance)
+  // `hasLuxe` / `luxeFee` are derived aliases of `hasUpgrade` / `upgradeFee` so the existing
+  // branches keep reading naturally — but the row labels now reflect whichever tier was picked.
+  const hasLuxe = hasUpgrade;
+  const luxeFee = upgradeFee;
+  // Receipt row label, e.g. "Aspire Luxe upgrade", "Aspire Suite upgrade", "Aspire Privé upgrade"
+  const upgradeRowLabel = hasUpgrade ? `Aspire ${upgradeLabel} upgrade` : '';
+  // Origin tier row label, e.g. "Lifestyle entry", "Luxe entry", "Suite entry"
+  const fromEntryLabel = `${fromTierLabel} entry`;
   let priceBlock = '<div class="hairline my-7"></div>';
   if (isPass && !hasLuxe && !isAdvance) {
     // Pass holder, same day — no charge at all
@@ -2639,8 +2729,8 @@ function bookingSummaryHTML() {
     const totalDue = luxeFee + deposit + seatLock;
     priceBlock += `
        <div class="space-y-2 text-[0.95rem]">
-         <div class="flex items-center justify-between"><span class="text-navy-500">Lifestyle entry</span><span class="text-aspire-navy inline-flex items-center gap-1.5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 12 5 5L20 6"/></svg>Included</span></div>
-         ${row('Aspire Luxe upgrade', l.currency + ' ' + luxeFee)}
+         <div class="flex items-center justify-between"><span class="text-navy-500">${fromEntryLabel}</span><span class="text-aspire-navy inline-flex items-center gap-1.5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 12 5 5L20 6"/></svg>Included</span></div>
+         ${row(upgradeRowLabel, l.currency + ' ' + luxeFee)}
          ${depositRow}
          ${seatLockRow}
          <div class="flex items-center justify-between pt-2 mt-2 border-t border-aspire-border"><span class="serif-heading text-lg text-aspire-navy">Total to pay</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums">${l.currency} ${totalDue}</span></div>
@@ -2666,7 +2756,7 @@ function bookingSummaryHTML() {
     const total = entry + seatLock;
     priceBlock += `
        <div class="space-y-2 text-[0.95rem]">
-         ${row('Lifestyle entry' + (guestsTotal > 1 ? ' × ' + guestsTotal : ''), l.currency + ' ' + entry.toFixed(2))}
+         ${row(fromEntryLabel + (guestsTotal > 1 ? ' × ' + guestsTotal : ''), l.currency + ' ' + entry.toFixed(2))}
          ${seatLockRow}
          <div class="flex items-center justify-between"><span class="text-navy-500">Acts as refundable deposit<span class="block text-[0.72rem] text-navy-500/70">refunded if you check in by ${graceTime}</span></span><span class="text-aspire-navy tabular-nums">—</span></div>
          <div class="flex items-center justify-between pt-2 mt-2 border-t border-aspire-border"><span class="serif-heading text-lg text-aspire-navy">Total</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums">${l.currency} ${total.toFixed(2)}</span></div>
@@ -2677,8 +2767,8 @@ function bookingSummaryHTML() {
     const total = luxeFee + deposit + seatLock;
     priceBlock += `
        <div class="space-y-2 text-[0.95rem]">
-         <div class="flex items-center justify-between"><span class="text-navy-500">Lifestyle entry${guestsTotal > 1 ? ' × ' + guestsTotal : ''}</span><span class="text-aspire-navy inline-flex items-center gap-1.5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 12 5 5L20 6"/></svg>Included</span></div>
-         ${row('Aspire Luxe upgrade', l.currency + ' ' + luxeFee)}
+         <div class="flex items-center justify-between"><span class="text-navy-500">${fromEntryLabel}${guestsTotal > 1 ? ' × ' + guestsTotal : ''}</span><span class="text-aspire-navy inline-flex items-center gap-1.5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 12 5 5L20 6"/></svg>Included</span></div>
+         ${row(upgradeRowLabel, l.currency + ' ' + luxeFee)}
          ${depositRow}
          ${seatLockRow}
          <div class="flex items-center justify-between pt-2 mt-2 border-t border-aspire-border"><span class="serif-heading text-lg text-aspire-navy">Total to pay</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums">${l.currency} ${total.toFixed(2)}</span></div>
@@ -2723,10 +2813,15 @@ const PASS_FIELD_PLACEHOLDER = {
 
 function renderStep4() {
   const isPass = state.booking.membership !== 'pay';
-  const hasLuxe = !!state.booking.luxeUpgrade;
+  const upgradeTier = state.booking.upgradeTier || (state.booking.luxeUpgrade ? 'luxe' : null);
+  const hasLuxe = !!upgradeTier;
+  const hasUpgrade = hasLuxe;
+  const upgradeLabel = hasUpgrade ? TIER_LABELS[upgradeTier] : '';
+  const fromTier = currentLoungeTier();
+  const fromTierLabel = TIER_LABELS[fromTier] || 'Lifestyle';
   const isAdvance = requiresDeposit(state.booking);
   const l = lounge();
-  const luxeFee = hasLuxe ? calculateLuxeUpgradeFee(l.priceFrom) : 0;
+  const luxeFee = hasUpgrade ? tierUpgradeFee(l.priceFrom, fromTier, upgradeTier) : 0;
   const deposit = isAdvance ? calculateDeposit(l) : 0;
   const seatLock = requiresSeatLock(state.booking) ? calculateSeatLockFee(l) : 0;
   // Pass holders need a card whenever there is anything to charge (Luxe upgrade and/or deposit)
@@ -2752,15 +2847,15 @@ function renderStep4() {
       ? `Reservation held · cancel free by ${formatCancellationDeadline(state.booking)}`
       : `Reservation · non-refundable · ${l.currency} ${deposit + seatLock}`;
   } else if (isPass && hasLuxe) {
-    $('#pay-section-title').textContent = 'Confirm access & pay Luxe upgrade';
+    $('#pay-section-title').textContent = `Confirm access & pay ${upgradeLabel} upgrade`;
     $('#pay-section-badge').textContent = isAdvance
-      ? `Luxe upgrade + reservation · ${l.currency} ${luxeFee + deposit + seatLock}`
-      : `Luxe upgrade only · ${l.currency} ${luxeFee}`;
+      ? `${upgradeLabel} upgrade + reservation · ${l.currency} ${luxeFee + deposit + seatLock}`
+      : `${upgradeLabel} upgrade only · ${l.currency} ${luxeFee}`;
   } else {
     $('#pay-section-title').textContent = 'Payment method';
     $('#pay-section-badge').textContent = hasLuxe
-      ? (isAdvance ? 'Lifestyle entry (refundable) + Luxe upgrade' : 'Lifestyle entry + Luxe upgrade')
-      : (isAdvance ? 'Lifestyle entry · refundable on check-in' : 'Secure · 3DS');
+      ? (isAdvance ? `${fromTierLabel} entry (refundable) + ${upgradeLabel} upgrade` : `${fromTierLabel} entry + ${upgradeLabel} upgrade`)
+      : (isAdvance ? `${fromTierLabel} entry · refundable on check-in` : 'Secure · 3DS');
   }
 
   // Hide every panel, then show whatever this combination needs
@@ -2833,8 +2928,12 @@ function renderStep4() {
   else                                       cta = 'Confirm and pay';
   $('#confirm-btn').innerHTML = cta + ' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m9 6 6 6-6 6"/></svg>';
 }
-function upgradeToLuxe() {
-  state.booking.luxeUpgrade = true;
+function upgradeToTier(toTier) {
+  // Mark the upgrade target. Keep `luxeUpgrade` in sync as a derived boolean so
+  // any legacy code path that still reads it (receipt, dashboard banner) keeps
+  // working for the Lifestyle→Luxe case.
+  state.booking.upgradeTier = toTier;
+  state.booking.luxeUpgrade = (toTier === 'luxe');
   // Carry over verified pass type when available so the receipt lands in the right mode
   if (state.verified && state.verification.type) {
     state.booking.membership = state.verification.type;
@@ -2843,12 +2942,22 @@ function upgradeToLuxe() {
   // instead of walking the user back through the booking flow.
   confirmBooking();
 }
+// Back-compat: the queue card used to call this directly.
+function upgradeToLuxe() { upgradeToTier('luxe'); }
 
 function confirmBooking() {
   const l = lounge();
   const guestsTotal = state.booking.guests.adults + state.booking.guests.children;
   const usingPass = state.booking.membership !== 'pay';
-  const hasLuxe = !!state.booking.luxeUpgrade;
+  const upgradeTier = state.booking.upgradeTier || (state.booking.luxeUpgrade ? 'luxe' : null);
+  const hasLuxe = !!upgradeTier;
+  const hasUpgrade = hasLuxe;
+  const upgradeLabel = hasUpgrade ? TIER_LABELS[upgradeTier] : '';
+  const upgradeProfile = hasUpgrade ? TIER_PROFILES[upgradeTier] : null;
+  const fromTier = currentLoungeTier();
+  const fromTierLabel = TIER_LABELS[fromTier] || 'Lifestyle';
+  const fromEntryLabel = `${fromTierLabel} entry`;
+  const upgradeRowLabel = hasUpgrade ? `Aspire ${upgradeLabel} upgrade` : '';
   const isAdvance = requiresDeposit(state.booking);
   const deposit = isAdvance ? calculateDeposit(l) : 0;
   const hasSeatLock = requiresSeatLock(state.booking);
@@ -2862,8 +2971,8 @@ function confirmBooking() {
     : 'Card';
   const refDate = formatDate(state.booking.date);
   const accessUntil = endTime(state.booking.arrivalTime);
-  const luxeFee = hasLuxe ? calculateLuxeUpgradeFee(l.priceFrom) : 0;
-  // Lifestyle entry is sunk once the user has accepted a Luxe upgrade — no double-charge.
+  const luxeFee = hasUpgrade ? tierUpgradeFee(l.priceFrom, fromTier, upgradeTier) : 0;
+  // Origin-tier entry is sunk once the user has accepted an upgrade — no double-charge.
   const entryAmount = (usingPass || hasLuxe) ? 0 : l.priceFrom * Math.max(1, guestsTotal);
   const passDepositAmount = isAdvance ? deposit : 0;
   const totalAmount = entryAmount + luxeFee + passDepositAmount + seatLock;
@@ -2873,17 +2982,17 @@ function confirmBooking() {
   $('#pay-stage-processing').classList.remove('hidden');
   $('#pay-stage-success').classList.add('hidden');
 
-  // Processing copy adapts to method + Luxe
+  // Processing copy adapts to method + upgrade target tier
   const proc = $('#pay-stage-processing');
   const procHeading = proc.querySelector('.serif-heading');
   if (procHeading) {
     procHeading.textContent = hasLuxe
-      ? 'Confirming Luxe upgrade…'
+      ? `Confirming ${upgradeLabel} upgrade…`
       : usingPass ? `Verifying your ${passLabel.toLowerCase()}…` : 'Processing your payment…';
   }
   const procBlurb = proc.querySelector('p');
   if (procBlurb) procBlurb.textContent = hasLuxe
-    ? "Please don't refresh the page. We're securing your seat at the Aspire Luxe Lounge and verifying your details."
+    ? `Please don't refresh the page. We're securing your seat at the ${upgradeProfile.name} and verifying your details.`
     : usingPass
     ? "Please don't refresh the page. We're confirming your pass with the provider — this normally takes a few seconds."
     : "Please don't refresh the page. We're confirming with your bank — this normally takes a few seconds.";
@@ -2894,8 +3003,8 @@ function confirmBooking() {
 
     // Headline on the success screen
     let headline;
-    if (hasLuxe && usingPass)            headline = `Luxe upgrade confirmed · ${l.currency} ${(luxeFee + passDepositAmount + seatLock)} charged`;
-    else if (hasLuxe && !usingPass)      headline = `Luxe upgrade confirmed · ${l.currency} ${totalAmount.toFixed(2)} charged`;
+    if (hasLuxe && usingPass)            headline = `${upgradeLabel} upgrade confirmed · ${l.currency} ${(luxeFee + passDepositAmount + seatLock)} charged`;
+    else if (hasLuxe && !usingPass)      headline = `${upgradeLabel} upgrade confirmed · ${l.currency} ${totalAmount.toFixed(2)} charged`;
     else if (usingPass && isAdvance)     headline = `Reservation held · ${l.currency} ${deposit + seatLock}`;
     else if (usingPass)                  headline = 'Booking confirmed';
     else                                 headline = `${l.currency} ${totalAmount.toFixed(2)} charged`;
@@ -2904,20 +3013,20 @@ function confirmBooking() {
     // Receipt
     const rows = [
       ['Reference', `<span class="tabular-nums">${state.bookingRef}</span>`],
-      ['Lounge',    hasLuxe ? `${LUXE_PROFILE.name} · ${l.city}` : l.name],
+      ['Lounge',    hasLuxe ? `${upgradeProfile.name} · ${l.city}` : l.name],
       ['Date',      refDate],
       ['Arrival',   state.booking.arrivalTime],
       ['Lounge access', `3 hours · until ${accessUntil}`],
       ['Guests',    String(guestsTotal)],
-      ['Access type', hasLuxe ? '<span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-aspire-navy"></span>Aspire Luxe · proceed direct</span>' : 'Lifestyle'],
+      ['Access type', hasLuxe ? `<span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-aspire-navy"></span>Aspire ${upgradeLabel} · proceed direct</span>` : fromTierLabel],
       [usingPass ? 'Pass on file' : 'Method', usingPass ? `${passLabel}${passNum ? ' •• ' + passNum.slice(-4) : ''}` : cardLabel],
     ];
     if (hasLuxe && usingPass) {
-      rows.push(['Lifestyle entry', '<span class="inline-flex items-center gap-1.5"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 12 5 5L20 6"/></svg>Included</span>']);
-      rows.push(['Aspire Luxe upgrade', `${l.currency} ${luxeFee}`]);
+      rows.push([fromEntryLabel, '<span class="inline-flex items-center gap-1.5"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 12 5 5L20 6"/></svg>Included</span>']);
+      rows.push([upgradeRowLabel, `${l.currency} ${luxeFee}`]);
     } else if (hasLuxe && !usingPass) {
-      rows.push(['Lifestyle entry', '<span class="inline-flex items-center gap-1.5"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 12 5 5L20 6"/></svg>Included</span>']);
-      rows.push(['Aspire Luxe upgrade', `${l.currency} ${luxeFee}`]);
+      rows.push([fromEntryLabel, '<span class="inline-flex items-center gap-1.5"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 12 5 5L20 6"/></svg>Included</span>']);
+      rows.push([upgradeRowLabel, `${l.currency} ${luxeFee}`]);
     } else if (!usingPass) {
       rows.push(['Amount', `${l.currency} ${entryAmount.toFixed(2)}`]);
     }
@@ -2950,8 +3059,11 @@ function confirmBooking() {
     ).join('');
 
     state.confirmed = true;
-    // Decrement the simulated Luxe capacity when an upgrade is taken
-    if (hasLuxe) state.luxe.seatsTaken += 1;
+    // Decrement the simulated target-tier capacity when an upgrade is taken
+    if (hasUpgrade) {
+      const bucket = tierCapacityBucket(upgradeTier);
+      if (bucket) bucket.seatsTaken += 1;
+    }
   }, 2200);
 }
 function finishPayment() {
@@ -3017,6 +3129,7 @@ function cancelReservation() {
   state.confirmed = false;
   state.booking.preferredZone = null;
   state.booking.luxeUpgrade = false;
+  state.booking.upgradeTier = null;
   state.payMethod = null;
   closeCancelModal();
   renderDashboard();
@@ -3329,27 +3442,28 @@ function renderQueue() {
   const myIdx = state.joined ? state.queue.findIndex(e => e.id === state.joined.id) : -1;
   const ahead = myIdx >= 0 ? myIdx : state.queue.length;
   const l = lounge();
-  const luxe = canOfferLuxeUpgrade();
-  const luxeFee = calculateLuxeUpgradeFee(l.priceFrom);
-  const hasLuxe = state.confirmed && state.booking.luxeUpgrade;
+  const offer = canOfferTierUpgrade();
+  const currentTierLabel = TIER_LABELS[currentLoungeTier()] || 'Lifestyle';
+  const upgradedTo = state.confirmed ? state.booking.upgradeTier : null;
+  const upgradedProfile = upgradedTo ? TIER_PROFILES[upgradedTo] : null;
+  const upgradeFee = offer.offered ? tierUpgradeFee(l.priceFrom, offer.from, offer.to) : 0;
 
-  // Confirmed Luxe upgrade — supersedes the queue counter
-  if (hasLuxe) {
+  // Confirmed tier upgrade — supersedes the queue counter
+  if (upgradedTo && upgradedProfile) {
     list.append(el('div', { class:'card-aspire p-6 sm:p-8 flex items-start gap-4' },
       el('span', { class:'h-11 w-11 rounded-full bg-aspire-navy text-white flex items-center justify-center flex-shrink-0', html:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m4 12 5 5L20 6"/></svg>' }),
       el('div', {},
-        el('div', { class:'swiss-eyebrow text-aspire-navy/70' }, 'Luxe upgrade · confirmed'),
-        el('div', { class:'serif-heading text-2xl sm:text-3xl text-aspire-navy mt-1' }, `You may proceed directly to the ${LUXE_PROFILE.name}.`),
-        el('div', { class:'text-[0.92rem] text-aspire-navy/80 mt-2' }, `Your 3-hour access window will start when you check in. ${LUXE_PROFILE.location}.`)
+        el('div', { class:'swiss-eyebrow text-aspire-navy/70' }, `${TIER_LABELS[upgradedTo]} upgrade · confirmed`),
+        el('div', { class:'serif-heading text-2xl sm:text-3xl text-aspire-navy mt-1' }, `You may proceed directly to the ${upgradedProfile.name}.`),
+        el('div', { class:'text-[0.92rem] text-aspire-navy/80 mt-2' }, `Your 3-hour access window will start when you check in. ${upgradedProfile.location}.`)
       )
     ));
   } else {
-    // Pair the queue counter with the Luxe upgrade card whenever the Lifestyle tables are full
-    const showsLuxe = luxe.offered || luxe.reason === 'luxe-full';
-    const grid = el('div', { class: showsLuxe ? 'grid grid-cols-1 lg:grid-cols-2 gap-3' : '' });
+    const showsUpgrade = offer.offered || offer.reason === 'tier-full';
+    const grid = el('div', { class: showsUpgrade ? 'grid grid-cols-1 lg:grid-cols-2 gap-3' : '' });
     grid.append(el('div', { class:'card-aspire p-6 sm:p-8 text-center flex flex-col' },
       el('div', { class:'-mx-6 sm:-mx-8 -mt-6 sm:-mt-8 mb-5 overflow-hidden', html:`<img src="https://i.postimg.cc/pT8GJ0Jh/macbook-hd-wallpaper.png" alt="${l.name}" class="w-full h-40 object-cover" />` }),
-      el('div', { class:'swiss-eyebrow text-aspire-navy' }, `${l.name} · Lifestyle queue`),
+      el('div', { class:'swiss-eyebrow text-aspire-navy' }, `${l.name} · ${currentTierLabel} queue`),
       el('div', { class:'swiss-eyebrow text-aspire-navy/70 mt-4' }, state.joined ? 'Guests ahead of you' : 'People currently waiting'),
       el('div', { class:'serif-heading text-6xl sm:text-7xl text-aspire-navy mt-2 tabular-nums' }, String(ahead)),
       el('div', { class:'text-aspire-navy/80 mt-2' }, ahead === 1 ? 'guest' : 'guests'),
@@ -3359,42 +3473,45 @@ function renderQueue() {
       )
     ));
 
-    if (luxe.offered) {
-      // Lifestyle tables full — offer the Luxe tier alternative
+    if (offer.offered) {
+      const toProfile = TIER_PROFILES[offer.to];
+      const toLabel = TIER_LABELS[offer.to];
       const benefitsGrid = el('div', { class:'grid grid-cols-2 gap-2 mt-4' });
-      LUXE_PROFILE.amenities.slice(0, 4).forEach(a => {
+      toProfile.amenities.slice(0, 4).forEach(a => {
         benefitsGrid.append(el('div', { class:'flex items-start gap-2 text-[0.78rem] text-aspire-navy/85' },
           el('span', { class:'mt-0.5 h-4 w-4 rounded-full bg-aspire-navy text-white flex items-center justify-center flex-shrink-0', html:'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5L20 6"/></svg>' }),
           el('span', {}, a)
         ));
       });
       grid.append(el('div', { class:'card-cream p-6 sm:p-8 border-aspire-navy/40 flex flex-col' },
-        el('div', { class:'-mx-6 sm:-mx-8 -mt-6 sm:-mt-8 mb-5 overflow-hidden', html:`<img src="https://i.postimg.cc/L4W51N0f/macbook-hd-wallpaper-2.png" alt="Aspire Luxe Lounge" class="w-full h-40 object-cover" />` }),
+        el('div', { class:'-mx-6 sm:-mx-8 -mt-6 sm:-mt-8 mb-5 overflow-hidden', html:`<img src="https://i.postimg.cc/L4W51N0f/macbook-hd-wallpaper-2.png" alt="${toProfile.name}" class="w-full h-40 object-cover" />` }),
         el('div', { class:'flex items-start justify-between gap-3' },
           el('div', {},
-            el('div', { class:'swiss-eyebrow text-aspire-navy' }, `${LUXE_PROFILE.name} · seats available now`),
-            el('div', { class:'serif-heading text-2xl text-aspire-navy mt-1' }, 'Elevate to Luxe — immediate access'),
-            el('p', { class:'text-[0.88rem] text-navy-500 mt-2 leading-relaxed' }, `Lifestyle is at capacity. Continue in the queue, or move up to the ${LUXE_PROFILE.name} where space is available now and the experience is more refined.`)
+            el('div', { class:'swiss-eyebrow text-aspire-navy' }, `${toProfile.name} · seats available now`),
+            el('div', { class:'serif-heading text-2xl text-aspire-navy mt-1' }, `Elevate to ${toLabel} — immediate access`),
+            el('p', { class:'text-[0.88rem] text-navy-500 mt-2 leading-relaxed' }, `${currentTierLabel} is at capacity. Continue in the queue, or move up to the ${toProfile.name} where space is available now and the experience is more refined.`)
           ),
-          el('span', { class:'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-aspire-navy text-white text-[0.7rem] uppercase tracking-widest flex-shrink-0', html:`<span class="h-1.5 w-1.5 rounded-full bg-white"></span>${luxe.remaining} seats left · Luxe` })
+          el('span', { class:'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-aspire-navy text-white text-[0.7rem] uppercase tracking-widest flex-shrink-0', html:`<span class="h-1.5 w-1.5 rounded-full bg-white"></span>${offer.remaining} seats left · ${toLabel}` })
         ),
         benefitsGrid,
         el('div', { class:'hairline my-5' }),
         el('div', { class:'flex items-end justify-between gap-3 flex-wrap' },
           el('div', {},
-            el('div', { class:'text-[0.7rem] uppercase tracking-widest text-navy-500' }, 'Luxe upgrade'),
-            el('div', { class:'serif-heading text-3xl text-aspire-navy mt-1 tabular-nums' }, `${l.currency} ${luxeFee}`),
-            el('div', { class:'text-[0.72rem] text-navy-500' }, LUXE_PROFILE.tagline)
+            el('div', { class:'text-[0.7rem] uppercase tracking-widest text-navy-500' }, `${toLabel} upgrade`),
+            el('div', { class:'serif-heading text-3xl text-aspire-navy mt-1 tabular-nums' }, `${l.currency} ${upgradeFee}`),
+            el('div', { class:'text-[0.72rem] text-navy-500' }, toProfile.tagline)
           ),
-          el('button', { class:'btn-primary', onclick: () => upgradeToLuxe(), html:'Upgrade to Luxe <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>' })
+          el('button', { class:'btn-primary', onclick: () => upgradeToTier(offer.to), html:`Upgrade to ${toLabel} <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>` })
         )
       ));
-    } else if (luxe.reason === 'luxe-full') {
+    } else if (offer.reason === 'tier-full') {
+      const toProfile = TIER_PROFILES[offer.to];
+      const toLabel = TIER_LABELS[offer.to];
       grid.append(el('div', { class:'card-cream p-6 sm:p-8 flex flex-col justify-center text-center' },
         el('div', { class:'mx-auto h-12 w-12 rounded-full bg-aspire-soft border border-aspire-border flex items-center justify-center text-aspire-navy/70', html:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>' }),
-        el('div', { class:'swiss-eyebrow mt-4' }, LUXE_PROFILE.name),
+        el('div', { class:'swiss-eyebrow mt-4' }, toProfile.name),
         el('div', { class:'serif-heading text-2xl text-aspire-navy mt-1' }, 'Fully booked this hour'),
-        el('p', { class:'text-[0.88rem] text-navy-500 mt-2 leading-relaxed' }, "You can stay in the standard queue — new Luxe seats open hourly.")
+        el('p', { class:'text-[0.88rem] text-navy-500 mt-2 leading-relaxed' }, `You can stay in the standard queue — new ${toLabel} seats open hourly.`)
       ));
     }
 
@@ -3507,16 +3624,19 @@ function renderDashboard() {
 
   $('#confirmed-banner').classList.remove('hidden');
   const accessUntil = endTime(state.booking.arrivalTime);
-  const hasLuxe = !!state.booking.luxeUpgrade;
+  const upgradeTier = state.booking.upgradeTier || (state.booking.luxeUpgrade ? 'luxe' : null);
+  const hasLuxe = !!upgradeTier;
+  const upgradeLabel = hasLuxe ? TIER_LABELS[upgradeTier] : '';
+  const upgradeProfile = hasLuxe ? TIER_PROFILES[upgradeTier] : null;
   const hasTableReservation = requiresDeposit(state.booking);
-  // Headline adapts for Luxe / Table reservation / standard
+  // Headline adapts for tier upgrade / Table reservation / standard
   const bannerHeading = $('#confirmed-banner').querySelector('.serif-heading');
   if (bannerHeading) bannerHeading.textContent =
-    hasLuxe ? 'Luxe upgrade confirmed'
+    hasLuxe ? `${upgradeLabel} upgrade confirmed`
     : hasTableReservation ? 'Table reserved'
     : 'Reservation confirmed';
   $('#confirmed-sub').innerHTML = hasLuxe
-    ? `Proceed directly to the <strong class="text-aspire-navy font-medium">${LUXE_PROFILE.name}</strong>. Your <strong class="text-aspire-navy font-medium">3-hour access</strong> window starts when you check in. Reference ${state.bookingRef}.`
+    ? `Proceed directly to the <strong class="text-aspire-navy font-medium">${upgradeProfile.name}</strong>. Your <strong class="text-aspire-navy font-medium">3-hour access</strong> window starts when you check in. Reference ${state.bookingRef}.`
     : `<strong class="text-aspire-navy font-medium">3-hour access</strong> from ${state.booking.arrivalTime} until ${accessUntil}. Confirmation sent to ${state.booking.email || 'your inbox'}. Reference ${state.bookingRef}.`;
 
   $('#dash-summary').innerHTML = bookingSummaryHTML();
