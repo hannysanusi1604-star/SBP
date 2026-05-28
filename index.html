@@ -4763,11 +4763,11 @@ window.addEventListener('hashchange', () => {
   }
 
   // Re-render entry exposed so pickLounge() can refresh the composer when
-  // the user switches lounge (and the menu view is mounted).
+  // the user switches lounge. Always re-renders — even if the menu view is
+  // hidden — so the auth form / lifestyle gate is ready the next time the
+  // user opens the Pre-Arrival sub-tab.
   window.paRerender = function() {
     if (!host) return;
-    var menu = document.getElementById('view-menu');
-    if (menu && !menu.classList.contains('active')) return;
     paRender();
   };
 
@@ -5834,7 +5834,13 @@ window.addEventListener('hashchange', () => {
     mb_show(mb_state.sub);
   }
   function maybeBoot() {
-    if (view.classList.contains('active')) mb_boot();
+    if (!view.classList.contains('active')) return;
+    if (!booted) mb_boot();
+    // Re-sync on every activation so lounge changes that happened while the
+    // menu was hidden are reflected (tab visibility + composer state).
+    mb_syncPreArrivalTab();
+    if (typeof window.paBoot === 'function') window.paBoot();        // first-time init (no-op if already booted)
+    if (typeof window.paRerender === 'function') window.paRerender(); // refresh auth / tier / lounge name
   }
   maybeBoot();
   var mo = new MutationObserver(maybeBoot);
