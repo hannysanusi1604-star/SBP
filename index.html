@@ -2217,9 +2217,35 @@ document.addEventListener('click', (e) => {
 });
 
 /* ----------------------- HOME ----------------------- */
+// Single source of truth for the home/search "Reserve…" CTAs — flips to a
+// menu-focused CTA once a booking is confirmed so we never push the user back
+// into the reservation flow.
+function homeCTA() {
+  return state.confirmed
+    ? { label: 'Explore the menu', view: 'menu' }
+    : { label: 'Reserve a lounge', view: 'reserve' };
+}
 function initHome() {
   updateLoungePickerLabel();
   renderHomeFeatured();
+  syncHomeStaticCTAs();
+}
+// Keep the non-rendered static hero / footer CTAs in sync with homeCTA().
+function syncHomeStaticCTAs() {
+  const cta = homeCTA();
+  // Top hero "Reserve the Lounge" button
+  const hero = document.querySelector('#view-home button[onclick="searchAndGo()"]');
+  if (hero) {
+    hero.innerHTML = (state.confirmed ? 'Explore the menu' : 'Reserve the Lounge') +
+      ' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  }
+  // Lower "Reserve a lounge" sticky CTA in the "new lounge experience" block
+  const stickyReserve = document.querySelector('#view-home a[data-view="reserve"].btn-primary');
+  if (stickyReserve) {
+    stickyReserve.setAttribute('href', '#' + cta.view);
+    stickyReserve.setAttribute('data-view', cta.view);
+    stickyReserve.innerHTML = cta.label + ' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  }
 }
 function updateLoungePickerLabel() {
   const l = lounge();
@@ -2253,7 +2279,11 @@ function renderHomeFeatured() {
         ),
         el('div', { class:'flex gap-2 flex-wrap' },
           el('button', { class:'btn-outline', onclick: () => openLoungePicker(), html:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 4v5h5"/></svg>Change lounge' }),
-          el('button', { class:'btn-primary', onclick: () => { state.step = 2; go('reserve'); }, html:'Reserve <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>' })
+          (function(){
+            const cta = homeCTA();
+            const label = state.confirmed ? 'Explore the menu' : 'Reserve';
+            return el('button', { class:'btn-primary', onclick: () => { if (state.confirmed) { go('menu'); } else { state.step = 2; go('reserve'); } }, html: label + ' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>' });
+          })()
         )
       )
     )
@@ -2268,7 +2298,9 @@ function renderHomeFeatured() {
   ));
 }
 function searchAndGo() {
-  // Schedule (date/time/guests) is picked on step 2 — no need to capture it on home.
+  // Once confirmed, the hero CTA invites the user to explore the menu instead
+  // of re-entering the reservation flow.
+  if (state.confirmed) { go('menu'); return; }
   state.step = 2;
   go('reserve');
 }
