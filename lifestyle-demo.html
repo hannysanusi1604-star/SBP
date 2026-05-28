@@ -8153,7 +8153,7 @@ window.addEventListener('hashchange', () => {
       '  <h2>That\'s the ' + lbl + ' journey.</h2>' +
       '  <p>' + tail + " Walk a different traveller next?</p>" +
       '  <div class="row">' +
-      '    <button type="button" class="btn-outline" id="dm-pick-again">Choose another scenario</button>' +
+      '    <button type="button" class="btn-outline" id="dm-pick-again">Choose another tier</button>' +
       '    <button type="button" class="btn-primary" id="dm-close">Explore freely</button>' +
       '  </div>' +
       '</div>';
@@ -8171,7 +8171,7 @@ window.addEventListener('hashchange', () => {
       try { state.confirmed = false; state.verified = false; state.preferredZone = null; } catch (_) {}
       try { sessionStorage.removeItem('paAuth'); } catch (_) {}
       try { if (typeof paState !== 'undefined') { paState.confirmed = null; } } catch (_) {}
-      document.getElementById('demo-scenario-picker').style.display = 'flex';
+      document.getElementById('demo-tier-picker').style.display = 'flex';
     });
     document.getElementById('dm-close').addEventListener('click', exitDemo);
   }
@@ -8556,7 +8556,7 @@ window.addEventListener('hashchange', () => {
     introBtn.addEventListener('click', function () {
       var intro = document.getElementById('demo-intro');
       if (intro) intro.style.display = 'none';
-      var picker = document.getElementById('demo-scenario-picker');
+      var picker = document.getElementById('demo-tier-picker');
       if (picker) picker.style.display = 'flex';
     });
   }
