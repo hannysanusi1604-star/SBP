@@ -436,12 +436,12 @@
     border-color: #B59D88; background: #B59D88; color: #fff;
     box-shadow: 0 0 0 2px rgba(181,157,136,.18);
   }
-  #view-menu .pa-swap-backdrop {
+  .pa-swap-backdrop {
     position: fixed; inset: 0; z-index: 60;
     background: rgba(31,42,68,.45); backdrop-filter: blur(4px);
     display: flex; align-items: center; justify-content: center; padding: 16px;
   }
-  #view-menu .pa-swap-modal-card {
+  .pa-swap-modal-card {
     background: #fff; max-height: 84vh; overflow-y: auto;
     width: 100%; max-width: 720px;
     padding: 28px;
@@ -4807,7 +4807,7 @@ window.addEventListener('hashchange', () => {
         paRender();
       });
     });
-    document.body.appendChild(backdropEl);
+    (document.getElementById('view-menu') || document.body).appendChild(backdropEl);
   }
   function paOpenDetailModal(id) {
     var d = paDish(id); if (!d) return;
@@ -4876,7 +4876,7 @@ window.addEventListener('hashchange', () => {
       paCloseModal();
       paOpenDetailModal(id);
     });
-    document.body.appendChild(backdropEl);
+    (document.getElementById('view-menu') || document.body).appendChild(backdropEl);
   }
 
   /* ---------- Event delegation ---------- */
