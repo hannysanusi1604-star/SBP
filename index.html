@@ -882,10 +882,10 @@ const I18N = {
     'pa.tier.luxe.label':'Luxe',
     'pa.tier.luxe.tagline':'Curated, ready to enjoy',
     'pa.tier.luxe.perk1':'Three chef-curated tray combinations',
-    'pa.tier.luxe.perk2':'Counter pickup at lounge entry',
+    'pa.tier.luxe.perk2':'Plated to your seat by a host',
     'pa.tier.luxe.perk3':'Standard 18-minute preparation',
     'pa.tier.luxe.perk4':'Fixed composition — no editing required',
-    'pa.tier.luxe.handoff':'Counter A · Lounge entry',
+    'pa.tier.luxe.handoff':'Your seat · Luxe lounge',
 
     'pa.tier.suite.label':'Suite',
     'pa.tier.suite.tagline':'Build your own tray',
@@ -1649,7 +1649,7 @@ const STATE = {
       boardingPass: localStorage.getItem('aspire-pa-bp') || '',
       verified: localStorage.getItem('aspire-pa-verified') === '1',
     },
-    suite: { pairing: null, delivery: 'table', mode: 'custom', counts: { starters: 2, mains: 2, desserts: 1 }, combo: 'voyager' },
+    suite: { pairing: null, mode: 'custom', counts: { starters: 2, mains: 2, desserts: 1 }, combo: 'voyager' },
     prive: { host: 'Élodie Roulet', hotTowel: true, chefNote: '', ingredients: new Set(), pairing: null, mode: 'preorder' },
   },
 };
@@ -1898,7 +1898,7 @@ function setActiveLounge(id) {
     STATE.preArrival.note = '';
     STATE.preArrival.customizations = {};
     STATE.preArrival.dietaryPrefs = new Set();
-    STATE.preArrival.suite = { pairing: null, delivery: 'table', mode: 'custom', counts: { starters: 2, mains: 2, desserts: 1 }, combo: 'voyager' };
+    STATE.preArrival.suite = { pairing: null, mode: 'custom', counts: { starters: 2, mains: 2, desserts: 1 }, combo: 'voyager' };
     STATE.preArrival.prive = { host: 'Élodie Roulet', hotTowel: true, chefNote: '', ingredients: new Set(), pairing: null, mode: 'preorder' };
     if (typeof paApplySizeDefaults === 'function') paApplySizeDefaults(true);
   }
@@ -3337,9 +3337,7 @@ function paHandoffCopy() {
     return `${t('pa.tier.prive.handoff')} — ${STATE.preArrival.prive.host}`;
   }
   if (tier === 'suite') {
-    return STATE.preArrival.suite.delivery === 'table'
-      ? t('pa.tier.suite.handoff')
-      : t('pa.tier.luxe.handoff');
+    return t('pa.tier.suite.handoff');
   }
   return t('pa.tier.luxe.handoff');
 }
@@ -3381,10 +3379,6 @@ function paSummaryMarkup() {
       ${pairing ? `<div class="flex items-center justify-between gap-3">
         <dt class="text-navy-500">${esc(t('pa.summary.pairing'))}</dt>
         <dd class="text-navy-900 text-right truncate max-w-[60%]" title="${esc(pairing)}">${esc(pairing)}</dd>
-      </div>` : ''}
-      ${tier === 'suite' ? `<div class="flex items-center justify-between gap-3">
-        <dt class="text-navy-500">${esc(t('pa.summary.delivery'))}</dt>
-        <dd class="text-navy-900">${esc(STATE.preArrival.suite.delivery === 'table' ? t('pa.suite.delivery.on') : t('pa.suite.delivery.off'))}</dd>
       </div>` : ''}
       ${tier === 'prive' ? `<div class="flex items-center justify-between gap-3">
         <dt class="text-navy-500">${esc(t('pa.summary.host'))}</dt>
@@ -3686,7 +3680,6 @@ function paSuitePanel() {
   // Privé no longer uses a tray, so Suite-pairing/delivery only renders for Suite
   if (activeTier() !== 'suite') return '';
   const sel = STATE.preArrival.suite.pairing;
-  const delivery = STATE.preArrival.suite.delivery;
   const pairings = PA_PAIRINGS.map(p => {
     const active = p.id === sel;
     return `
@@ -3712,18 +3705,6 @@ function paSuitePanel() {
             <div class="text-[0.7rem] uppercase tracking-[0.22em] text-navy-700">${esc(t('pa.suite.pairing.title'))}</div>
             <p class="mt-1 text-[0.78rem] text-navy-500">${esc(t('pa.suite.pairing.subtitle'))}</p>
             <div class="mt-3 grid sm:grid-cols-3 gap-2.5">${pairings}</div>
-          </div>
-          <div>
-            <div class="text-[0.7rem] uppercase tracking-[0.22em] text-navy-700">${esc(t('pa.suite.delivery.title'))}</div>
-            <p class="mt-1 text-[0.78rem] text-navy-500 max-w-md">${esc(t('pa.suite.delivery.body'))}</p>
-            <div class="mt-3 grid grid-cols-2 gap-2.5 max-w-sm">
-              <button data-pa-delivery="table" class="pa-option-chip ${delivery==='table' ? 'active' : ''}">
-                <span class="pa-opt-label">${icon('i-pin','w-3.5 h-3.5 inline -mt-0.5 text-gold-500')} ${esc(t('pa.suite.delivery.on'))}</span>
-              </button>
-              <button data-pa-delivery="counter" class="pa-option-chip ${delivery==='counter' ? 'active' : ''}">
-                <span class="pa-opt-label">${icon('i-tray','w-3.5 h-3.5 inline -mt-0.5')} ${esc(t('pa.suite.delivery.off'))}</span>
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -5195,10 +5176,6 @@ function attachPageEvents() {
   document.querySelectorAll('[data-pa-pairing]').forEach(b => b.addEventListener('click', () => {
     const id = b.getAttribute('data-pa-pairing');
     STATE.preArrival.suite.pairing = STATE.preArrival.suite.pairing === id ? null : id;
-    renderMain();
-  }));
-  document.querySelectorAll('[data-pa-delivery]').forEach(b => b.addEventListener('click', () => {
-    STATE.preArrival.suite.delivery = b.getAttribute('data-pa-delivery');
     renderMain();
   }));
   // Suite mode toggle (custom vs curated)
