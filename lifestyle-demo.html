@@ -6612,16 +6612,13 @@ window.addEventListener('hashchange', () => {
   body.aspire-demo #lang-toggle { pointer-events: none; opacity: 0.45; }
   #demo-veil {
     position: fixed; inset: 0;
-    /* default veil for the premium tiers (Luxe / Suite / Privé) */
-    background: rgba(31, 42, 68, 0.52);
+    /* Same veil for every tier — Lifestyle, Luxe, Suite and Privé all
+       get the identical level of dim so the highlighted control stands
+       out the same way across the whole demo. */
+    background: rgba(31, 42, 68, 0.45);
     z-index: 9000;
     pointer-events: none;
-    transition: background .35s ease, opacity .25s ease;
-  }
-  /* Lifestyle is the everyday tier — a brighter, more open veil so
-     the page feels accessible rather than premium. */
-  body.aspire-demo.tier-lifestyle #demo-veil {
-    background: rgba(31, 42, 68, 0.26);
+    transition: opacity .25s ease;
   }
   /* demo-target just lifts the element above the dark veil so it stays
      visible. The visual ring is a separate fixed-position #demo-highlight
