@@ -1249,7 +1249,7 @@
     <div class="mx-auto max-w-6xl px-5 sm:px-8">
       <div class="mb-tabs" role="tablist">
         <button type="button" class="mb-tab active" data-mb-go="editorial" role="tab" aria-selected="true">Editorial</button>
-        <button type="button" class="mb-tab" data-mb-go="pre-arrival" role="tab" aria-selected="false">Pre-Arrival</button>
+        <button type="button" class="mb-tab" data-mb-go="pre-arrival" role="tab" aria-selected="false" style="display:none">Pre-Arrival</button>
         <button type="button" class="mb-tab" data-mb-go="dishes" role="tab" aria-selected="false">Menu</button>
         <button type="button" class="mb-tab" data-mb-go="drinks" role="tab" aria-selected="false">Drinks</button>
         <button type="button" class="mb-tab" data-mb-go="dietary" role="tab" aria-selected="false">Dietary guide</button>
@@ -1924,12 +1924,28 @@ function depositGraceTime(arrivalStr) {
 }
 
 function canOfferLuxeUpgrade() {
+  // The upgrade is a Lifestyle-tier concept — guests already in Suite/Privé/Luxe
+  // lounges should never see the "Upgrade to Luxe" CTA.
+  const tier = currentLoungeTier();
+  if (tier && tier !== 'lifestyle') return { offered: false, reason: 'tier-incompatible', remaining: getLuxeSeatsRemaining() };
   // Only offered when the Lifestyle lounge tables are full — derived from queue depth
   const tablesFull = state.queue.length > 0;
   if (!tablesFull) return { offered: false, reason: 'tables-available', remaining: getLuxeSeatsRemaining() };
   const remaining = getLuxeSeatsRemaining();
   if (remaining <= 0) return { offered: false, reason: 'luxe-full', remaining: 0 };
   return { offered: true, remaining };
+}
+
+function currentLoungeTier() {
+  // Resolve the tier of the currently selected lounge from LOUNGE_NETWORK.
+  const id = state.booking.loungeId;
+  for (const group of LOUNGE_NETWORK) {
+    for (const l of group.lounges) {
+      const lid = l.id || ((l.code || '—').toLowerCase() + '-' + l.city.toLowerCase().replace(/[^a-z0-9]/g, ''));
+      if (lid === id) return l.tier || 'lifestyle';
+    }
+  }
+  return 'lifestyle';
 }
 
 function loungeProfileFromNetwork(net, region) {
@@ -2251,6 +2267,13 @@ function pickLounge(net, region) {
   state.booking.loungeId = entry.id;
   // Luxe upgrade is anchored to a specific Lifestyle lounge's queue + price — reset on change
   state.booking.luxeUpgrade = false;
+  // Floor plans and zones are lounge-specific — drop the prior selection so the
+  // summary, dashboard and step 4 right rail don't carry stale seating into the
+  // newly-chosen lounge.
+  state.booking.preferredZone = null;
+  state.booking.assignedTable = null;
+  state.booking.slot = null;
+  state.preferredZone = null;
   // Pre-Arrival auth is per-traveller. Switching lounge could mean a new boarding pass —
   // clear the sessionStorage flag so the composer re-verifies before showing the tier.
   try { sessionStorage.removeItem('paAuth'); } catch (e) {}
@@ -2893,16 +2916,19 @@ function confirmBooking() {
       rows.push(['Lifestyle entry', '<span class="inline-flex items-center gap-1.5"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 12 5 5L20 6"/></svg>Included</span>']);
       rows.push(['Aspire Luxe upgrade', `${l.currency} ${luxeFee}`]);
     } else if (hasLuxe && !usingPass) {
-      rows.push(['Lifestyle entry', `${l.currency} ${entryAmount.toFixed(2)}`]);
+      rows.push(['Lifestyle entry', '<span class="inline-flex items-center gap-1.5"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 12 5 5L20 6"/></svg>Included</span>']);
       rows.push(['Aspire Luxe upgrade', `${l.currency} ${luxeFee}`]);
     } else if (!usingPass) {
       rows.push(['Amount', `${l.currency} ${entryAmount.toFixed(2)}`]);
     }
     if (isAdvance) {
-      rows.push([
-        usingPass ? 'Refundable deposit held' : 'Refundable on check-in',
-        usingPass ? `${l.currency} ${deposit}` : `${l.currency} ${entryAmount.toFixed(2)} · by ${graceTime}`
-      ]);
+      // Direct-pay without Luxe: refund equals the entry amount on check-in.
+      // Direct-pay with Luxe (entry sunk) or pass holders: refund equals the held deposit.
+      const refundLabel = usingPass ? 'Refundable deposit held' : (hasLuxe ? 'Refundable deposit held' : 'Refundable on check-in');
+      const refundValue = (!usingPass && !hasLuxe)
+        ? `${l.currency} ${entryAmount.toFixed(2)} · by ${graceTime}`
+        : `${l.currency} ${deposit}`;
+      rows.push([refundLabel, refundValue]);
       if (hasSeatLock) {
         rows.push([
           `Seat reservation fee · ${ZONE_META[state.booking.preferredZone].label}`,
@@ -5270,7 +5296,7 @@ window.addEventListener('hashchange', () => {
   // restore tab from sessionStorage
   try {
     var saved = sessionStorage.getItem('mb_sub');
-    if (saved && ['editorial','dishes','drinks','dietary','partners','about','feedback'].indexOf(saved) >= 0) {
+    if (saved && ['editorial','pre-arrival','dishes','drinks','dietary','partners','about','feedback'].indexOf(saved) >= 0) {
       mb_state.sub = saved;
     }
   } catch(e) {}
