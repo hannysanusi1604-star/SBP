@@ -543,13 +543,13 @@
           </div>
 
           <aside class="lg:col-span-2 space-y-4">
-            <div class="card-aspire p-6">
+            <div id="step4-zone-addon" class="card-aspire p-6">
               <div class="swiss-eyebrow text-aspire-navy/70">Add-on</div>
-              <div class="mt-2 serif-heading text-xl text-aspire-navy">Share your seating preference</div>
-              <p class="mt-2 text-[0.92rem] text-aspire-navy/80">Tell us your preferred zone — communal table, dining zone or quiet zone — and our hosts will assign a matching seat when you arrive.</p>
-              <a href="#tables" data-view="tables" class="mt-4 inline-flex items-center gap-2 text-aspire-navy underline underline-offset-4">
-                Share preference <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m9 6 6 6-6 6"/></svg>
-              </a>
+              <div class="mt-2 serif-heading text-xl text-aspire-navy">Reserve a specific seat</div>
+              <p class="mt-2 text-[0.92rem] text-aspire-navy/80">You picked <strong>No preference</strong>. Lock a Communal, Dining or Quiet seat with a refundable deposit if you'd rather guarantee a table.</p>
+              <button onclick="openZoneModal()" class="mt-4 inline-flex items-center gap-2 text-aspire-navy underline underline-offset-4">
+                Choose a seat <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m9 6 6 6-6 6"/></svg>
+              </button>
             </div>
 
             <div class="card-cream p-6">
@@ -876,6 +876,21 @@
         View my booking
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ ZONE PICKER MODAL (step 4 add-on) -->
+<div id="zone-modal" class="hidden fixed inset-0 z-50 items-center justify-center p-4" role="dialog" aria-modal="true">
+  <div class="absolute inset-0 bg-aspire-navy/40 backdrop-blur-sm" onclick="closeZoneModal()"></div>
+  <div class="relative w-full max-w-md card-cream shadow-float p-8">
+    <div class="font-medium tracking-[0.42em] text-lg text-aspire-navy text-center">ASPIRE</div>
+    <div class="swiss-eyebrow mt-6 text-center">Seating preference</div>
+    <div class="serif-heading text-2xl text-aspire-navy mt-2 text-center">Reserve a specific seat?</div>
+    <div id="zone-modal-picker" class="mt-6 grid grid-cols-2 gap-2"></div>
+    <p class="mt-4 text-[0.78rem] text-navy-500 leading-relaxed italic text-center">Picking a zone holds the seat with a refundable deposit. <strong class="text-aspire-navy not-italic">No preference</strong> means you may need to queue if the lounge is full.</p>
+    <div class="mt-6">
+      <button onclick="closeZoneModal()" class="btn-primary w-full justify-center">Back to confirmation</button>
     </div>
   </div>
 </div>
@@ -1884,6 +1899,10 @@ function renderStep4() {
   $('#booking-summary-card').innerHTML = bookingSummaryHTML();
   $('#pay-name').value = state.booking.guestName;
 
+  // Add-on only makes sense when no specific seat is held — once a zone is picked,
+  // the deposit is in play and the add-on becomes redundant.
+  $('#step4-zone-addon').classList.toggle('hidden', !!state.booking.preferredZone);
+
   // Section heading + side metadata
   if (isPass && !hasLuxe && !isAdvance) {
     $('#pay-section-title').textContent = 'Confirm your access';
@@ -2088,6 +2107,37 @@ function finishPayment() {
   const m = $('#pay-modal');
   m.classList.add('hidden'); m.classList.remove('flex');
   go('dashboard');
+}
+
+/* ----------------------- ZONE PICKER MODAL (step 4 add-on) ----------------------- */
+function openZoneModal() {
+  renderZoneModalPicker();
+  const m = $('#zone-modal');
+  m.classList.remove('hidden'); m.classList.add('flex');
+}
+function closeZoneModal() {
+  const m = $('#zone-modal');
+  m.classList.add('hidden'); m.classList.remove('flex');
+  // Refresh step 4 so the add-on card hides and the booking summary picks up the new zone.
+  if (state.step === 4) renderStep4();
+}
+function renderZoneModalPicker() {
+  const picker = $('#zone-modal-picker'); picker.innerHTML = '';
+  const opts = [
+    { id: null,       label: 'No preference' },
+    { id: 'communal', label: ZONE_META.communal.label },
+    { id: 'dining',   label: ZONE_META.dining.label },
+    { id: 'quiet',    label: ZONE_META.quiet.label },
+  ];
+  opts.forEach(opt => {
+    const active = (state.booking.preferredZone || null) === opt.id;
+    const swatch = opt.id ? `<span class="inline-block h-2 w-2 mr-2 align-middle" style="background:${ZONE_META[opt.id].color}"></span>` : '';
+    picker.append(el('button', {
+      class:`py-3 px-3 text-[0.85rem] border transition-all ${active ? 'bg-aspire-navy text-white border-aspire-navy' : 'bg-white text-aspire-navy border-aspire-border hover:border-aspire-taupe'}`,
+      onclick: () => { state.booking.preferredZone = opt.id; renderZoneModalPicker(); },
+      html: swatch + opt.label,
+    }));
+  });
 }
 
 /* ----------------------- CANCEL RESERVATION MODAL ----------------------- */
