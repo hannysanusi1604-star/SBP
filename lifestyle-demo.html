@@ -6617,18 +6617,48 @@ window.addEventListener('hashchange', () => {
     pointer-events: none;
     transition: opacity .25s ease;
   }
+  /* demo-target just lifts the element above the dark veil so it stays
+     visible. The visual ring is a separate fixed-position #demo-highlight
+     element that follows the target's exact shape, size and border-radius
+     and glides between targets — so every step looks the same. */
   .demo-target {
     position: relative;
     z-index: 9001;
-    box-shadow: 0 0 0 3px #B59D88, 0 0 0 10px rgba(181,157,136,0.35),
-                0 0 30px 6px rgba(255,255,255,0.55) !important;
-    border-radius: 4px;
-    animation: demoPulse 1.6s ease-in-out infinite;
-    transition: box-shadow 280ms ease;
   }
-  @keyframes demoPulse {
-    0%,100% { box-shadow: 0 0 0 3px #B59D88, 0 0 0 10px rgba(181,157,136,0.35), 0 0 30px 6px rgba(255,255,255,0.55); }
-    50%     { box-shadow: 0 0 0 3px #B59D88, 0 0 0 18px rgba(181,157,136,0.12), 0 0 40px 12px rgba(255,255,255,0.30); }
+  #demo-highlight {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9001;
+    top: 0; left: 0;
+    width: 0; height: 0;
+    border: 3px solid #B59D88;
+    border-radius: 4px;
+    background: transparent;
+    box-shadow: 0 0 0 6px rgba(181,157,136,0.32),
+                0 0 32px 10px rgba(255,255,255,0.45);
+    opacity: 0;
+    will-change: top, left, width, height, border-radius, opacity;
+    transition:
+      top 380ms cubic-bezier(0.4, 0, 0.2, 1),
+      left 380ms cubic-bezier(0.4, 0, 0.2, 1),
+      width 380ms cubic-bezier(0.4, 0, 0.2, 1),
+      height 380ms cubic-bezier(0.4, 0, 0.2, 1),
+      border-radius 380ms ease,
+      opacity 280ms ease;
+  }
+  #demo-highlight.dh-visible {
+    opacity: 1;
+    animation: dhPulse 1.8s ease-in-out infinite;
+  }
+  @keyframes dhPulse {
+    0%, 100% {
+      box-shadow: 0 0 0 6px rgba(181,157,136,0.32),
+                  0 0 32px 10px rgba(255,255,255,0.45);
+    }
+    50% {
+      box-shadow: 0 0 0 14px rgba(181,157,136,0.14),
+                  0 0 42px 16px rgba(255,255,255,0.28);
+    }
   }
   #demo-coachmark {
     position: fixed;
@@ -6979,6 +7009,8 @@ window.addEventListener('hashchange', () => {
     </div>
   </div>
 </div>
+
+<div id="demo-highlight" aria-hidden="true"></div>
 
 <div id="demo-chapter-pill">
   <div class="cp-eyebrow"><span id="cp-eyebrow">Chapter 01</span></div>
@@ -7743,9 +7775,35 @@ window.addEventListener('hashchange', () => {
   var tierTag = document.getElementById('dm-tier-tag');
   var bannerLabel = document.getElementById('dm-banner-label');
 
+  // Float the highlight ring over the target. Uses the element's actual
+  // border-radius so the ring matches rounded buttons, square cards,
+  // pills and time chips identically. Position is fixed → CSS transitions
+  // glide it from one step to the next.
+  function positionHighlight(tgt) {
+    var hl = document.getElementById('demo-highlight');
+    if (!hl) return;
+    if (!tgt) { hl.classList.remove('dh-visible'); return; }
+    var r = tgt.getBoundingClientRect();
+    if (r.width === 0 && r.height === 0) { hl.classList.remove('dh-visible'); return; }
+    var radius = '4px';
+    try {
+      var cs = window.getComputedStyle(tgt);
+      // Match the element's actual top-left radius — works for circles
+      // (rounded-full pills), rounded cards, and square buttons alike.
+      radius = cs.borderTopLeftRadius || cs.borderRadius || '4px';
+    } catch (_) {}
+    hl.style.top    = r.top    + 'px';
+    hl.style.left   = r.left   + 'px';
+    hl.style.width  = r.width  + 'px';
+    hl.style.height = r.height + 'px';
+    hl.style.borderRadius = radius;
+    hl.classList.add('dh-visible');
+  }
+
   function placeCoach(tgt) {
-    if (!tgt) { coach.classList.remove('dm-visible'); return; }
+    if (!tgt) { coach.classList.remove('dm-visible'); positionHighlight(null); return; }
     coach.classList.add('dm-visible');
+    positionHighlight(tgt);
     var r = tgt.getBoundingClientRect();
     var vw = window.innerWidth, vh = window.innerHeight;
     var cw = coach.offsetWidth, ch = coach.offsetHeight;
@@ -7802,6 +7860,7 @@ window.addEventListener('hashchange', () => {
       currentTarget.removeEventListener('click', onTargetClick, true);
     }
     currentTarget = null;
+    positionHighlight(null);
     // Fade the coachmark out instead of snapping it away — the CSS transition
     // on opacity handles the fade; the next placeCoach() brings it back.
     coach.classList.remove('dm-visible');
@@ -7945,7 +8004,7 @@ window.addEventListener('hashchange', () => {
     document.body.classList.remove('aspire-demo');
     window.__aspireDemoExited = true;
     ['demo-veil','demo-banner','demo-coachmark','demo-finale','demo-tier-picker',
-     'demo-intro','demo-chapter-pill','demo-change-toast',
+     'demo-intro','demo-chapter-pill','demo-change-toast','demo-highlight',
      'dm-jump-tables','dm-jump-queue','dm-jump-menu','dm-jump-dashboard'].forEach(function (id) {
       var el = document.getElementById(id);
       if (el) el.remove();
@@ -8066,11 +8125,12 @@ window.addEventListener('hashchange', () => {
       if (t.id === 'demo-coachmark' || t.id === 'demo-banner' ||
           t.id === 'demo-veil' || t.id === 'demo-finale' ||
           t.id === 'demo-tier-picker' || t.id === 'demo-intro' ||
-          t.id === 'demo-chapter-pill' || t.id === 'demo-change-toast') return true;
+          t.id === 'demo-chapter-pill' || t.id === 'demo-change-toast' ||
+          t.id === 'demo-highlight') return true;
       if (t.closest && (t.closest('#demo-coachmark') || t.closest('#demo-banner') ||
           t.closest('#demo-finale') || t.closest('#demo-tier-picker') ||
           t.closest('#demo-intro') || t.closest('#demo-chapter-pill') ||
-          t.closest('#demo-change-toast'))) return true;
+          t.closest('#demo-change-toast') || t.closest('#demo-highlight'))) return true;
     }
     return false;
   }
