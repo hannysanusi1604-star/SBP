@@ -6612,7 +6612,7 @@ window.addEventListener('hashchange', () => {
   body.aspire-demo #lang-toggle { pointer-events: none; opacity: 0.45; }
   #demo-veil {
     position: fixed; inset: 0;
-    background: rgba(31, 42, 68, 0.32);
+    background: rgba(31, 42, 68, 0.52);
     z-index: 9000;
     pointer-events: none;
     transition: opacity .25s ease;
@@ -7246,10 +7246,69 @@ window.addEventListener('hashchange', () => {
       {
         view: 'queue',
         eyebrow: 'Step 15 · Walk-in queue',
+        title: 'Lounge is at capacity',
+        body: "The Lifestyle floor is full. Aspire offers a live upsell — move up to Luxe where seats are open right now. Tap Upgrade to Luxe.",
+        selector: '#view-queue [class*="border-aspire-navy/40"] button.btn-primary',
+        onEnter: function () {
+          try {
+            // Make sure the upgrade card actually renders — it appears for
+            // Lifestyle guests when the queue offer is available.
+            state.booking.upgradeTier = null;
+            state.booking.luxeUpgrade = false;
+            if (typeof renderQueue === 'function') renderQueue();
+          } catch (_) {}
+        }
+      },
+      {
+        view: 'queue',
+        eyebrow: 'Step 16 · Verify access · Luxe upgrade',
+        title: 'Verify access for Luxe',
+        body: "Same 700-ms check that gates the lounge. Pre-filled — tap Verify.",
+        selector: '#up-v-btn',
+        onEnter: function () {
+          // Pre-fill the verify inputs and fire input events so the
+          // bound check() promotes the Verify button out of disabled.
+          setTimeout(function () {
+            var nm = document.getElementById('up-v-name');
+            var nu = document.getElementById('up-v-num');
+            if (nm) { nm.value = 'Zimmermann'; nm.dispatchEvent(new Event('input', { bubbles: true })); }
+            if (nu) { nu.value = 'PP-2026-3458'; nu.dispatchEvent(new Event('input', { bubbles: true })); }
+          }, 80);
+        }
+      },
+      {
+        view: 'queue',
+        eyebrow: 'Step 17 · Pay the upgrade · Luxe',
+        title: 'Pay the upgrade fee',
+        body: "Card pre-filled, terms accepted. Tap Pay to move to the Luxe Lounge and skip the queue entirely.",
+        selector: '#up-pay-btn',
+        onEnter: function () {
+          // After the verify-step's 700 ms simulation, the modal swaps to
+          // the pay step — wait for the pay inputs, then pre-fill them.
+          setTimeout(function () {
+            var cn = document.getElementById('up-card-num');
+            var ce = document.getElementById('up-card-exp');
+            var cc = document.getElementById('up-card-cvc');
+            var cna = document.getElementById('up-card-name');
+            if (cn)  { cn.value  = '4242 4242 4242 4242'; cn.dispatchEvent(new Event('input', { bubbles: true })); }
+            if (ce)  { ce.value  = '04/27';               ce.dispatchEvent(new Event('input', { bubbles: true })); }
+            if (cc)  { cc.value  = '123';                 cc.dispatchEvent(new Event('input', { bubbles: true })); }
+            if (cna) { cna.value = 'Lukas Zimmermann';    cna.dispatchEvent(new Event('input', { bubbles: true })); }
+            var tos = document.getElementById('up-tos');
+            if (tos && !tos.checked) {
+              tos.checked = true;
+              tos.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+          }, 100);
+        }
+      },
+      {
+        view: 'dashboard',
+        eyebrow: 'Step 18 · Luxe upgrade confirmed',
         title: 'See your QR pass',
-        body: 'Live queue ticker, anonymised waits per zone. Tap Continue to see your QR check-in pass.',
+        body: 'Upgraded to Luxe · seats reserved · queue skipped. Tap to see your QR check-in pass.',
         selector: '#dm-jump-dashboard',
-        onEnter: function () { try { if (typeof renderQueue === 'function') renderQueue(); } catch (_) {} }
+        delayMs: 1500
       },
       { view: 'dashboard', final: true }
     ];
@@ -7351,34 +7410,62 @@ window.addEventListener('hashchange', () => {
         Object.assign({ eyebrow: 'Step 17 · Walk-in queue' }, queueStep, { view: 'queue', menuSub: undefined })
       ];
     } else if (tier === 'suite') {
+      // Suite's real differentiator is "Build from scratch" — the bespoke
+      // tray composer. Walk that path instead of the curated combo.
       composerSteps = [
         { view: 'menu', menuSub: 'pre-arrival',
-          eyebrow: 'Step 12 · Tray size',
-          title: 'Pick the Medium tray',
-          body: 'Small (solo), Medium (2–3 guests) or Large (4 guests). Tap Medium for the demo.',
-          selector: '#view-menu [data-pa-size="medium"]' },
+          eyebrow: 'Step 12 · Build from scratch',
+          title: 'Switch to Build from scratch',
+          body: "Suite's signature is composing your own tray. Tap Build from scratch to open an empty tray and pick every dish yourself.",
+          selector: '#view-menu [data-pa-suite-mode="custom"]' },
         { view: 'menu', menuSub: 'pre-arrival',
-          eyebrow: 'Step 13 · Curated combination',
-          title: 'Pick The Voyager',
-          body: 'Three signature Suite combos. Tap The Voyager.',
-          selector: '#view-menu [data-pa-suite-combo="voyager"]' },
+          eyebrow: 'Step 13 · Tray slot',
+          title: 'Open a starter slot',
+          body: "Empty slots replace the curated tray. Tap the highlighted starter slot to choose which dish goes in.",
+          selector: '#view-menu [data-pa-swap="starters:0"]' },
         { view: 'menu', menuSub: 'pre-arrival',
-          eyebrow: 'Step 14 · Pairing',
+          eyebrow: 'Step 14 · Choose a dish',
+          title: 'Pick Swiss Cheese & Charcuterie',
+          body: 'The dish picker shows the full Suite library, filtered to starters. Tap the Cheese & Charcuterie board.',
+          selector: '[data-pa-pick="cheese-charcuterie"]' },
+        { view: 'menu', menuSub: 'pre-arrival',
+          eyebrow: 'Step 15 · Pairing',
           title: 'Pick Champagne Brut',
-          body: 'Sommelier-paired wines or signature champagne. Tap the Champagne pairing.',
-          selector: '#view-menu [data-pa-pairing="champagne"]' },
+          body: "Remaining slots auto-filled for the demo — every one is editable. Now pick the Champagne pairing.",
+          selector: '#view-menu [data-pa-pairing="champagne"]',
+          onEnter: function () {
+            // Auto-fill the remaining empty slots so the user only walks
+            // the marquee interaction (one slot, one dish), and the tray
+            // is complete enough for Confirm to enable.
+            try {
+              if (typeof paState === 'undefined') return;
+              var defaults = {
+                starters: ['cheese-charcuterie', 'smoked-trout-salad'],
+                mains:    ['zurcher-geschnetzeltes', 'herb-lake-fish'],
+                desserts: ['zuger-kirschtorte']
+              };
+              ['starters','mains','desserts'].forEach(function (cat) {
+                var n = (paState.suite.counts && paState.suite.counts[cat]) || 0;
+                var arr = paState.selections[cat] = paState.selections[cat] || [];
+                for (var i = 0; i < n; i++) {
+                  if (!arr[i]) arr[i] = defaults[cat][i] || defaults[cat][0];
+                }
+              });
+              if (typeof window.paRerender === 'function') window.paRerender();
+            } catch (_) {}
+          } },
         { view: 'menu', menuSub: 'pre-arrival',
-          eyebrow: 'Step 15 · Arrival window',
+          eyebrow: 'Step 16 · Arrival window',
           title: 'Pick an arrival time',
-          body: 'Suite plates land moments before you sit down. Tap the highlighted time chip.',
+          body: 'Tap the highlighted time chip — the kitchen lines up your tray for that minute.',
           selector: '#view-menu [data-pa-time]' },
         { view: 'menu', menuSub: 'pre-arrival',
-          eyebrow: 'Step 16 · Confirm',
+          eyebrow: 'Step 17 · Confirm',
           title: 'Confirm the pre-order',
-          body: 'Size, combo, pairing, time — all set. Tap Confirm pre-order.',
+          body: "Your bespoke tray is composed. Tap Confirm pre-order to send it to the Suite kitchen.",
           selector: '#view-menu [data-pa-confirm]' },
-        Object.assign({ eyebrow: 'Step 17 · Tray in motion' }, receiptStep),
-        Object.assign({ eyebrow: 'Step 18 · Walk-in queue' }, queueStep, { view: 'queue', menuSub: undefined })
+        Object.assign({ eyebrow: 'Step 18 · Tray in motion' }, receiptStep),
+        Object.assign({ eyebrow: 'Step 19 · Walk-in queue' }, queueStep, { view: 'queue', menuSub: undefined })
       ];
     } else {
       // Privé
