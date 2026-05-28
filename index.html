@@ -1413,7 +1413,7 @@
           <div class="swiss-eyebrow">— Local Sourcing</div>
           <h2 class="serif-heading text-3xl sm:text-5xl md:text-[3.6rem] mt-4 leading-[1.05] text-aspire-navy">From Swiss valleys, lakes and farms.</h2>
           <p class="mt-6 text-navy-500 leading-[1.7] max-w-md">We work with Swiss farmers, alpine cheesemakers and lake fisheries within 200&nbsp;km of the lounge.</p>
-          <a href="#menu" class="mt-7 inline-flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.22em] text-aspire-navy border-b border-aspire-navy/40 pb-1 hover:border-aspire-navy transition-colors">
+          <a href="#menu" data-mb-go="about" class="mt-7 inline-flex items-center gap-2 text-[0.7rem] uppercase tracking-[0.22em] text-aspire-navy border-b border-aspire-navy/40 pb-1 hover:border-aspire-navy transition-colors">
             Discover sourcing <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </a>
         </div>
@@ -1515,7 +1515,7 @@
         <h2 class="serif-heading text-3xl sm:text-5xl mt-4 leading-[1.05] text-aspire-navy">Choose where to begin.</h2>
       </div>
       <div class="grid md:grid-cols-2 gap-12 sm:gap-20" style="perspective: 1400px">
-        <a href="#menu" class="tilt-card group block reveal">
+        <a href="#menu" data-mb-go="dishes" class="tilt-card group block reveal">
           <div class="tilt-inner">
             <div class="relative aspect-[4/3] overflow-hidden">
               <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=80" alt="Food" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]" loading="lazy"/>
@@ -1528,7 +1528,7 @@
             <p class="mt-2 text-[0.92rem] text-navy-500 leading-relaxed max-w-md">Today's buffet, refreshed continuously by our chefs.</p>
           </div>
         </a>
-        <a href="#menu" class="tilt-card group block reveal">
+        <a href="#menu" data-mb-go="drinks" class="tilt-card group block reveal">
           <div class="tilt-inner">
             <div class="relative aspect-[4/3] overflow-hidden">
               <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1400&q=80" alt="Drinks" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]" loading="lazy"/>
@@ -2286,16 +2286,17 @@ function syncHomeStaticCTAs() {
     stickyReserve.setAttribute('data-view', cta.view);
     stickyReserve.innerHTML = cta.label + arrow;
   }
-  // Menu view's editorial hero CTA — "Reserve a table" when no booking, else
-  // "Explore the menu" loses meaning (we're already in menu), so swap to a
-  // contextual jump to Pre-Arrival composer / lounge picker.
+  // Menu view's editorial hero CTA — "Reserve a table" when no booking; once
+  // a booking is confirmed, jump straight to the Menu sub-tab.
   const menuHero = document.getElementById('menu-hero-cta');
   if (menuHero) {
     if (state.confirmed) {
-      menuHero.setAttribute('href', '#dashboard');
-      menuHero.setAttribute('data-view', 'dashboard');
-      menuHero.innerHTML = 'View my stay' + arrow;
+      menuHero.removeAttribute('data-view');
+      menuHero.setAttribute('href', '#menu');
+      menuHero.setAttribute('data-mb-go', 'dishes');
+      menuHero.innerHTML = 'View the menu' + arrow;
     } else {
+      menuHero.removeAttribute('data-mb-go');
       menuHero.setAttribute('href', '#reserve');
       menuHero.setAttribute('data-view', 'reserve');
       menuHero.innerHTML = 'Reserve a table' + arrow;
