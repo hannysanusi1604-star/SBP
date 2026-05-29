@@ -7320,17 +7320,28 @@ window.addEventListener('hashchange', () => {
       },
       {
         view: 'reserve', reserveStep: 2,
-        eyebrow: 'Schedule',
-        title: 'Pick the arrival window',
-        body: 'Date, party size and a 3-hour arrival window pre-set for the demo. Tap Continue to guest details.',
-        selector: '#view-reserve [data-step="2"] button.btn-primary',
-        change: 'Schedule locked',
+        eyebrow: 'Seat preference',
+        title: 'Lock a Communal seat · +CHF 3',
+        body: "Skip this for a free seat assigned on arrival, or lock a specific zone now for CHF 3. Tap Communal to reserve the table — the seat-reservation fee adds to the booking total.",
+        selector: '#view-reserve #step2-zone-picker button:nth-of-type(2)',
+        change: 'Communal seat locked · +CHF 3',
+        milestone: true,
         onEnter: function () {
           try {
+            // Start with no zone so the Communal click actually changes
+            // state and the +CHF 3 row appears in the receipt.
             state.booking.preferredZone = null;
             if (typeof renderStep2 === 'function') renderStep2();
           } catch (_) {}
         }
+      },
+      {
+        view: 'reserve', reserveStep: 2,
+        eyebrow: 'Schedule',
+        title: 'Continue to guest details',
+        body: "Communal locked, +CHF 3 added to the bill. Date and arrival window pre-set. Tap Continue.",
+        selector: '#view-reserve [data-step="2"] button.btn-primary',
+        change: 'Schedule confirmed'
       },
       {
         view: 'reserve', reserveStep: 3,
@@ -7395,8 +7406,8 @@ window.addEventListener('hashchange', () => {
       {
         view: 'tables',
         eyebrow: 'Seating',
-        title: 'Submit the preference',
-        body: 'Communal pre-selected for the demo. Hosts assign a matching table the moment you arrive. Tap Submit preference.',
+        title: 'Confirm with the hosts',
+        body: "Communal already paid for during booking — this is the floor plan view of where your table will sit. Tap Submit to share the preference with the lounge hosts.",
         selector: '#confirm-table-btn',
         change: 'Communal seat shared with the hosts',
         milestone: true,
