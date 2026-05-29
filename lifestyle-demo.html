@@ -96,6 +96,22 @@
   .scrollbar-hide::-webkit-scrollbar { display: none; }
   .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
   .hero-bg { background-image: linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(255,255,255,0.22) 55%, rgba(255,255,255,0.85) 85%, #FFFFFF 100%), url('https://plain-weur-prod-public.komododecks.com/202605/29/YnB8RXMULbbkoqbxNQpT/image.png'); background-size: cover; background-position: center; }
+  /* Pin every lounge card photo to a single aspect ratio at every
+     breakpoint, so Lifestyle / Luxe / Suite / Privé all render at the
+     identical size. Tailwind's md:aspect-auto / sm:aspect-auto
+     otherwise let the text column drive the image height, which
+     produces inconsistent crops between the four tier shots. */
+  #reserve-lounges > div:first-child > div:first-child > div:first-child,
+  #featured-lounges > div:first-child > div:first-child {
+    aspect-ratio: 4 / 3 !important;
+  }
+  #reserve-lounges > div:first-child > div:first-child > div:first-child > img,
+  #featured-lounges > div:first-child > div:first-child > img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center;
+  }
   .view { display: none; }
   .view.active { display: block; animation: fadeIn 0.4s ease-out; }
   .nav-link { position: relative; padding-bottom: 4px; transition: color 200ms; color: #3D4A66; }
