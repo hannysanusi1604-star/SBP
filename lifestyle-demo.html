@@ -95,7 +95,7 @@
   ::-webkit-scrollbar-thumb:hover { background: rgba(31,42,68,0.3); }
   .scrollbar-hide::-webkit-scrollbar { display: none; }
   .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-  .hero-bg { background-image: linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(255,255,255,0.22) 55%, rgba(255,255,255,0.85) 85%, #FFFFFF 100%), url('https://img.sanishtech.com/u/8fe4d7497f710b8b730021265855b7ad.png'); background-size: cover; background-position: center; }
+  .hero-bg { background-image: linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(255,255,255,0.22) 55%, rgba(255,255,255,0.85) 85%, #FFFFFF 100%), url('https://plain-weur-prod-public.komododecks.com/202605/29/YnB8RXMULbbkoqbxNQpT/image.png'); background-size: cover; background-position: center; }
   .view { display: none; }
   .view.active { display: block; animation: fadeIn 0.4s ease-out; }
   .nav-link { position: relative; padding-bottom: 4px; transition: color 200ms; color: #3D4A66; }
@@ -1758,7 +1758,7 @@
 /* ----------------------- DATA ----------------------- */
 const LOUNGES = [
   { id:'zrh-abd', name:'Aspire Lounge Gates A, B & D', airport:'Zurich Airport', airportCode:'ZRH', terminal:'Airside · Schengen · Gates A, B & D', city:'Zurich', country:'Switzerland', region:'Europe',
-    image:'https://i.postimg.cc/htWQStdZ/Chat-GPT-Image-May-27-2026-11-54-17-PM.png',
+    image:'https://plain-weur-prod-public.komododecks.com/202605/29/YnB8RXMULbbkoqbxNQpT/image.png',
     amenities: ['Free WiFi','Charging points','Complimentary food & drinks','Major card schemes accepted','Guaranteed flight delay cover','Free cancellations & amends'],
     capacity:240, rating:4.8, reviews:1842, priceFrom:48, currency:'CHF', occupancyPct:86, hours:'05:15 — 21:00 · daily' },
 ];
@@ -7343,6 +7343,16 @@ window.addEventListener('hashchange', () => {
     return null;
   }
 
+  // Demo-specific lounge photos. Overrides whatever loungeProfileFromNetwork
+  // generated (which would otherwise use the generic Europe stock image)
+  // so the booking card + dashboard tile show the right tier-specific shot.
+  var DEMO_LOUNGE_IMAGES = {
+    'zrh-abd':   'https://plain-weur-prod-public.komododecks.com/202605/29/YnB8RXMULbbkoqbxNQpT/image.png',
+    'gva-luxe':  'https://plain-weur-prod-public.komododecks.com/202605/29/KRFNOGebg7q6bI81JPdB/image.png',
+    'zrh-suite': 'https://plain-weur-prod-public.komododecks.com/202605/29/UDKRfIChA55QoaIhDoaO/image.png',
+    'zrh-prive': 'https://plain-weur-prod-public.komododecks.com/202605/29/kDmjGAaMzP0WIAmwtIPo/image.png'
+  };
+
   function configureLounge(tier) {
     var meta = TIER_META[tier];
     try {
@@ -7352,6 +7362,21 @@ window.addEventListener('hashchange', () => {
       } else if (typeof state !== 'undefined' && state && state.booking) {
         state.booking.loungeId = meta.loungeId;
       }
+      // Force the demo image onto whichever LOUNGES entry pickLounge ended
+      // up using (the region-based default is generic — we want the tier
+      // shot the user supplied).
+      try {
+        var loungeId = meta.loungeId;
+        var newImg = DEMO_LOUNGE_IMAGES[loungeId];
+        if (newImg && Array.isArray(LOUNGES)) {
+          for (var i = 0; i < LOUNGES.length; i++) {
+            if (LOUNGES[i] && LOUNGES[i].id === loungeId) {
+              LOUNGES[i].image = newImg;
+              break;
+            }
+          }
+        }
+      } catch (_) {}
     } catch (_) {}
     try {
       state.booking.guestName = '';
