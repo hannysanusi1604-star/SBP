@@ -7462,8 +7462,14 @@ window.addEventListener('hashchange', () => {
         body: "Review the " + meta.label + " lounge — amenities, hours, the lot. Tap Continue to schedule the visit.",
         selector: '#view-reserve [data-step="1"] button.btn-primary',
         change: 'Lounge confirmed'
-      },
-      {
+      }
+    ];
+    if (isLifestyle) {
+      // Lifestyle is the only tier where the traveller engages with the
+      // seat picker — they pick "No preference" up front so the later
+      // CHF 3 upgrade-to-Communal story has weight. Premium tiers skip
+      // this entirely (hosts assign their tables, no zone choice).
+      common.push({
         view: 'reserve', reserveStep: 2,
         eyebrow: 'Seat',
         title: 'Skip the seat for now',
@@ -7472,74 +7478,82 @@ window.addEventListener('hashchange', () => {
         change: 'No preference — table assigned on arrival',
         onEnter: function () {
           try {
-            // Start fresh — make sure no zone is pre-set so the picker actually
-            // reflects the demo's "no preference" choice.
             state.booking.preferredZone = null;
             if (typeof renderStep2 === 'function') renderStep2();
           } catch (_) {}
         }
-      },
-      {
-        view: 'reserve', reserveStep: 2,
-        eyebrow: 'Schedule',
-        title: 'Continue to guest details',
-        body: "No-preference saved. Date and arrival window pre-set for the demo. Tap Continue.",
-        selector: '#view-reserve [data-step="2"] button.btn-primary',
-        change: 'Schedule confirmed'
-      },
-      {
-        view: 'reserve', reserveStep: 3,
-        eyebrow: 'Guest details',
-        title: 'Confirm guest details',
-        body: 'Name, email and mobile auto-filled — the customer never types. Tap Continue to payment.',
-        selector: '#step3-next',
-        change: 'Guest details saved',
-        onEnter: function () {
-          try {
-            state.booking.guestName = 'Lukas Zimmermann';
-            state.booking.email = 'lukas@example.com';
-            var n = document.getElementById('step-name'); if (n) n.value = state.booking.guestName;
-            var e = document.getElementById('step-email'); if (e) e.value = state.booking.email;
-            var p = document.getElementById('step-phone'); if (p) p.value = '+41 79 000 00 00';
-            if (typeof validateStep3 === 'function') validateStep3();
-          } catch (_) {}
-        }
-      },
-      {
-        view: 'reserve', reserveStep: 4,
-        eyebrow: 'Payment',
-        title: 'Confirm the reservation',
-        body: "Priority Pass on file — no charge taken. Terms accepted for the demo. Tap Confirm.",
-        selector: '#confirm-btn',
-        change: 'Verifying with provider…',
-        onEnter: function () {
-          try {
-            var ln = document.getElementById('pass-lastname'); if (ln) ln.value = 'Zimmermann';
-            var pn = document.getElementById('pass-number');   if (pn) pn.value = 'PP-2026-3458';
-            ['input','change'].forEach(function (ev) {
-              if (ln) ln.dispatchEvent(new Event(ev, { bubbles: true }));
-              if (pn) pn.dispatchEvent(new Event(ev, { bubbles: true }));
-            });
-            var accept = document.getElementById('pay-accept');
-            if (accept && !accept.checked) {
-              accept.checked = true;
-              accept.dispatchEvent(new Event('change', { bubbles: true }));
-            }
-            var cbtn = document.getElementById('confirm-btn');
-            if (cbtn) cbtn.classList.remove('disabled');
-          } catch (_) {}
-        }
-      },
-      {
-        view: 'pay-modal',
-        eyebrow: 'Confirmation',
-        title: 'Booking confirmed',
-        body: 'Reservation held, no payment required for Priority Pass. Tap View my booking to open the dashboard.',
-        selector: '#pay-modal #pay-stage-success button.btn-primary',
-        change: 'Reservation confirmed',
-        milestone: true
+      });
+    }
+    common.push({
+      view: 'reserve', reserveStep: 2,
+      eyebrow: 'Schedule',
+      title: 'Continue to guest details',
+      body: isLifestyle
+        ? "No-preference saved. Date and arrival window pre-set for the demo. Tap Continue."
+        : "Hosts assign your table on arrival — no zone choice needed at " + meta.label + ". Date and arrival window pre-set. Tap Continue.",
+      selector: '#view-reserve [data-step="2"] button.btn-primary',
+      change: 'Schedule confirmed',
+      onEnter: function () {
+        try {
+          // Keep premium tiers on no-preference so the booking summary doesn't
+          // surface a seat-lock fee they shouldn't see.
+          state.booking.preferredZone = null;
+          if (typeof renderStep2 === 'function') renderStep2();
+        } catch (_) {}
       }
-    ];
+    });
+    common.push({
+      view: 'reserve', reserveStep: 3,
+      eyebrow: 'Guest details',
+      title: 'Confirm guest details',
+      body: 'Name, email and mobile auto-filled — the customer never types. Tap Continue to payment.',
+      selector: '#step3-next',
+      change: 'Guest details saved',
+      onEnter: function () {
+        try {
+          state.booking.guestName = 'Lukas Zimmermann';
+          state.booking.email = 'lukas@example.com';
+          var n = document.getElementById('step-name'); if (n) n.value = state.booking.guestName;
+          var e = document.getElementById('step-email'); if (e) e.value = state.booking.email;
+          var p = document.getElementById('step-phone'); if (p) p.value = '+41 79 000 00 00';
+          if (typeof validateStep3 === 'function') validateStep3();
+        } catch (_) {}
+      }
+    });
+    common.push({
+      view: 'reserve', reserveStep: 4,
+      eyebrow: 'Payment',
+      title: 'Confirm the reservation',
+      body: "Priority Pass on file — no charge taken. Terms accepted for the demo. Tap Confirm.",
+      selector: '#confirm-btn',
+      change: 'Verifying with provider…',
+      onEnter: function () {
+        try {
+          var ln = document.getElementById('pass-lastname'); if (ln) ln.value = 'Zimmermann';
+          var pn = document.getElementById('pass-number');   if (pn) pn.value = 'PP-2026-3458';
+          ['input','change'].forEach(function (ev) {
+            if (ln) ln.dispatchEvent(new Event(ev, { bubbles: true }));
+            if (pn) pn.dispatchEvent(new Event(ev, { bubbles: true }));
+          });
+          var accept = document.getElementById('pay-accept');
+          if (accept && !accept.checked) {
+            accept.checked = true;
+            accept.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+          var cbtn = document.getElementById('confirm-btn');
+          if (cbtn) cbtn.classList.remove('disabled');
+        } catch (_) {}
+      }
+    });
+    common.push({
+      view: 'pay-modal',
+      eyebrow: 'Confirmation',
+      title: 'Booking confirmed',
+      body: 'Reservation held, no payment required for Priority Pass. Tap View my booking to open the dashboard.',
+      selector: '#pay-modal #pay-stage-success button.btn-primary',
+      change: 'Reservation confirmed',
+      milestone: true
+    });
 
     // After step 8 the user returns to the dashboard automatically (submit
     // preference navigates back). From here every tier walks the menu in
