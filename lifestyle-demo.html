@@ -7481,80 +7481,6 @@ window.addEventListener('hashchange', () => {
         selector: '#pay-modal #pay-stage-success button.btn-primary',
         change: 'Reservation confirmed',
         milestone: true
-      },
-      {
-        view: 'dashboard',
-        eyebrow: 'My Stay',
-        title: 'Share a seating preference',
-        body: "Your booking and QR pass live here. Tell the lounge where you'd like to sit so a table is ready on arrival.",
-        selector: '#dm-jump-tables',
-        change: 'Seating opened'
-      },
-      {
-        view: 'tables',
-        eyebrow: 'Seating',
-        title: 'Upgrade to a Communal seat',
-        body: "Booking is on a no-preference seat — assigned at the door. The traveller now changes their mind and locks Communal. Tap Submit preference (locking a specific zone triggers the CHF 3 fee).",
-        selector: '#confirm-table-btn',
-        change: 'Submitting new preference…',
-        onEnter: function () {
-          try {
-            // Make sure booking is still no-preference + verified, then
-            // demo the seat upgrade by pre-selecting Communal in the
-            // Tables UI. submitPreference will copy state.preferredZone
-            // into state.booking.preferredZone, which triggers the
-            // CHF 3 charge flow we present next.
-            state.verified = true;
-            state.verification.type = 'priority-pass';
-            state.verification.lastName = 'Zimmermann';
-            state.verification.number = 'PP-2026-3458';
-            state.booking.preferredZone = null; // booked with no zone
-            state.preferredZone = 'communal';   // traveller's new wish
-            state.tableSlot = state.booking.arrivalTime || '14:00';
-            if (typeof renderTables === 'function') renderTables();
-          } catch (_) {}
-        }
-      },
-      {
-        // Seat-upgrade pay confirmation — fires the moment the
-        // traveller upgrades from no-preference to a specific zone on
-        // an already-confirmed booking.
-        view: 'dashboard',
-        eyebrow: 'Seat upgrade · Pay',
-        title: 'Confirm the CHF 3 charge',
-        body: "Locking a specific zone after booking adds a CHF 3 seat-reservation fee. Card on file (Priority Pass). Tap Confirm &amp; pay CHF 3.",
-        selector: '#demo-seat-pay-confirm',
-        change: '✨ CHF 3 charged · Communal seat locked',
-        milestone: true,
-        onEnter: function () {
-          // Show the seat-pay modal. The modal's Confirm button is the
-          // step's selector — when the user taps it, our click handler
-          // fires the change toast and the modal is dismissed in the
-          // next step's onEnter.
-          var m = document.getElementById('demo-seat-pay-modal');
-          if (m) m.classList.add('sp-visible');
-        }
-      },
-      {
-        // Post-charge dashboard with the Luxe/communal seat now locked.
-        // Same dashboard view, but the modal closes and a fresh
-        // confirmation lands so the traveller sees their updated total.
-        view: 'dashboard',
-        eyebrow: 'Seat locked',
-        title: 'See your QR pass',
-        body: "Communal seat locked, +CHF 3 added to the booking total — refundable until six hours before arrival. Tap to see the QR check-in pass.",
-        selector: '#dm-jump-dashboard',
-        change: 'Communal seat shared with the hosts',
-        onEnter: function () {
-          // Close the seat-pay modal and lock the booking with the new
-          // zone so the dashboard reflects the upgraded reservation.
-          var m = document.getElementById('demo-seat-pay-modal');
-          if (m) m.classList.remove('sp-visible');
-          try {
-            state.booking.preferredZone = 'communal';
-            if (typeof renderDashboard === 'function') renderDashboard();
-          } catch (_) {}
-        }
       }
     ];
 
@@ -7585,8 +7511,68 @@ window.addEventListener('hashchange', () => {
       milestone: !isLifestyle
     };
 
-    var lifestyleTail = [
-      jumpToMenu,
+    // Lifestyle-only seating + CHF 3 seat-upgrade payment flow. Premium
+    // tiers (Luxe / Suite / Privé) skip this entirely — they go straight
+    // from the booking confirmation to the menu and Pre-Arrival composer.
+    var lifestyleSeatingSteps = [
+      {
+        view: 'dashboard',
+        eyebrow: 'My Stay',
+        title: 'Share a seating preference',
+        body: "Booking is on a no-preference seat. The traveller changes their mind — tap Share preference to update the booking.",
+        selector: '#dash-table-card a[data-view="tables"]',
+        change: 'Seating opened'
+      },
+      {
+        view: 'tables',
+        eyebrow: 'Seating',
+        title: 'Upgrade to a Communal seat',
+        body: "Locking a specific zone after booking triggers a CHF 3 seat-reservation fee. Tap Submit preference.",
+        selector: '#confirm-table-btn',
+        change: 'Submitting new preference…',
+        onEnter: function () {
+          try {
+            state.verified = true;
+            state.verification.type = 'priority-pass';
+            state.verification.lastName = 'Zimmermann';
+            state.verification.number = 'PP-2026-3458';
+            state.booking.preferredZone = null;   // booked with no zone
+            state.preferredZone = 'communal';     // traveller's new wish
+            state.tableSlot = state.booking.arrivalTime || '14:00';
+            if (typeof renderTables === 'function') renderTables();
+          } catch (_) {}
+        }
+      },
+      {
+        view: 'dashboard',
+        eyebrow: 'Seat upgrade · Pay',
+        title: 'Confirm the CHF 3 charge',
+        body: "CHF 3 seat-reservation fee · Priority Pass on file. Tap Confirm & pay CHF 3 to lock the Communal table.",
+        selector: '#demo-seat-pay-confirm',
+        change: '✨ CHF 3 charged · Communal seat locked',
+        milestone: true,
+        onEnter: function () {
+          var m = document.getElementById('demo-seat-pay-modal');
+          if (m) m.classList.add('sp-visible');
+        }
+      }
+    ];
+
+    var lifestyleTail = lifestyleSeatingSteps.concat([
+      // The first jumpToMenu step also dismisses the seat-pay modal and
+      // commits the new zone, so the dashboard renders with the locked
+      // Communal table before the menu opens.
+      Object.assign({}, jumpToMenu, {
+        onEnter: function () {
+          var m = document.getElementById('demo-seat-pay-modal');
+          if (m) m.classList.remove('sp-visible');
+          try {
+            state.booking.preferredZone = 'communal';
+            if (typeof renderDashboard === 'function') renderDashboard();
+          } catch (_) {}
+        }
+      })
+    ]).concat([
       editorialIntro,
       {
         view: 'menu', menuSub: 'dishes',
@@ -7705,7 +7691,7 @@ window.addEventListener('hashchange', () => {
         change: 'QR pass open'
       },
       { view: 'dashboard', final: true }
-    ];
+    ]);
 
     // ---------- Pre-Arrival composer steps, one button per step ----------
     // Step 11 = Verify access (with auth inputs pre-filled). Subsequent
