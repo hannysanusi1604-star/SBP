@@ -3828,7 +3828,7 @@ function renderQueue() {
     const showsUpgrade = offer.offered || offer.reason === 'tier-full';
     const grid = el('div', { class: showsUpgrade ? 'grid grid-cols-1 lg:grid-cols-2 gap-3' : '' });
     grid.append(el('div', { class:'card-aspire p-6 sm:p-8 text-center flex flex-col' },
-      el('div', { class:'-mx-6 sm:-mx-8 -mt-6 sm:-mt-8 mb-5 overflow-hidden', html:`<img src="https://img.sanishtech.com/u/8fe4d7497f710b8b730021265855b7ad.png" alt="${l.name}" class="w-full h-40 object-cover" />` }),
+      el('div', { class:'-mx-6 sm:-mx-8 -mt-6 sm:-mt-8 mb-5 overflow-hidden', html:`<img src="${l.image || TIER_LOUNGE_IMAGES.lifestyle}" alt="${l.name}" class="w-full h-40 object-cover" style="object-position: center;" />` }),
       el('div', { class:'swiss-eyebrow text-aspire-navy' }, `${l.name} · ${currentTierLabel} queue`),
       el('div', { class:'swiss-eyebrow text-aspire-navy/70 mt-4' }, state.joined ? 'Guests ahead of you' : 'People currently waiting'),
       el('div', { class:'serif-heading text-6xl sm:text-7xl text-aspire-navy mt-2 tabular-nums' }, String(ahead)),
