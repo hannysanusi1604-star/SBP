@@ -3711,6 +3711,9 @@ function renderQueue() {
     setTimeout(() => renderVerifyForm('q'), 0);
   } else if (state.joined) {
     const pos = state.queue.findIndex(e => e.id === state.joined.id) + 1;
+    // 15-minute auto-release notice — sets expectations the moment the
+    // traveller joins the queue, before the "table ready" ping arrives.
+    side.append(el('div', { class:'p-3 rounded-xl bg-[#FFF6E8] border border-[#E9C883] flex items-start gap-2.5 text-[0.82rem] text-[#7A5C1B] leading-snug', html:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" class="mt-0.5 flex-shrink-0"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l4 2"/></svg><div><strong class="font-medium">Auto-release after 15 minutes.</strong> Once your table is ready, you have 15 min to claim it before it goes to the next guest. No deposit, no card on file.</div>' }));
     side.append(el('div', { class:'card-aspire p-6' },
       el('div', { class:'flex items-center justify-between', html:`<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-aspire-border text-[0.7rem] uppercase tracking-widest text-aspire-navy"><span class="live-dot"></span>You're in</span><span class="text-[0.78rem] text-aspire-navy/70">Joined at ${state.joined.joinedAt}</span>` }),
       el('div', { class:'mt-4' },
