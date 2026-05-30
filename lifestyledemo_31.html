@@ -2223,6 +2223,7 @@ const state = {
   joined: null,
   countdown: null,
   countdownTimer: null,
+  approachTimer: null,     // walks you to the front of the queue after you join
   confirmed: false,
   bookingRef: 'ASP-' + Math.random().toString(36).slice(2,7).toUpperCase(),
   // Verification (boarding pass / membership)
@@ -3816,7 +3817,7 @@ function renderQueue() {
       state.queue.push(entry);
       state.joined = entry;
       renderQueue();
-      setTimeout(triggerToast, 5500);
+      startApproach();
     };
     form.append(joinBtn);
     form.append(el('p', { class:'mt-3 text-[0.78rem] text-navy-500' }, 'By joining you agree to receive booking-related messages.'));
@@ -4026,6 +4027,32 @@ function startCountdown() {
   }, 1000);
   renderQueue();
 }
+// After you join at the back of the line, walk you up to the front in real
+// time — seating the guests ahead of you one by one — so the position and
+// wait you were shown actually count down to "table ready", instead of a
+// table appearing out of nowhere a few seconds after you join.
+function startApproach() {
+  if (state.approachTimer) clearInterval(state.approachTimer);
+  state.approachTimer = setInterval(() => {
+    const myId = state.joined ? state.joined.id : null;
+    const myIdx = myId ? state.queue.findIndex(e => e.id === myId) : -1;
+    if (myIdx < 0) { clearInterval(state.approachTimer); state.approachTimer = null; return; }
+    if (myIdx === 0) {
+      // You've reached the front — a table opens for you.
+      clearInterval(state.approachTimer); state.approachTimer = null;
+      if ($('#view-queue').classList.contains('active')) renderQueue();
+      triggerToast();
+      return;
+    }
+    // Seat the guest currently at the front (one of those ahead of you).
+    const front = state.queue[0];
+    state.queue.shift();
+    pushQueueEvent('seated', `${ZONE_META[front.preference].label} · table ${zoneTableId(front.preference)} freed, guest seated`, front.preference);
+    state.seatedRecently += 1;
+    if ($('#view-queue').classList.contains('active')) renderQueue();
+  }, 1400);
+}
+
 /* ---- Live queue simulation ---- */
 function clockHM(d) { return (d || new Date()).toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' }); }
 // Wall-clock time you'd be seated, given a wait in minutes.
@@ -4060,6 +4087,7 @@ function zoneTableId(zone) {
 function queueTick() {
   if (document.body.classList.contains('aspire-demo')) return;
   if (state.countdown) return;
+  if (state.approachTimer) return;  // your own approach-to-front owns the queue right now
   const myId = state.joined ? state.joined.id : null;
   let changed = false;
   // Seat the front guest — but never you, and keep the line from emptying.
