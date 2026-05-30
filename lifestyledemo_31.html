@@ -7010,6 +7010,19 @@ window.addEventListener('hashchange', () => {
     display: inline-flex; align-items: center; gap: 0.5rem;
   }
   #demo-intro .in-begin:hover { background: #28344C; transform: translateY(-1px); }
+  #demo-intro .in-actions { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; justify-content: flex-end; }
+  #demo-intro .in-secondary {
+    cursor: pointer;
+    background: #fff; color: #1F2A44;
+    border: 1px solid #D8CEC8;
+    padding: 0.85rem 1.4rem;
+    font-family: 'Inter', sans-serif; font-weight: 400;
+    font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+    border-radius: 999px;
+    transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+  }
+  #demo-intro .in-secondary:hover { border-color: #1F2A44; background: #FBF8F4; transform: translateY(-1px); }
 
   /* Chapter banner — slides in when the demo enters a new chapter */
   #demo-chapter-pill {
@@ -7281,11 +7294,17 @@ window.addEventListener('hashchange', () => {
     </div>
 
     <div class="in-row">
-      <div class="in-foot">Next: pick the traveller (Lifestyle, Luxe, Suite or Privé) and the demo will force a single one-tap path through every chapter.</div>
-      <button type="button" class="in-begin" id="dm-intro-begin">
-        Begin the walkthrough
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-      </button>
+      <div class="in-foot">Walk a full traveller (Lifestyle, Luxe, Suite or Privé) through every chapter — or jump straight to a single focused scenario.</div>
+      <div class="in-actions">
+        <button type="button" class="in-secondary" id="dm-intro-scenarios">
+          Walk a single scenario
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        <button type="button" class="in-begin" id="dm-intro-begin">
+          Begin the walkthrough
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -8441,11 +8460,13 @@ window.addEventListener('hashchange', () => {
       '  <p>' + tail + " Walk a different traveller next?</p>" +
       '  <div class="row">' +
       '    <button type="button" class="btn-outline" id="dm-pick-again">Choose another tier</button>' +
+      '    <button type="button" class="btn-outline" id="dm-pick-scenario">Walk a scenario</button>' +
       '    <button type="button" class="btn-primary" id="dm-close">Explore freely</button>' +
       '  </div>' +
       '</div>';
     document.body.appendChild(f);
-    document.getElementById('dm-pick-again').addEventListener('click', function () {
+    // Reset everything to a clean slate before replaying from a picker.
+    function resetForReplay() {
       f.remove();
       document.getElementById('demo-banner').style.display = 'none';
       document.getElementById('demo-veil').style.display = 'none';
@@ -8458,7 +8479,14 @@ window.addEventListener('hashchange', () => {
       try { state.confirmed = false; state.verified = false; state.preferredZone = null; } catch (_) {}
       try { sessionStorage.removeItem('paAuth'); } catch (_) {}
       try { if (typeof paState !== 'undefined') { paState.confirmed = null; } } catch (_) {}
+    }
+    document.getElementById('dm-pick-again').addEventListener('click', function () {
+      resetForReplay();
       document.getElementById('demo-tier-picker').style.display = 'flex';
+    });
+    document.getElementById('dm-pick-scenario').addEventListener('click', function () {
+      resetForReplay();
+      document.getElementById('demo-scenario-picker').style.display = 'flex';
     });
     document.getElementById('dm-close').addEventListener('click', exitDemo);
   }
@@ -8842,16 +8870,17 @@ window.addEventListener('hashchange', () => {
     });
   });
 
-  // Intro card → tier picker.
-  var introBtn = document.getElementById('dm-intro-begin');
-  if (introBtn) {
-    introBtn.addEventListener('click', function () {
-      var intro = document.getElementById('demo-intro');
-      if (intro) intro.style.display = 'none';
-      var picker = document.getElementById('demo-tier-picker');
-      if (picker) picker.style.display = 'flex';
-    });
+  // Intro card → tier picker (full walkthrough) or scenario picker (single feature).
+  function openDemoPicker(pickerId) {
+    var intro = document.getElementById('demo-intro');
+    if (intro) intro.style.display = 'none';
+    var picker = document.getElementById(pickerId);
+    if (picker) picker.style.display = 'flex';
   }
+  var introBtn = document.getElementById('dm-intro-begin');
+  if (introBtn) introBtn.addEventListener('click', function () { openDemoPicker('demo-tier-picker'); });
+  var introScenBtn = document.getElementById('dm-intro-scenarios');
+  if (introScenBtn) introScenBtn.addEventListener('click', function () { openDemoPicker('demo-scenario-picker'); });
 
   // ----------------------------------------------------------------
   // Chapter banner — slides in when the demo enters a new chapter.
