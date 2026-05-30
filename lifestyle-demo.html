@@ -3941,7 +3941,27 @@ function triggerToast() {
         </button>
       </div>
     </div>`;
-  $('#toast-claim').onclick = () => { closeToast(); startCountdown(); };
+  $('#toast-claim').onclick = () => {
+    // Lock the claimed table into the booking so My Stay actually reflects
+    // it. If this is a walk-in (no prior reservation), promote the queue
+    // entry to a confirmed stay so the dashboard shows the assigned table
+    // instead of the "no bookings yet" empty state.
+    try {
+      state.booking.assignedTable = { id: tableId, zone: z, label: ZONE_META[z].label };
+      state.booking.preferredZone = z;
+      state.booking.slot = state.tableSlot || state.booking.arrivalTime || '14:00';
+      if (!state.confirmed) {
+        state.confirmed = true;
+        if (!state.booking.guestName && state.joined && state.joined.name) {
+          state.booking.guestName = state.joined.name;
+        }
+      }
+      if (typeof renderDashboard === 'function') renderDashboard();
+      syncHomeStaticCTAs();
+    } catch (_) {}
+    closeToast();
+    startCountdown();
+  };
   $('#toast-release').onclick = closeToast;
   $('#toast-close').onclick = closeToast;
 }
@@ -4055,14 +4075,24 @@ function renderDashboard() {
   const tableCard = $('#dash-table-card');
   if (state.booking.preferredZone) {
     const z = ZONE_META[state.booking.preferredZone];
+    const assigned = state.booking.assignedTable;
+    const tableNumberBlock = assigned
+      ? `<div class="mt-4 p-3 rounded-xl bg-white border border-aspire-taupe/40 shadow-card">
+           <div class="flex items-center gap-2 text-[0.72rem] uppercase tracking-widest text-aspire-navy">
+             <span class="live-dot"></span>Table claimed · ready now
+           </div>
+           <div class="serif-heading text-aspire-navy mt-1 text-2xl">${assigned.label} #${assigned.id}</div>
+           <div class="text-[0.78rem] text-navy-500 mt-1">Show this number to the host at the door — your seat is held.</div>
+         </div>`
+      : `<div class="mt-4 p-3 rounded-xl bg-white/70 border border-white">
+           <div class="text-[0.72rem] uppercase tracking-widest text-navy-500">Table number</div>
+           <div class="text-aspire-navy mt-1 text-[0.92rem]">Assigned by our hosts when you check in.</div>
+         </div>`;
     tableCard.innerHTML = `
       <div class="swiss-eyebrow text-aspire-navy/70">Your seating</div>
-      <div class="serif-heading text-2xl text-aspire-navy mt-1">${z.label} · preferred</div>
+      <div class="serif-heading text-2xl text-aspire-navy mt-1">${z.label} · ${assigned ? 'claimed' : 'preferred'}</div>
       <div class="text-aspire-navy/80 text-[0.92rem] mt-1">Arrival window · ${state.booking.slot || state.booking.arrivalTime}</div>
-      <div class="mt-4 p-3 rounded-xl bg-white/70 border border-white">
-        <div class="text-[0.72rem] uppercase tracking-widest text-navy-500">Table number</div>
-        <div class="text-aspire-navy mt-1 text-[0.92rem]">Assigned by our hosts when you check in.</div>
-      </div>
+      ${tableNumberBlock}
       <a href="#tables" data-view="tables" class="mt-4 inline-flex items-center gap-2 text-aspire-navy underline underline-offset-4 text-[0.85rem]">Update preference <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>`;
   } else {
     tableCard.innerHTML = `
