@@ -3842,7 +3842,7 @@ function renderQueue() {
     if (offer.offered) {
       const toProfile = TIER_PROFILES[offer.to];
       const toLabel = TIER_LABELS[offer.to];
-      const benefitsGrid = el('div', { class:'grid grid-cols-2 gap-2 mt-4' });
+      const benefitsGrid = el('div', { class:'grid grid-cols-1 gap-2 mt-4' });
       toProfile.amenities.slice(0, 4).forEach(a => {
         benefitsGrid.append(el('div', { class:'flex items-start gap-2 text-[0.78rem] text-aspire-navy/85' },
           el('span', { class:'mt-0.5 h-4 w-4 rounded-full bg-aspire-navy text-white flex items-center justify-center flex-shrink-0', html:'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m4 12 5 5L20 6"/></svg>' }),
@@ -3855,7 +3855,7 @@ function renderQueue() {
           el('div', {},
             el('div', { class:'swiss-eyebrow text-aspire-navy' }, `${toProfile.name} · seats available now`),
             el('div', { class:'serif-heading text-2xl text-aspire-navy mt-1' }, `Elevate to ${toLabel} — immediate access`),
-            el('p', { class:'text-[0.88rem] text-navy-500 mt-2 leading-relaxed' }, `${currentTierLabel} is at capacity. Continue in the queue, or move up to the ${toProfile.name} where space is available now and the experience is more refined.`)
+            el('p', { class:'text-[0.88rem] text-navy-500 mt-2 leading-relaxed' }, `${currentTierLabel} is full. Move up to ${toProfile.name} — seats open right now.`)
           ),
           el('span', { class:'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-aspire-navy text-white text-[0.7rem] uppercase tracking-widest flex-shrink-0', html:`<span class="h-1.5 w-1.5 rounded-full bg-white"></span>${offer.remaining} seats left · ${toLabel}` })
         ),
