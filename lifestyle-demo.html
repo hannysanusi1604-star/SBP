@@ -2798,14 +2798,25 @@ function bookingSummaryHTML() {
   const upgradeLabel = hasUpgrade ? TIER_LABELS[upgradeTier] : '';
   const upgradeProfileName = hasUpgrade ? TIER_PROFILES[upgradeTier].name : '';
   const fromTierLabel = TIER_LABELS[fromTier] || 'Lifestyle';
-  const isAdvance = requiresDeposit(state.booking);
+  // "Claimed via queue" path — the traveller got their table from the
+  // live queue, not by prepaying in the booking flow. No deposit, no
+  // seat-reservation fee. We override the standard advance/seat-lock
+  // calculations to render the cleaner walk-in summary.
+  const claimedViaQueue = !!(state.booking.assignedTable && !state.booking.preferredZone);
+  const isAdvance = claimedViaQueue ? false : requiresDeposit(state.booking);
   const deposit = isAdvance ? calculateDeposit(l) : 0;
-  const hasSeatLock = requiresSeatLock(state.booking);
+  const hasSeatLock = claimedViaQueue ? false : requiresSeatLock(state.booking);
   const seatLock = hasSeatLock ? calculateSeatLockFee(l) : 0;
   const graceTime = depositGraceTime(state.booking.arrivalTime);
-  let seating = state.booking.preferredZone
-    ? `${ZONE_META[state.booking.preferredZone].label} reserved · table held`
-    : 'No preference · seat assigned on arrival';
+  let seating;
+  if (claimedViaQueue) {
+    const a = state.booking.assignedTable;
+    seating = `${a.label} #${a.id} · claimed from queue`;
+  } else if (state.booking.preferredZone) {
+    seating = `${ZONE_META[state.booking.preferredZone].label} reserved · table held`;
+  } else {
+    seating = 'No preference · seat assigned on arrival';
+  }
   const accessTypeLabel = hasUpgrade
     ? `<span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-aspire-navy"></span>${upgradeLabel} upgrade</span>`
     : fromTierLabel;
@@ -2929,6 +2940,13 @@ function bookingSummaryHTML() {
        <div class="mt-4 flex items-start gap-2 text-[0.78rem] text-navy-500 leading-relaxed">
          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="mt-0.5 flex-shrink-0"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
          <span>Your reservation is held with a <strong class="text-aspire-navy">${l.currency} ${deposit}</strong> refundable deposit.${lockLine} ${cancelLine} Otherwise forfeited if you don't check in by <strong class="text-aspire-navy">${graceTime}</strong>.</span>
+       </div>`;
+  } else if (claimedViaQueue) {
+    const a = state.booking.assignedTable;
+    priceBlock += `
+       <div class="mt-4 flex items-start gap-2 text-[0.78rem] text-navy-500 leading-relaxed">
+         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="mt-0.5 flex-shrink-0"><path d="M6 8a6 6 0 0112 0c0 7 3 7 3 9H3c0-2 3-2 3-9z"/><path d="M10 21a2 2 0 004 0"/></svg>
+         <span>You picked up <strong class="text-aspire-navy">${a.label} #${a.id}</strong> live from the walk-in queue. No deposit, no card on file — just show your QR pass at the door.</span>
        </div>`;
   }
   return `
@@ -4027,7 +4045,11 @@ function renderDashboard() {
 
   $('#dash-summary').innerHTML = bookingSummaryHTML();
 
-  const dashAdvance = requiresDeposit(state.booking);
+  // Suppress deposit / cancel UI if the table was claimed off the live
+  // queue — that path is free and the panel should reflect "no deposit,
+  // no card on file" instead of dangling the CHF 48 forfeit copy.
+  const dashClaimedViaQueue = !!(state.booking.assignedTable && !state.booking.preferredZone);
+  const dashAdvance = dashClaimedViaQueue ? false : requiresDeposit(state.booking);
   const dashGrace = depositGraceTime(state.booking.arrivalTime);
   const dashDeposit = dashAdvance ? calculateDeposit(l) : 0;
   const dashCanCancelFree = dashAdvance && canCancelFree(state.booking);
