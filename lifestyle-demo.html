@@ -103,7 +103,8 @@
      column drive the image height on desktop. Width follows the
      existing flex layout (md:w-2/5 / sm:w-1/2). */
   #reserve-lounges > div:first-child > div:first-child > div:first-child,
-  #featured-lounges > div:first-child > div:first-child {
+  #featured-lounges > div:first-child > div:first-child,
+  #search-results > div:first-child > div:first-child {
     height: 320px !important;
     min-height: 320px !important;
     max-height: 320px !important;
@@ -113,7 +114,8 @@
   }
   @media (max-width: 767px) {
     #reserve-lounges > div:first-child > div:first-child > div:first-child,
-    #featured-lounges > div:first-child > div:first-child {
+    #featured-lounges > div:first-child > div:first-child,
+    #search-results > div:first-child > div:first-child {
       height: 240px !important;
       min-height: 240px !important;
       max-height: 240px !important;
@@ -121,11 +123,12 @@
     }
   }
   #reserve-lounges > div:first-child > div:first-child > div:first-child > img,
-  #featured-lounges > div:first-child > div:first-child > img {
+  #featured-lounges > div:first-child > div:first-child > img,
+  #search-results > div:first-child > div:first-child > img {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
-    object-position: center !important;
+    object-position: center center !important;
     display: block !important;
   }
   .view { display: none; }
@@ -1788,6 +1791,15 @@
 <!-- ============================================================ SCRIPT -->
 <script>
 /* ----------------------- DATA ----------------------- */
+// Single source of truth for the per-tier lounge photos used everywhere
+// (booking card, dashboard tile, queue upgrade card). Keeps Lifestyle,
+// Luxe, Suite and Privé visually aligned across every surface.
+const TIER_LOUNGE_IMAGES = {
+  lifestyle: 'https://plain-weur-prod-public.komododecks.com/202605/29/YnB8RXMULbbkoqbxNQpT/image.png',
+  luxe:      'https://plain-weur-prod-public.komododecks.com/202605/29/KRFNOGebg7q6bI81JPdB/image.png',
+  suite:     'https://plain-weur-prod-public.komododecks.com/202605/29/UDKRfIChA55QoaIhDoaO/image.png',
+  prive:     'https://plain-weur-prod-public.komododecks.com/202605/29/kDmjGAaMzP0WIAmwtIPo/image.png'
+};
 const LOUNGES = [
   { id:'zrh-abd', name:'Aspire Lounge Gates A, B & D', airport:'Zurich Airport', airportCode:'ZRH', terminal:'Airside · Schengen · Gates A, B & D', city:'Zurich', country:'Switzerland', region:'Europe',
     image:'https://plain-weur-prod-public.komododecks.com/202605/29/YnB8RXMULbbkoqbxNQpT/image.png',
@@ -3838,7 +3850,7 @@ function renderQueue() {
         ));
       });
       grid.append(el('div', { class:'card-cream p-6 sm:p-8 border-aspire-navy/40 flex flex-col' },
-        el('div', { class:'-mx-6 sm:-mx-8 -mt-6 sm:-mt-8 mb-5 overflow-hidden', html:`<img src="https://i.postimg.cc/L4W51N0f/macbook-hd-wallpaper-2.png" alt="${toProfile.name}" class="w-full h-40 object-cover" />` }),
+        el('div', { class:'-mx-6 sm:-mx-8 -mt-6 sm:-mt-8 mb-5 overflow-hidden', html:`<img src="${TIER_LOUNGE_IMAGES[offer.to] || 'https://i.postimg.cc/L4W51N0f/macbook-hd-wallpaper-2.png'}" alt="${toProfile.name}" class="w-full h-40 object-cover" style="object-position: center;" />` }),
         el('div', { class:'flex items-start justify-between gap-3' },
           el('div', {},
             el('div', { class:'swiss-eyebrow text-aspire-navy' }, `${toProfile.name} · seats available now`),
@@ -7378,11 +7390,14 @@ window.addEventListener('hashchange', () => {
   // Demo-specific lounge photos. Overrides whatever loungeProfileFromNetwork
   // generated (which would otherwise use the generic Europe stock image)
   // so the booking card + dashboard tile show the right tier-specific shot.
+  // Use the same per-tier photos that TIER_LOUNGE_IMAGES exposes so the
+  // booking card, dashboard tile and upgrade card all line up on the
+  // identical asset for each tier.
   var DEMO_LOUNGE_IMAGES = {
-    'zrh-abd':   'https://plain-weur-prod-public.komododecks.com/202605/29/YnB8RXMULbbkoqbxNQpT/image.png',
-    'gva-luxe':  'https://plain-weur-prod-public.komododecks.com/202605/29/KRFNOGebg7q6bI81JPdB/image.png',
-    'zrh-suite': 'https://plain-weur-prod-public.komododecks.com/202605/29/UDKRfIChA55QoaIhDoaO/image.png',
-    'zrh-prive': 'https://plain-weur-prod-public.komododecks.com/202605/29/kDmjGAaMzP0WIAmwtIPo/image.png'
+    'zrh-abd':   (typeof TIER_LOUNGE_IMAGES !== 'undefined' && TIER_LOUNGE_IMAGES.lifestyle),
+    'gva-luxe':  (typeof TIER_LOUNGE_IMAGES !== 'undefined' && TIER_LOUNGE_IMAGES.luxe),
+    'zrh-suite': (typeof TIER_LOUNGE_IMAGES !== 'undefined' && TIER_LOUNGE_IMAGES.suite),
+    'zrh-prive': (typeof TIER_LOUNGE_IMAGES !== 'undefined' && TIER_LOUNGE_IMAGES.prive)
   };
 
   function configureLounge(tier) {
