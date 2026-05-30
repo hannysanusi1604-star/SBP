@@ -4158,6 +4158,8 @@ function renderDashboard() {
   const dashAdvance = requiresDeposit(state.booking);
   const dashGrace = depositGraceTime(state.booking.arrivalTime);
   const dashDeposit = dashAdvance ? calculateDeposit(l) : 0;
+  const dashSeatLock = (dashAdvance && requiresSeatLock(state.booking)) ? calculateSeatLockFee(l) : 0;
+  const dashTotal = dashDeposit + dashSeatLock;  // full amount held — matches the cancel modal
   const dashCanCancelFree = dashAdvance && canCancelFree(state.booking);
   const dashCancelDeadline = formatCancellationDeadline(state.booking);
   $('#dash-access-card').innerHTML = `
@@ -4176,7 +4178,7 @@ function renderDashboard() {
       <div class="flex items-start gap-2.5 text-[0.85rem] text-aspire-navy/85 leading-relaxed">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="mt-0.5 flex-shrink-0"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l4 2"/></svg>
         <div>
-          <div><strong class="text-aspire-navy">${l.currency} ${dashDeposit}</strong> deposit held · refunds on check-in.</div>
+          <div><strong class="text-aspire-navy">${l.currency} ${dashDeposit}</strong> deposit held · refunds on check-in.${dashSeatLock ? ` Plus a <strong class="text-aspire-navy">${l.currency} ${dashSeatLock}</strong> seat reservation fee for your ${ZONE_META[state.booking.preferredZone].label}.` : ''}</div>
           <div class="text-[0.78rem] text-aspire-navy/65 mt-0.5">${
             dashCanCancelFree
               ? `Cancel free by <strong class="text-aspire-navy">${dashCancelDeadline}</strong> · grace period until <strong class="text-aspire-navy">${dashGrace}</strong>.`
@@ -4185,7 +4187,7 @@ function renderDashboard() {
         </div>
       </div>
       <button onclick="openCancelModal()" class="btn-outline mt-4 w-full justify-center text-[0.72rem]">
-        ${dashCanCancelFree ? `Cancel reservation · free until ${dashCancelDeadline}` : `Cancel reservation · ${l.currency} ${dashDeposit} forfeit`}
+        ${dashCanCancelFree ? `Cancel reservation · free until ${dashCancelDeadline}` : `Cancel reservation · ${l.currency} ${dashTotal} forfeit`}
       </button>` : ''}`;
 
   const fl = $('#flight-list'); fl.innerHTML = '';
@@ -4414,7 +4416,7 @@ window.addEventListener('hashchange', () => {
       perks: [
         'Three chef-curated tray combinations',
         'Plated to your seat by a host',
-        'Standard 18-minute preparation',
+        'Prepared in 14–24 min by tray size',
         'Fixed composition — no editing required',
       ],
       handoff: 'Your seat · Luxe lounge',
@@ -4711,6 +4713,13 @@ window.addEventListener('hashchange', () => {
   }
 
   function paEffectivePrep() {
+    // Privé is bespoke — it has no tray size, so derive prep from how many
+    // ingredients the chef composes the plate around (the Privé flow's own input)
+    // rather than inheriting a leftover tray size the user never set here.
+    if (paState.tier === 'prive') {
+      var n = (paState.prive && paState.prive.ingredients) ? paState.prive.ingredients.size : 0;
+      return Math.max(14, 14 + n * 2);
+    }
     var cfg = PA_TRAY_SIZES[paState.size];
     return paState.tier === 'luxe' ? cfg.prep : Math.max(8, cfg.prep - 3);
   }
@@ -4820,6 +4829,9 @@ window.addEventListener('hashchange', () => {
     }
     var ingredients = PA_DISH_INGREDIENTS[d.id] || [];
     var teaser = ingredients.slice(0,3).join(' — ');
+    // Suite "Customize this dish" — surface any ingredients the guest removed so
+    // the tray reflects the customization instead of silently ignoring it.
+    var removedList = (paState.tier === 'suite' && paState.suite.customizations[d.id] && paState.suite.customizations[d.id].removed) || [];
     return '<div class="pa-dish-slot filled '+(recommended?'recommend':'')+' '+(canEdit?'':'locked')+'" style="align-items:flex-start;">' +
       '<span class="pa-tier-num" style="margin-top:4px;">'+num+'</span>' +
       '<img src="'+esc(d.image)+'" alt="'+esc(d.name)+'" loading="lazy" class="pa-thumb" onerror="this.style.opacity=\'.3\'" />' +
@@ -4829,6 +4841,7 @@ window.addEventListener('hashchange', () => {
           (recommended && canEdit ? '<span class="pa-pill">'+paIcon('sparkle','w-2.5 h-2.5')+' Chef’s pick</span>' : '') +
         '</div>' +
         (teaser ? '<p class="mt-1 text-[0.78rem] text-aspire-taupe leading-snug">'+esc(teaser)+'</p>' : '') +
+        (removedList.length ? '<p class="mt-1 text-[0.72rem] text-[#B05A47] leading-snug">Without '+esc(removedList.join(', '))+'</p>' : '') +
         '<div class="mt-2 flex items-center gap-2 flex-wrap">' +
           '<span class="text-[0.6rem] uppercase tracking-[0.22em] '+(d.temperature==='hot'?'text-[#C0481E]':'text-[#2E7BB8]')+'">'+esc(d.temperature)+'</span>' +
           (d.allergens.length ? '<span class="text-[0.58rem] uppercase tracking-[0.18em] text-aspire-taupe">Contains: '+esc(d.allergens.slice(0,3).join(', '))+'</span>' : '') +
@@ -5076,7 +5089,7 @@ window.addEventListener('hashchange', () => {
             '<div class="mt-4 grid grid-cols-3 sm:grid-cols-6 gap-2">'+timeChips+'</div>',
             '<textarea data-pa-note rows="3" placeholder="Add a note — celebration, allergy, seating preference…" class="mt-6 w-full bg-transparent border-b border-aspire-navy/15 px-1 py-3 text-[0.95rem] focus:outline-none focus:border-aspire-navy">'+esc(paState.note)+'</textarea>',
           '</div>',
-          '<div class="lg:col-span-5"><p class="text-aspire-taupe leading-[1.7]">Each tray takes roughly 18 minutes to plate, so we finish moments before you sit down.</p></div>',
+          '<div class="lg:col-span-5"><p class="text-aspire-taupe leading-[1.7]">A tray takes roughly '+paEffectivePrep()+' minutes to plate at this size, so we finish moments before you sit down.</p></div>',
         '</div>',
       '</div>',
     ].join('');
@@ -5777,7 +5790,9 @@ window.addEventListener('hashchange', () => {
         var c = paState.suite.customizations[id] || { removed: [] };
         var i = c.removed.indexOf(ing);
         if (i === -1) c.removed.push(ing); else c.removed.splice(i, 1);
-        paState.suite.customizations[id] = c;
+        if (!c.removed.length) delete paState.suite.customizations[id];
+        else paState.suite.customizations[id] = c;
+        paRender();            // reflect the change on the tray slot underneath
         paCloseModal();
         paOpenDetailModal(id);
       });
@@ -5785,6 +5800,7 @@ window.addEventListener('hashchange', () => {
     var resetBtn = backdropEl.querySelector('[data-pa-reset-custom]');
     if (resetBtn) resetBtn.addEventListener('click', function(){
       delete paState.suite.customizations[id];
+      paRender();
       paCloseModal();
       paOpenDetailModal(id);
     });
@@ -6104,7 +6120,7 @@ window.addEventListener('hashchange', () => {
     { id:'pretzel-butter', name:'Pretzel Rolls & Butter Selection', description:'Warm Swiss pretzel rolls with cultured butter, herb butter and alpine sea salt.', category:'starters', image:'https://images.unsplash.com/photo-1568051243851-f9b136146e97?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'local', dietary:['vegetarian','nut-free'], allergens:['gluten','dairy'] },
     { id:'fruit-compote', name:'Seasonal Fruit Compote Cups', description:'Slow-cooked seasonal fruits, vanilla bean, light alpine honey syrup.', category:'starters', image:'https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'local', dietary:['vegan','vegetarian','gluten-free','dairy-free','halal-friendly','nut-free'], allergens:[] },
     // Starters — International
-    { id:'greek-yogurt-parfait', name:'Greek Yogurt Parfait Station', description:'Thick Greek yoghurt, honey, granola, fresh berries and seasonal fruits.', category:'starters', image:'https://images.unsplash.com/photo-1542691457-cbe4df041eb2?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'international', dietary:['vegetarian','halal-friendly'], allergens:['dairy','gluten','nuts'] },
+    { id:'greek-yogurt-parfait', name:'Greek Yogurt Parfait', description:'Thick Greek yoghurt, honey, granola, fresh berries and seasonal fruits.', category:'starters', image:'https://images.unsplash.com/photo-1542691457-cbe4df041eb2?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'international', dietary:['vegetarian','halal-friendly'], allergens:['dairy','gluten','nuts'] },
     { id:'french-pastry', name:'Mini French Pastry Selection', description:'Pain au chocolat, croissant, brioche and palmier — baked each morning.', category:'starters', image:'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'international', dietary:['vegetarian','nut-free'], allergens:['gluten','dairy','eggs'] },
     { id:'chickpea-salad', name:'Middle Eastern Chickpea Salad', description:'Chickpeas, tomato, cucumber, parsley, lemon, cumin and olive oil.', category:'starters', image:'https://images.unsplash.com/photo-1543339308-43e59d6b73a6?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'international', dietary:['vegan','vegetarian','gluten-free','dairy-free','halal-friendly','nut-free'], allergens:[] },
     { id:'avocado-wraps', name:'Avocado & Tomato Breakfast Wraps', description:'Smashed avocado, sun-ripened tomato, baby spinach, lemon, soft wheat wrap.', category:'starters', image:'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'international', dietary:['vegan','vegetarian','dairy-free','halal-friendly','nut-free'], allergens:['gluten'] },
@@ -6115,7 +6131,7 @@ window.addEventListener('hashchange', () => {
     { id:'herb-lake-fish', name:'Herb-Roasted Lake Fish', description:'Filet of Lake Zürich perch, herb butter, citrus beurre blanc, garden vegetables.', category:'mains', image:'https://images.unsplash.com/photo-1485921325833-c519f76c4927?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'local', dietary:['gluten-free','nut-free'], allergens:['dairy'], chefNote:'Sustainably caught from regional Swiss lakes.' },
     // Mains — International
     { id:'shakshuka', name:'Mediterranean Shakshuka', description:'Slow-simmered tomatoes, peppers, spices and baked eggs with crusty bread.', category:'mains', image:'https://images.unsplash.com/photo-1590412200988-a436970781fa?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'international', dietary:['vegetarian','halal-friendly'], allergens:['eggs','gluten'] },
-    { id:'chicken-skillet', name:'Chicken Sausage Breakfast Skillet', description:'Halal chicken sausage, peppers, onions, golden potatoes and baked eggs.', category:'mains', image:'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'international', dietary:['halal-friendly','nut-free'], allergens:['eggs'] },
+    { id:'chicken-skillet', name:'Chicken Sausage Skillet', description:'Halal chicken sausage, peppers, onions, golden potatoes and baked eggs.', category:'mains', image:'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'international', dietary:['halal-friendly','nut-free'], allergens:['eggs'] },
     { id:'asian-fried-rice', name:'Asian Vegetable Fried Rice', description:'Jasmine rice, ginger, garlic, soy and seasonal vegetables, finished with sesame.', category:'mains', image:'https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=1200&q=80', temperature:'hot', source:'international', dietary:['vegan','vegetarian','dairy-free','halal-friendly','nut-free'], allergens:['soy','sesame'] },
     // Desserts — Local
     { id:'zuger-kirschtorte', name:'Mini Zuger Kirschtorte', description:'Layered hazelnut meringue, buttercream and kirsch-soaked sponge from canton Zug.', category:'desserts', image:'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=1200&q=80', temperature:'cold', source:'local', dietary:['vegetarian'], allergens:['gluten','dairy','nuts','eggs'], chefNote:'A protected Swiss specialty since 1915.' },
@@ -7572,6 +7588,7 @@ window.addEventListener('hashchange', () => {
     prive:     { label: 'Privé',     loungeId: 'zrh-prive', tag: 'Privé · Bespoke plate' }
   };
   var chosenTier = null;
+  var chosenScenario = null;  // set when a single-feature scenario is walked (vs a full tier)
 
   function findNetEntry(loungeId) {
     if (typeof LOUNGE_NETWORK === 'undefined') return null;
@@ -8557,16 +8574,24 @@ window.addEventListener('hashchange', () => {
     var v = document.getElementById('demo-veil'); if (v) v.style.opacity = '0';
     var f = document.createElement('div');
     f.id = 'demo-finale';
-    var lbl = TIER_META[chosenTier].label;
-    var tail = chosenTier === 'lifestyle'
-      ? "All five chapters — booking, seating, the menu, the live Luxe upsell at the queue, and the QR pass."
-      : chosenTier === 'prive'
-        ? "All five chapters — booking, seating, the menu, the bespoke plate composer, and the QR pass."
-        : "All five chapters — booking, seating, the menu, the Pre-Arrival composer, and the QR pass.";
+    var headline, tail;
+    if (chosenScenario && SCENARIOS[chosenScenario]) {
+      // A single-feature scenario was walked — don't claim "all five chapters".
+      var sc = SCENARIOS[chosenScenario];
+      headline = 'That’s “' + sc.title + '”.';
+      tail = 'A focused walk through ' + sc.tag + '.';
+    } else {
+      headline = 'That’s the ' + TIER_META[chosenTier].label + ' journey.';
+      tail = chosenTier === 'lifestyle'
+        ? "All five chapters — booking, seating, the menu, the live Luxe upsell at the queue, and the QR pass."
+        : chosenTier === 'prive'
+          ? "All five chapters — booking, seating, the menu, the bespoke plate composer, and the QR pass."
+          : "All five chapters — booking, seating, the menu, the Pre-Arrival composer, and the QR pass.";
+    }
     f.innerHTML = '' +
       '<div class="dm-card">' +
       '  <div class="swiss-eyebrow">— Demo complete</div>' +
-      '  <h2>That\'s the ' + lbl + ' journey.</h2>' +
+      '  <h2>' + headline + '</h2>' +
       '  <p>' + tail + " Walk a different traveller next?</p>" +
       '  <div class="row">' +
       '    <button type="button" class="btn-outline" id="dm-pick-again">Choose another tier</button>' +
@@ -8586,6 +8611,7 @@ window.addEventListener('hashchange', () => {
       currentChapter = null;
       idx = 0;
       chosenTier = null;
+      chosenScenario = null;
       try { state.confirmed = false; state.verified = false; state.preferredZone = null; } catch (_) {}
       try { sessionStorage.removeItem('paAuth'); } catch (_) {}
       try { if (typeof paState !== 'undefined') { paState.confirmed = null; } } catch (_) {}
@@ -8789,6 +8815,7 @@ window.addEventListener('hashchange', () => {
   // ----------------------------------------------------------------
   function startTier(tier) {
     chosenTier = tier;
+    chosenScenario = null;
     var meta = TIER_META[tier];
     bannerLabel.textContent = 'Aspire Demo · ' + meta.label;
     tierTag.textContent = meta.tag;
@@ -8880,16 +8907,24 @@ window.addEventListener('hashchange', () => {
       }
       // Tables view always = seating.
       if (s.view === 'tables') { s.phase = 'seating'; continue; }
-      // Dashboard / menu steps route by which jump-button they target.
+      // Dashboard seat-preference / CHF 3 seat-lock steps = seating. They carry
+      // a non-jump selector, so route them by what they do (not the view), else
+      // they'd fall through to "dashboard → final" and leak into queue scenarios.
+      if (sel.indexOf('demo-seat-pay') >= 0 || sel.indexOf('dash-table-card') >= 0) {
+        s.phase = 'seating'; continue;
+      }
+      // Route by the view the step LIVES on before falling back to its jump
+      // button. The pre-arrival composer + "pre-order sent" beat live on the
+      // menu (even though they hand off via #dm-jump-queue); the upsell lives on
+      // the queue (even though it hands off via #dm-jump-dashboard). Tagging by
+      // destination button mislabels both.
+      if (s.view === 'menu')  { s.phase = 'menu'; continue; }
+      if (s.view === 'queue') { s.phase = 'queue'; continue; }
+      // Remaining dashboard hand-off steps route by their jump-button target.
       if (sel === '#dm-jump-tables') { s.phase = 'seating'; continue; }
       if (sel === '#dm-jump-menu')   { s.phase = 'menu'; continue; }
       if (sel === '#dm-jump-queue')  { s.phase = 'queue'; continue; }
       if (sel === '#dm-jump-dashboard') { s.phase = 'final'; continue; }
-      // Queue view = queue (upgrade flow lives here too).
-      if (s.view === 'queue') { s.phase = 'queue'; continue; }
-      // Anything else on the menu = menu (tabs walk, pre-arrival composer,
-      // receipt overlay).
-      if (s.view === 'menu') { s.phase = 'menu'; continue; }
       // Bare dashboard step (no jump selector) — treat as final.
       if (s.view === 'dashboard') { s.phase = 'final'; continue; }
       s.phase = s.phase || 'reserve';
@@ -8957,6 +8992,7 @@ window.addEventListener('hashchange', () => {
     var s = SCENARIOS[scenarioId];
     if (!s) return;
     chosenTier = s.tier;
+    chosenScenario = scenarioId;
     var meta = TIER_META[s.tier];
     bannerLabel.textContent = 'Aspire Demo · ' + s.title;
     tierTag.textContent = s.tag;
