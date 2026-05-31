@@ -645,7 +645,7 @@
         </div>
         <div class="mt-5 px-1">
           <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-aspire-border text-[0.7rem] uppercase tracking-widest text-aspire-navy">
-            <span class="live-dot"></span>Live occupancy · updates every 30s
+            <span class="live-dot"></span>Live virtual queue · real-time waits
           </span>
         </div>
       </div>
@@ -1809,7 +1809,7 @@ const LOUNGES = [
 
 const LOUNGE_NETWORK = [
   { region:'Europe', lounges:[
-    { name:'Zürich Aspire Lounge — Gates A, B & D', city:'Zurich', country:'Switzerland', count:2, code:'ZRH', id:'zrh-abd', tier:'lifestyle' },
+    { name:'Aspire Lounge Gates A, B & D', city:'Zurich', country:'Switzerland', code:'ZRH', id:'zrh-abd', tier:'lifestyle' },
     { name:'Suite by Aspire · Zürich Airport (Non-Schengen)', city:'Zurich', country:'Switzerland', code:'ZRH', id:'zrh-suite', tier:'suite' },
     { name:'Privé by Aspire · Zürich Terminal 2', city:'Zurich', country:'Switzerland', code:'ZRH', id:'zrh-prive', tier:'prive' },
     { name:'Geneva Lounge',                        city:'Geneva', country:'Switzerland', count:2, code:'GVA', id:'gva-luxe', tier:'luxe' },
@@ -1885,6 +1885,10 @@ const LOUNGE_NETWORK = [
 ];
 
 const NETWORK_TOTAL = LOUNGE_NETWORK.reduce((s, r) => s + r.lounges.reduce((a, l) => a + (l.count || 1), 0), 0);
+// Distinct airports across the network — lets the headline read "N lounges across
+// M airports", which reconciles the lounge total (counts multi-lounge venues) with
+// the smaller number of clickable location rows in the directory.
+const NETWORK_AIRPORTS = new Set(LOUNGE_NETWORK.reduce((a, r) => a.concat(r.lounges.map(l => l.code).filter(Boolean)), [])).size;
 
 /* Region-aware lounge imagery */
 const REGION_IMAGES = {
@@ -2127,7 +2131,9 @@ function loungeProfileFromNetwork(net, region) {
     priceFrom,
     currency,
     occupancyPct,
-    hours: '05:15 — 21:00 · daily',
+    // Vary opening hours per lounge so the network doesn't read as one templated
+    // "05:15 — 21:00 daily" string across every timezone.
+    hours: `0${5 + (seed % 3)}:${(seed % 2) ? '30' : '15'} — ${21 + (seed % 3)}:00 · daily`,
   };
 }
 
@@ -2274,7 +2280,13 @@ function go(view) {
   if (view === 'home')      { renderHomeFeatured(); }
   if (view === 'search')    renderSearch();
   if (view === 'reserve')   { state.step = 1; renderReserve(); }
-  if (view === 'tables')    renderTables();
+  if (view === 'tables')    {
+    // Seed the Tables view from the booking so a zone/arrival already chosen in
+    // the reserve flow shows up here instead of an empty, disabled picker.
+    if (state.booking.preferredZone) state.preferredZone = state.booking.preferredZone;
+    if (state.booking.arrivalTime)   state.tableSlot = state.booking.arrivalTime;
+    renderTables();
+  }
   if (view === 'queue')     renderQueue();
   if (view === 'dashboard') renderDashboard();
   // Static CTAs (home hero, sticky reserve, menu hero) reflect whether a
@@ -2396,7 +2408,7 @@ function renderHomeFeatured() {
   ));
   grid.append(el('a', { href:'#search', 'data-view':'search', class:'lg:col-span-2 group rounded-3xl bg-aspire-card p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 hover:bg-aspire-taupe/30 transition-colors block' },
     el('div', {},
-      el('div', { class:'swiss-eyebrow text-aspire-navy/70' }, `Global network · ${NETWORK_TOTAL} lounges`),
+      el('div', { class:'swiss-eyebrow text-aspire-navy/70' }, `Global network · ${NETWORK_TOTAL} lounges · ${NETWORK_AIRPORTS} airports`),
       el('div', { class:'serif-heading text-2xl text-aspire-navy mt-1' }, 'Explore where Aspire operates'),
       el('p', { class:'text-[0.92rem] text-aspire-navy/80 mt-1 max-w-md' }, "Browse our lounges in 40+ airports across Europe, the Americas, Asia, Africa, the Middle East and Australia.")
     ),
@@ -2552,17 +2564,24 @@ function renderSearch() {
   // Network header
   out.append(el('div', { class:'lg:col-span-2 mt-2' },
     el('div', { class:'swiss-eyebrow' }, 'Global Aspire network'),
-    el('div', { class:'serif-heading text-2xl text-aspire-navy mt-1' }, `${NETWORK_TOTAL} lounges worldwide`),
+    el('div', { class:'serif-heading text-2xl text-aspire-navy mt-1' }, `${NETWORK_TOTAL} lounges across ${NETWORK_AIRPORTS} airports`),
     el('p', { class:'text-[0.88rem] text-navy-500 mt-1' }, "Tap any lounge to make it your booking destination. Your current selection sits at the top of this page.")
   ));
 
   // Full network list grouped by region — selected lounge stays clickable so users can confirm again
+  const sortBy = $('#search-sort')?.value || 'availability';
+  const sortMatches = (arr, region) => arr.slice().sort((a, b) => {
+    const pa = loungeProfileFromNetwork(a, region), pb = loungeProfileFromNetwork(b, region);
+    if (sortBy === 'price')  return pa.priceFrom - pb.priceFrom;          // low → high
+    if (sortBy === 'rating') return pb.rating - pa.rating;                // high → low
+    return pa.occupancyPct - pb.occupancyPct;                            // most available (least full) first
+  });
   let total = 0;
   LOUNGE_NETWORK.forEach(group => {
-    const matches = group.lounges.filter(l => {
+    const matches = sortMatches(group.lounges.filter(l => {
       const hay = `${l.name} ${l.city} ${l.country} ${l.code || ''}`.toLowerCase();
       return hay.includes(q);
-    });
+    }), group.region);
     if (!matches.length) return;
     total += matches.length;
     const section = el('div', { class:'lg:col-span-2 card-cream p-5 sm:p-6' },
@@ -2819,18 +2838,18 @@ function bookingSummaryHTML() {
     : fromTierLabel;
   const queueStatus = hasUpgrade
     ? `<span class="text-emerald-700">${upgradeLabel} — proceed direct</span>`
-    : (state.confirmed ? 'Confirmed' : 'Waiting');
+    : (state.confirmed ? 'Confirmed' : 'Awaiting confirmation');
   const fields = [
     ['Airport', l.airport],
     ['Lounge', l.name],
     ['Date', formatDate(state.booking.date)],
     ['Arrival', state.booking.arrivalTime],
-    ['Lounge access', `<span class="text-aspire-navy">3 hours</span> from check-in · until ${endTime(state.booking.arrivalTime)}`],
+    ['Lounge access', `<span class="text-aspire-navy">3 hours</span> from ${state.booking.arrivalTime} · until ${endTime(state.booking.arrivalTime)}`],
     ['Name', state.booking.guestName || '—'],
     ['Guests', `Adult (${state.booking.guests.adults})${state.booking.guests.children ? ` · Child (${state.booking.guests.children})` : ''}`],
     ['Entry method', memberLabel],
     ['Access type', accessTypeLabel],
-    ['Queue status', queueStatus],
+    ['Booking status', queueStatus],
     ['Seating', seating],
     ['Terminal', l.terminal],
   ];
@@ -3693,6 +3712,9 @@ function submitPreference() {
   if (!state.preferredZone) return;
   state.booking.preferredZone = state.preferredZone;
   state.booking.slot = state.tableSlot;
+  // Keep arrival a single source of truth so the dashboard's access card and
+  // seating card can't show two different arrival times.
+  state.booking.arrivalTime = state.tableSlot;
   // Saving a preference does NOT confirm a booking — it just records the
   // seating wish. If the customer already has a confirmed reservation we
   // route them to the dashboard so they can see the updated preference;
@@ -3700,8 +3722,10 @@ function submitPreference() {
   if (state.confirmed) {
     go('dashboard');
   } else {
-    state.step = 2;
+    // go('reserve') resets to step 1, so stage step 2 *after* navigating.
     go('reserve');
+    state.step = 2;
+    renderReserve();
   }
 }
 
