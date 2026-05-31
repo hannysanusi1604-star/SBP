@@ -2866,6 +2866,11 @@ function bookingSummaryHTML() {
   const depositRow = isAdvance
     ? `<div class="flex items-start justify-between gap-3"><span class="text-navy-500">Refundable deposit <span class="block text-[0.72rem] text-navy-500/70">held now · refunded at check-in</span></span><span class="text-aspire-navy tabular-nums whitespace-nowrap">${l.currency} ${deposit}</span></div>`
     : '';
+  // Deposit shown as a HOLD that sits *below* the charged-now total — it is the guest's
+  // own money (returned at check-in), so it must never be summed into what they "pay".
+  const depositHoldRow = isAdvance
+    ? `<div class="flex items-start justify-between gap-3 pt-2 mt-1"><span class="text-navy-500">Refundable deposit <span class="ml-1 inline-flex items-center rounded-full bg-aspire-soft border border-aspire-border px-1.5 py-0.5 text-[0.62rem] uppercase tracking-wider text-navy-500 align-middle">hold</span><span class="block text-[0.72rem] text-navy-500/70">held on your card now · returned at check-in</span></span><span class="text-navy-500 tabular-nums whitespace-nowrap">${l.currency} ${deposit}</span></div>`
+    : '';
   const seatLockRow = hasSeatLock
     ? `<div class="flex items-start justify-between gap-3"><span class="text-navy-500">Seat reservation fee <span class="block text-[0.72rem] text-navy-500/70">locks your ${ZONE_META[state.booking.preferredZone].label}</span></span><span class="text-aspire-navy tabular-nums whitespace-nowrap">${l.currency} ${seatLock}</span></div>`
     : '';
@@ -2902,15 +2907,16 @@ function bookingSummaryHTML() {
          <div class="flex items-center justify-between pt-2 mt-2 border-t border-aspire-border"><span class="serif-heading text-lg text-aspire-navy">Total held now</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums">${l.currency} ${totalHeld}</span></div>
        </div>`;
   } else if (isPass && hasLuxe) {
-    // Pass holder upgrading to Luxe — tier differential + deposit + seat-lock fee
-    const totalDue = luxeFee + deposit + seatLock;
+    // Pass holder upgrading to Luxe. "Charged now" is the real spend (upgrade + seat fee);
+    // the refundable deposit is a separate hold shown below, never summed into the charge.
+    const chargedNow = luxeFee + seatLock;
     priceBlock += `
        <div class="space-y-2 text-[0.95rem]">
          <div class="flex items-center justify-between"><span class="text-navy-500">${fromEntryLabel}</span><span class="text-aspire-navy inline-flex items-center gap-1.5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 12 5 5L20 6"/></svg>Included</span></div>
          ${row(upgradeRowLabel, l.currency + ' ' + luxeFee)}
-         ${depositRow}
          ${seatLockRow}
-         <div class="flex items-center justify-between pt-2 mt-2 border-t border-aspire-border"><span class="serif-heading text-lg text-aspire-navy">Total to pay</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums">${l.currency} ${totalDue}</span></div>
+         <div class="flex items-center justify-between pt-2 mt-2 border-t border-aspire-border"><span class="serif-heading text-lg text-aspire-navy">Charged now</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums">${l.currency} ${chargedNow}</span></div>
+         ${depositHoldRow}
        </div>`;
   } else if (!isPass && !hasLuxe && !isAdvance) {
     // Direct payment, same day — standard total
@@ -2940,15 +2946,16 @@ function bookingSummaryHTML() {
        </div>`;
   } else {
     // Direct payment with Luxe — Lifestyle entry is sunk (already implicitly committed by the
-    // queue / booking step); the upgrade is a delta only. Charge luxeFee + deposit + seatLock.
-    const total = luxeFee + deposit + seatLock;
+    // queue / booking step); the upgrade is a delta only. "Charged now" is the real spend
+    // (upgrade + seat fee); the refundable deposit is a separate hold shown below.
+    const chargedNow = luxeFee + seatLock;
     priceBlock += `
        <div class="space-y-2 text-[0.95rem]">
          <div class="flex items-center justify-between"><span class="text-navy-500">${fromEntryLabel}${guestsTotal > 1 ? ' × ' + guestsTotal : ''}</span><span class="text-aspire-navy inline-flex items-center gap-1.5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 12 5 5L20 6"/></svg>Included</span></div>
          ${row(upgradeRowLabel, l.currency + ' ' + luxeFee)}
-         ${depositRow}
          ${seatLockRow}
-         <div class="flex items-center justify-between pt-2 mt-2 border-t border-aspire-border"><span class="serif-heading text-lg text-aspire-navy">Total to pay</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums">${l.currency} ${total.toFixed(2)}</span></div>
+         <div class="flex items-center justify-between pt-2 mt-2 border-t border-aspire-border"><span class="serif-heading text-lg text-aspire-navy">Charged now</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums">${l.currency} ${chargedNow.toFixed(2)}</span></div>
+         ${depositHoldRow}
        </div>`;
   }
 
@@ -3036,7 +3043,7 @@ function renderStep4() {
   } else if (isPass && hasLuxe) {
     $('#pay-section-title').textContent = `Confirm access & pay ${upgradeLabel} upgrade`;
     $('#pay-section-badge').textContent = isAdvance
-      ? `${upgradeLabel} upgrade + reservation · ${l.currency} ${luxeFee + deposit + seatLock}`
+      ? `${upgradeLabel} upgrade · ${l.currency} ${luxeFee + seatLock} now · ${l.currency} ${deposit} deposit held`
       : `${upgradeLabel} upgrade only · ${l.currency} ${luxeFee}`;
   } else {
     $('#pay-section-title').textContent = 'Payment method';
@@ -3111,7 +3118,7 @@ function renderStep4() {
   let cta;
   if (isPass && !hasLuxe && !isAdvance)      cta = 'Confirm booking';
   else if (isPass && !hasLuxe && isAdvance)  cta = `Confirm & hold ${l.currency} ${deposit + seatLock}`;
-  else if (isPass && hasLuxe)                cta = `Confirm & pay ${l.currency} ${luxeFee + deposit + seatLock}`;
+  else if (isPass && hasLuxe)                cta = `Confirm & pay ${l.currency} ${luxeFee + seatLock}`;
   else                                       cta = 'Confirm and pay';
   $('#confirm-btn').innerHTML = cta + ' <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m9 6 6 6-6 6"/></svg>';
 }
@@ -3178,6 +3185,9 @@ function confirmBooking() {
   const entryAmount = (usingPass || hasLuxe) ? 0 : l.priceFrom * Math.max(1, guestsTotal);
   const passDepositAmount = isAdvance ? deposit : 0;
   const totalAmount = entryAmount + luxeFee + passDepositAmount + seatLock;
+  // What the card is actually charged (the refundable deposit is a hold, shown separately).
+  const chargedNow = entryAmount + luxeFee + seatLock;
+  const depHeldSuffix = passDepositAmount ? ` · ${l.currency} ${passDepositAmount} deposit held` : '';
 
   const m = $('#pay-modal');
   m.classList.remove('hidden'); m.classList.add('flex');
@@ -3205,11 +3215,11 @@ function confirmBooking() {
 
     // Headline on the success screen
     let headline;
-    if (hasLuxe && usingPass)            headline = `${upgradeLabel} upgrade confirmed · ${l.currency} ${(luxeFee + passDepositAmount + seatLock)} charged`;
-    else if (hasLuxe && !usingPass)      headline = `${upgradeLabel} upgrade confirmed · ${l.currency} ${totalAmount.toFixed(2)} charged`;
-    else if (usingPass && isAdvance)     headline = `Reservation held · ${l.currency} ${deposit + seatLock}`;
+    if (hasLuxe && usingPass)            headline = `${upgradeLabel} upgrade confirmed · ${l.currency} ${luxeFee + seatLock} charged${depHeldSuffix}`;
+    else if (hasLuxe && !usingPass)      headline = `${upgradeLabel} upgrade confirmed · ${l.currency} ${chargedNow.toFixed(2)} charged${depHeldSuffix}`;
+    else if (usingPass && isAdvance)     headline = `Reservation confirmed · ${l.currency} ${deposit} deposit held${seatLock ? ` · ${l.currency} ${seatLock} seat fee` : ''}`;
     else if (usingPass)                  headline = 'Booking confirmed';
-    else                                 headline = `${l.currency} ${totalAmount.toFixed(2)} charged`;
+    else                                 headline = `${l.currency} ${chargedNow.toFixed(2)} charged${depHeldSuffix}`;
     $('#pay-amount').textContent = headline;
 
     // Receipt
@@ -3254,7 +3264,8 @@ function confirmBooking() {
       ]);
     }
     if (!usingPass) {
-      rows.push(['Total', `${l.currency} ${totalAmount.toFixed(2)}`]);
+      // Charged now excludes the refundable deposit, which is already listed above as a hold.
+      rows.push(['Charged now', `${l.currency} ${chargedNow.toFixed(2)}`]);
     }
     $('#pay-receipt').innerHTML = rows.map(([k,v]) =>
       `<div class="flex justify-between gap-3"><span class="text-navy-500">${k}</span><span class="text-aspire-navy text-right">${v}</span></div>`
