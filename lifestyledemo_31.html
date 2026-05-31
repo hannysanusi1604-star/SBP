@@ -3758,8 +3758,11 @@ function submitPreference() {
 // wait" badge always equals the wait of the guest at the very back of the line.
 // ~4 minutes of table turnover per guest ahead of you.
 const QUEUE_PACE_MIN = 4;
+// Mutable per-run pace: a demo scenario can dial up a busier floor (e.g. the
+// live upsell) while the default walk-in queue keeps the 4-min-per-guest rate.
+let queuePaceMin = QUEUE_PACE_MIN;
 function queueEtaFor(guestsAhead) {
-  return Math.max(2, Math.round(Math.max(0, guestsAhead) * QUEUE_PACE_MIN));
+  return Math.max(2, Math.round(Math.max(0, guestsAhead) * queuePaceMin));
 }
 function renderQueue() {
   const ql = lounge();
@@ -8889,6 +8892,7 @@ window.addEventListener('hashchange', () => {
     document.body.classList.add('tier-' + tier);
 
     configureLounge(tier);
+    queuePaceMin = QUEUE_PACE_MIN; // standard floor pace for the full walkthrough
     STEPS = buildSteps(tier);
     idx = 0;
     setTimeout(runStep, TIMING.initialBoot);
@@ -9066,6 +9070,15 @@ window.addEventListener('hashchange', () => {
 
     configureLounge(s.tier);
     if (s.preConfirm) preConfirmBookingState();
+    // Reset the floor to the standard pace, then let the live-upsell scenario
+    // dial up a busier Lifestyle queue so the wait reads ~25 min — the friction
+    // that justifies moving up to Luxe.
+    queuePaceMin = QUEUE_PACE_MIN;
+    state.queue = JSON.parse(JSON.stringify(QUEUE_INITIAL));
+    if (scenarioId === 'lounge-upsell') {
+      state.queue.push({ id:'q-006', name:'T. Fischer', initials:'TF', party:3, preference:'dining', joinedAt:'14:02', estimatedWait:25, status:'waiting' });
+      queuePaceMin = 5; // 6 guests waiting · (6 − 1) × 5 min = 25 min longest wait
+    }
     STEPS = buildScenarioSteps(scenarioId);
     idx = 0;
     currentChapter = null;
