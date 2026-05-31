@@ -7547,7 +7547,7 @@ window.addEventListener('hashchange', () => {
       <button class="sc-btn" data-demo-scenario="lounge-upsell">
         <div class="sc-num">Scenario 02</div>
         <div class="sc-title">The live lounge upsell</div>
-        <div class="sc-body">Lifestyle floor at capacity. Watch the traveller move up to Luxe in three taps and skip the queue entirely.</div>
+        <div class="sc-body">Lifestyle floor at capacity — a ~30 minute queue. Watch the traveller move up to Luxe in three taps and skip the wait entirely.</div>
         <div class="sc-meta">Lifestyle → Luxe · upsell</div>
       </button>
       <button class="sc-btn" data-demo-scenario="buffet-browser">
@@ -7991,8 +7991,8 @@ window.addEventListener('hashchange', () => {
       {
         view: 'queue',
         eyebrow: 'Walk-in queue',
-        title: 'Lounge at capacity — Luxe open',
-        body: "The Lifestyle floor is full. Aspire offers the traveller a live upsell — move up to Luxe where seats are free right now. Tap Upgrade to Luxe.",
+        title: 'Lounge at capacity — ~30 min wait',
+        body: "The Lifestyle floor is full — six guests ahead and a ~30 minute wait for a table. That's the moment Aspire offers a live upsell: move up to Luxe, where seats are free right now, and skip the queue entirely. Tap Upgrade to Luxe.",
         selector: '#view-queue [class*="border-aspire-navy/40"] button.btn-primary',
         change: 'Luxe upgrade flow opened',
         milestone: true,
@@ -9071,13 +9071,13 @@ window.addEventListener('hashchange', () => {
     configureLounge(s.tier);
     if (s.preConfirm) preConfirmBookingState();
     // Reset the floor to the standard pace, then let the live-upsell scenario
-    // dial up a busier Lifestyle queue so the wait reads ~25 min — the friction
-    // that justifies moving up to Luxe.
+    // dial up a busier Lifestyle queue so the max wait reads ~30 min — the
+    // friction on the queue page that justifies moving up to Luxe.
     queuePaceMin = QUEUE_PACE_MIN;
     state.queue = JSON.parse(JSON.stringify(QUEUE_INITIAL));
     if (scenarioId === 'lounge-upsell') {
-      state.queue.push({ id:'q-006', name:'T. Fischer', initials:'TF', party:3, preference:'dining', joinedAt:'14:02', estimatedWait:25, status:'waiting' });
-      queuePaceMin = 5; // 6 guests waiting · (6 − 1) × 5 min = 25 min longest wait
+      state.queue.push({ id:'q-006', name:'T. Fischer', initials:'TF', party:3, preference:'dining', joinedAt:'14:02', estimatedWait:30, status:'waiting' });
+      queuePaceMin = 6; // 6 in queue · (6 − 1) × 6 min = 30 min max wait
     }
     STEPS = buildScenarioSteps(scenarioId);
     idx = 0;
