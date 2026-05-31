@@ -2014,9 +2014,10 @@ function requiresDeposit(booking) {
   return !!(booking && booking.date && booking.arrivalTime);
 }
 function requiresSeatLock(booking) {
-  // An additional small fee on top of the deposit when a specific zone is picked,
-  // since the table is held exclusively rather than assigned on arrival.
-  return !!(booking && booking.preferredZone);
+  // The CHF 3 fee applies only to a *paid* held seat (chosen in the reserve flow),
+  // not to a free seating preference shared via the Tables view. The seatLocked
+  // flag is what distinguishes the two.
+  return !!(booking && booking.preferredZone && booking.seatLocked);
 }
 function calculateSeatLockFee(lounge) {
   // Flat 3 units of the lounge's local currency (CHF 3 in Zurich, €3, etc.)
@@ -2201,7 +2202,8 @@ const state = {
     guestName: '',
     email: '',
     membership: 'priority-pass',
-    preferredZone: null,    // customer's preferred zone (assigned by hosts, not picked)
+    preferredZone: null,    // chosen zone — either a free preference (Tables) or a paid hold (reserve)
+    seatLocked: false,      // true only when the zone is a paid CHF 3 held table (reserve flow), not a free preference
     assignedTable: null,    // table assigned on arrival
     slot: null,
     luxeUpgrade: false,     // legacy boolean — kept in sync with upgradeTier === 'luxe'
@@ -2498,6 +2500,7 @@ function pickLounge(net, region) {
   // summary, dashboard and step 4 right rail don't carry stale seating into the
   // newly-chosen lounge.
   state.booking.preferredZone = null;
+  state.booking.seatLocked = false;
   state.booking.assignedTable = null;
   state.booking.slot = null;
   state.preferredZone = null;
@@ -2730,6 +2733,9 @@ function renderStep1() {
 }
 function renderStep2() {
   const l = lounge();
+  // In the reserve flow, choosing a specific zone IS the paid CHF 3 held seat.
+  // (A free preference carried in from the Tables view becomes a paid hold here.)
+  state.booking.seatLocked = !!state.booking.preferredZone;
   $('#schedule-sub').textContent = `${l.name} · ${l.terminal}`;
   $('#schedule-hours').textContent = `Hours · ${l.hours}`;
   $('#step-date').value = state.booking.date;
@@ -2831,7 +2837,9 @@ function bookingSummaryHTML() {
   let seating = state.booking.assignedTable
     ? `${state.booking.assignedTable.label} #${state.booking.assignedTable.id} · claimed from queue`
     : state.booking.preferredZone
-    ? `${ZONE_META[state.booking.preferredZone].label} reserved · table held`
+    ? (state.booking.seatLocked
+        ? `${ZONE_META[state.booking.preferredZone].label} reserved · table held`
+        : `${ZONE_META[state.booking.preferredZone].label} preferred · assigned on arrival`)
     : 'No preference · seat assigned on arrival';
   const accessTypeLabel = hasUpgrade
     ? `<span class="inline-flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-aspire-navy"></span>${upgradeLabel} upgrade</span>`
@@ -2989,6 +2997,8 @@ const PASS_FIELD_PLACEHOLDER = {
 };
 
 function renderStep4() {
+  // Still in the paid reserve flow — a chosen zone is a paid held seat.
+  state.booking.seatLocked = !!state.booking.preferredZone;
   const isPass = state.booking.membership !== 'pay';
   const upgradeTier = state.booking.upgradeTier || (state.booking.luxeUpgrade ? 'luxe' : null);
   const hasLuxe = !!upgradeTier;
@@ -3011,8 +3021,8 @@ function renderStep4() {
   // user can either upgrade No-preference into a reserved seat, or swap/release
   // the zone they already picked.
   $('#step4-zone-addon-body').innerHTML = state.booking.preferredZone
-    ? `Currently: <strong>${ZONE_META[state.booking.preferredZone].label}</strong> reserved. Switch zones or release the seat to check in flexibly.`
-    : `Currently: <strong>No preference</strong>. Lock a Communal, Dining or Quiet seat with a refundable deposit if you'd rather guarantee a table.`;
+    ? `Currently: <strong>${ZONE_META[state.booking.preferredZone].label}</strong> held for a ${l.currency} ${calculateSeatLockFee(l)} seat fee. Switch zones or release the seat to check in flexibly.`
+    : `Currently: <strong>No preference</strong>. Hold a Communal, Dining or Quiet table for a ${l.currency} ${calculateSeatLockFee(l)} seat fee (on top of your refundable deposit) to guarantee a specific seat.`;
 
   // Section heading + side metadata
   if (isPass && !hasLuxe && !isAdvance) {
@@ -3529,6 +3539,7 @@ function cancelReservation() {
   // Demo behaviour — clear the booking back to "no reservation"
   state.confirmed = false;
   state.booking.preferredZone = null;
+  state.booking.seatLocked = false;
   state.booking.luxeUpgrade = false;
   state.booking.upgradeTier = null;
   state.payMethod = null;
@@ -3711,6 +3722,7 @@ function renderTables() {
 function submitPreference() {
   if (!state.preferredZone) return;
   state.booking.preferredZone = state.preferredZone;
+  state.booking.seatLocked = false;   // Tables = a free, host-assigned preference (no CHF 3 hold)
   state.booking.slot = state.tableSlot;
   // Keep arrival a single source of truth so the dashboard's access card and
   // seating card can't show two different arrival times.
@@ -4250,15 +4262,28 @@ function renderDashboard() {
         <div class="text-[0.78rem] text-navy-500 mt-1">Show this number to the host at the door — your seat is held.</div>
       </div>
       <div class="mt-3 text-[0.78rem] text-navy-500 italic">No seat-reservation fee — the hosts assigned this from the live queue.</div>`;
+  } else if (state.booking.preferredZone && state.booking.seatLocked) {
+    // Paid CHF 3 held seat from the reserve flow — a specific table is reserved.
+    const z = ZONE_META[state.booking.preferredZone];
+    tableCard.innerHTML = `
+      <div class="swiss-eyebrow text-aspire-navy/70">Your seating</div>
+      <div class="serif-heading text-2xl text-aspire-navy mt-1">${z.label} · reserved</div>
+      <div class="text-aspire-navy/80 text-[0.92rem] mt-1">Arrival window · ${state.booking.slot || state.booking.arrivalTime}</div>
+      <div class="mt-4 p-3 rounded-xl bg-white border border-aspire-taupe/40 shadow-card">
+        <div class="flex items-center gap-2 text-[0.72rem] uppercase tracking-widest text-aspire-navy"><span class="live-dot"></span>Table held in your name</div>
+        <div class="text-aspire-navy mt-1 text-[0.92rem]">Your ${z.label.toLowerCase()} is reserved with a ${lounge().currency} ${calculateSeatLockFee(lounge())} seat fee — a specific table is set aside for your arrival window.</div>
+      </div>
+      <a href="#tables" data-view="tables" class="mt-4 inline-flex items-center gap-2 text-aspire-navy underline underline-offset-4 text-[0.85rem]">Change seating <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>`;
   } else if (state.booking.preferredZone) {
+    // Free seating preference (shared via the Tables view) — no fee, hosts assign.
     const z = ZONE_META[state.booking.preferredZone];
     tableCard.innerHTML = `
       <div class="swiss-eyebrow text-aspire-navy/70">Your seating</div>
       <div class="serif-heading text-2xl text-aspire-navy mt-1">${z.label} · preferred</div>
       <div class="text-aspire-navy/80 text-[0.92rem] mt-1">Arrival window · ${state.booking.slot || state.booking.arrivalTime}</div>
       <div class="mt-4 p-3 rounded-xl bg-white/70 border border-white">
-        <div class="text-[0.72rem] uppercase tracking-widest text-navy-500">Table number</div>
-        <div class="text-aspire-navy mt-1 text-[0.92rem]">Assigned by our hosts when you check in.</div>
+        <div class="text-[0.72rem] uppercase tracking-widest text-navy-500">Free preference · no fee</div>
+        <div class="text-aspire-navy mt-1 text-[0.92rem]">Our hosts assign a matching ${z.label.toLowerCase()} table when you check in.</div>
       </div>
       <a href="#tables" data-view="tables" class="mt-4 inline-flex items-center gap-2 text-aspire-navy underline underline-offset-4 text-[0.85rem]">Update preference <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>`;
   } else {
@@ -7894,6 +7919,7 @@ window.addEventListener('hashchange', () => {
           if (m) m.classList.remove('sp-visible');
           try {
             state.booking.preferredZone = 'communal';
+            state.booking.seatLocked = true;   // paid CHF 3 hold — dashboard shows "reserved · table held"
             if (typeof renderDashboard === 'function') renderDashboard();
           } catch (_) {}
         }
@@ -8984,6 +9010,7 @@ window.addEventListener('hashchange', () => {
       state.booking.email = 'lukas@example.com';
       state.booking.membership = 'priority-pass';
       state.booking.preferredZone = 'communal';
+      state.booking.seatLocked = false;   // a free seating preference (no CHF 3 hold implied)
       state.booking.slot = state.booking.arrivalTime || '14:00';
       state.preferredZone = 'communal';
       state.tableSlot = state.booking.arrivalTime || '14:00';
