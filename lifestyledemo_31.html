@@ -7991,8 +7991,19 @@ window.addEventListener('hashchange', () => {
       {
         view: 'queue',
         eyebrow: 'Walk-in queue',
-        title: 'Lounge at capacity — ~30 min wait',
-        body: "The Lifestyle floor is full — six guests ahead and a ~30 minute wait for a table. That's the moment Aspire offers a live upsell: move up to Luxe, where seats are free right now, and skip the queue entirely. Tap Upgrade to Luxe.",
+        title: 'The floor is full — ~30 min wait',
+        body: "Here's the moment of friction: six guests ahead and a ~30 minute wait for a table on the Lifestyle floor. Tap the live wait to see what Aspire does next.",
+        selector: '#queue-summary',
+        change: 'Live wait · ~30 min',
+        onEnter: function () {
+          try { if (typeof renderQueue === 'function') renderQueue(); } catch (_) {}
+        }
+      },
+      {
+        view: 'queue',
+        eyebrow: 'Live upsell',
+        title: 'Skip it — move up to Luxe',
+        body: "Rather than wait, Aspire offers a live upsell: move up to Luxe, where seats are free right now, and skip the queue entirely. Tap Upgrade to Luxe.",
         selector: '#view-queue [class*="border-aspire-navy/40"] button.btn-primary',
         change: 'Luxe upgrade flow opened',
         milestone: true,
