@@ -4052,7 +4052,13 @@ function triggerToast() {
     // refundable deposit but no seat-reservation fee.
     try {
       state.booking.assignedTable = { id: tableId, zone: z, label: ZONE_META[z].label };
-      state.booking.slot = state.tableSlot || state.booking.arrivalTime || '14:00';
+      // Claimed off the queue, so the 3-hour access window starts now — set the
+      // arrival/slot to the live time you got the table, not the 14:00 booking
+      // placeholder. (Only the queue path does this; reserve-flow bookings keep
+      // the arrival time the guest chose.)
+      const claimTime = clockHM(new Date());
+      state.booking.arrivalTime = claimTime;
+      state.booking.slot = claimTime;
       // Align My Stay with what you entered in the queue. The queue captures a
       // single total party size (no adult/child split), so record it as the
       // adult headcount — otherwise My Stay keeps showing the default 1 guest.
