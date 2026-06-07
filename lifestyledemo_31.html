@@ -4051,6 +4051,12 @@ function triggerToast() {
     try {
       state.booking.assignedTable = { id: tableId, zone: z, label: ZONE_META[z].label };
       state.booking.slot = state.tableSlot || state.booking.arrivalTime || '14:00';
+      // Align My Stay with what you entered in the queue. The queue captures a
+      // single total party size (no adult/child split), so record it as the
+      // adult headcount — otherwise My Stay keeps showing the default 1 guest.
+      if (state.joined && state.joined.party > 0) {
+        state.booking.guests = { adults: state.joined.party, children: 0 };
+      }
       if (!state.confirmed) {
         state.confirmed = true;
         if (!state.booking.guestName && state.joined && state.joined.name) {
