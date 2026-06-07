@@ -2165,6 +2165,7 @@ const QUEUE_INITIAL = [
   { id:'q-003', name:'S. Patel',   initials:'SP', party:4, preference:'dining',   joinedAt:'13:51', estimatedWait:25, status:'waiting' },
   { id:'q-004', name:'N. Keller',  initials:'NK', party:2, preference:'quiet',    joinedAt:'13:55', estimatedWait:28, status:'waiting' },
   { id:'q-005', name:'R. Moreau',  initials:'RM', party:1, preference:'communal', joinedAt:'13:58', estimatedWait:32, status:'waiting' },
+  { id:'q-006', name:'T. Fischer', initials:'TF', party:3, preference:'dining',   joinedAt:'14:02', estimatedWait:25, status:'waiting' },
 ];
 
 const TIME_SLOTS = ['06:00','06:30','07:00','07:30','08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30'];
@@ -2854,7 +2855,7 @@ function bookingSummaryHTML() {
     ['Arrival', state.booking.arrivalTime],
     ['Lounge access', `<span class="text-aspire-navy">3 hours</span> from ${state.booking.arrivalTime} · until ${endTime(state.booking.arrivalTime)}`],
     ['Name', state.booking.guestName || '—'],
-    ['Guests', `Adult (${state.booking.guests.adults})${state.booking.guests.children ? ` · Child (${state.booking.guests.children})` : ''}`],
+    ['Guests', String(state.booking.guests.adults + state.booking.guests.children)],
     ['Entry method', memberLabel],
     ['Access type', accessTypeLabel],
     ['Booking status', queueStatus],
@@ -3756,10 +3757,11 @@ function submitPreference() {
 // Estimated wait is derived from queue position so the figures stay internally
 // consistent: the further back you sit, the longer you wait, and the "longest
 // wait" badge always equals the wait of the guest at the very back of the line.
-// ~4 minutes of table turnover per guest ahead of you.
-const QUEUE_PACE_MIN = 4;
-// Mutable per-run pace: a demo scenario can dial up a busier floor (e.g. the
-// live upsell) while the default walk-in queue keeps the 4-min-per-guest rate.
+// ~5 minutes of table turnover per guest ahead of you, so a full 6-guest line
+// reads ~25 min — the standard wait across every scenario and the free-roam queue.
+const QUEUE_PACE_MIN = 5;
+// Mutable per-run pace: a demo scenario could dial up a busier floor, but the
+// default walk-in queue keeps the 5-min-per-guest rate everywhere.
 let queuePaceMin = QUEUE_PACE_MIN;
 function queueEtaFor(guestsAhead) {
   return Math.max(2, Math.round(Math.max(0, guestsAhead) * queuePaceMin));
@@ -9095,15 +9097,11 @@ window.addEventListener('hashchange', () => {
 
     configureLounge(s.tier);
     if (s.preConfirm) preConfirmBookingState();
-    // Reset the floor to the standard pace, then let the live-upsell scenario
-    // dial up a busier Lifestyle queue so the max wait reads ~25 min — the
+    // Standard 6-guest Lifestyle line at the default 5-min pace: ~25 min max
+    // wait across every scenario — including the upsell, where that wait is the
     // friction on the queue page that justifies moving up to Luxe.
     queuePaceMin = QUEUE_PACE_MIN;
     state.queue = JSON.parse(JSON.stringify(QUEUE_INITIAL));
-    if (scenarioId === 'lounge-upsell') {
-      state.queue.push({ id:'q-006', name:'T. Fischer', initials:'TF', party:3, preference:'dining', joinedAt:'14:02', estimatedWait:25, status:'waiting' });
-      queuePaceMin = 5; // 6 in queue · (6 − 1) × 5 min = 25 min max wait
-    }
     STEPS = buildScenarioSteps(scenarioId);
     idx = 0;
     currentChapter = null;
