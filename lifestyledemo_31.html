@@ -2007,8 +2007,9 @@ function getLuxeSeatsRemaining() {
 /* ----------------------- ADVANCE-BOOKING DEPOSIT HELPERS ----------------------- */
 function requiresDeposit(booking) {
   // A table claimed live from the walk-in queue is free — the guest is already
-  // at the lounge, so there's no advance deposit and no card on file.
-  if (booking && booking.assignedTable) return false;
+  // at the lounge, so there's no advance deposit and no card on file. A tier
+  // upgrade taken live from the queue is the same on-site, proceed-direct case.
+  if (booking && (booking.assignedTable || booking.upgradedFromQueue)) return false;
   // Every advance reservation holds a refundable deposit equal to the entry
   // price — it binds the guest to actually showing up and is refunded at check-in.
   return !!(booking && booking.date && booking.arrivalTime);
@@ -2225,6 +2226,7 @@ const state = {
     slot: null,
     luxeUpgrade: false,     // legacy boolean — kept in sync with upgradeTier === 'luxe'
     upgradeTier: null,      // 'luxe' | 'suite' | 'prive' — the tier the guest upgraded to
+    upgradedFromQueue: false, // true when the upgrade was taken live from the queue (on-site, proceed direct, no deposit)
   },
   luxe: {
     totalCapacity: 20,      // seats in the Aspire Luxe Lounge
@@ -2513,6 +2515,7 @@ function pickLounge(net, region) {
   // Tier upgrade is anchored to a specific lounge's queue + price — reset on change
   state.booking.luxeUpgrade = false;
   state.booking.upgradeTier = null;
+  state.booking.upgradedFromQueue = false;
   // Floor plans and zones are lounge-specific — drop the prior selection so the
   // summary, dashboard and step 4 right rail don't carry stale seating into the
   // newly-chosen lounge.
@@ -3158,6 +3161,9 @@ function finaliseBooking(opts) {
   if (toTier) {
     state.booking.upgradeTier = toTier;
     state.booking.luxeUpgrade = (toTier === 'luxe');
+    // Taken live from the queue: you're on-site and proceed straight in, so no
+    // refundable no-show deposit applies (same as claiming a table off the queue).
+    state.booking.upgradedFromQueue = true;
     if (state.verified && state.verification.type) {
       state.booking.membership = state.verification.type;
     }
