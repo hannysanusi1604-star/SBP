@@ -3196,6 +3196,11 @@ function finaliseBooking(opts) {
     if (state.verified && state.verification.type) {
       state.booking.membership = state.verification.type;
     }
+    // Update the booking name to whatever was entered on the upgrade's pass
+    // verification, so My Stay's "Name" reflects what was just inserted.
+    if (state.verified && state.verification.lastName && state.verification.lastName.trim()) {
+      state.booking.guestName = state.verification.lastName.trim();
+    }
     // Carry the guest count entered in the upgrade flow into the booking, and
     // start the access window now — you proceed directly to the upgraded
     // lounge — so My Stay aligns with exactly what was entered.
