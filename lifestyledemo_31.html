@@ -1812,7 +1812,8 @@ const LOUNGE_NETWORK = [
     { name:'Aspire Lounge Gates A, B & D', city:'Zurich', country:'Switzerland', code:'ZRH', id:'zrh-abd', tier:'lifestyle' },
     { name:'Suite by Aspire · Zürich Airport (Non-Schengen)', city:'Zurich', country:'Switzerland', code:'ZRH', id:'zrh-suite', tier:'suite' },
     { name:'Privé by Aspire · Zürich Terminal 2', city:'Zurich', country:'Switzerland', code:'ZRH', id:'zrh-prive', tier:'prive' },
-    { name:'Geneva Lounge',                        city:'Geneva', country:'Switzerland', count:2, code:'GVA', id:'gva-luxe', tier:'luxe' },
+    { name:'Aspire Luxe Lounge · Zürich Airport', city:'Zurich', country:'Switzerland', code:'ZRH', id:'zrh-luxe', tier:'luxe' },
+    { name:'Geneva Aspire Lounge',                 city:'Geneva', country:'Switzerland', code:'GVA', tier:'lifestyle' },
     { name:'Zurich Aspire Lounge Midfield',        city:'Zurich', country:'Switzerland', count:2, code:'ZRH', tier:'lifestyle' },
     { name:'Zurich Swiss Airlines Lounges',        city:'Zurich', country:'Switzerland', count:10, code:'ZRH' },
     { name:'Amsterdam Schiphol Aspire Lounge 26',  city:'Amsterdam', country:'Netherlands', code:'AMS', tier:'lifestyle' },
@@ -2269,6 +2270,34 @@ const VERIFY_TYPES = [
 const $ = (s, root=document) => root.querySelector(s);
 const $$ = (s, root=document) => [...root.querySelectorAll(s)];
 const lounge = () => LOUNGES.find(l => l.id === state.booking.loungeId) || LOUNGES[0];
+// After a tier upgrade the guest is effectively in the upgraded-tier lounge, so
+// the directory features that one as "Your selection". We keep state.booking
+// .loungeId pointed at the *origin* lounge (the summary reads it as the upgrade's
+// "from" tier), and override only what's shown as the selection.
+const TIER_LOUNGE_IDS = { luxe:'zrh-luxe', suite:'zrh-suite', prive:'zrh-prive' };
+function tierLoungeProfile(tier) {
+  const prof = TIER_PROFILES[tier];
+  if (!prof) return null;
+  const base = lounge();
+  const mult = TIER_MULTIPLIER[tier] || 1;
+  return Object.assign({}, base, {
+    id: TIER_LOUNGE_IDS[tier] || base.id,
+    name: prof.name,
+    image: TIER_LOUNGE_IMAGES[tier] || base.image,
+    amenities: prof.amenities,
+    terminal: prof.location,
+    priceFrom: Math.round((base.priceFrom || 0) * mult),
+    tier: tier,
+  });
+}
+function selectedLoungeId() {
+  const up = state.booking.upgradeTier;
+  return (up && TIER_LOUNGE_IDS[up]) ? TIER_LOUNGE_IDS[up] : state.booking.loungeId;
+}
+function selectedLoungeProfile() {
+  const up = state.booking.upgradeTier;
+  return up ? (tierLoungeProfile(up) || lounge()) : lounge();
+}
 function formatDate(d) {
   try { return new Date(d).toLocaleDateString('en-GB', { weekday:'short', day:'2-digit', month:'short', year:'numeric' }); } catch { return d; }
 }
@@ -2395,7 +2424,7 @@ function updateLoungePickerLabel() {
 function renderHomeFeatured() {
   const grid = $('#featured-lounges'); if (!grid) return;
   grid.innerHTML = '';
-  const sel = lounge();
+  const sel = selectedLoungeProfile();
   // Selected lounge — prominent card spanning the full width
   grid.append(el('div', { class:'lg:col-span-2 rounded-3xl overflow-hidden bg-white border border-aspire-navy/40 flex flex-col sm:flex-row shadow-card' },
     el('div', { class:'relative sm:w-1/2 aspect-[4/3] sm:aspect-auto overflow-hidden' },
@@ -2483,7 +2512,7 @@ function renderLoungePickerList(q) {
 const TIER_LABELS = { lifestyle:'Lifestyle', suite:'Suite', prive:'Privé', luxe:'Luxe' };
 function loungeRow(net, region) {
   const profile = loungeProfileFromNetwork(net, region);
-  const selected = state.booking.loungeId === profile.id;
+  const selected = selectedLoungeId() === profile.id;
   const wrap = el('button', {
     class:`w-full text-left flex items-center gap-4 p-4 rounded-2xl border transition-all cursor-pointer ${selected ? 'border-aspire-navy bg-aspire-soft' : 'border-aspire-border bg-white hover:border-aspire-taupe hover:bg-aspire-soft/60'}`,
     onclick: () => pickLounge(net, region)
@@ -2549,7 +2578,7 @@ function renderSearch() {
   const out = $('#search-results'); out.innerHTML = '';
 
   // Selected lounge — always featured at the top of /search
-  const sel = lounge();
+  const sel = selectedLoungeProfile();
   if (!q || `${sel.airport} ${sel.airportCode} ${sel.city} ${sel.name}`.toLowerCase().includes(q)) {
     out.append(el('div', { class:'lg:col-span-2 rounded-3xl overflow-hidden bg-white border border-aspire-navy flex flex-col sm:flex-row shadow-card' },
       el('div', { class:'relative sm:w-2/5 aspect-[4/3] sm:aspect-auto overflow-hidden' },
@@ -7662,7 +7691,7 @@ window.addEventListener('hashchange', () => {
         <div class="tp-eyebrow">— Tier 02</div>
         <div class="tp-title">Luxe</div>
         <div class="tp-body">Curated three-course tray, signature pairings, plated moments before you sit down.</div>
-        <div class="tp-meta">Geneva · Aspire Luxe</div>
+        <div class="tp-meta">Zürich · Aspire Luxe</div>
       </button>
       <button class="tp-btn" data-demo-tier="suite">
         <div class="tp-eyebrow">— Tier 03</div>
@@ -7713,7 +7742,7 @@ window.addEventListener('hashchange', () => {
   // ----------------------------------------------------------------
   var TIER_META = {
     lifestyle: { label: 'Lifestyle', loungeId: 'zrh-abd',   tag: 'Lifestyle · Buffet & bar' },
-    luxe:      { label: 'Luxe',      loungeId: 'gva-luxe',  tag: 'Luxe · Curated tray' },
+    luxe:      { label: 'Luxe',      loungeId: 'zrh-luxe',  tag: 'Luxe · Curated tray' },
     suite:     { label: 'Suite',     loungeId: 'zrh-suite', tag: 'Suite · Private suite tray' },
     prive:     { label: 'Privé',     loungeId: 'zrh-prive', tag: 'Privé · Bespoke plate' }
   };
@@ -7741,7 +7770,7 @@ window.addEventListener('hashchange', () => {
   // identical asset for each tier.
   var DEMO_LOUNGE_IMAGES = {
     'zrh-abd':   (typeof TIER_LOUNGE_IMAGES !== 'undefined' && TIER_LOUNGE_IMAGES.lifestyle),
-    'gva-luxe':  (typeof TIER_LOUNGE_IMAGES !== 'undefined' && TIER_LOUNGE_IMAGES.luxe),
+    'zrh-luxe':  (typeof TIER_LOUNGE_IMAGES !== 'undefined' && TIER_LOUNGE_IMAGES.luxe),
     'zrh-suite': (typeof TIER_LOUNGE_IMAGES !== 'undefined' && TIER_LOUNGE_IMAGES.suite),
     'zrh-prive': (typeof TIER_LOUNGE_IMAGES !== 'undefined' && TIER_LOUNGE_IMAGES.prive)
   };
