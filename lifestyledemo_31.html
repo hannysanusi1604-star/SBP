@@ -4897,13 +4897,34 @@ window.addEventListener('hashchange', () => {
     function norm(t){ var p = (t || '').split(':'); return ('0'+(p[0]||'0')).slice(-2)+':'+('0'+(p[1]||'00')).slice(-2); }
     return { open: norm(mm ? mm[1] : '05:15'), close: norm(mm ? mm[2] : '21:00') };
   }
+  // Arrival is the day after today — taken from the verified boarding pass.
+  function paArrivalDate() { var d = new Date(); d.setDate(d.getDate() + 1); d.setHours(0,0,0,0); return d; }
+  function paArrivalDateStr() { try { return (typeof formatDate === 'function') ? formatDate(paArrivalDate()) : paArrivalDate().toDateString(); } catch (e) { return ''; } }
+  function paArrivalShort() { try { return paArrivalDate().toLocaleDateString('en-GB', { weekday:'short', day:'2-digit', month:'short' }); } catch (e) { return ''; } }
+  // "Ready by" / arrival label for the composer (date computed fresh = tomorrow).
+  function paReadyByLabel(time) {
+    if (time === 'On arrival') return 'On arrival';
+    var t = (time && time !== 'now') ? time : '';
+    var d = paArrivalShort();
+    if (t && d) return d + ' · ' + t;
+    return d || (t || '—');
+  }
+  // "Ready by" for a saved order — uses the date stored on the order so history
+  // stays accurate later.
+  function paOrderReadyBy(o) {
+    if (!o) return '—';
+    if (o.time === 'On arrival') return 'On arrival';
+    var t = (o.time && o.time !== 'now') ? o.time : '';
+    var d = o.arrivalShort || '';
+    if (t && d) return d + ' · ' + t;
+    return d || t || '—';
+  }
   // Free arrival-time entry (any time within opening hours). The date is already
   // known from the verified boarding pass, so we only ask for the time.
   function paArrivalMarkup() {
     var hrs = paLoungeHours();
     var val = paState.schedule || '';
-    var dateStr = '';
-    try { if (typeof formatDate === 'function' && state && state.booking && state.booking.date) dateStr = formatDate(state.booking.date); } catch (e) {}
+    var dateStr = paArrivalDateStr();
     return '' +
       (dateStr ? '<div class="text-[0.8rem] text-aspire-taupe mb-3">We already have your arrival date from your boarding pass — <span class="text-aspire-navy">'+esc(dateStr)+'</span>.</div>' : '') +
       '<div class="flex items-center gap-3 flex-wrap">' +
@@ -5112,7 +5133,7 @@ window.addEventListener('hashchange', () => {
     var expected = counts.starters + counts.mains + counts.desserts;
     var filled = sel.starters.filter(Boolean).length + sel.mains.filter(Boolean).length + sel.desserts.filter(Boolean).length;
     var complete = expected > 0 && filled === expected;
-    var time = paState.schedule || 'now';
+    var time = paReadyByLabel(paState.schedule);
     var prep = paEffectivePrep();
     var pairing = paPairingLabel();
     var suiteCustom = paState.tier === 'suite' && paState.suite.mode === 'custom';
@@ -5206,20 +5227,17 @@ window.addEventListener('hashchange', () => {
         '<div class="lg:col-span-7">' +
           '<div class="flex items-center gap-3 text-aspire-taupeDark">' +
             '<span class="pa-status-dot"></span>' +
-            '<span class="text-[0.6rem] uppercase tracking-[0.32em]">Live order</span>' +
+            '<span class="text-[0.6rem] uppercase tracking-[0.32em]">Scheduled</span>' +
             '<span class="text-aspire-navy/20">·</span>' +
             '<span class="text-[0.6rem] uppercase tracking-[0.32em] text-aspire-navy">'+esc(PA_TIER_META[c.tier].label)+'</span>' +
           '</div>' +
-          '<h2 class="serif-heading text-3xl sm:text-5xl mt-4 text-aspire-navy">Your tray is in motion.</h2>' +
-          '<p class="mt-4 text-aspire-taupe leading-[1.7] max-w-xl">Live preparation status. Cancel up to 20 minutes before arrival, or compose another tray any time.</p>' +
+          '<h2 class="serif-heading text-3xl sm:text-5xl mt-4 text-aspire-navy">Your pre-order is confirmed.</h2>' +
+          '<p class="mt-4 text-aspire-taupe leading-[1.7] max-w-xl">We’ll plate it fresh and timed to your arrival—'+esc(paOrderReadyBy(c))+'. Cancel up to 20 minutes before arrival, or compose another tray any time.</p>' +
           '<div class="mt-10" data-pa-live-pipeline>'+paPipelineMarkup(activeIdx)+'</div>' +
-          '<div data-pa-ready-state class="hidden mt-8 p-5 bg-white border border-aspire-navy/15">' +
-            '<div class="swiss-eyebrow text-aspire-navy">Tray ready</div>' +
-            '<p class="mt-2 text-[0.95rem] text-aspire-navy">Your tray is ready · meet host at <span data-pa-ready-host class="font-medium">'+esc(c.handoff)+'</span>.</p>' +
-          '</div>' +
+          '<p class="mt-4 text-[0.78rem] text-aspire-taupe">Received and confirmed—the kitchen begins plating shortly before you arrive.</p>' +
           '<div class="mt-12 grid sm:grid-cols-3 gap-6 pt-8 border-t border-aspire-navy/10">' +
-            '<div><div class="swiss-eyebrow">Ready by</div><div class="mt-2 serif-heading text-2xl text-aspire-navy">'+esc(c.time)+'</div></div>' +
-            '<div><div class="swiss-eyebrow">Plated in</div><div class="mt-2 serif-heading text-2xl text-aspire-navy tabular-nums" data-pa-countdown>'+c.prep+' min 00 s</div></div>' +
+            '<div><div class="swiss-eyebrow">Ready by</div><div class="mt-2 serif-heading text-2xl text-aspire-navy">'+esc(paOrderReadyBy(c))+'</div></div>' +
+            '<div><div class="swiss-eyebrow">Plating time</div><div class="mt-2 serif-heading text-2xl text-aspire-navy tabular-nums">~'+c.prep+' min</div></div>' +
             '<div><div class="swiss-eyebrow">Where to find your tray</div><div class="mt-2 text-[0.92rem] text-aspire-navy leading-snug inline-flex items-start gap-1.5">'+paIcon('pin','w-4 h-4 mt-0.5')+' <span>'+esc(c.handoff)+'</span></div></div>' +
           '</div>' +
           (c.addon ? '<div class="mt-8 flex items-center justify-between gap-3 p-4 bg-white border border-aspire-navy/15"><div class="text-[0.92rem] text-aspire-navy inline-flex items-center gap-2">'+paIcon('crown','w-3.5 h-3.5')+' Added extra · '+esc(c.addon.name)+'</div><div class="serif-heading text-xl text-aspire-navy tabular-nums">CHF '+c.addon.price+'</div></div>' : '') +
@@ -5235,7 +5253,7 @@ window.addEventListener('hashchange', () => {
           '</div>' +
           '<div class="pa-push">' +
             '<div class="pa-push-head">'+paIcon('bell','w-3 h-3')+' Aspire · Pre-Arrival</div>' +
-            '<div class="pa-push-body">Your tray is being plated. We’ll meet you in about '+pushMins+' minutes.</div>' +
+            '<div class="pa-push-body">Pre-order confirmed for '+esc(paOrderReadyBy(c))+'. We’ll plate it about '+pushMins+' minutes before you arrive.</div>' +
             '<div class="pa-push-time">Now</div>' +
           '</div>' +
           '<div class="border border-aspire-navy/10 bg-white p-5">' +
@@ -5270,7 +5288,7 @@ window.addEventListener('hashchange', () => {
         '<div><div class="swiss-eyebrow">Pairing</div><div class="mt-2 text-[0.95rem] text-aspire-navy">'+esc(c.pairing || '—')+'</div></div>' +
       '</div>' +
       '<div class="mt-8 grid sm:grid-cols-3 gap-6 pt-7 border-t border-aspire-navy/10">' +
-        '<div><div class="swiss-eyebrow">Arrival</div><div class="mt-2 serif-heading text-2xl text-aspire-navy">'+esc(c.time)+'</div></div>' +
+        '<div><div class="swiss-eyebrow">Arrival</div><div class="mt-2 serif-heading text-2xl text-aspire-navy">'+esc(paOrderReadyBy(c))+'</div></div>' +
         '<div><div class="swiss-eyebrow">Handoff</div><div class="mt-2 text-[0.95rem] text-aspire-navy leading-snug inline-flex items-start gap-1.5">'+paIcon('pin','w-4 h-4 mt-0.5')+' <span>'+esc(c.handoff)+'</span></div></div>' +
         '<div><div class="swiss-eyebrow">Reference</div><div class="mt-2 serif-heading text-2xl text-aspire-navy tracking-wide">'+esc(c.ref)+'</div></div>' +
       '</div>' +
@@ -5286,9 +5304,11 @@ window.addEventListener('hashchange', () => {
         '</div>' +
       '</div>' +
       '<div class="mt-8 pt-7 border-t border-aspire-navy/10">' +
-        '<div class="swiss-eyebrow">— Live preparation</div>' +
+        '<div class="swiss-eyebrow">— '+(c.mode === 'now' ? 'Live preparation' : 'Preparation')+'</div>' +
         '<div class="mt-5" data-pa-live-pipeline>'+paPipelineMarkup(1)+'</div>' +
-        '<div class="mt-6 flex items-baseline gap-3"><span class="swiss-eyebrow">Plated in</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums" data-pa-countdown>'+(c.prep||12)+' min 00 s</span></div>' +
+        (c.mode === 'now'
+          ? '<div class="mt-6 flex items-baseline gap-3"><span class="swiss-eyebrow">Plated in</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums" data-pa-countdown>'+(c.prep||12)+' min 00 s</span></div>'
+          : '<div class="mt-6 flex items-baseline gap-3"><span class="swiss-eyebrow">Plating time</span><span class="serif-heading text-2xl text-aspire-navy tabular-nums">~'+(c.prep||12)+' min</span></div>') +
         '<div data-pa-ready-state class="hidden mt-5 p-4 bg-white border border-aspire-navy/15"><div class="swiss-eyebrow text-aspire-navy">Plate ready</div><p class="mt-2 text-[0.95rem] text-aspire-navy">Your plate is ready · meet host at <span data-pa-ready-host class="font-medium">'+esc(c.handoff)+'</span>.</p></div>' +
       '</div>' +
       '<p class="mt-8 text-[0.82rem] text-aspire-taupe italic max-w-2xl">You can cancel the request up to 10 minutes before arrival.</p>' +
@@ -5820,7 +5840,7 @@ window.addEventListener('hashchange', () => {
       }
       return '<div class="flex items-center justify-between gap-3 py-3 border-b border-aspire-navy/10 last:border-b-0">' +
         '<div class="flex-1 min-w-0">' +
-          '<div class="text-[0.7rem] uppercase tracking-widest text-aspire-taupe">'+esc(dts)+' · '+esc((PA_TIER_META[o.tier]||{}).label || o.tier)+'</div>' +
+          '<div class="text-[0.7rem] uppercase tracking-widest text-aspire-taupe">'+esc(paOrderReadyBy(o))+' · '+esc((PA_TIER_META[o.tier]||{}).label || o.tier)+'</div>' +
           '<div class="text-[0.92rem] text-aspire-navy truncate">'+esc(items)+'</div>' +
           '<div class="text-[0.7rem] text-aspire-taupe tabular-nums mt-0.5">'+esc(o.ref)+'</div>' +
         '</div>' +
@@ -5836,7 +5856,10 @@ window.addEventListener('hashchange', () => {
   }
   function paReceiptMarkup(o) {
     var dt = new Date(o.confirmedAt || Date.now());
-    var dts = dt.toLocaleString('en-GB', { weekday:'short', day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    var orderedStr = dt.toLocaleString('en-GB', { weekday:'short', day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    // Header reads the arrival date (from the boarding pass); fall back to the
+    // order timestamp for an on-arrival order with no scheduled date.
+    var dts = o.arrivalDate ? ('Arriving ' + o.arrivalDate + (o.time && o.time !== 'On arrival' && o.time !== 'now' ? ' · ' + o.time : '')) : orderedStr;
     var rows = '';
     if (o.kind === 'bespoke') {
       rows += '<div class="flex justify-between gap-3"><span class="text-aspire-taupe">Ingredients</span><span class="text-aspire-navy text-right max-w-[60%]">'+esc((o.ingredients||[]).join(', ') || '—')+'</span></div>';
@@ -5855,7 +5878,7 @@ window.addEventListener('hashchange', () => {
       '<div class="text-[0.78rem] text-aspire-taupe text-center mt-1">'+esc(dts)+'</div>' +
       '<div class="mt-5 p-4 bg-aspire-soft rounded-xl space-y-2 text-[0.85rem]">' +
         '<div class="flex justify-between gap-3"><span class="text-aspire-taupe">Reference</span><span class="text-aspire-navy tabular-nums">'+esc(o.ref)+'</span></div>' +
-        '<div class="flex justify-between gap-3"><span class="text-aspire-taupe">Ready by</span><span class="text-aspire-navy">'+esc(o.time || '—')+'</span></div>' +
+        '<div class="flex justify-between gap-3"><span class="text-aspire-taupe">Ready by</span><span class="text-aspire-navy">'+esc(paOrderReadyBy(o))+'</span></div>' +
         '<div class="flex justify-between gap-3"><span class="text-aspire-taupe">Handoff</span><span class="text-aspire-navy text-right max-w-[60%]">'+esc(o.handoff || '—')+'</span></div>' +
         '<div class="pt-2 mt-2 border-t border-aspire-border space-y-1.5">' + rows + '</div>' +
       '</div>' +
@@ -5925,7 +5948,10 @@ window.addEventListener('hashchange', () => {
 
     host.innerHTML = paAuthPillMarkup(auth) + paHistoryPanelMarkup() + hero + banner + confirmed + body;
     // Boot or tear down the live timer to match the confirmed state.
-    if (paState.confirmed && paState.confirmed.confirmedAt) paStartLive(); else paStopLive();
+    // The live plating countdown only runs for a genuine on-arrival order; a
+    // pre-order for tomorrow stays "scheduled" (no misleading live countdown).
+    var _cf = paState.confirmed;
+    if (_cf && _cf.confirmedAt && _cf.kind === 'bespoke' && _cf.mode === 'now') paStartLive(); else paStopLive();
   }
 
   // Expose composer state + the curated-fill helpers so the guided demo tour
@@ -6184,7 +6210,9 @@ window.addEventListener('hashchange', () => {
       if (expected === 0 || filled !== expected) return;
       paState.confirmed = {
         kind: 'tray',
-        time: paState.schedule || 'now',
+        time: paState.schedule || '',
+        arrivalDate: paArrivalDateStr(),
+        arrivalShort: paArrivalShort(),
         prep: paEffectivePrep(),
         ref: paGenerateRef(),
         tier: paState.tier,
@@ -6210,7 +6238,9 @@ window.addEventListener('hashchange', () => {
       var bev = PA_PRIVE_PAIRINGS.find(function(x){return x.id===p.pairing;});
       paState.confirmed = {
         kind: 'bespoke',
-        time: p.mode === 'now' ? 'On arrival' : paState.schedule,
+        time: p.mode === 'now' ? 'On arrival' : (paState.schedule || ''),
+        arrivalDate: p.mode === 'now' ? '' : paArrivalDateStr(),
+        arrivalShort: p.mode === 'now' ? '' : paArrivalShort(),
         ref: paGenerateRef(),
         tier: 'prive',
         handoff: paHandoffCopy(),
