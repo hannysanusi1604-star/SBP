@@ -2184,14 +2184,30 @@ const OCCUPANCY_FORECAST = [
   {hour:'16',value:66},{hour:'17',value:78},{hour:'18',value:84},{hour:'19',value:72},{hour:'20',value:54},
 ];
 
-const FLIGHTS = [
-  { code:'LX 318',  dest:'London Heathrow', sched:'14:35', status:'On time',      gate:'A12' },
-  { code:'BA 715',  dest:'Edinburgh',       sched:'14:50', status:'Boarding',     gate:'A18' },
-  { code:'AF 1213', dest:'Paris CDG',       sched:'15:05', status:'Delayed +15',  gate:'B04' },
-  { code:'KL 1924', dest:'Amsterdam',       sched:'15:20', status:'On time',      gate:'B12' },
-  { code:'EW 553',  dest:'Düsseldorf',      sched:'15:40', status:'On time',      gate:'C02' },
-  { code:'LX 412',  dest:'Madrid',          sched:'16:00', status:'On time',      gate:'A21' },
+// Live ZRH departures board. Codes, destinations and gates are fixed, but the
+// scheduled times are generated relative to "now" each time My Stay renders, so
+// the "next 90 min" feed always reads sensibly whenever the demo is opened —
+// the status (Final call / Boarding / On time / Delayed) follows the clock too.
+const DEPARTURE_ROUTES = [
+  { code:'LX 318',  dest:'London Heathrow', gate:'A12', inMin:12, delay:0  },
+  { code:'BA 715',  dest:'Edinburgh',       gate:'A18', inMin:24, delay:0  },
+  { code:'AF 1213', dest:'Paris CDG',       gate:'B04', inMin:38, delay:15 },
+  { code:'KL 1924', dest:'Amsterdam',       gate:'B12', inMin:53, delay:0  },
+  { code:'EW 553',  dest:'Düsseldorf',      gate:'C02', inMin:68, delay:0  },
+  { code:'LX 412',  dest:'Madrid',          gate:'A21', inMin:84, delay:0  },
 ];
+function liveDepartures() {
+  const now = Date.now();
+  return DEPARTURE_ROUTES.map(r => {
+    const sched = clockHM(new Date(now + r.inMin * 60000));
+    let status;
+    if (r.delay)          status = `Delayed +${r.delay}`;
+    else if (r.inMin <= 15) status = 'Final call';
+    else if (r.inMin <= 30) status = 'Boarding';
+    else                    status = 'On time';
+    return { code:r.code, dest:r.dest, gate:r.gate, sched, status };
+  });
+}
 
 /* ----------------------- STATE ----------------------- */
 const state = {
@@ -3609,9 +3625,11 @@ function verifyAccess(source) {
   // simple simulated check: accept anything with last name + 4+ char number
   if (!(state.verification.lastName.trim().length > 1 && state.verification.number.trim().length >= 4)) return;
   state.verified = true;
-  // mirror into booking membership for the summary
+  // mirror the verified access type into the booking so My Stay's "Entry
+  // method" reflects exactly what was entered here in the queue (boarding pass
+  // included — its id matches the MEMBERSHIPS entry).
   const meta = VERIFY_TYPES.find(t => t.id === state.verification.type);
-  if (meta && meta.id !== 'boarding-pass') state.booking.membership = meta.id;
+  if (meta) state.booking.membership = meta.id;
   state.booking.guestName = state.booking.guestName || `${state.verification.lastName}`;
   if (source === 'tables') renderTables();
   else renderQueue();
@@ -4255,8 +4273,8 @@ function renderDashboard() {
       </button>` : ''}`;
 
   const fl = $('#flight-list'); fl.innerHTML = '';
-  FLIGHTS.forEach(f => {
-    const cls = f.status.includes('Delayed') ? 'text-amber-700' : f.status === 'Boarding' ? 'text-emerald-700' : 'text-navy-500';
+  liveDepartures().forEach(f => {
+    const cls = f.status.includes('Delayed') ? 'text-amber-700' : (f.status === 'Boarding' || f.status === 'Final call') ? 'text-emerald-700' : 'text-navy-500';
     fl.append(el('div', { class:'py-3 flex items-center justify-between text-[0.92rem]' },
       el('div', { class:'flex items-center gap-4' },
         el('span', { class:'font-medium text-aspire-navy w-16' }, f.code),
