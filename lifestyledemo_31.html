@@ -2864,9 +2864,10 @@ function bookingSummaryHTML() {
   const queueStatus = hasUpgrade
     ? `<span class="text-emerald-700">${upgradeLabel} — proceed direct</span>`
     : (state.confirmed ? 'Confirmed' : 'Awaiting confirmation');
+  const upgradeProfile = hasUpgrade ? TIER_PROFILES[upgradeTier] : null;
   const fields = [
     ['Airport', l.airport],
-    ['Lounge', l.name],
+    ['Lounge', upgradeProfile ? `${upgradeProfile.name} · ${l.city}` : l.name],
     ['Date', formatDate(state.booking.date)],
     ['Arrival', state.booking.arrivalTime],
     ['Lounge access', `<span class="text-aspire-navy">3 hours</span> from ${state.booking.arrivalTime} · until ${endTime(state.booking.arrivalTime)}`],
@@ -2876,7 +2877,7 @@ function bookingSummaryHTML() {
     ['Access type', accessTypeLabel],
     ['Booking status', queueStatus],
     ['Seating', seating],
-    ['Terminal', l.terminal],
+    ['Terminal', upgradeProfile ? upgradeProfile.location : l.terminal],
   ];
   // Helper row builder used by the price-block branches
   const row = (k, v) => `<div class="flex items-center justify-between"><span class="text-navy-500">${k}</span><span class="text-aspire-navy tabular-nums">${v}</span></div>`;
@@ -3160,6 +3161,15 @@ function finaliseBooking(opts) {
     if (state.verified && state.verification.type) {
       state.booking.membership = state.verification.type;
     }
+    // Carry the guest count entered in the upgrade flow into the booking, and
+    // start the access window now — you proceed directly to the upgraded
+    // lounge — so My Stay aligns with exactly what was entered.
+    if (upgradeFlow.guests > 0) {
+      state.booking.guests = { adults: upgradeFlow.guests, children: 0 };
+    }
+    const upTime = clockHM(new Date());
+    state.booking.arrivalTime = upTime;
+    state.booking.slot = upTime;
     const bucket = tierCapacityBucket(toTier);
     if (bucket) bucket.seatsTaken += 1;
     state.pendingUpgrade = null;
@@ -3303,13 +3313,17 @@ function finishPayment() {
 }
 
 /* ----------------------- UPGRADE MODAL (queue → tier hop) ----------------------- */
-const upgradeFlow = { step: 1, verifyType: 'priority-pass', lastName: '', number: '', payMethod: 'card', cardNum: '', cardExp: '', cardCvc: '', cardName: '', tos: false };
+const upgradeFlow = { step: 1, verifyType: 'priority-pass', lastName: '', number: '', guests: 1, payMethod: 'card', cardNum: '', cardExp: '', cardCvc: '', cardName: '', tos: false };
 
 function openUpgradeModal() {
   upgradeFlow.step = 1;
   upgradeFlow.verifyType = state.verification.type || 'priority-pass';
   upgradeFlow.lastName = state.verification.lastName || '';
   upgradeFlow.number = state.verification.number || '';
+  // Prefill party size from the queue (if joined) or the existing booking, so
+  // the upgrade carries the guest count through instead of resetting to 1.
+  upgradeFlow.guests = (state.joined && state.joined.party)
+    || (state.booking.guests.adults + state.booking.guests.children) || 1;
   upgradeFlow.payMethod = 'card';
   upgradeFlow.cardNum = ''; upgradeFlow.cardExp = ''; upgradeFlow.cardCvc = ''; upgradeFlow.cardName = '';
   upgradeFlow.tos = false;
@@ -3342,6 +3356,7 @@ function upgradeStep1Markup() {
   const fromLabel = TIER_LABELS[currentLoungeTier()] || 'Lifestyle';
   const typeOpts = VERIFY_TYPES.map(t => `<option value="${t.id}"${t.id === upgradeFlow.verifyType ? ' selected' : ''}>${t.label}</option>`).join('');
   const numLabel = (VERIFY_TYPES.find(t => t.id === upgradeFlow.verifyType) || VERIFY_TYPES[1]).numLabel;
+  const guestOpts = [1,2,3,4,5,6].map(n => `<option value="${n}"${n === upgradeFlow.guests ? ' selected' : ''}>${n}</option>`).join('');
   return `
     <div class="swiss-eyebrow text-center">Step 1 · Verify access</div>
     <div class="serif-heading text-2xl text-aspire-navy text-center mt-1">Confirm eligibility for ${toLabel}</div>
@@ -3357,6 +3372,10 @@ function upgradeStep1Markup() {
     <label class="block mt-4">
       <div class="text-[0.7rem] uppercase tracking-widest text-navy-500 mb-2"><span id="up-v-num-label">${numLabel}</span></div>
       <input id="up-v-num" value="${upgradeFlow.number.replace(/"/g, '&quot;')}" placeholder="ABC123456" class="input-cream" />
+    </label>
+    <label class="block mt-4">
+      <div class="text-[0.7rem] uppercase tracking-widest text-navy-500 mb-2">Guests</div>
+      <select id="up-v-guests" class="input-cream">${guestOpts}</select>
     </label>
     <button id="up-v-btn" class="btn-primary disabled mt-5 w-full justify-center">
       Verify access
@@ -3450,6 +3469,8 @@ function bindUpgradeModal() {
       check();
     };
     nm.oninput = check; nu.oninput = check;
+    const gs = $('#up-v-guests');
+    if (gs) gs.onchange = () => { upgradeFlow.guests = Number(gs.value); };
     check();
     btn.onclick = () => {
       if (btn.classList.contains('disabled')) return;
