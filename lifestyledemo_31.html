@@ -4889,6 +4889,30 @@ window.addEventListener('hashchange', () => {
     return slots;
   }
 
+  // Lounge opening hours, parsed from the selected lounge (defaults 05:15–21:00).
+  function paLoungeHours() {
+    var h = '05:15 — 21:00';
+    try { var L = (typeof lounge === 'function') ? lounge() : null; if (L && L.hours) h = L.hours; } catch (e) {}
+    var mm = h.match(/(\d{1,2}:\d{2})\s*[—–-]\s*(\d{1,2}:\d{2})/);
+    function norm(t){ var p = (t || '').split(':'); return ('0'+(p[0]||'0')).slice(-2)+':'+('0'+(p[1]||'00')).slice(-2); }
+    return { open: norm(mm ? mm[1] : '05:15'), close: norm(mm ? mm[2] : '21:00') };
+  }
+  // Free arrival-time entry (any time within opening hours). The date is already
+  // known from the verified boarding pass, so we only ask for the time.
+  function paArrivalMarkup() {
+    var hrs = paLoungeHours();
+    var val = paState.schedule || '';
+    var dateStr = '';
+    try { if (typeof formatDate === 'function' && state && state.booking && state.booking.date) dateStr = formatDate(state.booking.date); } catch (e) {}
+    return '' +
+      (dateStr ? '<div class="text-[0.8rem] text-aspire-taupe mb-3">We already have your arrival date from your boarding pass — <span class="text-aspire-navy">'+esc(dateStr)+'</span>.</div>' : '') +
+      '<div class="flex items-center gap-3 flex-wrap">' +
+        '<input type="time" data-pa-time-input min="'+hrs.open+'" max="'+hrs.close+'" step="300" value="'+esc(val)+'" class="bg-white border border-aspire-navy/15 px-3 py-2.5 text-[1rem] text-aspire-navy tabular-nums focus:outline-none focus:border-aspire-navy" style="max-width:170px;" />' +
+        '<span class="text-[0.72rem] uppercase tracking-[0.18em] text-aspire-taupe">Open '+esc(hrs.open)+'–'+esc(hrs.close)+'</span>' +
+      '</div>' +
+      '<p data-pa-time-err class="hidden mt-2 text-[0.72rem] text-[#B05A47]">Please choose a time within opening hours ('+esc(hrs.open)+'–'+esc(hrs.close)+').</p>';
+  }
+
   function paSuiteCounts() {
     if (paState.tier === 'suite' && paState.suite.mode === 'custom') return paState.suite.counts;
     return PA_TRAY_SIZES[paState.size];
@@ -5329,7 +5353,7 @@ window.addEventListener('hashchange', () => {
         '<div class="mt-8 grid lg:grid-cols-12 gap-10">',
           '<div class="lg:col-span-7">',
             '<div class="text-[0.7rem] uppercase tracking-[0.22em] text-aspire-taupe">When will you arrive?</div>',
-            '<div class="mt-4 grid grid-cols-3 sm:grid-cols-6 gap-2">'+timeChips+'</div>',
+            '<div class="mt-4">'+paArrivalMarkup()+'</div>',
             '<textarea data-pa-note rows="3" placeholder="Add a note — celebration, allergy, seating preference…" class="mt-6 w-full bg-transparent border-b border-aspire-navy/15 px-1 py-3 text-[0.95rem] focus:outline-none focus:border-aspire-navy">'+esc(paState.note)+'</textarea>',
           '</div>',
           '<div class="lg:col-span-5"><p class="text-aspire-taupe leading-[1.7]">A tray takes roughly '+paEffectivePrep()+' minutes to plate at this size, so we finish moments before you sit down.</p></div>',
@@ -5441,7 +5465,7 @@ window.addEventListener('hashchange', () => {
         '<div class="mt-8 grid lg:grid-cols-12 gap-10">',
           '<div class="lg:col-span-7">',
             '<div class="text-[0.7rem] uppercase tracking-[0.22em] text-aspire-taupe">When will you arrive?</div>',
-            '<div class="mt-4 grid grid-cols-3 sm:grid-cols-6 gap-2">'+timeChips+'</div>',
+            '<div class="mt-4">'+paArrivalMarkup()+'</div>',
             '<textarea data-pa-note rows="3" placeholder="Add a note — celebration, allergy, seating preference…" class="mt-6 w-full bg-transparent border-b border-aspire-navy/15 px-1 py-3 text-[0.95rem] focus:outline-none focus:border-aspire-navy">'+esc(paState.note)+'</textarea>',
           '</div>',
           '<div class="lg:col-span-5"><p class="text-aspire-taupe leading-[1.7]">Suite travellers gain a three-minute priority allocation in the kitchen.</p></div>',
@@ -5523,7 +5547,7 @@ window.addEventListener('hashchange', () => {
             '<p class="mt-3 text-aspire-taupe leading-[1.7] max-w-xl">Pre-order ahead or walk in and let the chef compose on the spot. Add a note for anything personal — occasion, allergy, preference.</p>',
             '<div class="mt-6 grid sm:grid-cols-2 gap-3">'+modeChips+'</div>',
             (p.mode === 'preorder'
-              ? '<div class="mt-6"><div class="text-[0.7rem] uppercase tracking-[0.22em] text-aspire-taupe">Arrival window</div><div class="mt-3 grid grid-cols-3 sm:grid-cols-6 gap-2">'+timeChips+'</div></div>'
+              ? '<div class="mt-6"><div class="text-[0.7rem] uppercase tracking-[0.22em] text-aspire-taupe">Arrival window</div><div class="mt-3">'+paArrivalMarkup()+'</div></div>'
               : ''),
             '<textarea data-pa-chef-note rows="3" placeholder="Anything personal for the chef — occasion, allergy, preference…" class="mt-6 w-full bg-transparent border border-aspire-navy/15 p-4 text-[0.95rem] focus:outline-none focus:border-aspire-navy">'+esc(p.chefNote)+'</textarea>',
           '</div>',
@@ -6263,6 +6287,25 @@ window.addEventListener('hashchange', () => {
     var el = e.target;
     if (el.matches('[data-pa-note]')) { paState.note = el.value; return; }
     if (el.matches('[data-pa-chef-note]')) { paState.prive.chefNote = el.value; return; }
+    if (el.matches('[data-pa-time-input]')) {
+      // Any time the guest likes, as long as it's within opening hours.
+      var v = el.value;
+      var hrs = paLoungeHours();
+      var errEl = host.querySelector('[data-pa-time-err]');
+      if (v && (v < hrs.open || v > hrs.close)) {
+        if (errEl) errEl.classList.remove('hidden');
+        paState.schedule = '';
+      } else {
+        if (errEl) errEl.classList.add('hidden');
+        paState.schedule = v;
+      }
+      return;
+    }
+  });
+  // Re-render on commit (blur / picker close) so the summary "Ready by" updates —
+  // done on change, not input, to avoid stealing focus mid-edit.
+  host.addEventListener('change', function(e){
+    if (e.target.matches && e.target.matches('[data-pa-time-input]') && paState.schedule) paRender();
   });
 
   // Auth + tier-lock controls (separate listener so it doesn't conflict with
@@ -8365,7 +8408,8 @@ window.addEventListener('hashchange', () => {
           eyebrow: 'Arrival window',
           title: 'Pick an arrival time',
           body: "Voyager combo loaded — Swiss-meets-world. Now tell the kitchen when you'll arrive so the tray lands in time.",
-          selector: '#view-menu [data-pa-time]',
+          selector: '#view-menu [data-pa-time-input]',
+          onEnter: function(){ try { var i=document.querySelector('#view-menu [data-pa-time-input]'); if(i){ var t='14:00'; if(i.max && t>i.max)t=i.max; if(i.min && t<i.min)t=i.min; i.value=t; i.dispatchEvent(new Event('input',{bubbles:true})); } } catch(e){} },
           change: 'Arrival window set' },
         { view: 'menu', menuSub: 'pre-arrival',
           eyebrow: 'Confirm',
@@ -8430,7 +8474,8 @@ window.addEventListener('hashchange', () => {
           eyebrow: 'Arrival window',
           title: 'Pick an arrival time',
           body: 'Champagne added. Now lock the arrival window — the kitchen lines up the tray for that minute.',
-          selector: '#view-menu [data-pa-time]',
+          selector: '#view-menu [data-pa-time-input]',
+          onEnter: function(){ try { var i=document.querySelector('#view-menu [data-pa-time-input]'); if(i){ var t='14:00'; if(i.max && t>i.max)t=i.max; if(i.min && t<i.min)t=i.min; i.value=t; i.dispatchEvent(new Event('input',{bubbles:true})); } } catch(e){} },
           change: 'Arrival window set' },
         { view: 'menu', menuSub: 'pre-arrival',
           eyebrow: 'Confirm',
@@ -8473,7 +8518,8 @@ window.addEventListener('hashchange', () => {
           eyebrow: 'Arrival window',
           title: 'Pick an arrival time',
           body: 'Wine pairing locked. Tell the chef when you arrive — the plate lands moments before you sit down.',
-          selector: '#view-menu [data-pa-time]',
+          selector: '#view-menu [data-pa-time-input]',
+          onEnter: function(){ try { var i=document.querySelector('#view-menu [data-pa-time-input]'); if(i){ var t='14:00'; if(i.max && t>i.max)t=i.max; if(i.min && t<i.min)t=i.min; i.value=t; i.dispatchEvent(new Event('input',{bubbles:true})); } } catch(e){} },
           change: 'Arrival window set' },
         { view: 'menu', menuSub: 'pre-arrival',
           eyebrow: 'Send',
