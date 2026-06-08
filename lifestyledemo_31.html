@@ -4599,10 +4599,10 @@ window.addEventListener('hashchange', () => {
     },
   };
 
+  var PA_DRINKS_PRICE = 10;
   var PA_PAIRINGS = [
-    { id:'pinot',     label:'Pinot Noir · Graubünden',  hint:'Light Alpine fruit, bright finish — pairs with cured meats.' },
-    { id:'champagne', label:'Champagne Brut · Henriot', hint:'Crisp, fine bubble — the all-day companion.' },
-    { id:'riesling',  label:'Alpine Riesling · Wallis', hint:'Mineral, off-dry — pairs with smoked fish and Asian notes.' },
+    { id:'french-bloom', label:'French Bloom · The Vintage Cuvée',  hint:'Alcohol-free sparkling — delicate, floral, celebratory.' },
+    { id:'ruinart',      label:'Ruinart Blanc de Blanc · Champagne', hint:'Chardonnay finesse — crisp, refined bubbles.' },
   ];
 
   var PA_PRIVE_INGREDIENTS = [
@@ -4709,6 +4709,38 @@ window.addEventListener('hashchange', () => {
     },
   };
 
+  // Suite gets its own all-day curated canapé menu (not time-split). Images for
+  // a few items are stand-ins reused from the existing photo set.
+  var PA_SUITE_MENU = {
+    dishes: [
+      { id:'thai-chicken-satay',      name:'Thai Chicken Satay with Coconut Dip', description:'Chicken, coconut milk, lemongrass, ginger, garlic, turmeric.', category:'starters', image:'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=1200&q=80', temperature:'hot', dietary:['gluten-free','dairy-free','halal-friendly','nut-free'], allergens:[], ing:['Chicken','Coconut milk','Lemongrass','Ginger','Garlic','Turmeric'] },
+      { id:'caprese-skewers',         name:'Mini Caprese Skewers with Basil Pesto', description:'Cherry tomatoes, mozzarella, basil, olive oil, balsamic glaze.', category:'starters', image:'https://www.allrecipes.com/thmb/54wS5KBK0r4z-XgKnxwW_-IqPP4=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/6688282-701fd97840bd4e7eb4aff929b1e5c0d8.jpg', temperature:'cold', dietary:['vegetarian','gluten-free','nut-free'], allergens:['dairy'], ing:['Cherry tomatoes','Mozzarella','Basil','Olive oil','Balsamic glaze'] },
+      { id:'eggs-benedict-salmon',    name:'Egg Benedict with Smoked Salmon', description:'English muffins, smoked salmon, eggs, hollandaise sauce.', category:'starters', image:'https://tatyanaseverydayfood.com/wp-content/uploads/2019/03/Smoked-Salmon-Eggs-Benedict-recipe.jpg', temperature:'hot', dietary:['nut-free'], allergens:['gluten','dairy','eggs'], ing:['English muffins','Smoked salmon','Eggs','Hollandaise sauce'] },
+      { id:'bundnerfleisch-rolls',    name:'Bündnerfleisch Rolls',      description:'Bündnerfleisch, cream cheese, herbs, lemon zest.', category:'starters', image:'https://i.postimg.cc/4xhgTmSN/Chat-GPT-Image-May-26-2026-12-12-21-PM.png', temperature:'cold', dietary:['gluten-free','nut-free'], allergens:['dairy'], ing:['Bündnerfleisch','Cream cheese','Herbs','Lemon zest'] },
+      { id:'gruyere-tartlets',        name:'Mini Gruyère Cheese Tartlets', description:'Tartlet shells, Gruyère cheese, eggs, cream.', category:'starters', image:'https://theheirloompantry.co/wp-content/uploads/2022/08/tomato-tartlets-with-puff-pastry-the-heirloom-pantry-01-500x500.jpg', temperature:'hot', dietary:['vegetarian','nut-free'], allergens:['gluten','dairy','eggs'], ing:['Tartlet shells','Gruyère cheese','Eggs','Cream'] },
+      { id:'beef-sliders',            name:'Beef Sliders',              description:'Beef patties, mini buns, onion, lettuce, tomato, cheddar.', category:'mains', image:'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&q=80', temperature:'hot', dietary:['nut-free'], allergens:['gluten','dairy'], ing:['Beef patties','Mini buns','Onion','Lettuce','Tomato','Cheddar'] },
+      { id:'geschnetzeltes-volauvent', name:'Mini Zürcher Geschnetzeltes Vol-au-Vent', description:'Chicken, mushrooms, cream, onion, puff pastry.', category:'mains', image:'https://www.unileverfoodsolutions.ch/dam/global-ufs/mcos/dach/calcmenu-recipes/ch-recipes/elderly-q4-2018/elderly-herbstgerichte-q4-2018/ch%C3%BCgelipastetli-mit-milken/main-header.jpg', temperature:'hot', dietary:['nut-free'], allergens:['gluten','dairy','eggs'], ing:['Chicken','Mushrooms','Cream','Onion','Puff pastry'] },
+      { id:'rosti-bites-raclette',    name:'Rösti Bites with Raclette Cheese', description:'Potatoes, raclette cheese, butter, chives.', category:'mains', image:'https://www.recipetineats.com/tachyon/2020/10/Thin-ultra-crispy-potato-rosit_8.jpg', temperature:'hot', dietary:['vegetarian','gluten-free','nut-free'], allergens:['dairy'], ing:['Potatoes','Raclette cheese','Butter','Chives'] },
+      { id:'pasta-primavera-truffle', name:'Pasta Primavera with Truffle Sauce', description:'Pasta, mixed vegetables, truffle, parmesan cheese, garlic.', category:'mains', image:'https://ameliarecipes.com/wp-content/uploads/2025/08/homemade-Truffle-Pasta-Recipe-500x500.jpg', temperature:'hot', dietary:['vegetarian','nut-free'], allergens:['gluten','dairy'], ing:['Pasta','Mixed vegetables','Truffle','Parmesan cheese','Garlic'] },
+      { id:'prawn-tempura',           name:'Prawn Tempura',             description:'Prawns, tempura flour, egg, sparkling water, sweet chili sauce.', category:'mains', image:'https://images.unsplash.com/photo-1606756790138-261d2b21cd75?auto=format&fit=crop&w=1200&q=80', temperature:'hot', dietary:['dairy-free'], allergens:['gluten','shellfish','eggs'], ing:['Prawns','Tempura flour','Egg','Sparkling water','Sweet chili sauce'] },
+      { id:'carac-chocolate-tartlets', name:'Carac Chocolate Tartlets', description:'Tartlet shells, chocolate ganache, green icing.', category:'desserts', image:'https://www.simplyrecipes.com/thmb/UlDAPmXvG5kMr--0ZgWcK_GvKMc=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/__opt__aboutcom__coeus__resources__content_migration__simply_recipes__uploads__2005__10__Chocolate-Mousse-LEAD-3-cacdb5f8258a494cbb4398804e74cbd4.jpg', temperature:'cold', dietary:['vegetarian'], allergens:['gluten','dairy','eggs'], ing:['Tartlet shells','Chocolate ganache','Green icing'] },
+      { id:'spinach-feta-muffins',    name:'Mini Spinach & Feta Muffins', description:'Spinach, feta, flour, eggs.', category:'desserts', image:'https://www.cookingclassy.com/wp-content/uploads/2022/09/egg-muffins-01.jpg', temperature:'cold', dietary:['vegetarian','nut-free'], allergens:['gluten','dairy','eggs'], ing:['Spinach','Feta','Flour','Eggs'] },
+      { id:'swiss-apple-tart-bites',  name:'Swiss Apple Tart Bites',    description:'Pastry, apples, cinnamon, sugar.', category:'desserts', image:'https://www.elmundoeats.com/wp-content/uploads/2022/03/RC-Healthy-lemon-tarts-on-a-rack-view-from-front-2.jpg', temperature:'cold', dietary:['vegetarian','nut-free'], allergens:['gluten','dairy','eggs'], ing:['Pastry','Apples','Cinnamon','Sugar'] },
+      { id:'french-macarons',         name:'French Macaron Selection',  description:'A selection of Ladurée macarons.', category:'desserts', image:'https://images.unsplash.com/photo-1569864358642-9d1684040f43?auto=format&fit=crop&w=1200&q=80', temperature:'cold', dietary:['vegetarian','gluten-free'], allergens:['nuts','eggs','dairy'], ing:['Almond meringue','Buttercream','Assorted flavours'] },
+      { id:'mini-meringues',          name:'Mini Meringues with Double Cream', description:'Egg whites, sugar, double cream, berries.', category:'desserts', image:'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=1200&q=80', temperature:'cold', dietary:['vegetarian','gluten-free','nut-free'], allergens:['eggs','dairy'], ing:['Egg whites','Sugar','Double cream','Berries'] },
+    ],
+    combos: [
+      { id:'voyager', name:'The Signature', tag:'The full spread — satay, sliders, vol-au-vent and Carac tartlets.', image:'https://i.pinimg.com/736x/b7/02/65/b702653e4bf4542e18b7b0c0da5c41e1.jpg',
+        starters:['thai-chicken-satay','eggs-benedict-salmon','bundnerfleisch-rolls','caprese-skewers','gruyere-tartlets'], mains:['beef-sliders','geschnetzeltes-volauvent','prawn-tempura','rosti-bites-raclette','pasta-primavera-truffle'], desserts:['carac-chocolate-tartlets','french-macarons','mini-meringues','swiss-apple-tart-bites','spinach-feta-muffins'] },
+      { id:'garden', name:'The Garden', tag:'Vegetable-led — caprese, Gruyère tartlets, truffle pasta and apple tarts.', image:'https://i.pinimg.com/736x/36/e4/fa/36e4fa1c06d7b955d94a5a4cc92b78f6.jpg',
+        starters:['caprese-skewers','gruyere-tartlets','bundnerfleisch-rolls','thai-chicken-satay','eggs-benedict-salmon'], mains:['pasta-primavera-truffle','rosti-bites-raclette','beef-sliders','geschnetzeltes-volauvent','prawn-tempura'], desserts:['swiss-apple-tart-bites','french-macarons','spinach-feta-muffins','carac-chocolate-tartlets','mini-meringues'] },
+      { id:'pure', name:'The Alpine', tag:'Swiss-leaning — rösti bites, Bündnerfleisch, Gruyère and macarons.', image:'https://i.pinimg.com/736x/da/5d/81/da5d810163aef9329800fa8b0c282161.jpg',
+        starters:['gruyere-tartlets','bundnerfleisch-rolls','caprese-skewers','eggs-benedict-salmon','thai-chicken-satay'], mains:['rosti-bites-raclette','geschnetzeltes-volauvent','pasta-primavera-truffle','beef-sliders','prawn-tempura'], desserts:['french-macarons','mini-meringues','swiss-apple-tart-bites','carac-chocolate-tartlets','spinach-feta-muffins'] },
+    ],
+    recommended: { starters:['eggs-benedict-salmon'], mains:['geschnetzeltes-volauvent'], desserts:['carac-chocolate-tartlets'] },
+    addon: null,
+  };
+
   // Live variables — reassigned by paApplyDaypart() from the active daypart.
   var PA_DISHES = [];
   var PA_LUXE_COMBOS = [];
@@ -4717,11 +4749,16 @@ window.addEventListener('hashchange', () => {
   var PA_LUXE_ADDON = null;
   function paDaypart() { var h = new Date().getHours(); return (h < 11) ? 'breakfast' : 'dinner'; }
   function paApplyDaypart() {
+    // Suite has its own all-day menu; Luxe (and anything else) uses the live
+    // breakfast/lunch daypart menu. Resolve from the locked lounge tier so the
+    // right catalog is in place even before paState.tier syncs in paRender.
+    var tier = (typeof paLoungeTier === 'function') ? paLoungeTier().tier : paState.tier;
     var dp = paDaypart();
-    if (paState._daypart === dp && PA_DISHES.length) return;
-    var changed = !!paState._daypart && paState._daypart !== dp;
-    paState._daypart = dp;
-    var m = PA_MENUS[dp];
+    var key = (tier === 'suite') ? 'suite' : dp;
+    if (paState._menuKey === key && PA_DISHES.length) return;
+    var changed = !!paState._menuKey && paState._menuKey !== key;
+    paState._menuKey = key;
+    var m = (key === 'suite') ? PA_SUITE_MENU : PA_MENUS[dp];
     PA_DISHES = m.dishes;
     PA_LUXE_COMBOS = m.combos;
     PA_RECOMMENDED = m.recommended;
@@ -4758,7 +4795,7 @@ window.addEventListener('hashchange', () => {
     size: 'medium',
     luxeCombo: 'voyager',
     luxeAddon: false,
-    _daypart: null,
+    _menuKey: null,
     selections: { starters: [], mains: [], desserts: [] },
     suite: { mode: 'curated', combo: 'voyager', pairing: null, counts: { starters: 2, mains: 2, desserts: 1 }, customizations: {} },
     prive: { ingredients: new Set(), pairing: null, host: 'Élodie Roulet', chefNote: '', mode: 'preorder' },
@@ -5065,13 +5102,17 @@ window.addEventListener('hashchange', () => {
         '<div class="flex items-center justify-between gap-3"><dt class="text-aspire-taupe">Tray size</dt><dd class="text-aspire-navy">'+esc(sizeLabel)+'</dd></div>' +
         (!suiteCustom ? '<div class="flex items-center justify-between gap-3"><dt class="text-aspire-taupe">Guests</dt><dd class="text-aspire-navy">'+esc(PA_TRAY_SIZES[paState.size].guests)+'</dd></div>' : '') +
         '<div class="flex items-center justify-between gap-3"><dt class="text-aspire-taupe">Dishes selected</dt><dd class="text-aspire-navy">'+filled+' / '+expected+'</dd></div>' +
-        (pairing ? '<div class="flex items-center justify-between gap-3"><dt class="text-aspire-taupe">Pairing</dt><dd class="text-aspire-navy text-right truncate max-w-[60%]" title="'+esc(pairing)+'">'+esc(pairing)+'</dd></div>' : '') +
+        (pairing ? '<div class="flex items-center justify-between gap-3"><dt class="text-aspire-taupe">Drinks</dt><dd class="text-aspire-navy text-right truncate max-w-[60%]" title="'+esc(pairing)+'">'+esc(pairing)+'</dd></div>' : '') +
         '<div class="flex items-center justify-between gap-3"><dt class="text-aspire-taupe">Estimated prep</dt><dd class="text-aspire-navy inline-flex items-center gap-1.5">'+paIcon('clock','w-3.5 h-3.5')+' '+prep+' min'+(paState.tier!=='luxe'?' <span class="pa-pill" style="font-size:.5rem;padding:2px 6px;">−3</span>':'')+'</dd></div>' +
         '<div class="flex items-center justify-between gap-3 pt-3 border-t border-aspire-navy/10"><dt class="text-aspire-taupe">Handoff</dt><dd class="text-aspire-navy text-right text-[0.82rem] leading-snug max-w-[60%]">'+esc(paHandoffCopy())+'</dd></div>' +
         '<div class="flex items-center justify-between gap-3"><dt class="text-aspire-taupe">Ready by</dt><dd class="text-aspire-navy font-medium">'+esc(time)+'</dd></div>' +
         ((paState.tier === 'luxe' && paState.luxeAddon && PA_LUXE_ADDON)
           ? '<div class="flex items-center justify-between gap-3 pt-3 border-t border-aspire-navy/10"><dt class="text-aspire-taupe text-right text-[0.82rem] leading-snug max-w-[60%]">'+esc(PA_LUXE_ADDON.name)+'</dt><dd class="text-aspire-navy font-medium tabular-nums">CHF '+PA_LUXE_ADDON.price+'</dd></div>' +
             '<div class="flex items-center justify-between gap-3"><dt class="text-aspire-navy">Extras total</dt><dd class="serif-heading text-xl text-aspire-navy tabular-nums">CHF '+PA_LUXE_ADDON.price+'</dd></div>'
+          : '') +
+        ((paState.tier === 'suite' && paState.suite.pairing)
+          ? '<div class="flex items-center justify-between gap-3 pt-3 border-t border-aspire-navy/10"><dt class="text-aspire-taupe">Drinks included</dt><dd class="text-aspire-navy font-medium tabular-nums">CHF '+PA_DRINKS_PRICE+'</dd></div>' +
+            '<div class="flex items-center justify-between gap-3"><dt class="text-aspire-navy">Extras total</dt><dd class="serif-heading text-xl text-aspire-navy tabular-nums">CHF '+PA_DRINKS_PRICE+'</dd></div>'
           : '') +
       '</dl>' +
       (!complete ? '<p class="mt-5 text-[0.72rem] uppercase tracking-[0.22em] text-[#B05A47]">Please fill all slots before pre-ordering.</p>' : '') +
@@ -5158,6 +5199,7 @@ window.addEventListener('hashchange', () => {
             '<div><div class="swiss-eyebrow">Where to find your tray</div><div class="mt-2 text-[0.92rem] text-aspire-navy leading-snug inline-flex items-start gap-1.5">'+paIcon('pin','w-4 h-4 mt-0.5')+' <span>'+esc(c.handoff)+'</span></div></div>' +
           '</div>' +
           (c.addon ? '<div class="mt-8 flex items-center justify-between gap-3 p-4 bg-white border border-aspire-navy/15"><div class="text-[0.92rem] text-aspire-navy inline-flex items-center gap-2">'+paIcon('crown','w-3.5 h-3.5')+' Added extra · '+esc(c.addon.name)+'</div><div class="serif-heading text-xl text-aspire-navy tabular-nums">CHF '+c.addon.price+'</div></div>' : '') +
+          (c.drinks ? '<div class="mt-4 flex items-center justify-between gap-3 p-4 bg-white border border-aspire-navy/15"><div class="text-[0.92rem] text-aspire-navy inline-flex items-center gap-2">'+paIcon('wine','w-3.5 h-3.5')+' Drinks · '+esc(c.drinks.name)+'</div><div class="serif-heading text-xl text-aspire-navy tabular-nums">CHF '+c.drinks.price+'</div></div>' : '') +
         '</div>' +
         '<aside class="lg:col-span-5 flex flex-col gap-6">' +
           '<div class="pa-ref-card">'+paRefQrMarkup(c.ref)+
@@ -5376,9 +5418,9 @@ window.addEventListener('hashchange', () => {
             '<div class="mt-5 pa-pill">'+paIcon('sparkle','w-2.5 h-2.5')+' Priority prep · −3 min</div>',
           '</div>',
           '<div class="md:col-span-8">',
-            '<div class="text-[0.7rem] uppercase tracking-[0.22em] text-aspire-navy">Sommelier pairing</div>',
-            '<p class="mt-1 text-[0.78rem] text-aspire-taupe">Choose one — complimentary with your tray.</p>',
-            '<div class="mt-3 grid sm:grid-cols-3 gap-2.5">'+pairingChips+'</div>',
+            '<div class="text-[0.7rem] uppercase tracking-[0.22em] text-aspire-navy">Upgrade your journey · +'+PA_DRINKS_PRICE+' CHF</div>',
+            '<p class="mt-1 text-[0.78rem] text-aspire-taupe">Include drinks with your tray — choose one. Added to your bill.</p>',
+            '<div class="mt-3 grid sm:grid-cols-2 gap-2.5">'+pairingChips+'</div>',
           '</div>',
         '</div>',
       '</div></div>',
@@ -6125,6 +6167,7 @@ window.addEventListener('hashchange', () => {
         // receipt + history view can re-resolve names later.
         selections: { starters: paState.selections.starters.slice(), mains: paState.selections.mains.slice(), desserts: paState.selections.desserts.slice() },
         addon: (paState.tier === 'luxe' && paState.luxeAddon && PA_LUXE_ADDON) ? { name: PA_LUXE_ADDON.name, price: PA_LUXE_ADDON.price } : null,
+        drinks: (paState.tier === 'suite' && paState.suite.pairing) ? { name: paPairingLabel(), price: PA_DRINKS_PRICE } : null,
       };
       paPushHistory(paState.confirmed);
       paRender();
@@ -8357,11 +8400,11 @@ window.addEventListener('hashchange', () => {
           selector: '[data-pa-pick="cheese-charcuterie"]',
           change: 'Cheese & Charcuterie placed' },
         { view: 'menu', menuSub: 'pre-arrival',
-          eyebrow: 'Pairing',
-          title: 'Pick Champagne Brut',
-          body: "Slot filled. Remaining slots auto-completed for the demo — every one stays editable. Now pick a pairing.",
-          selector: '#view-menu [data-pa-pairing="champagne"]',
-          change: 'Champagne paired',
+          eyebrow: 'Drinks',
+          title: 'Add Ruinart Champagne',
+          body: "Slot filled. Remaining slots auto-completed for the demo — every one stays editable. Now add drinks to your tray.",
+          selector: '#view-menu [data-pa-pairing="ruinart"]',
+          change: 'Ruinart added',
           onEnter: function () {
             // Auto-fill the remaining empty slots so the user only walks
             // the marquee interaction (one slot, one dish), and the tray
