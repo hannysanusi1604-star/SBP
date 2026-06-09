@@ -5525,7 +5525,6 @@ window.addEventListener('hashchange', () => {
     var ingredientCards = PA_PRIVE_INGREDIENTS.map(function(it){
       var on = p.ingredients.has(it.id);
       return '<button data-pa-ingredient="'+it.id+'" class="pa-combo-card '+(on?'active':'')+'"'+((!on && atMax)?' style="opacity:.5;text-align:left;"':' style="text-align:left;"')+'>' +
-        '<div class="pa-combo-img"><img src="'+esc(it.image)+'" alt="'+esc(it.label)+'" loading="lazy" onerror="this.style.opacity=\'.25\'" /></div>' +
         '<div class="pa-combo-body">' +
           '<div class="flex items-baseline justify-between gap-3">' +
             '<h4 class="serif-heading text-xl text-aspire-navy">'+esc(it.label)+'</h4>' +
