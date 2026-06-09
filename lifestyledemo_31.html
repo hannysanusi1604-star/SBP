@@ -4908,7 +4908,11 @@ window.addEventListener('hashchange', () => {
     return { open: norm(mm ? mm[1] : '05:15'), close: norm(mm ? mm[2] : '21:00') };
   }
   // Arrival is the day after today — taken from the verified boarding pass.
-  function paArrivalDate() { var d = new Date(); d.setDate(d.getDate() + 1); d.setHours(0,0,0,0); return d; }
+  // Privé invites the guest five days before departure, so its date is the
+  // departure date (today + 5); other tiers arrive the next day.
+  function paIsPrive() { try { return (typeof paLoungeTier === 'function') ? paLoungeTier().tier === 'prive' : paState.tier === 'prive'; } catch (e) { return paState.tier === 'prive'; } }
+  function paDateNoun() { return paIsPrive() ? 'departure' : 'arrival'; }
+  function paArrivalDate() { var d = new Date(); d.setDate(d.getDate() + (paIsPrive() ? 5 : 1)); d.setHours(0,0,0,0); return d; }
   function paArrivalDateStr() { try { return (typeof formatDate === 'function') ? formatDate(paArrivalDate()) : paArrivalDate().toDateString(); } catch (e) { return ''; } }
   function paArrivalShort() { try { return paArrivalDate().toLocaleDateString('en-GB', { weekday:'short', day:'2-digit', month:'short' }); } catch (e) { return ''; } }
   // "Ready by" / arrival label for the composer (date computed fresh = tomorrow).
@@ -4936,7 +4940,7 @@ window.addEventListener('hashchange', () => {
     var val = paState.schedule || '';
     var dateStr = paArrivalDateStr();
     return '' +
-      (dateStr ? '<div class="text-[0.8rem] text-aspire-taupe mb-3">We already have your arrival date from your boarding pass — <span class="text-aspire-navy">'+esc(dateStr)+'</span>.</div>' : '') +
+      (dateStr ? '<div class="text-[0.8rem] text-aspire-taupe mb-3">We already have your '+paDateNoun()+' date from your boarding pass — <span class="text-aspire-navy">'+esc(dateStr)+'</span>.</div>' : '') +
       '<div class="flex items-center gap-3 flex-wrap">' +
         '<input type="time" data-pa-time-input min="'+hrs.open+'" max="'+hrs.close+'" step="300" value="'+esc(val)+'" class="bg-white border border-aspire-navy/15 px-3 py-2.5 text-[1rem] text-aspire-navy tabular-nums focus:outline-none focus:border-aspire-navy" style="max-width:170px;" />' +
         '<span class="text-[0.72rem] uppercase tracking-[0.18em] text-aspire-taupe">Open '+esc(hrs.open)+'–'+esc(hrs.close)+'</span>' +
