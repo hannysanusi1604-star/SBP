@@ -5307,7 +5307,7 @@ window.addEventListener('hashchange', () => {
         '<div class="mt-3 grid sm:grid-cols-2 gap-x-8 gap-y-2 text-[0.9rem] text-aspire-navy">' +
           (celeb.cakeFlavour ? '<div><span class="text-aspire-taupe">Cake</span> · '+esc(celeb.cakeFlavour)+'</div>' : '') +
           (celeb.flowerType ? '<div><span class="text-aspire-taupe">Flowers</span> · '+esc(celeb.flowerType)+'</div>' : '') +
-          (celeb.wine ? '<div><span class="text-aspire-taupe">Wine</span> · '+esc(celeb.wine)+'</div>' : '') +
+          (celeb.wine ? '<div><span class="text-aspire-taupe">Drink</span> · '+esc(celeb.wine)+'</div>' : '') +
           (celeb.note ? '<div class="sm:col-span-2"><span class="text-aspire-taupe">Handwritten note</span> · “'+esc(celeb.note)+'”</div>' : '') +
         '</div>' +
         '<div class="mt-4 p-4 bg-aspire-soft border border-aspire-border flex items-start gap-2 text-[0.85rem] text-aspire-navy">'+paIcon('sparkle','w-3.5 h-3.5 mt-0.5')+'<span>Includes Champagne, dried flowers, personalised desserts, a cake and handwritten notes. Pricing is determined case-by-case—your ACE, <strong>'+esc(c.ace || 'your concierge')+'</strong>, will contact you personally to confirm the details and cost.</span></div>' +
@@ -5595,7 +5595,7 @@ window.addEventListener('hashchange', () => {
                 '<div class="grid sm:grid-cols-2 gap-4">',
                   '<label class="block"><div class="text-[0.7rem] uppercase tracking-[0.22em] text-aspire-taupe">Cake flavour</div><input data-pa-cake value="'+esc(p.cakeFlavour)+'" placeholder="e.g. pistachio & raspberry" class="'+inputCls+'" /></label>',
                   '<label class="block"><div class="text-[0.7rem] uppercase tracking-[0.22em] text-aspire-taupe">Type of flower</div><input data-pa-flower value="'+esc(p.flowerType)+'" placeholder="e.g. dried peonies" class="'+inputCls+'" /></label>',
-                  '<label class="block"><div class="text-[0.7rem] uppercase tracking-[0.22em] text-aspire-taupe">Specific wine / Champagne</div><input data-pa-wine value="'+esc(p.wine)+'" placeholder="e.g. Ruinart Blanc de Blanc" class="'+inputCls+'" /></label>',
+                  '<label class="block"><div class="text-[0.7rem] uppercase tracking-[0.22em] text-aspire-taupe">Drink of choice (alcoholic / non-alcoholic)</div><input data-pa-wine value="'+esc(p.wine)+'" placeholder="e.g. Ruinart Champagne, or an alcohol-free spritz" class="'+inputCls+'" /></label>',
                   '<label class="block"><div class="text-[0.7rem] uppercase tracking-[0.22em] text-aspire-taupe">Handwritten note</div><input data-pa-handnote value="'+esc(p.noteText)+'" placeholder="The message we’ll hand-write…" class="'+inputCls+'" /></label>',
                 '</div>',
                 '<div class="flex items-start gap-2 text-[0.8rem] text-aspire-taupe pt-1 border-t border-aspire-navy/10">'+paIcon('sparkle','w-3.5 h-3.5')+'<span>Specific pricing is determined on a case-by-case basis. Your <strong class="text-aspire-navy">ACE</strong> — your personal concierge — will contact you personally to confirm the details and pricing.</span></div>',
